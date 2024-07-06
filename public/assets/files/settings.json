@@ -1,0 +1,38 @@
+{
+    "shipping_methods": [
+        {
+            "id": 1,
+            "title": "Door-To-Door",
+            "title_ar": "من الباب إلى الباب"
+        },
+        {
+            "id": 2,
+            "title": "Door-To-Port",
+            "title_ar": "من الباب إلى الميناء"
+        }
+    ],
+    "payment_methods": [
+        {
+            "id": 1,
+            "title": "Cash",
+            "title_ar": "كاش"
+        },
+        {
+            "id": 2,
+            "title": "Credit Card",
+            "title_ar": "بطاقة الائتمان"
+        }
+    ],
+    "payment_statuses": [
+        {
+            "id": 1,
+            "title": "Postpaid",
+            "title_ar": "الدفع الآجل"
+        },
+        {
+            "id": 2,
+            "title": "Prepaid",
+            "title_ar": "الدفع المسبق"
+        }
+    ]
+}

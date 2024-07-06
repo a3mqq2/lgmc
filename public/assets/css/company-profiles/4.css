@@ -1,0 +1,58 @@
+.sheet_1 {
+  background-image: url('/assets/images/company-profiles/4/1.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+.sheet_2 {
+  background-image: url('/assets/images/company-profiles/4/2.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+.sheet_3 {
+  background-image: url('/assets/images/company-profiles/4/3.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+
+.table-products
+{
+  width: 80%;
+  margin: auto;
+  position: relative;
+  top: 160px;
+}
+
+.table-products td 
+{
+  height: 180px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.page-counter
+{
+  position: absolute;
+  bottom: 50px;
+  text-align: center;
+  font-size: 14px;
+  color: #4170b0;
+  left: 50%;
+}
+
+
+th 
+{
+  text-align: center;
+}

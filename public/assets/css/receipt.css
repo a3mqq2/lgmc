@@ -1,0 +1,675 @@
+section.sheet {
+    background-image: url('/assets/images/receipt.png?v=2');
+    background-size: cover;
+    padding: 0px !important;
+    margin: 0px !important;
+    position: relative !important;
+}
+
+  
+  body {
+    background: #fff !important;
+    font-family: 'Almarai', sans-serif;
+  }
+  
+  
+  .container {
+    padding: 0px !important;
+    margin: 0px !important;
+    margin-top: 4.5cm !important;
+    padding-left: 1.2cm !important;
+  }
+  
+  .container-mt0 {
+    padding: 0px !important;
+    margin: 0px !important;
+    padding-right: 1.2cm !important;
+  }
+  
+  
+  .container-body {
+    padding-left: 1.2cm !important;
+  }
+  
+  
+  .text-primary {
+    color: #0067ff !important;
+    font-weight: bold;
+  }
+  
+  
+  .printable-table {
+    width: 100%;
+    display: table;
+    border-collapse: separate;
+    box-sizing: border-box;
+    text-indent: initial;
+    border-spacing: 0px !important;
+    border-color: rgb(225, 225, 225);
+    padding-left: 1.2cm !important;
+    padding-right: 1.2cm !important;
+  }
+  
+  .printable-table th {
+    background-color: #f7f7f7 !important;
+    color: #0067ff !important;
+  }
+  
+  .printable-table td,
+  .printable-table th {
+    padding: 5px 10px;
+    margin: 0px !important;
+    border: 0.2px solid #d1d1d1;
+  }
+  
+  @media print {
+  
+    .col-sm-1,
+    .col-sm-2,
+    .col-sm-3,
+    .col-sm-4,
+    .col-sm-5,
+    .col-sm-6,
+    .col-sm-7,
+    .col-sm-8,
+    .col-sm-9,
+    .col-sm-10,
+    .col-sm-11,
+    .col-sm-12 {
+      float: left;
+    }
+  
+    .col-sm-12 {
+      width: 100%;
+    }
+  
+    .col-sm-11 {
+      width: 91.66666667%;
+    }
+  
+    .col-sm-10 {
+      width: 83.33333333%;
+    }
+  
+    .col-sm-9 {
+      width: 75%;
+    }
+  
+    .col-sm-8 {
+      width: 66.66666667%;
+    }
+  
+    .col-sm-7 {
+      width: 58.33333333%;
+    }
+  
+    .col-sm-6 {
+      width: 50%;
+    }
+  
+    .col-sm-5 {
+      width: 41.66666667%;
+    }
+  
+    .col-sm-4 {
+      width: 33.33333333%;
+    }
+  
+    .col-sm-3 {
+      width: 25%;
+    }
+  }
+  
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .no-border {
+    border: none !important;
+  }
+  
+  .printable-table .bg-primary {
+    background-color: #0067ff !important;
+    color: #fff !important;
+  }
+  
+  @media print {
+    .pagebreak {
+      page-break-before: always;
+    }
+  
+    /* page-break-after works, as well */
+  }
+  
+  .very-small {
+    font-size: 12px !important;
+  }
+  
+  .text-right {
+    text-align: right !important;
+  }
+  
+  .transperant {
+    background-color: transparent !important;
+  }
+  
+  .transperant th,
+  .transperant td,
+  .transperant tr {
+    background-color: transparent !important;
+    border: none !important;
+  }
+  
+  td.ls-element {
+    margin-top: -9px !important;
+    display: block;
+    width: 100% !important;
+  }
+  
+  body.A4 .p-20 {
+    padding: 25px !important;
+  }
+  
+  table.print-table {
+    position: absolute;
+    top: 10.2cm;
+    width: 19cm;
+    width: 81.8%;
+    left: 2.3cm;
+  }
+  
+  table.print-table2 {
+    position: absolute;
+    top: 12.4cm;
+    width: 19cm;
+  }
+  
+  table.print-table th {
+    background-color: #D3EEE8 !important;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  
+  table.print-table th {
+    padding: 5px 20px;
+    border: 2px solid #000;
+    color: rgb(0, 0, 0) !important;
+    text-align: center;
+    font-weight: bold !important;
+  }
+  
+  table.print-table td {
+    border: 2px solid #000 !important;
+    text-align: center;
+  }
+  
+  .container {
+    padding: 0px !important;
+    margin: 0px !important;
+    margin-top: 4.5cm !important;
+    padding-left: 0.5cm !important;
+  }
+  
+  .terms {
+    background-image: url(/assets/images/quotations/1-terms.png?v=2);
+    width: 21cm;
+    height: 238px;
+    background-size: cover;
+    position: absolute;
+    bottom: 58px;
+    left: 0;
+  }
+  
+  span#delivery_time {
+    position: absolute;
+    top: 69px;
+    left: 4.2cm;
+    font-size: 13px;
+  }
+  
+  table.print-table td.no-border {
+    border-width: 0px !important;
+  }
+  
+  .bg-primary {
+    background-color: #D3EEE8 !important;
+    border: 2px solid #000 !important;
+    text-align: center;
+    color: rgb(0, 0, 0) !important;
+  }
+  
+  .container {
+    padding: 0px !important;
+    margin: 0px !important;
+    margin-top: 4.5cm !important;
+    padding-left: 1.3cm !important;
+  }
+  
+  #id {
+    width: 301px;
+    margin-left: auto;
+    margin-top: 24px;
+    margin-right: 250px;
+    font-size: 10px;
+  }
+
+
+  #id p {
+    font-size: 23px;
+    color: #e30613;
+    font-weight: bold;
+    font-family: sans-serif;
+  }
+
+
+
+  #date {
+    font-size: 13px;
+    font-weight: bold;
+    font-family: sans-serif;
+    color: black;
+    width: 300px;
+    margin-top: 106px;
+    margin-left: 474px;
+  }
+
+
+  #date p 
+  {
+    text-align: center;
+  }
+
+
+  #customer
+  {
+    font-size: 21px;
+    font-weight: bold;
+    color: black;
+    width: 513px;
+    margin-left: auto;
+    margin-top: 30px;
+    margin-right: 243px;
+    text-align: center;
+  }
+
+  #amount
+  {
+    font-size: 21px;
+    font-weight: bold;
+    color: black;
+    width: 513px;
+    margin-left: auto;
+    margin-top: 12px;
+    margin-right: 243px;
+    text-align: center;
+  }
+
+
+
+  #description
+  {
+    font-size: 21px;
+    font-weight: bold;
+    color: black;
+    width: 513px;
+    margin-left: auto;
+    margin-top: 12px;
+    margin-right: 243px;
+    text-align: center;
+  }
+
+  #bill_air #flight_id 
+  {
+    font-size: 21px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: 180px;
+    margin-right: 93px;
+    text-align: center;
+  }
+
+
+  #bill_sea #flight_id 
+  {
+    font-size: 21px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: 180px;
+    margin-right: 54px;
+    text-align: center;
+  }
+
+  #bill_air #flight_type
+  {
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: -50px;
+    margin-right: 261px;
+    text-align: center;
+  }
+
+  #bill_sea #flight_type
+  {
+    font-size: 17px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: -48px;
+    margin-right: 150px;
+    text-align: center;
+  }
+
+  #bill_air #flight_date
+  {
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: -41px;
+    margin-right: 429px;
+    text-align: center;
+  }
+
+
+
+  #bill_sea #flight_date
+  {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: -39px;
+    margin-right: 247px;
+    text-align: center;
+  }
+
+
+
+  #bill_sea #harbor
+  {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: -39px;
+    margin-right: 346px;
+    text-align: center;
+  }
+
+
+
+  #bill_sea #cont_number
+  {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: -39px;
+    margin-right: 439px;
+    text-align: center;
+  }
+
+
+
+  #bill_sea #company
+  {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: -39px;
+    margin-right: 538px;
+    text-align: center;
+  }
+
+
+  
+  #bill_sea #bill
+  {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: -39px;
+    margin-right: 634px;
+    text-align: center;
+  }
+
+
+  #bill_air #bill
+  {
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: -46px;
+    margin-right: 602px;
+    text-align: center;
+  }
+
+
+  #bill_air #code {
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: 96px;
+    margin-right: 92px;
+    text-align: center;
+ }
+
+
+ #bill_air #customer 
+ {
+    font-size: 11px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: -39px;
+    margin-right: 185px;
+    text-align: center;
+ }
+
+
+ #bill_air #phone 
+ {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: -36px;
+    margin-right: 352px;
+    text-align: center;
+ }
+
+
+ #bill_air #city
+ {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: -25px;
+    margin-right: 526px;
+    text-align: center;
+ }
+
+
+
+ #bill_air #box
+ {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: 119px;
+    margin-right: 16px;
+    text-align: center;
+ }
+
+
+ #bill_air #weight
+ {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: -26px;
+    margin-right: 187px;
+    text-align: center;
+ }
+
+
+ #bill_air #price
+ {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: -23px;
+    margin-right: 356px;
+    text-align: center;
+ }
+
+ #bill_air #debt
+ {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: -23px;
+    margin-right: 526px;
+    text-align: center;
+ }
+
+
+
+
+
+ #bill_sea #code {
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+    width: 103px;
+    margin-left: auto;
+    margin-top: 110px;
+    margin-right: 92px;
+    text-align: center;
+ }
+
+
+ #bill_sea #customer 
+ {
+    font-size: 11px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: -39px;
+    margin-right: 185px;
+    text-align: center;
+ }
+
+
+ #bill_sea #phone 
+ {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: -36px;
+    margin-right: 352px;
+    text-align: center;
+ }
+
+
+ #bill_sea #city
+ {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: -25px;
+    margin-right: 526px;
+    text-align: center;
+ }
+
+
+
+ #bill_sea #box
+ {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: 133px;
+    margin-right: 16px;
+    text-align: center;
+ }
+
+
+ #bill_sea #weight
+ {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: -26px;
+    margin-right: 187px;
+    text-align: center;
+ }
+
+
+ #bill_sea #price
+ {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: -23px;
+    margin-right: 356px;
+    text-align: center;
+ }
+
+ #bill_sea #debt
+ {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    width: 253px;
+    margin-left: auto;
+    margin-top: -23px;
+    margin-right: 526px;
+    text-align: center;
+ }

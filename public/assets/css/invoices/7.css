@@ -1,0 +1,269 @@
+section.sheet {
+  background-image: url('/assets/images/invoices/7.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+body {
+  background: #fff !important;
+  font-family: 'Almarai', sans-serif;
+}
+
+
+.container {
+  padding: 0px !important;
+  margin: 0px !important;
+  margin-top: 4.5cm !important;
+  padding-left: 1.2cm !important;
+}
+
+.container-mt0 {
+  padding: 0px !important;
+  margin: 0px !important;
+  padding-right: 1.2cm !important;
+}
+
+
+.container-body {
+  padding-left: 1.2cm !important;
+}
+
+
+.text-primary {
+  color: #0067ff !important;
+  font-weight: bold;
+}
+
+
+.printable-table {
+  width: 100%;
+  display: table;
+  border-collapse: separate;
+  box-sizing: border-box;
+  text-indent: initial;
+  border-spacing: 0px !important;
+  border-color: rgb(225, 225, 225);
+  padding-left: 1.2cm !important;
+  padding-right: 1.2cm !important;
+}
+
+.printable-table th {
+  background-color: #f7f7f7 !important;
+  color: #0067ff !important;
+}
+
+.printable-table td,
+.printable-table th {
+  padding: 5px 10px;
+  margin: 0px !important;
+  border: 0.2px solid #d1d1d1;
+}
+
+@media print {
+
+  .col-sm-1,
+  .col-sm-2,
+  .col-sm-3,
+  .col-sm-4,
+  .col-sm-5,
+  .col-sm-6,
+  .col-sm-7,
+  .col-sm-8,
+  .col-sm-9,
+  .col-sm-10,
+  .col-sm-11,
+  .col-sm-12 {
+      float: left;
+  }
+
+  .col-sm-12 {
+      width: 100%;
+  }
+
+  .col-sm-11 {
+      width: 91.66666667%;
+  }
+
+  .col-sm-10 {
+      width: 83.33333333%;
+  }
+
+  .col-sm-9 {
+      width: 75%;
+  }
+
+  .col-sm-8 {
+      width: 66.66666667%;
+  }
+
+  .col-sm-7 {
+      width: 58.33333333%;
+  }
+
+  .col-sm-6 {
+      width: 50%;
+  }
+
+  .col-sm-5 {
+      width: 41.66666667%;
+  }
+
+  .col-sm-4 {
+      width: 33.33333333%;
+  }
+
+  .col-sm-3 {
+      width: 25%;
+  }
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.no-border {
+  border: none !important;
+}
+
+.printable-table .bg-primary {
+  background-color: #0067ff !important;
+  color: #fff !important;
+}
+
+@media print {
+  .pagebreak {
+      page-break-before: always;
+  }
+
+  /* page-break-after works, as well */
+}
+
+.very-small {
+  font-size: 12px !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.transperant {
+  background-color: transparent !important;
+}
+
+.transperant th,
+.transperant td,
+.transperant tr {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+td.ls-element {
+  margin-top: -9px !important;
+  display: block;
+  width: 100% !important;
+}
+
+body.A4 .p-20 {
+  padding: 25px !important;
+}
+
+
+.offer_information
+{
+  line-height: 1.6;
+  position: absolute;
+  left: 162px;
+  top: 236.4px;
+  font-size: 10px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.extra
+{
+  left: 540px !important;
+  top: 245px !important;
+  line-height: 3 !important;
+}
+.offer_to_caption
+{
+  font-weight: bold;
+  color: #fff;
+  background: #000;
+  position: absolute;
+  padding: 8px 5px;
+  font-size: 9px;
+  top: 185px;
+  left: 39px;
+  letter-spacing: 1.4px;
+}
+
+.quotable
+{
+  top: 334px;
+  position: absolute;
+  font-size: 10px;
+  text-align: center;
+  width: 89.3%;
+  margin: auto;
+  left: 39.1px;
+  border: 1px;
+  font-weight: bold;
+}
+
+.quotable .dark-th
+{
+  background: #358444;
+    color: #fff;
+}
+
+
+.quotable .light-th
+{
+  background: #358444;
+    color: #fff;
+}
+
+.quototal
+{
+  top: 374px;
+  position: absolute;
+  font-size: 10px;
+  text-align: center;
+  width: 36.5%;
+  margin: auto;
+  right: 46.1px;
+  border: 1px;
+  font-weight: bold;
+  border: 1.7px solid;
+}
+
+.project_description
+{
+  position: absolute;
+  top: 6.1cm;
+  left: 1.3cm;
+}
+
+.footer-page
+{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  background: #E2F4DF;
+  padding: 10px;
+}
+#stamp{
+  width: 4.8cm;
+  position: absolute;
+  bottom: 69px;
+  left: 4.2cm;
+  z-index: 9999;
+}

@@ -1,0 +1,114 @@
+.sheet_1 {
+  background-image: url('/assets/images/company-profiles/3/1.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+.sheet_2 {
+  background-image: url('/assets/images/company-profiles/3/2.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+.sheet_3 {
+  background-image: url('/assets/images/company-profiles/3/3.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+.sheet_4 {
+  background-image: url('/assets/images/company-profiles/3/4.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+
+.sheet_5 {
+  background-image: url('/assets/images/company-profiles/3/5.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+.sheet_6 {
+  background-image: url('/assets/images/company-profiles/3/6.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+.sheet_7 {
+  background-image: url('/assets/images/company-profiles/3/7.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+.sheet_8 {
+  background-image: url('/assets/images/company-profiles/3/8.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+.sheet_9 {
+  background-image: url('/assets/images/company-profiles/3/10.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+
+
+.table-products
+{
+  width: 80%;
+  margin: auto;
+  position: relative;
+  top: 160px;
+}
+
+.table-products td 
+{
+  height: 180px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.page-counter
+{
+  position: absolute;
+  bottom: 50px;
+  text-align: center;
+  font-size: 14px;
+  color: #4170b0;
+  left: 50%;
+}
+
+
+th,td
+{
+  text-align: center;
+  color: #fff;
+}

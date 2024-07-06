@@ -1,0 +1,132 @@
+section.sheet {
+
+    background-size: cover;
+    padding: 0px !important;
+    margin: 0px !important;
+    position: relative !important;
+}
+
+body {
+    background: #fff !important;
+    font-family: 'Almarai', sans-serif;
+}
+
+
+.container {
+    padding: 0px !important;
+    margin: 0px !important;
+    margin-top: 4.5cm !important;
+    padding-left: 1.2cm !important;
+}
+
+.container-body {
+    padding-left: 1.2cm !important;
+}
+
+
+.text-primary {
+    color: #bc1d1a !important;
+    font-weight: bold;
+}
+
+
+.printable-table {
+    width: 100%;
+    display: table;
+    border-collapse: separate;
+    box-sizing: border-box;
+    text-indent: initial;
+    border-spacing: 0px !important;
+    border-color: rgb(0, 0, 0);
+    padding-left: 0.5cm !important;
+    padding-right: 0.5cm !important;
+}
+
+.printable-table th {
+    background-color: #f7f7f7 !important;
+    color: #005485 !important;
+}
+
+.printable-table td,
+.printable-table th {
+    padding: 5px 10px;
+    margin: 0px !important;
+    border: 0.2px solid #000000;
+}
+
+@media print {
+
+    .col-sm-1,
+    .col-sm-2,
+    .col-sm-3,
+    .col-sm-4,
+    .col-sm-5,
+    .col-sm-6,
+    .col-sm-7,
+    .col-sm-8,
+    .col-sm-9,
+    .col-sm-10,
+    .col-sm-11,
+    .col-sm-12 {
+        float: left;
+    }
+
+    .col-sm-12 {
+        width: 100%;
+    }
+
+    .col-sm-11 {
+        width: 91.66666667%;
+    }
+
+    .col-sm-10 {
+        width: 83.33333333%;
+    }
+
+    .col-sm-9 {
+        width: 75%;
+    }
+
+    .col-sm-8 {
+        width: 66.66666667%;
+    }
+
+    .col-sm-7 {
+        width: 58.33333333%;
+    }
+
+    .col-sm-6 {
+        width: 50%;
+    }
+
+    .col-sm-5 {
+        width: 41.66666667%;
+    }
+
+    .col-sm-4 {
+        width: 33.33333333%;
+    }
+
+    .col-sm-3 {
+        width: 25%;
+    }
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.no-border {
+    border: none !important;
+}
+
+.black-white {
+    -webkit-filter: grayscale(100%);
+    /* Safari 6.0 - 9.0 */
+    filter: grayscale(100%);
+}
+.li-small{
+    font-size: 13px;
+}

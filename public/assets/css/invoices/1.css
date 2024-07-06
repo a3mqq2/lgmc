@@ -1,0 +1,347 @@
+section.sheet {
+  background-image: url('/assets/images/invoices/1.png?v=2');
+  background-size: cover;
+  padding: 0px !important;
+  margin: 0px !important;
+  position: relative !important;
+}
+
+.terms {
+  background-image: url('/assets/images/invoices/1-terms.png?v=2');
+  width: 375px;
+  height: 68px;
+}
+
+body {
+  background: #fff !important;
+  font-family: 'Almarai', sans-serif;
+}
+
+
+.container {
+  padding: 0px !important;
+  margin: 0px !important;
+  margin-top: 4.5cm !important;
+  padding-left: 1.2cm !important;
+}
+
+.container-mt0 {
+  padding: 0px !important;
+  margin: 0px !important;
+  padding-right: 1.2cm !important;
+}
+
+
+.container-body {
+  padding-left: 1.2cm !important;
+}
+
+
+.text-primary {
+  color: #0067ff !important;
+  font-weight: bold;
+}
+
+
+.printable-table {
+  width: 100%;
+  display: table;
+  border-collapse: separate;
+  box-sizing: border-box;
+  text-indent: initial;
+  border-spacing: 0px !important;
+  border-color: rgb(225, 225, 225);
+  padding-left: 1.2cm !important;
+  padding-right: 1.2cm !important;
+}
+
+.printable-table th {
+  background-color: #f7f7f7 !important;
+  color: #0067ff !important;
+}
+
+.printable-table td,
+.printable-table th {
+  padding: 5px 10px;
+  margin: 0px !important;
+  border: 0.2px solid #d1d1d1;
+}
+
+@media print {
+
+  .col-sm-1,
+  .col-sm-2,
+  .col-sm-3,
+  .col-sm-4,
+  .col-sm-5,
+  .col-sm-6,
+  .col-sm-7,
+  .col-sm-8,
+  .col-sm-9,
+  .col-sm-10,
+  .col-sm-11,
+  .col-sm-12 {
+    float: left;
+  }
+
+  .col-sm-12 {
+    width: 100%;
+  }
+
+  .col-sm-11 {
+    width: 91.66666667%;
+  }
+
+  .col-sm-10 {
+    width: 83.33333333%;
+  }
+
+  .col-sm-9 {
+    width: 75%;
+  }
+
+  .col-sm-8 {
+    width: 66.66666667%;
+  }
+
+  .col-sm-7 {
+    width: 58.33333333%;
+  }
+
+  .col-sm-6 {
+    width: 50%;
+  }
+
+  .col-sm-5 {
+    width: 41.66666667%;
+  }
+
+  .col-sm-4 {
+    width: 33.33333333%;
+  }
+
+  .col-sm-3 {
+    width: 25%;
+  }
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.no-border {
+  border: none !important;
+}
+
+.printable-table .bg-primary {
+  background-color: #0067ff !important;
+  color: #fff !important;
+}
+
+@media print {
+  .pagebreak {
+    page-break-before: always;
+  }
+
+  /* page-break-after works, as well */
+}
+
+.very-small {
+  font-size: 12px !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.transperant {
+  background-color: transparent !important;
+}
+
+.transperant th,
+.transperant td,
+.transperant tr {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+td.ls-element {
+  margin-top: -9px !important;
+  display: block;
+  width: 100% !important;
+}
+
+body.A4 .p-20 {
+  padding: 25px !important;
+}
+
+
+#date {
+  position: absolute;
+  left: 4.1cm;
+  top: 3.7cm;
+}
+
+#offer_to_name_user {
+  position: absolute;
+  left: 3.9cm;
+  top: 6.2cm;
+  font-size: 13px;
+}
+
+#offer_to_name {
+  position: absolute;
+  left: 3.9cm;
+  top: 6.8cm;
+  font-size: 13px;
+}
+
+#offer_to_address {
+  position: absolute;
+  left: 3.9cm;
+  top: 7.4cm;
+  font-size: 13px;
+}
+
+#offer_to_phone {
+  position: absolute;
+  left: 13.8cm;
+  top: 5.7cm;
+  font-size: 13px;
+}
+
+#offer_to_email {
+  position: absolute;
+  left: 13.8cm;
+  top: 6.2cm;
+  font-size: 13px;
+}
+
+#quotation_number {
+  position: absolute;
+  left: 8cm;
+  top: 4.7cm;
+  font-size: 30px;
+  color: red !important;
+}
+
+#title {
+  position: absolute;
+  left: 5cm;
+  top: 8.6cm;
+  font-size: 21px;
+  color: #fff;
+  font-weight: bold;
+}
+
+#valid_to {
+  position: absolute;
+  left: 3.2cm;
+  bottom: 4.95cm;
+}
+
+#responsible {
+  position: absolute;
+  right: 2.6cm;
+  bottom: 2.5cm;
+  text-align: center;
+  z-index: 999999;
+}
+
+table.print-table {
+  position: absolute;
+  top: 10.2cm;
+  width: 19cm;
+  width: 81.8%;
+  left: 2.3cm;
+}
+
+table.print-table2 {
+  position: absolute;
+  top: 12.4cm;
+  width: 19cm;
+}
+
+table.print-table th {
+  background-color: #D3EEE8 !important;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+table.print-table th {
+  padding: 5px 20px;
+  border: 2px solid #000;
+  color: rgb(0, 0, 0) !important;
+  text-align: center;
+  font-weight: bold !important;
+}
+
+table.print-table td {
+  border: 2px solid #000 !important;
+  text-align: center;
+}
+
+.container {
+  padding: 0px !important;
+  margin: 0px !important;
+  margin-top: 4.5cm !important;
+  padding-left: 0.5cm !important;
+}
+
+.terms {
+  background-image: url(/assets/images/quotations/1-terms.png?v=2);
+  width: 21cm;
+  height: 238px;
+  background-size: cover;
+  position: absolute;
+  bottom: 58px;
+  left: 0;
+}
+
+span#delivery_time {
+  position: absolute;
+  top: 69px;
+  left: 4.2cm;
+  font-size: 13px;
+}
+
+table.print-table td.no-border {
+  border-width: 0px !important;
+}
+
+.bg-primary {
+  background-color: #D3EEE8 !important;
+  border: 2px solid #000 !important;
+  text-align: center;
+  color: rgb(0, 0, 0) !important;
+}
+
+.container {
+  padding: 0px !important;
+  margin: 0px !important;
+  margin-top: 4.5cm !important;
+  padding-left: 1.3cm !important;
+}
+
+#inovice_id {
+  position: absolute;
+  left: 3.8cm;
+  top: 11.2cm;
+}
+
+#po_number {
+  position: absolute;
+  left: 9.6cm;
+  top: 11.3cm;
+}
+
+#stamp{
+  width: 4.8cm;
+  position: absolute;
+  bottom: 69px;
+  left: 4.2cm;
+  z-index: 9999;
+}
