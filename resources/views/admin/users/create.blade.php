@@ -85,26 +85,23 @@
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <tbody>
-                                    @foreach ($roles as $role)
-                                        <tr>
-                                            <th colspan="4" class="text-center bg-dark text-light">{{$role->display_name}}</th>
-                                        </tr>
-                                        <tr>
-                                            @foreach ($role->permissions as $index=>$permission)
-                                                <tr>
-                                                    <td class="bg-light" style="width: 50%">
-                                                    <label for="" class="form-check-label">{{$permission->display_name}}</label></td>
-                                                    <td style="width: 50%;">
-                                                        <input class="form-check-input role-switch" type="checkbox" name="permissions[{{$role->id}}][]" value="{{$permission->id}}">
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tr>
-                                    @endforeach
+                                    @foreach ($permissions as $permission)
+                                    <tr>
+                                        <td class="bg-light" style="width: 50%">
+                                            <label for="" class="form-check-label">{{ $permission->display_name }}</label>
+                                        </td>
+                                        <td style="width: 50%;">
+                                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                            data-on-text="نعم" data-off-text="لا"
+                                            data-on-color="success" data-off-color="danger" >
+                                                                                     </td>
+                                    </tr>
+                                @endforeach
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                    
 
                     <button type="submit" class="btn btn-primary">إنشاء</button>
                 </form>
