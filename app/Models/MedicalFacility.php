@@ -42,7 +42,7 @@ class MedicalFacility extends Model
     }
 
     public function medicalFacilityType() {
-        return $this->belongsTo(medicalFacilityType::class);
+        return $this->belongsTo(MedicalFacilityType::class);
     }
     
 

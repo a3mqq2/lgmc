@@ -81,6 +81,7 @@ class TransactionController extends Controller
         ]);
 
         $validatedData['user_id'] = auth()->id();
+        $validatedData['balance'] = 0;
         $transaction = Transaction::create($validatedData);
         $vault = Vault::findOrFail($request->vault_id);
         if($request->type == "deposit") {
