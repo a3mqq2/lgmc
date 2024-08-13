@@ -29,24 +29,24 @@
                                     <td>{{ $university->created_at->format('Y-m-d') }}</td>
                                     <td>
                                         <a href="{{ route(get_area_name().'.universities.edit', $university->id) }}" class="btn btn-primary btn-sm">تعديل</a>
-                                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ $university->id }}">حذف</button>
+                                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $university->id }}">حذف</button>
                                     </td>
                                 </tr>
                                 <!-- Delete Modal -->
-                                <div class="modal fade" id="deleteModal{{ $university->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal fade" id="deleteModal{{ $university->id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ $university->id }}" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="deleteModalLabel">تأكيد الحذف</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <h5 class="modal-title" id="deleteModalLabel{{ $university->id }}">تأكيد الحذف</h5>
+                                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                هل أنت متأكد من رغبتك في حذف هذه الجامعة؟
+                                                هل أنت متأكد من رغبتك في حذف الجامعة <strong>{{ $university->name }}</strong>؟
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
                                                 <form action="{{ route(get_area_name().'.universities.destroy', $university->id) }}" method="POST">
                                                     @csrf
                                                     @method('DELETE')

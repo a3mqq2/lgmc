@@ -190,7 +190,7 @@
                                     <select name="branch_id" id="" class="form-control">
                                         <option value="">حدد فرع</option>
                                         @foreach (App\Models\Branch::all() as $branch)
-                                        <option value="{{$branch->id}}">{{$branch->name}}</option>
+                                        <option value="{{$branch->id}}">{{}}</option>
                                         @endforeach
                                     </select>
                                 </div>

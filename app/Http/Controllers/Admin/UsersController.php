@@ -83,8 +83,8 @@ class UsersController extends Controller
             'password' => 'required|string|confirmed|min:8',
             'active' => 'boolean',
             'branch_id' => 'nullable|exists:branches,id',
-            'phone' => 'nullable|string|max:20',
-            'phone2' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|digits:10',
+            'phone2' => 'nullable|string|digits:10',
             'passport_number' => 'nullable|string|max:50',
             'ID_number' => 'nullable|string|max:50',
         ]);

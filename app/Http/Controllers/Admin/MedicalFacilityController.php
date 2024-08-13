@@ -51,7 +51,7 @@ class MedicalFacilityController extends Controller
             'ownership' => 'required|in:private,public',
             'medical_facility_type_id' => 'required|exists:medical_facility_types,id',
             'address' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
+            'phone_number' => 'nullable|string|digits:10',
             'branch_id' => 'nullable',
             "commerical_number" => "required",
         ]);
