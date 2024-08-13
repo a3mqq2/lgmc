@@ -105,11 +105,9 @@ class UsersController extends Controller
         $user->branches()->attach($request->branches);
 
         if ($request->has('permissions')) {
-            foreach ($request->permissions as $roleId => $permissionIds) {
-                foreach ($permissionIds as $permissionId) {
-                    $permission = Permission::findById($permissionId);
-                    $user->givePermissionTo($permission);
-                }
+            foreach ($request->permissions as $roleId => $permissionId) {
+                $permission = Permission::where('name', $permissionId)->first();
+                $user->givePermissionTo($permission);
             }
         }
 

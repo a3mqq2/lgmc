@@ -71,40 +71,41 @@ class TransactionController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    $validatedData = $request->validate([
-        'desc' => 'required|string|max:255',
-        'amount' => 'required|numeric',
-        'transaction_type_id' => 'required|exists:transaction_types,id',
-        'type' => 'required|in:deposit,withdrawal',
-        'vault_id' => "required|exists:vaults,id",
-    ]);
-
-    $validatedData['user_id'] = auth()->id();
-    $transaction = Transaction::create($validatedData);
-
-    $vault = Vault::findOrFail($request->vault_id);
-
-    if ($request->type == "deposit") {
-        $vault->increment('balance', $request->amount);
-    } else {
-        if ($vault->balance - $request->amount < 0) {
-            return redirect()->back()->withErrors(["لا يوجد رصيد كافي في الخزينة المحددة"]);
+    {
+        $validatedData = $request->validate([
+            'desc' => 'required|string|max:255',
+            'amount' => 'required|numeric',
+            'transaction_type_id' => 'required|exists:transaction_types,id',
+            'type' => 'required|in:deposit,withdrawal',
+            'vault_id' => "required|exists:vaults,id",
+        ]);
+    
+        $validatedData['user_id'] = auth()->id();
+        $transaction = Transaction::create($validatedData);
+    
+        $vault = Vault::findOrFail($request->vault_id);
+    
+        if ($request->type == "deposit") {
+            $vault->increment('balance', $request->amount);
+        } else {
+            if ($vault->balance - $request->amount < 0) {
+                return redirect()->back()->withErrors(["لا يوجد رصيد كافي في الخزينة المحددة"]);
+            }
+            $vault->decrement('balance', $request->amount);
         }
-        $vault->decrement('balance', $request->amount);
+    
+        // Save the updated vault balance in the transaction
+        $transaction->balance = $vault->balance;
+        $transaction->save();
+    
+        $vault->save();
+    
+        Log::create(['user_id' => auth()->user()->id, 'details' => 'تم إضافة معاملة جديدة: ' . $transaction->desc]);
+    
+        return redirect()->route(get_area_name() . '.transactions.index')
+            ->with('success', 'تم إضافة معاملة جديدة بنجاح.');
     }
-
-    // Save the updated vault balance in the transaction
-    $transaction->balance = $vault->balance;
-    $transaction->save();
-
-    $vault->save();
-
-    Log::create(['user_id' => auth()->user()->id, 'details' => 'تم إضافة معاملة جديدة: ' . $transaction->desc]);
-
-    return redirect()->route(get_area_name() . '.transactions.index')
-        ->with('success', 'تم إضافة معاملة جديدة بنجاح.');
-}
+    
 
 
 }

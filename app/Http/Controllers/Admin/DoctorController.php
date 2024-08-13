@@ -137,7 +137,7 @@ class DoctorController extends Controller
             $doctor->ex_medical_facilities = $request->ex_medical_facilities;
             $doctor->experience = $request->experience;
             $doctor->notes = $request->notes;
-            $doctor->branch_id = auth()->user()->branch_id;
+            $doctor->branch_id = $request->branch_id ? $request->branch_id : auth()->user()->branch_id;
             $doctor->save();
             $doctor->medicalFacilities()->attach($request->medical_facilities);
             $doctor->code = auth()->user()->branch->code . '-' . $doctor->id;

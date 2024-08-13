@@ -25,6 +25,13 @@ class DatabaseSeeder extends Seeder
 
 
         $permission = Permission::create([
+            'name' => 'general_management',
+            'display_name' => "الادارة العامة",
+        ]);
+
+
+
+        $permission = Permission::create([
             'name' => 'users',
             'display_name' => "الموظفين",
         ]);
@@ -95,6 +102,8 @@ class DatabaseSeeder extends Seeder
             'name' => "admin_reports",
         ]);
 
+        
+
 
         
 
@@ -159,6 +168,7 @@ class DatabaseSeeder extends Seeder
         $user->givePermissionTo('branch_reports');
         $user->givePermissionTo('branch_accounting');
         $user->givePermissionTo('medical_faciltiesـlicences');
+        $user->givePermissionTo('general_management');
 
     }
 }

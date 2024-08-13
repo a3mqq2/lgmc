@@ -189,6 +189,9 @@
                                     <label for="">حدد فرع</label>
                                     <select name="branch_id" id="" class="form-control">
                                         <option value="">حدد فرع</option>
+                                        @foreach (App\Models\Branch::all() as $branch)
+                                        <option value="{{$branch->id}}">{{$branch->name}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 @endif

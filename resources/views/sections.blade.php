@@ -56,6 +56,7 @@
                                         </div>
                                         <div class="mt-4">
                                             <div class="row">
+                                                @if (auth()->user()->can('general_management'))
                                                 <div class="col-md-12  p-2" style="border-bottom:1px solid #ddd;">
                                                     <a href="{{route('admin.home')}}">
                                                      <div class=" d-flex align-items-center">
@@ -69,6 +70,8 @@
                                                      </div>
                                                     </a>
                                                  </div>
+                                                @endif
+                             
                                                  @foreach (auth()->user()->branches as $branch)
                                                  <div class="col-md-12  p-2 mt-2" style="border-bottom:1px solid #ddd;">
                                                     <a href="{{route('user.home', ['branch_id' => $branch->id])}}">

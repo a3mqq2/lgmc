@@ -35,13 +35,12 @@ class FileTypeController extends Controller
         $request->validate([
             "type" => "required|in:doctor,medical_facility",
             "name" => "required|max:225",
-            "is_required" => "required|boolean|in:0,1",
         ]);
 
         $fileType = new FileType();
         $fileType->type  = $request->type;
         $fileType->name = $request->name;
-        $fileType->is_required = $request->is_required;
+        $fileType->is_required = $request->is_required ? true : false;
         $fileType->save();
 
         // Log creation with details
