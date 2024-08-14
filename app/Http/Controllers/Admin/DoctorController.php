@@ -150,7 +150,7 @@ class DoctorController extends Controller
             $doctor->save();
             Log::create(['user_id' => auth()->user()->id, 'details' => "تم إنشاء طبيب جديد: " . $doctor->name]);
             DB::commit();
-            return redirect()->route(get_area_name() . '.doctors.index')->with('success', 'تم اضافة الطبيب بنجاح');
+            return redirect()->route(($request->branch_id ? 'admin' : 'user') . '.doctors.index')->with('success', 'تم اضافة الطبيب بنجاح');
         } catch (\Exception $e) {
             DB::rollback();
             laravelLog::error($e->getMessage());
