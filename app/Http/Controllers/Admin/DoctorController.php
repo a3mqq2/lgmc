@@ -63,7 +63,7 @@ class DoctorController extends Controller
     public function create()
     {
         $universities = University::orderByDesc('id')->get();
-        $medicalFacilities = MedicalFacility::when(function($q) {
+        $medicalFacilities = MedicalFacility::when(get_area_name() != "admin", function($q) {
             $q->where('branch_id', auth()->user()->branch_id);
         })->orderByDesc('id')->get();
         $countries = Country::orderByDesc('id')->get();
