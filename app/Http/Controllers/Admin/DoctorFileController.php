@@ -54,7 +54,7 @@ class DoctorFileController extends Controller
             // Store the uploaded file
             $file = $request->file('document');
             $fileName = $file->getClientOriginalName();
-            $filePath = $file->storeAs('/public/doctor_files', $fileName); // Store file in storage/app/public/doctor_files directory
+            $filePath = $file->storeAs('/public/doctor_files', $fileName, 'public'); // Store file in storage/app/public/doctor_files directory
 
             // Create a record in the database
             DoctorFile::create([

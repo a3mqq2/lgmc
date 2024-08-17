@@ -32,7 +32,7 @@ class MedicalFacilityFileController extends Controller
             // Store the uploaded file
             $file = $request->file('document');
             $fileName = $file->getClientOriginalName();
-            $filePath = $file->storeAs('/public/medical_facilites', $fileName); 
+            $filePath = $file->storeAs('/public/medical_facilites', $fileName,'public'); 
 
             // Create a record in the database
             MedicalFacilityFile::create([
