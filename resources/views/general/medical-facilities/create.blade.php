@@ -54,7 +54,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="phone_number" class="form-label">رقم الهاتف</label>
-                            <input type="text" class="form-control" id="phone_number" name="phone_number" required>
+                            <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="10" required>
                         </div>
                         <button type="submit" class="btn btn-primary">إنشاء</button>
                     </form>

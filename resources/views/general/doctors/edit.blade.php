@@ -80,11 +80,11 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="">رقم الهاتف</label>
-                                    <input type="number" required name="phone" value="{{old('phone', $doctor->phone)}}" id="" class="form-control">
+                                    <input type="number" required maxlength="10" name="phone" value="{{old('phone', $doctor->phone)}}" id="" class="form-control">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="">رقم الهاتف 2</label>
-                                    <input type="number" name="phone_2" value="{{old('phone_2', $doctor->phone_2)}}" id="" class="form-control">
+                                    <input type="number" maxlength="10" name="phone_2" value="{{old('phone_2', $doctor->phone_2)}}" id="" class="form-control">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="">العنوان</label>

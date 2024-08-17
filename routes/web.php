@@ -20,7 +20,7 @@ Route::redirect('/', 'login');
 
 Route::get("/login", [AuthController::class, 'login'])->name('login');
 Route::post("/do-login", [AuthController::class, 'do_login'])->name('do_login');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function() {
     Route::get('/sections', [AuthController::class, 'sections'])->name('sections');

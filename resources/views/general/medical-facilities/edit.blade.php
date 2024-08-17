@@ -29,6 +29,7 @@
                                 <option value="public" {{ $medicalFacility->ownership == 'public' ? 'selected' : '' }}>عام</option>
                             </select>
                         </div>
+
                         <div class="mb-3">
                             <label for="branch">الفرع</label>
                             <select name="branch_id" id="" class="form-control select2" required>
@@ -37,23 +38,26 @@
                                 @endforeach
                             </select>
                         </div>
+
                         <div class="mb-3">
                             <label for="medical_facility_type_id" class="form-label">نوع المنشأة الطبية</label>
-                            <select class="form-control" id="medical_facility_type_id" name="medical_facility_type_id"
-                                required>
+                            <select class="form-control" id="medical_facility_type_id" name="medical_facility_type_id" required>
                                 @foreach ($medicalFacilityTypes as $type)
                                     <option value="{{ $type->id }}" {{ $medicalFacility->medical_facility_type_id == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
                                 @endforeach
                             </select>
                         </div>
+
                         <div class="mb-3">
                             <label for="address" class="form-label">العنوان</label>
                             <textarea class="form-control" id="address" name="address" rows="3" required>{{ $medicalFacility->address }}</textarea>
                         </div>
+
                         <div class="mb-3">
                             <label for="phone_number" class="form-label">رقم الهاتف</label>
-                            <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ $medicalFacility->phone_number }}" required>
+                            <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ $medicalFacility->phone_number }}" maxlength="10" required>
                         </div>
+
                         <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
                     </form>
                 </div>

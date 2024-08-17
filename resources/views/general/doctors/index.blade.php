@@ -17,7 +17,7 @@
                         </div>
                         <div class="col-md-3">
                             <label for="phone">رقم الهاتف</label>
-                            <input type="text" class="form-control" id="phone" name="phone" placeholder="رقم الهاتف" value="{{ request()->input('phone') }}">
+                            <input type="text" class="form-control" id="phone" name="phone" placeholder="رقم الهاتف" maxlength="10" value="{{ request()->input('phone') }}">
                         </div>
                         <div class="col-md-3">
                             <label for="email">البريد الالكتروني</label>

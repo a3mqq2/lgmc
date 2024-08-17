@@ -63,7 +63,7 @@ class FileTypeController extends Controller
      */
     public function edit(FileType $fileType)
     {
-        return view('admin.file_types', compact('fileType'));
+        return view('admin.file_types.edit', compact('fileType'));
     }
 
     /**
@@ -74,12 +74,11 @@ class FileTypeController extends Controller
         $request->validate([
             "type" => "required|in:doctor,medical_facility",
             "name" => "required|max:225",
-            "is_required" => "required|boolean|in:0,1",
         ]);
 
         $fileType->type  = $request->type;
         $fileType->name = $request->name;
-        $fileType->is_required = $request->is_required;
+        $fileType->is_required = $request->is_required ? true : false;
         $fileType->save();
 
         // Log update with details

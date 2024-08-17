@@ -50,12 +50,12 @@
 
                         <div class="col-md-4 mb-3">
                             <label for="phone" class="form-label">الهاتف</label>
-                            <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}">
+                            <input type="text" class="form-control" id="phone" maxlength="10" name="phone" value="{{ old('phone') }}">
                         </div>
 
                         <div class="col-md-4 mb-3">
                             <label for="phone2" class="form-label">الهاتف الثاني</label>
-                            <input type="text" class="form-control" id="phone2" name="phone2" value="{{ old('phone2') }}">
+                            <input type="text" class="form-control" id="phone2" maxlength="10" name="phone2" value="{{ old('phone2') }}">
                         </div>
 
                         <div class="col-md-4 mb-3">

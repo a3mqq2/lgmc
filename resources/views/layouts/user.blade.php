@@ -146,7 +146,7 @@
                                 @endif
                                 <a class="dropdown-item" href="#" onclick="document.getElementById('logout-form').submit()"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">تسجيل الخــروج</span></a>
 
-                                <form action="{{route('logout')}}" method="post" id="logout-form">
+                                <form action="{{route('logout')}}" method="get" id="logout-form">
                                     @csrf
 
                                 </form>
