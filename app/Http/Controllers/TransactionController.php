@@ -41,6 +41,11 @@ class TransactionController extends Controller
         }
 
         // Retrieve transactions with pagination
+
+        if(get_area_name() == "user") {
+            $query->where('branch_id', auth()->user()->branch_id);
+        }
+
         $transactions = $query->latest()->paginate(10);
 
         // Retrieve all transaction types for the filter dropdown
@@ -63,7 +68,9 @@ class TransactionController extends Controller
     {
         $transactionTypes = TransactionType::all();
         $branches = Branch::all(); // Assuming Branch model is already defined
-        $vaults = Vault::all();
+        $vaults = Vault::when(get_area_name() == "user", function($query) {
+            $query->where('branch_id', auth()->user()->branch_id);
+        });
         return view('general.transactions.create', compact('transactionTypes', 'branches','vaults'));
     }
 

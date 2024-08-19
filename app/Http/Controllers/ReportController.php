@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class ReportController extends Controller
 {
     public function index() {
-       $vaults = Vault::when(auth()->user()->branch_id, function($q) {
+       $vaults = Vault::when(get_area_name() == "user", function($q) {
         $q->where('branch_id', auth()->user()->branch_id);
        })->get(); 
 
@@ -29,6 +29,11 @@ class ReportController extends Controller
 
         if($request->vault_id) {
             $transactions = $transactions->where('vault_id', $request->vault_id);
+        }
+
+
+        if(get_area_name() == "user") {
+            $transactions = $transactions->where('branch_id', auth()->user()->branch_id);
         }
 
 
@@ -51,6 +56,9 @@ class ReportController extends Controller
             $transactions = $transactions->where('vault_id', $request->vault_id);
         }
 
+        if(get_area_name() == "user") {
+            $transactions = $transactions->where('branch_id', auth()->user()->branch_id);
+        }
 
         $transactions = $transactions->whereBetween('created_at', [$request->from_date, $request->to_date]);
         $transactions = $transactions->orderByDesc('id')->paginate(10);
@@ -92,7 +100,8 @@ class ReportController extends Controller
 
         $query = Licence::query();
 
-        if($request->branch_id) {
+        
+        if(get_area_name() == "user") {
             $query->where('branch_id', auth()->user()->branch_id);
         }
 
