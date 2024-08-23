@@ -75,7 +75,7 @@ class ReportController extends Controller
 
         $query = Licence::query();
 
-        if($request->branch_id) {
+        if(get_area_name() == "user") {
             $query->where('branch_id', auth()->user()->branch_id);
         }
 
