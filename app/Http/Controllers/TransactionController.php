@@ -67,7 +67,8 @@ class TransactionController extends Controller
     public function create()
     {
         $transactionTypes = TransactionType::all();
-        $branches = Branch::all(); // Assuming Branch model is already defined
+        $branches = Branch::all();
+        dd(get_area_name() == "user", auth()->user()->branch_id);
         $vaults = Vault::when(get_area_name() == "user", function($query) {
             $query->where('branch_id', auth()->user()->branch_id);
         });
@@ -103,6 +104,7 @@ class TransactionController extends Controller
     
         // Save the updated vault balance in the transaction
         $transaction->balance = $vault->balance;
+        $transaction->branch_id = $vault->branch_id;
         $transaction->save();
     
         $vault->save();
