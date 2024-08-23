@@ -68,10 +68,13 @@ class TransactionController extends Controller
     {
         $transactionTypes = TransactionType::all();
         $branches = Branch::all();
-        dd(get_area_name() == "user", auth()->user()->branch_id);
-        $vaults = Vault::when(get_area_name() == "user", function($query) {
-            $query->where('branch_id', auth()->user()->branch_id);
-        });
+
+        $vaults = Vault::query();
+        if(get_area_name() == "user") {
+            $vaults = $vaults->where('branch_id', auth()->user()->branch_id);
+        }
+
+        $vaults = $vaults->get();
         return view('general.transactions.create', compact('transactionTypes', 'branches','vaults'));
     }
 
