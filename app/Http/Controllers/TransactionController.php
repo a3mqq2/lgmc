@@ -90,33 +90,37 @@ class TransactionController extends Controller
             'type' => 'required|in:deposit,withdrawal',
             'vault_id' => "required|exists:vaults,id",
         ]);
-    
+
+        $vault = Vault::findOrFail($request->vault_id);
+
+        if ($request->type == "withdrawal") {
+            if ($vault->balance < $request->amount) {
+                return redirect()->back()->withErrors(["لا يوجد رصيد كافي في الخزينة المحددة"]);
+            }
+        }
+
         $validatedData['user_id'] = auth()->id();
         $transaction = Transaction::create($validatedData);
-    
-        $vault = Vault::findOrFail($request->vault_id);
-    
+
         if ($request->type == "deposit") {
             $vault->increment('balance', $request->amount);
         } else {
-            if ($vault->balance - $request->amount < 0) {
-                return redirect()->back()->withErrors(["لا يوجد رصيد كافي في الخزينة المحددة"]);
-            }
             $vault->decrement('balance', $request->amount);
         }
-    
+
         // Save the updated vault balance in the transaction
         $transaction->balance = $vault->balance;
         $transaction->branch_id = $vault->branch_id;
         $transaction->save();
-    
+
         $vault->save();
-    
+
         Log::create(['user_id' => auth()->user()->id, 'details' => 'تم إضافة معاملة جديدة: ' . $transaction->desc]);
-    
+
         return redirect()->route(get_area_name() . '.transactions.index')
             ->with('success', 'تم إضافة معاملة جديدة بنجاح.');
     }
+
     
 
 
