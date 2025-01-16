@@ -22,22 +22,7 @@
                             <input type="text" class="form-control" id="name" name="commerical_number" value="{{ $medicalFacility->commerical_number }}" required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="ownership" class="form-label">نوع الملكية</label>
-                            <select class="form-control" id="ownership" name="ownership" required>
-                                <option value="private" {{ $medicalFacility->ownership == 'private' ? 'selected' : '' }}>خاص</option>
-                                <option value="public" {{ $medicalFacility->ownership == 'public' ? 'selected' : '' }}>عام</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="branch">الفرع</label>
-                            <select name="branch_id" id="" class="form-control select2" required>
-                                @foreach ($branches as $branch)
-                                    <option value="{{$branch->id}}" {{ $medicalFacility->branch_id == $branch->id ? 'selected' : '' }}>{{$branch->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                    
 
                         <div class="mb-3">
                             <label for="medical_facility_type_id" class="form-label">نوع المنشأة الطبية</label>

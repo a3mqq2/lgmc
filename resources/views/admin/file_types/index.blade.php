@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.'.get_area_name())
 @section('title', 'قائمة أنواع المستندات')
 @section('content')
 
@@ -22,6 +22,8 @@
                                         <th>الاسم</th>
                                         <th>مخصص لـ</th>
                                         <th>الملف اجباري</th>
+                                        <th>الرتبة الطبية</th>
+                                        <th>نوع الطبيب</th>
                                         <th>الإجراءات</th>
                                     </tr>
                                 </thead>
@@ -38,6 +40,32 @@
                                                 @endif
                                             </td>
                                             <td>{{ $fileType->is_required ? 'نعم' : 'لا' }}</td>
+                                            <td>
+                                                @if ($fileType->type == 'doctor')
+                                                    {{ $fileType->doctorRank?->name }}
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($fileType->type == 'doctor')
+                                                    @switch($fileType->doctor_type)
+                                                        @case('foreign')
+                                                            أجنبي
+                                                            @break
+                                                        @case('visitor')
+                                                            زائر
+                                                            @break
+                                                        @case('libyan')
+                                                            ليبي
+                                                            @break
+                                                        @default
+                                                            الكل
+                                                    @endswitch
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
                                             <td>
                                                 <a href="{{ route(get_area_name().'.file-types.edit', $fileType->id) }}" class="btn btn-sm btn-primary">تعديل</a>
                                                 <form action="{{ route(get_area_name().'.file-types.destroy', $fileType->id) }}" method="POST" class="d-inline">

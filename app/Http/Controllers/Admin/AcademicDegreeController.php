@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
 
 namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
 
 use App\Models\Log;
 use App\Models\AcademicDegree;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 class AcademicDegreeController extends Controller
 {

@@ -1,18 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\VaultController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\LicenceController;
 use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\Admin\UsersController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\Admin\DoctorController;
+use App\Http\Controllers\Common\VaultController;
+use App\Http\Controllers\Common\DoctorController;
+use App\Http\Controllers\Common\ReportController;
+use App\Http\Controllers\Common\TicketController;
+use App\Http\Controllers\Common\LicenceController;
 use App\Http\Controllers\Admin\DoctorFileController;
-use App\Http\Controllers\Admin\MedicalFacilityController;
+use App\Http\Controllers\Common\TransactionController;
+use App\Http\Controllers\Common\DoctorRequestController;
+use App\Http\Controllers\Common\MedicalFacilityController;
 use App\Http\Controllers\Admin\MedicalFacilityFileController;
 
-Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
+Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations')->group(function () {
     Route::get('/home', [UserController::class, 'home'])->name('home');
     Route::resource('vaults', VaultController::class)->only(['index']);
     Route::resource("transactions", TransactionController::class);
@@ -26,7 +27,13 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     Route::patch('/licences/{licence}/payment', [LicenceController::class, 'payment'])->name('licences.payment');
     Route::get('/licences/{licence}/print', [LicenceController::class, 'print'])->name('licences.print');
     Route::resource('licences', LicenceController::class);
-
+    Route::get('/doctor-requests/{doctor_request}/print', [DoctorRequestController::class, 'print'])->name('doctor-requests.print');
+    Route::put('/doctor-requests/{doctor_request}/approve', [DoctorRequestController::class, 'approve'])->name('doctor-requests.approve');
+    Route::put('/doctor-requests/{doctor_request}/reject', [DoctorRequestController::class, 'reject'])->name('doctor-requests.reject');
+    Route::put('/doctor-requests/{doctor_request}/done', [DoctorRequestController::class, 'done'])->name('doctor-requests.done');
+    Route::resource('doctor-requests', DoctorRequestController::class);
+    Route::post('/tickets/{ticket}/reply', [TicketController::class, 'reply'])->name('tickets.reply');
+    Route::resource('tickets', TicketController::class);
     // ================ REPORTS ================ //
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/transactions', [ReportController::class, 'transactions'])->name('reports.transactions');

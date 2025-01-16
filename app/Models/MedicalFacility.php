@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\MembershipStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,12 +14,29 @@ class MedicalFacility extends Model
         'name',
         'ownership',
         'medical_facility_type_id',
-        'branch_id',
         'address',
         'phone_number',
         'user_id',
         'commerical_number',
+        'activity_start_date',
+        'due',
+        'branch_id',
+        'membership_status',
+        "membership_expiration_date",
     ];
+
+
+    protected $casts =
+    [
+        "activity_start_date" => "date",
+        "membership_expiration_date" => "date",
+        "membership_status" => MembershipStatus::class,
+    ];
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 
     public function type()
     {
@@ -37,10 +55,6 @@ class MedicalFacility extends Model
         return $this->belongsToMany(Doctor::class);
     }
 
-    public function branch() {
-        return $this->belongsTo(Branch::class);
-    }
-
     public function medicalFacilityType() {
         return $this->belongsTo(MedicalFacilityType::class);
     }
@@ -48,5 +62,10 @@ class MedicalFacility extends Model
 
     public function files() {
         return $this->hasMany(MedicalFacilityFile::class);
+    }
+
+    public function manager()
+    {
+        return $this->belongsTo(Doctor::class, 'manager_id');
     }
 }

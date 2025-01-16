@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
 
 use App\Models\Doctor;
 use App\Models\DoctorFile;
 use App\Models\Log;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+
 use App\Models\FileType;
 
 class DoctorFileController extends Controller

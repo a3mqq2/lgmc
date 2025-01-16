@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
 
 use App\Models\Log;
 use App\Models\FileType;
 use Illuminate\Http\Request;
 use App\Models\MedicalFacility;
 use App\Models\MedicalFacilityFile;
-use App\Http\Controllers\Controller;
+
 
 class MedicalFacilityFileController extends Controller
 {

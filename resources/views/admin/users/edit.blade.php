@@ -1,143 +1,284 @@
-@extends('layouts.admin')
-@section('title', 'تعديل بيانات الموظف')
-@section('content')
+@extends('layouts.' . get_area_name())
 
+@section('title', 'تعديل مستخدم')
+
+@section('content')
 <div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">تعديل بيانات الموظف</h4>
+                <h4 class="card-title">تعديل بيانات المستخدم</h4>
             </div>
             <div class="card-body">
-                <form action="{{ route(get_area_name().'.users.update', $user->id) }}" method="POST">
+                
+                {{-- Use PUT method for updates --}}
+                <form action="{{ route(get_area_name() . '.users.update', $user->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
                     <div class="row">
+                        {{-- Name --}}
                         <div class="col-md-4 mb-3">
                             <label for="name" class="form-label">الاسم</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ $user->name }}" required>
+                            <input 
+                                type="text" 
+                                class="form-control @error('name') is-invalid @enderror" 
+                                id="name" 
+                                name="name" 
+                                value="{{ old('name', $user->name) }}" 
+                                required
+                            >
                             @error('name')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
+                                <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
                             @enderror
                         </div>
 
+                        {{-- Email --}}
                         <div class="col-md-4 mb-3">
                             <label for="email" class="form-label">البريد الإلكتروني</label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ $user->email }}" required>
+                            <input 
+                                type="email" 
+                                class="form-control @error('email') is-invalid @enderror" 
+                                id="email" 
+                                name="email" 
+                                value="{{ old('email', $user->email) }}" 
+                                required
+                            >
                             @error('email')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
+                                <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
                             @enderror
                         </div>
 
+                        {{-- Password (Optional) --}}
                         <div class="col-md-4 mb-3">
-                            <label for="password" class="form-label">كلمة المرور</label>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password">
+                            <label for="password" class="form-label">كلمة المرور (اتركه فارغًا إن لم ترد تغييره)</label>
+                            <input 
+                                type="password" 
+                                class="form-control @error('password') is-invalid @enderror" 
+                                id="password" 
+                                name="password" 
+                                placeholder="******"
+                            >
                             @error('password')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
+                                <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
                             @enderror
                         </div>
 
+                        {{-- Confirm Password --}}
                         <div class="col-md-4 mb-3">
                             <label for="password_confirmation" class="form-label">تأكيد كلمة المرور</label>
-                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
+                            <input 
+                                type="password" 
+                                class="form-control" 
+                                id="password_confirmation" 
+                                name="password_confirmation"
+                                placeholder="******"
+                            >
                         </div>
 
+                        {{-- Phone --}}
                         <div class="col-md-4 mb-3">
                             <label for="phone" class="form-label">الهاتف</label>
-                            <input type="text" class="form-control" id="phone" name="phone" value="{{ $user->phone }}">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="phone" 
+                                maxlength="10" 
+                                name="phone" 
+                                value="{{ old('phone', $user->phone) }}"
+                            >
                         </div>
 
+                        {{-- Secondary Phone --}}
                         <div class="col-md-4 mb-3">
                             <label for="phone2" class="form-label">الهاتف الثاني</label>
-                            <input type="text" class="form-control" id="phone2" name="phone2" value="{{ $user->phone2 }}">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="phone2" 
+                                maxlength="10" 
+                                name="phone2" 
+                                value="{{ old('phone2', $user->phone2) }}"
+                            >
                         </div>
 
+                        {{-- Passport Number --}}
                         <div class="col-md-4 mb-3">
                             <label for="passport_number" class="form-label">رقم الجواز</label>
-                            <input type="text" class="form-control" id="passport_number" name="passport_number" value="{{ $user->passport_number }}">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="passport_number" 
+                                name="passport_number" 
+                                value="{{ old('passport_number', $user->passport_number) }}"
+                            >
                         </div>
 
+                        {{-- National ID Number --}}
                         <div class="col-md-4 mb-3">
                             <label for="ID_number" class="form-label">الرقم الوطني</label>
-                            <input type="text" class="form-control" id="ID_number" name="ID_number" value="{{ $user->ID_number }}">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="ID_number" 
+                                name="ID_number" 
+                                value="{{ old('ID_number', $user->ID_number) }}"
+                            >
                         </div>
 
+                        {{-- Branches (Multiple) --}}
                         <div class="col-md-4 mb-3">
                             <label for="branches" class="form-label">اختر الفروع</label>
-                            <select class="select2" id="branches" name="branches[]" multiple>
+                            <select 
+                                class="select2 form-control" 
+                                id="branches" 
+                                name="branches[]" 
+                                multiple
+                            >
                                 @foreach ($branches as $branch)
-                                    <option value="{{ $branch->id }}" {{ in_array($branch->id, $user->branches->pluck('id')->toArray()) ? 'selected' : '' }}>{{ $branch->name }}</option>
+                                    <option 
+                                        value="{{ $branch->id }}"
+                                        {{ (collect(old('branches', $user->branches->pluck('id')))->contains($branch->id)) ? 'selected' : '' }}
+                                    >
+                                        {{ $branch->name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
-                    </div>
+                    </div>{{-- End Row --}}
 
-                    <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <tbody>
-                                    @foreach ($permissions as $permission)
-                                    <tr>
-                                        <td class="bg-light" style="width: 50%">
-                                            <label for="" class="form-check-label">{{ $permission->display_name }}</label>
-                                        </td>
-                                        <td style="width: 50%;">
-                                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
-                                            data-on-text="نعم" data-off-text="لا"
-                                            data-on-color="success" data-off-color="danger"
-                                            {{ $user->permissions->where('name', $permission->name)->count() ? "checked" : "" }}>
-                                                                                     </td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
+                    <hr>
+
+                    {{-- Roles & Permissions Table --}}
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-primary text-light">
+                                    <h4 class="card-title">الأدوار والصلاحيات</h4>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th style="width: 50px;">#</th>
+                                                <th>الدور </th>
+                                                <th>الصلاحيات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($roles as $index => $role)
+                                                <tr>
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>
+                                                        {{-- Role-level checkbox --}}
+                                                        <div class="form-check">
+                                                            <input 
+                                                                class="form-check-input role-checkbox" 
+                                                                type="checkbox" 
+                                                                name="roles[]" 
+                                                                id="role-{{ $role->id }}" 
+                                                                value="{{ $role->name }}"
+                                                                data-role-id="{{ $role->id }}" 
+                                                                {{-- check if user already has role or old input selected --}}
+                                                                @if(collect(old('roles', $user->roles->pluck('name')))->contains($role->name)) 
+                                                                    checked 
+                                                                @endif
+                                                            >
+                                                            <label class="form-check-label" for="role-{{ $role->id }}">
+                                                                <strong>{{ $role->display_name }}</strong>
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        @if($role->permissions->count() > 0)
+                                                            {{-- Permissions container, hidden by default --}}
+                                                            <div 
+                                                                id="permissions-{{ $role->id }}" 
+                                                                style="display: none; margin-top: 10px;"
+                                                            >
+                                                                <ul class="mb-0" style="list-style: none; padding-left: 0;">
+                                                                    @foreach($role->permissions as $permission)
+                                                                        <li class="mb-2">
+                                                                            <div class="form-check">
+                                                                                <input 
+                                                                                    class="form-check-input" 
+                                                                                    type="checkbox" 
+                                                                                    name="permissions[]" 
+                                                                                    id="perm-{{$role->id}}-{{ $permission->id }}" 
+                                                                                    value="{{ $permission->name }}"
+                                                                                    {{-- check if user has this permission or old input selected --}}
+                                                                                    @if(collect(old('permissions', $user->permissions->pluck('name')))->contains($permission->name)) 
+                                                                                        checked 
+                                                                                    @endif
+                                                                                >
+                                                                                <label class="form-check-label" for="perm-{{$role->id}}-{{ $permission->id }}">
+                                                                                    <strong>{{ $permission->display_name }}</strong> 
+                                                                                </label>
+                                                                            </div>
+                                                                        </li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        @else
+                                                            <span class="text-danger">لا توجد صلاحيات لهذا الدور.</span>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="3" class="text-center">
+                                                        لا توجد أدوار متاحة.
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
-
-                    <button type="submit" class="btn btn-primary">تحديث</button>
+                    <button type="submit" class="btn btn-primary mt-3">حفظ التعديلات</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
 @endsection
 
 @section('scripts')
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('.role-switch').change(function() {
-            var isChecked = $(this).is(':checked');
-            var role_id = $(this).attr('name').match(/\[(\d+)\]/)[1];
-
-            // Enable/disable all checkboxes in the same row
-            $(this).closest('tr').find('.role-switch').prop('disabled', !isChecked);
-        });
-
-        // Trigger change event once on page load
-        $('.role-switch:checked').trigger('change');
-    });
-</script>
-<script>
-    $(document).ready(function() {
-        // Initialize Bootstrap Switch
-        $('input[type="checkbox"]').bootstrapSwitch({
-            size: 'small', // Adjust the size as needed
-            onText: 'نعم', // Text when toggled on
-            offText: 'لا', // Text when toggled off
-            onColor: 'success', // Color when toggled on
-            offColor: 'danger' // Color when toggled off
+    // On page load, toggle all role's permissions blocks according to whether the role is checked
+    document.addEventListener('DOMContentLoaded', function () {
+        const roleCheckboxes = document.querySelectorAll('.role-checkbox');
+        roleCheckboxes.forEach(checkbox => {
+            togglePermissions(checkbox);
+            checkbox.addEventListener('change', function() {
+                togglePermissions(this);
+            });
         });
     });
+
+    function togglePermissions(roleCheckbox) {
+        // get role ID from data attribute
+        const roleId = roleCheckbox.dataset.roleId;
+        const permBlock = document.getElementById('permissions-' + roleId);
+
+        if (!permBlock) return; // if there's no permission block for this role, do nothing
+
+        if (roleCheckbox.checked) {
+            // Show the permission block
+            permBlock.style.display = 'block';
+        } else {
+            // Hide the permission block
+            permBlock.style.display = 'none';
+
+            // Optionally uncheck all permission checkboxes within this block
+            const permInputs = permBlock.querySelectorAll('input[type="checkbox"]');
+            permInputs.forEach(input => {
+                input.checked = false;
+            });
+        }
+    }
 </script>
 @endsection

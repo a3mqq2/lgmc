@@ -805,3 +805,14 @@ thead.bg-primary.text-light {
   border: 1px solid #ccc;
   border-radius: 3px;
 }
+
+.main-content-label
+{
+    background: #bc1d1921;
+    color: #bc1d19;
+    padding: 7px 22px;
+    border: 1px dashed #bc1d19;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: bold;
+}

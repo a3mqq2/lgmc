@@ -18,12 +18,15 @@ class CreateMedicalFacilitiesTable extends Migration
             $table->string('name');
             $table->enum('ownership', ['private', 'public']);
             $table->unsignedBigInteger('medical_facility_type_id');
-            $table->unsignedBigInteger('branch_id');
+            $table->date('activity_start_date')->nullable();
             $table->foreign('medical_facility_type_id')->references('id')->on('medical_facility_types')->onDelete('cascade');
-            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->string('address');
             $table->string('phone_number');
+            $table->enum('membership_status', ['active', 'inactive']);
+            $table->date('membership_expiration_date')->nullable();
             $table->foreignId('user_id')->constrained();
+            $table->string('serial_number')->nullable();
+            $table->foreignId('branch_id')->constrained();
             $table->timestamps();
         });
     }

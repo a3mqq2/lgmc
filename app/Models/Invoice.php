@@ -1,0 +1,168 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\InvoiceStatus;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Invoice extends Model
+{
+    use SoftDeletes;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'invoices';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'invoice_number',
+        'invoiceable_type',
+        'invoiceable_id',
+        'description',
+        'licence_id',
+        'pricing_id',
+        'user_id',
+        'amount',
+        'status',
+        'received_at',
+        'relief_at',
+        'received_by',
+        'relief_by',
+        'relief_reason',
+        'branch_id'
+    ];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'received_at',
+        'relief_at',
+        'deleted_at'
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'amount' => 'decimal:2',
+        'status' => InvoiceStatus::class,
+    ];
+
+    /**
+     * ✅ Polymorphic relationship for invoiceable entities.
+     *
+     * @return MorphTo
+     */
+    public function invoiceable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * ✅ Relationship with Licence.
+     *
+     * @return BelongsTo
+     */
+    public function licence(): BelongsTo
+    {
+        return $this->belongsTo(Licence::class);
+    }
+
+    /**
+     * ✅ Relationship with Pricing.
+     *
+     * @return BelongsTo
+     */
+    public function pricing(): BelongsTo
+    {
+        return $this->belongsTo(Pricing::class);
+    }
+
+    /**
+     * ✅ Relationship with the User (creator).
+     *
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * ✅ Relationship with User (receiver).
+     *
+     * @return BelongsTo
+     */
+    public function receivedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'received_by');
+    }
+
+    /**
+     * ✅ Relationship with User (relief approver).
+     *
+     * @return BelongsTo
+     */
+    public function reliefBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'relief_by');
+    }
+
+    /**
+     * ✅ Relationship with Branch.
+     *
+     * @return BelongsTo
+     */
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    /**
+     * ✅ Check if the invoice is paid.
+     *
+     * @return bool
+     */
+    public function isPaid(): bool
+    {
+        return $this->status === 'paid';
+    }
+
+    /**
+     * ✅ Check if the invoice is in relief status.
+     *
+     * @return bool
+     */
+    public function isRelief(): bool
+    {
+        return $this->status === 'relief';
+    }
+
+    /**
+     * ✅ Check if the invoice is unpaid.
+     *
+     * @return bool
+     */
+    public function isUnpaid(): bool
+    {
+        return $this->status === 'unpaid';
+    }
+
+
+   
+}

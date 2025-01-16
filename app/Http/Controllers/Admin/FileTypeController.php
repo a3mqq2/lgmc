@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
 
 use App\Models\FileType;
 use App\Models\DoctorFile;
+use App\Models\DoctorRank;
 use App\Models\Log;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 class FileTypeController extends Controller
 {
@@ -24,7 +25,8 @@ class FileTypeController extends Controller
      */
     public function create()
     {
-        return view('admin.file_types.create');
+        $doctor_ranks = DoctorRank::all();
+        return view('admin.file_types.create', compact('doctor_ranks'));
     }
 
     /**
@@ -35,12 +37,21 @@ class FileTypeController extends Controller
         $request->validate([
             "type" => "required|in:doctor,medical_facility",
             "name" => "required|max:225",
+            "doctor_rank_id" => "nullable|exists:doctor_ranks,id",  // Validation for doctor_rank_id
+            "doctor_type" => "nullable|in:foreign,visitor,libyan,palestinian",  // Validation for doctor_type
         ]);
 
         $fileType = new FileType();
         $fileType->type  = $request->type;
         $fileType->name = $request->name;
         $fileType->is_required = $request->is_required ? true : false;
+        
+        // Save additional fields if the type is doctor
+        if ($fileType->type == 'doctor') {
+            $fileType->doctor_rank_id = $request->doctor_rank_id;
+            $fileType->doctor_type = $request->doctor_type;
+        }
+
         $fileType->save();
 
         // Log creation with details
@@ -51,19 +62,12 @@ class FileTypeController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(FileType $fileType)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(FileType $fileType)
     {
-        return view('admin.file_types.edit', compact('fileType'));
+        $doctor_ranks = DoctorRank::all();
+        return view('admin.file_types.edit', compact('fileType','doctor_ranks'));
     }
 
     /**
@@ -74,11 +78,24 @@ class FileTypeController extends Controller
         $request->validate([
             "type" => "required|in:doctor,medical_facility",
             "name" => "required|max:225",
+            "doctor_rank_id" => "nullable|exists:doctor_ranks,id",  // Validation for doctor_rank_id
+            "doctor_type" => "nullable|in:foreign,visitor,libyan,palestinian",  // Validation for doctor_type
         ]);
 
         $fileType->type  = $request->type;
         $fileType->name = $request->name;
         $fileType->is_required = $request->is_required ? true : false;
+        
+        // Save additional fields if the type is doctor
+        if ($fileType->type == 'doctor') {
+            $fileType->doctor_rank_id = $request->doctor_rank_id;
+            $fileType->doctor_type = $request->doctor_type;
+        } else {
+            // Clear the doctor-specific fields if type is not doctor
+            $fileType->doctor_rank_id = null;
+            $fileType->doctor_type = null;
+        }
+
         $fileType->save();
 
         // Log update with details

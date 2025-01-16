@@ -10,7 +10,14 @@ class CheckRole
 {
     public function handle(Request $request, Closure $next, $role)
     {
-        if (!Auth::check() || !Auth::user()->hasRole($role)) {
+
+        if($role == "finance") {
+            if(auth()->user()->roles->where('name','financial-administration') || auth()->user()->roles->where('name','financial-branch')) {
+                abort(403, 'Unauthorized action.');
+            }
+        }
+
+        if (auth()->user()->roles->where('name', $role)->count() == 0) {
             abort(403, 'Unauthorized action.');
         }
 

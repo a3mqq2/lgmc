@@ -29,30 +29,47 @@
                                     @endforeach
                                 </select>
                             </div>
+                            @if (request('type') == "doctors")
+                            <label for="">
+                                @if (request('doctor_type') == App\Enums\DoctorType::Visitor->value)
+                                     الشركة المستضيفه         
+                                    @else 
+                                    مكان العمل
+                                @endif
+                            </label>
+                            <select name="medical_facility_id" id="" class="chosen-select form-control mb-3">
+                                <option value="-">
+                                    @if (request('doctor_type') == App\Enums\DoctorType::Visitor->value)
+                                        الشركة المستضيفه
+                                        @else 
+                                        مكان العمل 
+                                    @endif
+                                </option>
+                                @foreach ($medicalFacilities as $facility)
+                                     <option value="{{ $facility->id }}" data-type="App\Models\MedicalFacility">{{ $facility->name }}</option>
+                                 @endforeach
+                            </select>
+                            @endif
                         </div>
-                        @if (request('type') == "facilities")
-                        <div class="col-md-12" id="representer_select">
-                            <div class="mb-3">
-                                <label for="doctor_id" class="form-label">اختر الممثل</label>
-                                <select id="doctor_id" name="doctor_id" class="form-control chosen-select">
-                                    <option value="">اختر الممثل</option>
-                                    @foreach ($doctors as $doctor)
-                                        <option value="{{ $doctor->id }}">{{ $doctor->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        @endif
+
+                        @php
+                                $expiryDate = request('doctor_type') === App\Enums\DoctorType::Visitor->value
+                                    ? Carbon\Carbon::now()->addMonths(6)->toDateString()
+                                    : Carbon\Carbon::now()->addYear()->toDateString();
+                        @endphp
+                       
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="issued_date" class="form-label">تاريخ الإصدار</label>
-                                <input type="date" class="form-control" id="issued_date" name="issued_date" required>
+                                <input type="date" class="form-control" id="issued_date" value="{{date('Y-m-d')}}" name="issued_date" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="expiry_date" class="form-label">تاريخ الانتهاء</label>
-                                <input type="date" class="form-control" id="expiry_date" name="expiry_date" required>
+                                <input type="date" class="form-control" id="expiry_date" 
+                                    value="{{ $expiryDate }}"
+                                    name="expiry_date" required>
                             </div>
                         </div>
                     </div>
@@ -76,10 +93,10 @@
 
         const licensableTypeInput = document.getElementById('licensable_type');
         const licensableIdSelect = document.getElementById('licensable_id');
-
+        const representerSelectContainer = document.getElementById('representer_select');
 
         function filterLicensableOptions() {
-            const selectedType = licensableTypeInput.value;
+            const selectedType = licensableTypeInput ? licensableTypeInput.value : '';
             const options = licensableIdSelect.querySelectorAll('option');
 
             options.forEach(option => {
@@ -97,7 +114,9 @@
             $('.chosen-select').trigger('chosen:updated');
         }
 
-        filterLicensableOptions();
+        if (licensableTypeInput) {
+            filterLicensableOptions();
+        }
     });
 </script>
 @endsection

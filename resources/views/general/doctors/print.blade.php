@@ -21,10 +21,12 @@
                             <th class="bg-light">الاسم بالإنجليزية</th>
                             <td>{{ $doctor->name_en }}</td>
                         </tr>
+                        @if (request('type') == "libyan")
                         <tr>
                             <th class="bg-light">الرقم الوطني</th>
                             <td>{{ $doctor->national_number }}</td>
                         </tr>
+                        @endif
                         <tr>
                             <th class="bg-light">اسم الأم</th>
                             <td>{{ $doctor->mother_name }}</td>
@@ -43,7 +45,7 @@
                         </tr>
                         <tr>
                             <th class="bg-light">الجنس</th>
-                            <td>{{ $doctor->gender }}</td>
+                            <td>{{ $doctor->gender->label() }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">رقم الجواز</th>
@@ -99,14 +101,14 @@
                         </tr>
                         <tr>
                             <th class="bg-light">تاريخ التأهيل</th>
-                            <td>{{ $doctor->qualification_date ? $doctor->qualification_date->format('Y-m-d') : 'N/A' }}</td>
+                            <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date->format('Y-m-d') : 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <th class="bg-light">شهادة التميز</th>
+                            <th class="bg-light">شهادة الإمتياز</th>
                             <td>{{ $doctor->certificate_of_excellence }}</td>
                         </tr>
                         <tr>
-                            <th class="bg-light">تاريخ شهادة التميز</th>
+                            <th class="bg-light">تاريخ شهادة الإمتياز</th>
                             <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date->format('Y-m-d') : 'N/A' }}</td>
                         </tr>
                         <tr>
@@ -158,7 +160,7 @@
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
-                            <th class="bg-light">المنشأة السابقة</th>
+                            <th class="bg-light">المنشأت السابقة</th>
                             <td>{{ $doctor->ex_medical_facilities }}</td>
                         </tr>
                         <tr>

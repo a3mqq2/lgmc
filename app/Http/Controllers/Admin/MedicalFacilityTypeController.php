@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
 
 use App\Models\MedicalFacilityType;
 use App\Models\Log;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+
 
 class MedicalFacilityTypeController extends Controller
 {

@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Http\Controllers\Common;
+use App\Http\Controllers\Controller;
+
+use App\Models\Doctor;
+use Illuminate\Http\Request;
+use App\Services\DoctorService;
+use App\Http\Requests\StoreDoctorRequest;
+use App\Http\Requests\UpdateDoctorRequest;
+
+class DoctorController extends Controller
+{
+    protected $doctorService;
+
+    public function __construct(DoctorService $doctorService)
+    {
+        $this->doctorService = $doctorService;
+    }
+
+
+    public function index(Request $request)
+    {
+        // $request->validate(['type' => 'required|in:libyan,palestinian,foreign','visitor']);
+        $doctors = $this->doctorService->getDoctors();
+        $data = $this->doctorService->getRequirements();
+        $data['doctors'] = $doctors;
+        return view('general.doctors.index', $data);
+    }
+
+    public function create(Request $request)
+    {
+        // $request->validate(['type' => 'required|in:libyan,palestinian,foreign','visitor']);
+        $data = $this->doctorService->getRequirements();
+        return view('general.doctors.create',$data);
+    }
+
+    public function store(StoreDoctorRequest $request)
+    {
+        try {
+            $validatedData = $request->validated();
+            $this->doctorService->create($validatedData);
+            return redirect()->route(get_area_name().'.doctors.index')->with('success', 'تم إضافة الطبيب بنجاح');
+        } catch (\Exception $e) {
+
+            return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني' . $e->getMessage()]);
+        }
+    }
+
+
+    public function edit(Doctor $doctor)
+    {
+        $data = $this->doctorService->getRequirements();
+        $data['doctor'] = $doctor;
+        return view('general.doctors.edit', $data);
+    }
+
+    
+    public function show(Doctor $doctor)
+    {
+        $data['doctor'] = $doctor;
+        return view('general.doctors.show', $data);
+    }
+
+
+    public function update(UpdateDoctorRequest $request, $id)
+    {
+        try {
+            $validatedData = $request->validated();
+            $doctor = Doctor::findOrFail($id);
+            $this->doctorService->update($doctor, $validatedData);
+            return redirect()->route('admin.doctors.index')->with('success', 'تم تعديل الطبيب بنجاح');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني']);
+        }
+    }
+
+    public function destroy(Doctor $doctor)
+    {
+        try {
+            $this->doctorService->delete($doctor);
+            return redirect()->route('admin.doctors.index')->with('success', 'تم حذف الطبيب بنجاح');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني']);
+        }
+    }
+
+    public function print(Doctor $doctor)
+    {
+        $data['doctor'] = $doctor;
+        return view('general.doctors.print', $data);
+    }
+}

@@ -1,5 +1,5 @@
 section.sheet.libyan {
-  background-image: url('/assets/images/p1-01.svg?v=2');
+  background-image: url('/assets/images/libyan.svg');
   padding: 0px !important;
   margin: 0px !important;
   background-size: cover;
@@ -8,7 +8,7 @@ section.sheet.libyan {
 
 
 section.sheet.foreign {
-  background-image: url('/assets/images/p2-02.svg?v=2');
+  background-image: url('/assets/images/p2-01.svg');
   padding: 0px !important;
   margin: 0px !important;
   background-size: cover;
@@ -16,8 +16,20 @@ section.sheet.foreign {
 }
 
 
+
+section.sheet.visitor {
+  background-image: url('/assets/images/visitor.svg');
+  padding: 0px !important;
+  margin: 0px !important;
+  background-size: cover;
+  position: relative !important;
+}
+
+
+
+
 section.sheet.facilities {
-  background-image: url('/assets/images/p3-02.svg?v=2');
+  background-image: url('/assets/images/facility.svg?v=2');
   padding: 0px !important;
   margin: 0px !important;
   background-size: cover;
@@ -812,3 +824,180 @@ table.print-table td.no-border {
   right: 3cm;
   bottom: 8.4cm;
 }
+
+.libyan-name
+{
+  font-size: 20px;
+  font-weight: bold !important;
+  text-align: center;
+  margin-top: 468px;
+  margin-left: -80px;
+}
+
+.libyan-branch
+{
+  font-size: 20px;
+  font-weight: bold !important;
+  text-align: center;
+  margin-top: 15px;
+  margin-left: -80px;
+}
+
+.libyan-doctor-id
+{
+  font-size: 20px;
+  font-weight: bold !important;
+  text-align: center;
+  margin-top: 22px;
+  margin-left: -80px;
+}
+
+.libyan-specilists
+{
+  font-size: 15px;
+  font-weight: bold !important;
+  text-align: center;
+  margin-top: 22px;
+  margin-left: -80px;
+}
+
+
+.libyan-facility
+{
+  font-size: 15px;
+  font-weight: bold !important;
+  text-align: center;
+  margin-top: 22px;
+  margin-left: -80px;
+}
+
+
+
+
+
+
+
+.foreign-name
+{
+  font-size: 20px;
+  font-weight: bold !important;
+  text-align: center;
+  margin-top: 478px;
+  margin-left: -80px;
+}
+
+.foreign-country
+{
+  font-size: 20px;
+  font-weight: bold !important;
+  text-align: center;
+  margin-top: 9px;
+  margin-left: 300px;
+  width: 280px;
+}
+
+
+.foreign-passport
+{
+  font-size: 20px;
+  font-weight: bold !important;
+  text-align: center;
+  margin-top: -31px;
+  margin-left: 60px;
+  width: 280px;
+}
+
+.foreign-doctor-id {
+  font-size: 20px;
+  font-weight: bold !important;
+  text-align: center;
+  margin-top: 14px;
+  margin-left: -119px;
+}
+
+.foreign-specilists
+{
+  font-size: 15px;
+  font-weight: bold !important;
+  text-align: center;
+  margin-top: 22px;
+  margin-left: -80px;
+}
+
+
+.foreign-facility
+{
+  font-size: 15px;
+  font-weight: bold !important;
+  text-align: center;
+  margin-top: 22px;
+  margin-left: -80px;
+}
+
+.hoster-name
+{
+  text-align: center;
+  position: relative;
+  top: 433px;
+  font-size: 13px;
+}
+
+
+
+.hoster-id
+{
+  text-align: center;
+  position: relative;
+  top: 444px;
+  font-size: 13px;
+  left: 39px;
+}
+
+
+.hoster-licence
+{
+  width: 40px !important;
+  text-align: center;
+  float: left;
+  margin-top: 421px;
+  margin-left: 160px;
+}
+
+.visitor-name
+{
+  margin-top: 457px;
+  text-align: center;
+  margin-left: -160px;
+}
+
+.visitor-country
+{
+  width: 70px;
+  text-align: center;
+  float: right;
+  margin-right: 191px;
+  margin-top: 14px;
+}
+
+.visitor-passport
+{
+  width: 60px;
+  text-align: center;
+  float: right;
+  margin-right: 310px;
+  margin-top: 18px;
+}
+
+.visitor-doctor-id
+{
+  text-align: center;
+  width: 30px;
+  margin: 59px auto;
+}
+
+.visitor-specilists
+{
+  text-align: center;
+  margin-top: -38px;
+}
+

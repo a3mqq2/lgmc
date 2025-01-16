@@ -3,6 +3,9 @@
 
 @section('content')
 <div class="row">
+    <div class="col-md-12">
+        <a href="{{ route(get_area_name().'.doctors.create', ['type' => request('type')] ) }}" class="btn btn-success mb-2"><i class="fa fa-plus"></i> إنشاء جديد </a>
+    </div>
     <div class="col-12">
         <div class="card">
             <div class="card-header bg-primary text-light">
@@ -52,13 +55,18 @@
                             <tr>
                                 <th class="bg-light">#</th>
                                 <th class="bg-light">كود الطبيب</th>
+                                <th class="bg-light"> الرقم النقابي الاول </th>
                                 <th class="bg-light">الاسم</th>
                                 <th class="bg-light">رقم الهاتف</th>
                                 <th class="bg-light">البريد الالكتروني</th>
                                 <th class="bg-light">العنوان</th>
+                                @if (request('type') == "libyan")
                                 <th class="bg-light">الرقم الوطني</th>
+                                @endif
+                                <th class="bg-light text-dark" >نوع الطبيب</th>
                                 <th class="bg-light">الدرجة العلمية</th>
                                 <th class="bg-light">تاريخ الاضافة</th>
+                                <th class="bg-light">حالة العضوية</th>
                                 <th class="bg-light">الإجراءات</th>
                             </tr>
                         </thead>
@@ -67,13 +75,24 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $doctor->code }}</td>
+                                <td>{{ $doctor->doctor_number }}</td>
                                 <td>{{ $doctor->name }}</td>
                                 <td>{{ $doctor->phone }}</td>
                                 <td>{{ $doctor->email }}</td>
                                 <td>{{ $doctor->address }}</td>
+                                @if (request('type') == "libyan")
                                 <td>{{ $doctor->national_number }}</td>
+                                @endif
+                                <td class="{{$doctor->type->badgeClass()}}" >
+                                    {{ $doctor->type->label() }}
+                                </td>
                                 <td>{{ $doctor->academicDegree->name ?? 'N/A' }}</td>
                                 <td>{{ $doctor->created_at->format('Y-m-d') }}</td>
+                                <td>
+                                    <span class="badge {{$doctor->membership_status->badgeClass()}} ">
+                                        {{ $doctor->membership_status->label() }}
+                                    </span>
+                                </td>
                                 <td>
                                     <a href="{{ route(get_area_name() . '.doctors.show', $doctor) }}" class="btn btn-primary btn-sm text-light">عرض <i class="fa fa-eye"></i></a>
                                     <a href="{{ route(get_area_name() . '.doctors.edit', $doctor) }}" class="btn btn-info btn-sm text-light">تعديل <i class="fa fa-edit"></i></a>

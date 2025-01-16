@@ -16,15 +16,6 @@
                                     value="{{ request()->input('name') }}">
                             </div>
                             <div class="col-md-3">
-                                <select class="form-control" name="ownership">
-                                    <option value="">اختر نوع الملكية</option>
-                                    <option value="private" @if (request()->input('ownership') == 'private') selected
-                                    @endif>خاص</option>
-                                    <option value="public" @if (request()->input('ownership') == 'public') selected
-                                    @endif>عام</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
                                 <select class="form-control" name="medical_facility_type_id">
                                     <option value="">اختر نوع المنشأة الطبية</option>
                                     @foreach ($medicalFacilityTypes as $type)
@@ -50,6 +41,9 @@
                                     <th>النوع</th>
                                     <th>العنوان</th>
                                     <th>رقم الهاتف</th>
+                                    <th>حالة العضوية</th>
+                                    <th>تاريخ الانتهاء</th>
+                                    <th>مالك النشاط</th>
                                     <th>الإجراءات</th>
                                 </tr>
                             </thead>
@@ -63,6 +57,15 @@
                                         <td>{{ $facility->type->name }}</td>
                                         <td>{{ $facility->address }}</td>
                                         <td>{{ $facility->phone_number }}</td>
+                                        <td>
+                                            <span class="badge {{$facility->membership_status->badgeClass()}}">
+                                                {{$facility->membership_status->label()}}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {{$facility->membership_expiration_date}}
+                                        </td>
+                                        <td>{{$facility->manager ? $facility->manager->name : "لا آحد"}}</td>
                                         <td>
 
                                             <a href="{{ route(get_area_name().'.medical-facilities.show', $facility->id) }}"

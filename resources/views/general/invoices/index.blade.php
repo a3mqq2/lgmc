@@ -1,0 +1,180 @@
+@extends('layouts.'.get_area_name())
+
+@section('title', 'قائمة الفواتير')
+
+@section('content')
+<div class="container-fluid">
+    <h4 class="mb-4">قائمة الفواتير</h4>
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">🔍 تصفية الفواتير</div>
+        <div class="card-body">
+            <form method="GET" action="{{ route(get_area_name().'.invoices.index') }}">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="invoiceable">نوع الفاتورة</label>
+                        <select name="invoiceable" id="invoiceable" class="form-control">
+                            <option value="">الكل</option>
+                            <option value="Doctor" {{ request('invoiceable') == 'Doctor' ? 'selected' : '' }}>طبيب</option>
+                            <option value="MedicalFacility" {{ request('invoiceable') == 'MedicalFacility' ? 'selected' : '' }}>منشأة طبية</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status">حالة الدفع</label>
+                        <select name="status" class="form-control">
+                            <option value="">الكل</option>
+                            <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }}>مدفوعة</option>
+                            <option value="unpaid" {{ request('status') == 'unpaid' ? 'selected' : '' }}>غير مدفوعة</option>
+                            <option value="partial" {{ request('status') == 'partial' ? 'selected' : '' }}>مدفوعة جزئيًا</option>
+                        </select>
+                    </div>
+                   
+                    <div class="col-md-3">
+                        <label for="license_id">رقم الإذن</label>
+                        <input type="text" name="license_id" id="license_id" value="{{ request('license_id') }}" class="form-control" placeholder="معرف رقم الإذن">
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label for="search">بحث</label>
+                        <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control" placeholder="رقم الفاتورة أو الوصف">
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">  بحث</button>
+                        <a href="{{ route(get_area_name().'.invoices.index') }}" class="btn btn-secondary">  إعادة تعيين</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">      جدول الفواتير</div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>رقم الفاتورة</th>
+                            <th>الاسم</th>
+                            <th>الوصف</th>
+                            <th>المستخدم</th>
+                            <th>رقم الإذن</th>
+                            <th>المبلغ</th>
+                            <th>الحالة</th>
+                            <th>سبب الاعفاء</th>
+                            <th>تاريخ الإنشاء</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($invoices as $invoice)
+                            <tr>
+                                <td>{{ $invoice->id }}</td>
+                                <td>{{ $invoice->invoice_number }}</td>
+                                <td>{{ $invoice->invoiceable?->name }}</td>
+                                <td>{{ $invoice->description }}</td>
+                                <td>{{ $invoice->user?->name ?? '-' }}</td>
+                                <td>{{ $invoice->license_id ?? '-' }}</td>
+                                <td>{{ number_format($invoice->amount, 2) }} د.ل</td>
+                                <td>
+                                   <span class="badge {{$invoice->status->badgeClass()}}">
+                                        {{$invoice->status->label()}}
+                                   </span>
+                                </td>
+                                <td>{{ $invoice->relief_reason??'-' }}</td>
+                                <td>{{ $invoice->created_at->format('Y-m-d') }}</td>
+                                <td>
+                                    
+                                    @if ($invoice->status == App\Enums\InvoiceStatus::unpaid)
+                                        <a href="{{ route(get_area_name().'.invoices.edit', $invoice->id) }}" class="btn btn-sm btn-warning">تعديل <i class="fa fa-edit"></i> </a>
+
+                                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#received_{{$invoice->id}}">
+                                            استلام القيمة <i class="fa fa-check"></i>
+                                        </button>
+
+
+                                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#relief_{{$invoice->id}}">
+                                            اعفاء عن الدفع <i class="fa fa-times"></i>
+                                    </button>
+                                    @endif
+                                    <a href="{{ route(get_area_name().'.invoices.print', $invoice->id) }}" class="btn btn-sm btn-secondary">
+                                        طباعة
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="11" class="text-center">لا توجد فواتير متاحة.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            {{ $invoices->appends(request()->query())->links() }}
+        </div>
+    </div>
+
+
+    @foreach ($invoices as $invoice)
+
+    @if (auth()->user()->branch_id == $invoice->branch_id && $invoice->status->value == App\Enums\InvoiceStatus::unpaid->value)
+    <div class="modal fade" id="received_{{$invoice->id}}" tabindex="-1" aria-labelledby="received_{{$invoice->id}}Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{{ route(get_area_name() . '.invoices.received', ['invoice' => $invoice->id]) }}">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="received_{{$invoice->id}}Label">تآكيد إستلام القيمة</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">ملاحظات - اختياري</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                        <button type="submit" class="btn btn-primary">موافقة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="relief_{{$invoice->id}}" tabindex="-1" aria-labelledby="relief_{{$invoice->id}}Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{{ route(get_area_name() . '.invoices.relief', ['invoice' => $invoice->id]) }}">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="relief_{{$invoice->id}}Label">تآكيد اعفاء عن دفع القيمة</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">السبب - اجباري </label>
+                            <textarea class="form-control" id="notes" name="notes" required rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                        <button type="submit" class="btn btn-danger">موافقة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @endif
+
+
+
+
+    @endforeach
+
+
+</div>
+@endsection

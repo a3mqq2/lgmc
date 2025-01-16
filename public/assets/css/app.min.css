@@ -91,7 +91,7 @@
     --vz-dropdown-border-width: 0px;
     --vz-card-bg: #fff;
     --vz-card-cap-bg: #fff;
-    --vz-card-logo-dark: block;
+    --vz-card-lgmc-dark: block;
     --vz-card-logo-light: none;
     --vz-modal-bg: #fff;
     --vz-nav-tabs-link-active-color: #495057;
@@ -176,7 +176,7 @@
     --vz-dropdown-border-width: 1px;
     --vz-card-bg: #212529;
     --vz-card-cap-bg: #212529;
-    --vz-card-logo-dark: none;
+    --vz-card-lgmc-dark: none;
     --vz-card-logo-light: block;
     --vz-modal-bg: #212529;
     --vz-nav-tabs-link-active-color: #f3f6f9;
@@ -422,7 +422,7 @@
     color: var(--vz-header-item-color-dark) !important
 }
 
-[data-topbar=dark] .logo-dark {
+[data-topbar=dark] .lgmc-dark {
     display: none
 }
 
@@ -500,7 +500,7 @@
     }
 }
 
-[data-layout=vertical][data-layout-style=detached][data-topbar=dark] .horizontal-logo .logo-dark {
+[data-layout=vertical][data-layout-style=detached][data-topbar=dark] .horizontal-logo .lgmc-dark {
     display: none
 }
 
@@ -1509,7 +1509,7 @@
     color: var(--vz-vertical-menu-title-color-dark)
 }
 
-[data-layout=vertical][data-sidebar=dark] .logo-dark {
+[data-layout=vertical][data-sidebar=dark] .lgmc-dark {
     display: none
 }
 
@@ -1517,7 +1517,7 @@
     display: inline-block
 }
 
-[data-layout=vertical][data-sidebar=light] .logo-dark {
+[data-layout=vertical][data-sidebar=light] .lgmc-dark {
     display: inline-block
 }
 
@@ -1559,7 +1559,7 @@
         display: none
     }
 
-    [data-layout=vertical][data-layout-style=detached][data-sidebar=dark] .logo-dark {
+    [data-layout=vertical][data-layout-style=detached][data-sidebar=dark] .lgmc-dark {
         display: inline-block
     }
 
@@ -1888,7 +1888,7 @@
     }
 }
 
-[data-layout-mode=dark][data-topbar=light] .navbar-header .horizontal-logo .logo-dark {
+[data-layout-mode=dark][data-topbar=light] .navbar-header .horizontal-logo .lgmc-dark {
     display: none
 }
 
@@ -2064,7 +2064,7 @@
     display: none
 }
 
-[data-layout=twocolumn][data-sidebar=light] .app-menu .navbar-brand-box .logo-dark {
+[data-layout=twocolumn][data-sidebar=light] .app-menu .navbar-brand-box .lgmc-dark {
     display: block
 }
 
@@ -2090,7 +2090,7 @@
     display: block
 }
 
-[data-layout=twocolumn][data-sidebar=dark] .app-menu .navbar-brand-box .logo-dark {
+[data-layout=twocolumn][data-sidebar=dark] .app-menu .navbar-brand-box .lgmc-dark {
     display: none
 }
 
@@ -3433,8 +3433,8 @@ code {
     display: var(--vz-card-logo-light)
 }
 
-.card-logo-dark {
-    display: var(--vz-card-logo-dark)
+.card-lgmc-dark {
+    display: var(--vz-card-lgmc-dark)
 }
 
 [data-layout-mode=dark] .btn-close {
@@ -3499,14 +3499,7 @@ code {
     z-index: 9999
 }
 
-#status {
-    width: 40px;
-    height: 40px;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    margin: -20px 0 0 -20px
-}
+
 
 .spinner-chase {
     margin: 0 auto;

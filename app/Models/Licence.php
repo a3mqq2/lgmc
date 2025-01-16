@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\DoctorType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,8 +19,21 @@ class Licence extends Model
         'doctor_id',
         'branch_id',
         'created_by',
-        'amount'
+        'amount',
+        'doctor_type',
+        'medical_facility_id',
     ];
+
+    protected $casts = [
+        "doctor_type" => DoctorType::class,
+    ];
+
+
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 
     /**
      * Get the owning licensable model.
@@ -73,5 +87,10 @@ class Licence extends Model
 
     public function logs() {
         return $this->hasMany(LicenceLog::class, 'licence_id');
+    }
+
+    public function MedicalFacility()
+    {
+        return $this->belongsTo(MedicalFacility::class, 'medical_facility_id');
     }
 }

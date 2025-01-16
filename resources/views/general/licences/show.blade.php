@@ -11,12 +11,6 @@
         </button>
         @endif
 
-        @if ($licence->status == "under_payment" && get_area_name() != "admin")
-        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#paymentModal">
-            دفع الرسوم <i class="fa fa-money-bill"></i>
-        </button>
-        @endif
-
         @if ($licence->status == "active")
             <a href="{{route(get_area_name().'.licences.print', $licence->id)}}" class="btn btn-dark text-light">طباعه اذن المزاولة <i class="fa fa-print"></i></a>
         @endif
@@ -47,10 +41,12 @@
                                 <th class="bg-light">الحالة</th>
                                 <td>{!! $licence->status_badge !!}</td>
                             </tr>
+                            @if ($licence->licensable_type == "App\Models\MedicalFacility")
                             <tr>
                                 <th class="bg-light"> الممثل </th>
-                                <td>{{ $licence->doctor?->name }}</td>
+                                <td>{{ $licence->licensable->manager ? $licence->licensable->manager->name : "لا احد" }}</td>
                             </tr>
+                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -74,10 +70,12 @@
                                     <th class="bg-light">الاسم</th>
                                     <td>{{ $licence->licensable->name }}</td>
                                 </tr>
+                                @if (request('type') == "libyan")
                                 <tr>
                                     <th class="bg-light">الرقم الوطني</th>
                                     <td>{{ $licence->licensable->national_number }}</td>
                                 </tr>
+                                @endif
                                 <tr>
                                     <th class="bg-light">تاريخ الميلاد</th>
                                     <td>{{ $licence->licensable->date_of_birth ? $licence->licensable->date_of_birth->format('Y-m-d') : 'N/A' }}</td>
@@ -117,10 +115,7 @@
                                     <th class="bg-light">الاسم</th>
                                     <td>{{ $licence->licensable->name }}</td>
                                 </tr>
-                                <tr>
-                                    <th class="bg-light">نوع الملكية</th>
-                                    <td>{{ $licence->licensable->ownership }}</td>
-                                </tr>
+                             
                                 <tr>
                                     <th class="bg-light">الهاتف</th>
                                     <td>{{ $licence->licensable->phone_number }}</td>
@@ -201,46 +196,6 @@
 @endif
 
 
-@if (get_area_name() == "user" && $licence->status == "under_payment")
-        <!-- Approval Modal -->
-        <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form method="POST" action="{{ route(get_area_name() . '.licences.payment', ['licence' => $licence->id]) }}">
-                        @csrf
-                        @method('PATCH')
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="paymentModalLabel">دفع رسوم اذن المزاولة </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="">الخزينة المالية</label>
-                                <select name="vault_id" id="" class="form-control">
-                                    <option value="">حدد خزينة الدفع</option>
-                                    @foreach ($vaults as $vault)
-                                        <option value="{{$vault->id}}">{{$vault->name}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="amount" class="form-label">القيمة</label>
-                                <input type="number" name="amount" id="amount" step="0.01" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label for="notes" class="form-label">ملاحظات</label>
-                                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                            <button type="submit" class="btn btn-primary">دفع</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-@endif
 
 
 

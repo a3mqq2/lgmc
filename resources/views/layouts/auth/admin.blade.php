@@ -9,7 +9,7 @@
     <meta content="" name="description" />
     <meta content="" name="author" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{asset('/assets/images/logo-primary.png')}}">
+    <link rel="shortcut icon" href="{{asset('/assets/images/lgmc-dark.png')}}">
 
     <!-- Layout config Js -->
     <script src="{{asset('/assets/js/layout.js')}}"></script>
@@ -47,7 +47,7 @@
 
                                 <div class="col-lg-12">
                                     <div class="col-md-12 d-flex justify-content-center">
-                                        <img src="{{asset('/assets/images/logo-dark.png')}}" style="width: 330px;margin: 20px auto;" alt="">
+                                        <img src="{{asset('/assets/images/lgmc-dark.png?v=234')}}" style="width: 330px;margin: 20px auto;" alt="">
                                     </div>
                                     <div class="" style="padding:10px 71px;">
                                         <div>

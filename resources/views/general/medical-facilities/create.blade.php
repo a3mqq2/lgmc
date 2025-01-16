@@ -2,6 +2,8 @@
 @section('title', 'إنشاء منشأة طبية جديدة')
 
 @section('content')
+<form action="{{ route(get_area_name().'.medical-facilities.store') }}" method="POST" enctype="multipart/form-data">
+
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -9,57 +11,149 @@
                     <h4 class="card-title">إنشاء منشأة طبية جديدة</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route(get_area_name().'.medical-facilities.store') }}" method="POST">
                         @csrf
-                        <div class="mb-3">
-                            <label for="name" class="form-label">اسم المنشأة</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="serial_number" class="form-label">رقم المنشأة</label>
+                                    <input type="text" class="form-control" id="name" name="serial_number" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">اسم المنشأة</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label"> السجل التجاري </label>
+                                    <input type="text" class="form-control" id="commerical_number" name="commerical_number" required>
+                                </div>
+                            </div>
+                            @if (get_area_name() == "admin")
+                            <div class="col-md-12">
+                                <label for="branch">الفرع</label>
+                                <select name="branch_id" id="" class="form-control select2">
+                                    <option value="">حدد الفرع</option>
+                                    @foreach ($branches as $branch)
+                                        <option value="{{$branch->id}}">{{$branch->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @else 
+                            <input type="hidden" name="branch_id" value="{{auth()->user()->branch_id}}">
+                            @endif
                         </div>
-                        <div class="mb-3">
-                            <label for="name" class="form-label"> السجل التجاري </label>
-                            <input type="text" class="form-control" id="commerical_number" name="commerical_number" required>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="medical_facility_type_id" class="form-label">نوع المنشأة الطبية</label>
+                                    <select class="form-control" id="medical_facility_type_id" name="medical_facility_type_id"
+                                        required>
+                                        @foreach ($medicalFacilityTypes as $type)
+                                            <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">العنوان</label>
+                                    <input type="text" name="address" class="form-control"  id="">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="phone_number" class="form-label">رقم الهاتف</label>
+                                    <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="10" required>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="ownership" class="form-label">نوع الملكية</label>
-                            <select class="form-control" id="ownership" name="ownership" required>
-                                <option value="private">خاص</option>
-                                <option value="public">عام</option>
-                            </select>
+                        
+                       
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="date" class="form-label"> تاريخ بدء النشاط  </label>
+                                    <input type="date" class="form-control" id="date" name="date"  required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="">نوع نشاط الشركة</label>
+                                    <select name="activity_type" id="" class="form-control">
+                                        <option value="">حدد نوع النشاط</option>
+                                        <option value="commercial_record">سجل تجاري</option>
+                                        <option value="negative_certificate">شهادة سلبية</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="">مالك النشاط</label>
+                                <select name="manager_id" id="" class="form-control">
+                                    <option value="">حدد مالك نشاط</option>
+                                    @foreach ($doctors as $doctor)
+                                        <option value="{{$doctor->id}}">{{$doctor->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-                        @if (get_area_name() == "admin")
-                        <div class="mb-3">
-                            <label for="branch">الفرع</label>
-                            <select name="branch_id" id="" class="form-control select2">
-                                <option value="">حدد الفرع</option>
-                                @foreach ($branches as $branch)
-                                    <option value="{{$branch->id}}">{{$branch->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @else 
-                        <input type="hidden" name="branch_id" value="{{auth()->user()->branch_id}}">
-                        @endif
-                        <div class="mb-3">
-                            <label for="medical_facility_type_id" class="form-label">نوع المنشأة الطبية</label>
-                            <select class="form-control" id="medical_facility_type_id" name="medical_facility_type_id"
-                                required>
-                                @foreach ($medicalFacilityTypes as $type)
-                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="address" class="form-label">العنوان</label>
-                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="phone_number" class="form-label">رقم الهاتف</label>
-                            <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="10" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">إنشاء</button>
-                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">📑 المستندات المطلوبة</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach ($file_types as $file_type)
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="document-card shadow-sm border rounded text-center p-3 position-relative">
+                                    <div class="document-icon mb-3">
+                                        <i class="fas fa-file-upload fa-3x text-primary"></i>
+                                    </div>
+                                    <h6 class="document-title mb-2">
+                                        {{ $file_type->name }}
+                                        @if ($file_type->is_required)
+                                            <span class="text-danger">*</span>
+                                        @endif
+                                    </h6>
+                                    <div class="custom-file">
+                                        <input type="file" name="documents[{{ $file_type->id }}]" 
+                                               class="custom-file-input"
+                                               id="file_{{ $file_type->id }}"
+                                               @if($file_type->is_required) required @endif>
+                                        <label class="custom-file-label" for="file_{{ $file_type->id }}">
+                                            اختر ملف
+                                        </label>
+                                    </div>
+                                    <small class="text-muted d-block mt-2">
+                                        الملف يجب أن يكون بصيغة <b>PDF</b> أو صورة
+                                    </small>
+                                    <div id="status_{{ $file_type->id }}" class="mt-2 text-muted">
+                                        🔄 لم يتم الرفع بعد
+                                    </div>
+                                    @if ($file_type->is_required)
+                                        <div class="alert alert-warning mt-3 p-2 text-center rounded-lg shadow-sm"
+                                             style="background: linear-gradient(135deg, #fff8e1, #ffe0b2); 
+                                                    border-left: 5px solid #ff9800;
+                                                    color: #5d4037;">
+                                            <i class="fas fa-exclamation-circle"></i> 
+                                            <strong>ملف إلزامي:</strong> يُرجى التأكد من رفع هذا الملف.
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <button type="submit" class="btn btn-primary mb-3">إنشاء</button>
+</form>
+
 @endsection

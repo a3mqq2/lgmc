@@ -9,9 +9,15 @@ class UserController extends Controller
 {
     public function home(Request $request) {
         if($request->branch_id) {
-            $user = auth()->user();
-            $user->branch_id = $request->branch_id;
-            $user->save();
+            if(in_array($request->branch_id, auth()->user()->branches->pluck('id')->toArray())) {
+                $user = auth()->user();
+                $user->branch_id = $request->branch_id;
+                $user->save();
+            } else {
+                $user = auth()->user();
+                $user->branch_id = auth()->user()->branches->first()->id;
+                $user->save();
+            }
         } else {
             $user = auth()->user();
             $user->branch_id = auth()->user()->branches->first()->id;

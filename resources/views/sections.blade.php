@@ -9,7 +9,7 @@
     <meta content="" name="description" />
     <meta content="" name="author" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{asset('/assets/images/logo-primary.png')}}">
+    <link rel="shortcut icon" href="{{asset('/assets/images/lgmc-dark.png')}}">
 
     <!-- Layout config Js -->
     <script src="{{asset('/assets/js/layout.js')}}"></script>
@@ -47,7 +47,7 @@
 
                                 <div class="col-lg-12">
                                     <div class="col-md-12 d-flex justify-content-center">
-                                        <img src="{{asset('/assets/images/logo-dark.png')}}" style="width: 330px;margin: 20px auto;" alt="">
+                                        <img src="{{asset('/assets/images/lgmc-dark.png')}}" style="width: 330px;margin: 20px auto;" alt="">
                                     </div>
                                     <div class="" style="padding:10px 71px;">
                                         <div>
@@ -56,7 +56,7 @@
                                         </div>
                                         <div class="mt-4">
                                             <div class="row">
-                                                @if (auth()->user()->can('general_management'))
+                                                @if (auth()->user()->hasRole('general_admin'))
                                                 <div class="col-md-12  p-2" style="border-bottom:1px solid #ddd;">
                                                     <a href="{{route('admin.home')}}">
                                                      <div class=" d-flex align-items-center">
@@ -81,12 +81,30 @@
                                                          </div>
                                                          <div class="text px-3">
                                                              <h5 class="font-weight-bold text-primary mr-3 mt-1">  {{$branch->name}}  </h5>
-                                                             <p class="font-weight-bold mr-3 text-dark">  BRANCH   </p>
+                                                             <p class="font-weight-bold mr-3 text-dark"> BRANCH OPERATION   </p>
                                                          </div>
                                                      </div>
                                                     </a>
                                                  </div>
                                                  @endforeach
+                                                 
+
+
+                                                 <div class="col-md-12  p-2 mt-2" style="border-bottom:1px solid #ddd;">
+                                                    <a href="{{route('finance.home')}}">
+                                                     <div class=" d-flex align-items-center">
+                                                         <div class="image mr-3">
+                                                             <img src="{{ asset('/assets/images/sections/admin.svg') }}" width="60" class="mr-3" alt="">
+                                                         </div>
+                                                         <div class="text px-3">
+                                                             <h5 class="font-weight-bold text-primary mr-3 mt-1"> الإدارة المالية </h5>
+                                                             <p class="font-weight-bold mr-3 text-dark">  FINANCE    </p>
+                                                         </div>
+                                                     </div>
+                                                    </a>
+                                                 </div>
+
+
                                                 <div class="col-md-12  p-2 mt-3" style="border-bottom:1px solid #ddd;">
                                                     <a href="{{route('logout')}}">
                                                         <div class=" d-flex align-items-center">

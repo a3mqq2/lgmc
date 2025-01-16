@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\WebsiteController;
+use App\Http\Controllers\Common\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,15 +15,18 @@ use App\Http\Controllers\Admin\AdminController;
 |
 */
 
-Route::redirect('/', 'login');
+
+Route::get('/', [WebsiteController::class, 'index'])->name('index');
+
 
 
 Route::get("/login", [AuthController::class, 'login'])->name('login');
 Route::post("/do-login", [AuthController::class, 'do_login'])->name('do_login');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
+Route::get('change-branch', [AuthController::class, 'change_branch'])->name('change_branch');
 Route::middleware('auth')->group(function() {
     Route::get('/sections', [AuthController::class, 'sections'])->name('sections');
 });
 require __DIR__.'/admin.php';
 require __DIR__.'/user.php';
+require __DIR__.'/finance.php';

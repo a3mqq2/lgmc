@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\checkIfBranch;
+use App\Http\Middleware\CheckPermission;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -67,5 +68,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'check_branch' => checkIfBranch::class,
         'role' => \App\Http\Middleware\CheckRole::class,
+        'permission' => CheckPermission::class,
     ];
 }

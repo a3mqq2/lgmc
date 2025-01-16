@@ -34,8 +34,8 @@ return new class extends Migration
             $table->foreignId('academic_degree_id')->nullable()->constrained();
             $table->unsignedBigInteger('qualification_university_id');
             $table->foreign('qualification_university_id')->references('id')->on('universities')->onDelete('cascade');
-            $table->dateTime('qualification_date');
-            $table->foreignId('capacity_id')->constrained();
+            $table->dateTime('certificate_of_excellence_date');
+            $table->foreignId('doctor_rank_id')->constrained();
             $table->text('ex_medical_facilities')->nullable();
             $table->integer('experience')->default(0);
             $table->text('notes')->nullable();
@@ -46,6 +46,8 @@ return new class extends Migration
             $table->foreign('specialty_1_id')->references('id')->on('specialties')->nullOnDelete();
             $table->foreign('specialty_2_id')->references('id')->on('specialties')->nullOnDelete();
             $table->foreign('specialty_3_id')->references('id')->on('specialties')->nullOnDelete();
+            $table->enum('membership_status', ['active', 'inactive']);
+            $table->date('membership_expiration_date')->nullable();
             $table->timestamps();
         });
     }

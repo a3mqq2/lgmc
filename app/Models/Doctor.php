@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\DoctorType;
+use App\Enums\GenderEnum;
+use App\Enums\MaritalStatus;
+use App\Enums\MembershipStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Doctor extends Model
 {
@@ -29,7 +33,6 @@ class Doctor extends Model
         'internership_complete',
         'academic_degree_id',
         'qualification_university_id',
-        'qualification_date',
         'certificate_of_excellence',
         'graduationـcertificate',
         'passport',
@@ -42,7 +45,7 @@ class Doctor extends Model
         'health_certificate',
         'jobـcontract',
         'anotherـcertificate',
-        'capacity_id',
+        'doctor_rank_id',
         'ex_medical_facilities',
         'experience',
         'notes',
@@ -50,15 +53,25 @@ class Doctor extends Model
         'specialty_1_id',
         'specialty_2_id',
         'specialty_3_id',
-        'certificate_of_excellence_date'
+        'certificate_of_excellence_date',
+        'doctor_number',
+        'country_graduation_id',
+        'type',
+        'due',
+        'membership_status',
+        'membership_expiration_date'
     ];
 
     protected $casts = [
         'date_of_birth' => 'datetime',
         'passport_expiration' => 'datetime',
         'internership_complete' => 'datetime',
-        'qualification_date' => 'datetime',
-        'certificate_of_excellence_date' => "datetime",
+        'certificate_of_excellence_date' => 'datetime',
+        'membership_expiration_date' => 'datetime',
+        'marital_status' => MaritalStatus::class,
+        'gender' => GenderEnum::class,
+        'type' => DoctorType::class,
+        'membership_status' => MembershipStatus::class,
     ];
 
     public function country()
@@ -73,7 +86,7 @@ class Doctor extends Model
 
     public function academicDegree()
     {
-        return $this->belongsTo(AcademicDegree::class);
+        return $this->belongsTo(AcademicDegree::class, 'academic_degree_id');
     }
 
     public function qualificationUniversity()
@@ -96,9 +109,9 @@ class Doctor extends Model
         return $this->belongsTo(Specialty::class, 'specialty_3_id');
     }
 
-    public function capacity()
+    public function doctor_rank()
     {
-        return $this->belongsTo(Capacity::class);
+        return $this->belongsTo(DoctorRank::class);
     }
 
     public function branch()
@@ -121,5 +134,9 @@ class Doctor extends Model
     {
         return $this->hasMany(Licence::class, 'licensable_id')->where('licensable_type', 'App\Models\Doctor');
     }
-    
+
+    public function countryGraduation()
+    {
+        return $this->belongsTo(Country::class, 'country_graduation_id');
+    }
 }

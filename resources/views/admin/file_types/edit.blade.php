@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.'.get_area_name())
 @section('title', 'تعديل نوع مستند')
 @section('content')
 
@@ -38,11 +38,34 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input type="checkbox" name="is_required" id="is_required" class="form-check-input" @if(old('is_required', $fileType->is_required)) checked @endif value="1">
-                                <label for="is_required" class="form-check-label">الملف اجباري</label>
+                        <!-- Doctor Fields (Initially Hidden) -->
+                        <div id="doctor-fields" style="display: none;">
+                            <div class="mb-3">
+                                <label for="doctor_rank_id" class="form-label">الرتبة الطبية</label>
+                                <select name="doctor_rank_id" id="doctor_rank_id" class="form-control">
+                                    <option value="">  الكل  </option>
+                                    @foreach ($doctor_ranks as $doctor_rank)
+                                        <option value="{{ $doctor_rank->id }}" @if(old('doctor_rank_id', $fileType->doctor_rank_id) == $doctor_rank->id) selected @endif>
+                                            {{ $doctor_rank->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
+
+                            <div class="mb-3">
+                                <label for="doctor_type" class="form-label">نوع الطبيب</label>
+                                <select name="doctor_type" id="doctor_type" class="form-control">
+                                    <option value="">الكل</option>
+                                    <option value="foreign" @if(old('doctor_type', $fileType->doctor_type) == 'foreign') selected @endif>أجنبي</option>
+                                    <option value="visitor" @if(old('doctor_type', $fileType->doctor_type) == 'visitor') selected @endif>زائر</option>
+                                    <option value="libyan" @if(old('doctor_type', $fileType->doctor_type) == 'libyan') selected @endif>ليبي</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="checkbox" name="is_required" id="is_required" class="mr-3" value="1" @if(old('is_required', $fileType->is_required)) checked @endif>
+                            <label for="is_required" style="margin-right: 8px !important;">الملف اجباري</label>
                         </div>
 
                         <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
@@ -53,4 +76,23 @@
     </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+    // Toggle the doctor-related fields based on the selected type
+    document.getElementById('type').addEventListener('change', function() {
+        const doctorFields = document.getElementById('doctor-fields');
+        if (this.value === 'doctor') {
+            doctorFields.style.display = 'block';
+        } else {
+            doctorFields.style.display = 'none';
+        }
+    });
+
+    // Initial check for existing value (if the form is pre-filled)
+    if (document.getElementById('type').value === 'doctor') {
+        document.getElementById('doctor-fields').style.display = 'block';
+    }
+</script>
 @endsection

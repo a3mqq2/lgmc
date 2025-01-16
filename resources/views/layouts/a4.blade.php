@@ -36,9 +36,9 @@
         @if (request()->input('landscape'))
             <img src="{{ asset('assets/img/print/header-landscape.svg') }}" width="100%" class="a4-header">
         @else
-            <img src="{{ asset('assets/images/logo-dark.png') }}"  width="300">
+            <img src="{{ asset('assets/images/lgmc-dark.png') }}"  width="300">
         @endif
-        <img src="{{ asset('assets/images/logo-dark.png') }}" class="background-logo">
+        <img src="{{ asset('assets/images/lgmc-dark.png') }}" class="background-logo">
         <div class="content" width="100%">
             @yield('content')
         </div>

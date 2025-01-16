@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.'.get_area_name())
 
 @section('title', 'إنشاء درجة علمية جديدة')
 

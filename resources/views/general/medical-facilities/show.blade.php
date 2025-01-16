@@ -21,14 +21,7 @@
                         </tr>
 
 
-                        <tr>
-                            <th class="bg-light">نوع الملكية</th>
-                            <td>{{ $medicalFacility->ownership == 'private' ? 'خاص' : 'عام' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">الفرع</th>
-                            <td>{{ $medicalFacility->branch->name }}</td>
-                        </tr>
+                    
                         <tr>
                             <th class="bg-light">نوع المنشأة الطبية</th>
                             <td>{{ $medicalFacility->medicalFacilityType->name }}</td>
@@ -40,6 +33,10 @@
                         <tr>
                             <th class="bg-light">رقم الهاتف</th>
                             <td>{{ $medicalFacility->phone_number }}</td>
+                        </tr>
+                        <tr>
+                            <th class="bg-light"> تاريخ بدء النشاط </th>
+                            <td>{{ $medicalFacility->activity_start_date }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">تاريخ الإنشاء</th>
