@@ -137,7 +137,7 @@
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header bg-primary text-light">
-                                <h4 class="card-title"> بيانات الاتصال  </h4>
+                                <h4 class="card-title"> بيانات الاتصال والدخول </h4>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -154,8 +154,12 @@
                                         <input type="text" name="address" value="{{old('address')}}" id="" class="form-control">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="">البريد الالكتروني</label>
-                                        <input type="email" name="email" value="{{old('email')}}" id="" class="form-control">
+                                        <label for=""> كلمة المرور </label>
+                                        <input type="password" name="password" value="{{old('password')}}" id="" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for=""> تأكيد كلمة المرور  </label>
+                                        <input type="password" name="password_confirmation" value="{{old('password_confirmation')}}" id="" class="form-control">
                                     </div>
                                 </div>
                             </div>

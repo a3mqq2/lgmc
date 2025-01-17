@@ -24,7 +24,7 @@
                                     <label for="">الاسم بالكامل باللغه الانجليزيه</label>
                                     <input type="text" required name="name_en" value="{{old('name_en', $doctor->name_en)}}"  id="" class="form-control">
                                 </div>
-                                @if (request('type') == "libyan")
+                                @if ($doctor->type->value == "libyan")
                                 <div class="col-md-6 mt-2">
                                     <label for="">الرقم الوطني</label>
                                     <input type="number" required name="national_number" value="{{old('national_number', $doctor->national_number)}}" id="" class="form-control">
@@ -34,17 +34,17 @@
                                     <label for=""> اسم الام </label>
                                     <input type="text" required name="mother_name" value="{{old('mother_name', $doctor->mother_name)}}" id="" class="form-control">
                                 </div>
-                                @if (request('type') == "foreign" || request('type') == "visitor")
+                                @if ($doctor->type->value == "foreign" || $doctor->type->value == "visitor")
                                 <div class="col-md-6 mt-2">
                                     <label for="">  الجنسية  </label>
-                                    <select name="country_id" required id="country_id" class="form-control  " {{ (request('type') == "libyan" || request('type') == "palestinian") ? "disabled" : "" }}  >
+                                    <select name="country_id" required id="country_id" class="form-control  " {{ ($doctor->type->value == "libyan" || $doctor->type->value == "palestinian") ? "disabled" : "" }}  >
                                         <option value="">حدد دوله من القائمة </option>
                                         @foreach ($countries as $country)
                                             <option value="{{$country->id}}"
                                                 
                                                 {{old('country_id', $doctor->country_id) == $country->id ? "selected" : ""}}
-                                                {{request('type') == "libyan" ?  ($country->id == 1 ? 'selected ' : '') : ''}}
-                                                {{request('type') == "palestinian"  ?  ($country->id == 2 ? 'selected  ' : '') : ''}}
+                                                {{$doctor->type->value == "libyan" ?  ($country->id == 1 ? 'selected ' : '') : ''}}
+                                                {{$doctor->type->value == "palestinian"  ?  ($country->id == 2 ? 'selected  ' : '') : ''}}
 
                                                 >{{$country->name}}</option>
                                         @endforeach
@@ -85,7 +85,7 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header bg-primary text-light">
-                            <h4 class="card-title"> بيانات الاتصال  </h4>
+                            <h4 class="card-title"> بيانات الاتصال والدخول </h4>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -102,12 +102,20 @@
                                     <input type="text" name="address" value="{{old('address',$doctor->address)}}" id="" class="form-control">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="">البريد الالكتروني</label>
-                                    <input type="email" name="email" value="{{old('email', $doctor->email)}}" id="" class="form-control">
+                                    <label for=""> كلمة المرور </label>
+                                    <input type="password" name="password" value="{{old('password')}}" id="" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for=""> تأكيد كلمة المرور  </label>
+                                    <input type="password" name="password_confirmation" value="{{old('password_confirmation')}}" id="" class="form-control">
+                                </div>
+
+                                <div class="p-3">
+                                    <div class="alert bg-orange text-light">لا تعدل كلمة المرور الا اذا اردت ذلك</div>
                                 </div>
                             </div>
                         </div>
-                
+            
                     </div>
                     <div class="card">
                         <div class="card-header bg-primary text-light">
@@ -115,7 +123,7 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                @if (request('type') == "visitor")
+                                @if ($doctor->type->value == "visitor")
                                 <div class="col-md-4">
                                     <label for=""> دولة التخرج </label>
                                     <select name="country_graduation_id" id="" class="form-control select2">

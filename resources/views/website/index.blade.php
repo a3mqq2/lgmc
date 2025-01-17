@@ -8,7 +8,7 @@
   <meta name="keywords" content="النقابة العامة للأطباء, الأطباء في ليبيا, نقابة الأطباء ليبيا, الخدمات الطبية, الرعاية الصحية, نظام الأطباء, الأطباء الليبيون, ليبيا, الطب في ليبيا, نقابة طبية, الصحة في ليبيا">
   <meta name="author" content="Hulul Information Technology">
   <title>موقع النقابة العامة للآطباء</title>
-  <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}">
+  <link rel="shortcut icon" href="{{ asset('assets/images/logo-primary.png') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/plugins.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/colors/aqua.css') }}">
@@ -108,12 +108,12 @@
               نحن نراجع حلولنا بدقة لضمان دعم جميع مراحل تطورك المهني كطبيب. نسعى لتوفير الموارد والأدوات التي تساعدك في تطوير مهاراتك وتعزيز مسيرتك المهنية.
             </p>
             <div class="text-center m-auto">
-              <a class="btn btn-lg btn-primary rounded text-center" style="
+              <a href="/register" class="btn btn-lg btn-primary rounded text-center" style="
               background: #9e0302;
               border: 2px solid #890403;
           "> طلب عضوية جديدة    </a>
 
-          <a class="btn btn-lg btn-primary rounded text-center" style="
+          <a  href="/doc-login" class="btn btn-lg btn-primary rounded text-center" style="
           background: #1d1111;
           border: 2px solid #890403;
           ">  تسجيل دخول        </a>
@@ -378,7 +378,7 @@
           <div class="col-lg-12 text-center">
             <h2 class="fs-16 text-uppercase text-line text-white mb-3">انضم إلى مجتمعنا الطبي</h2>
             <h3 class="display-4 mb-6 text-white pe-xxl-18">نحن ملتزمون بدعم الأطباء في ليبيا. انضم إلينا عبر بوابة الدخول الخاصة بالأطباء.</h3>
-            <a href="https://www.tmc.org.ly/auth/login" class="btn btn-white rounded mb-0 text-nowrap">دخول الأطباء</a>
+            <a href="/doc-login" class="btn btn-white rounded mb-0 text-nowrap">دخول الأطباء</a>
           </div>
           <!-- /column -->
         </div>

@@ -243,10 +243,10 @@
                     @endif
                 </ul>
 
-                @if($ticket->attachement)
+                @if($ticket->attachment)
                     <div class="mb-3">
                         <strong>المرفقات:</strong><br>
-                        <a href="{{ asset('storage/' . $ticket->attachement) }}" class="btn btn-sm btn-info mt-1" target="_blank">
+                        <a href="{{ asset('storage/' . $ticket->attachment) }}" class="btn btn-sm btn-info mt-1" target="_blank">
                             <i class="fa fa-paperclip"></i> عرض المرفق
                         </a>
                     </div>

@@ -46,7 +46,7 @@ return new class extends Migration
             $table->foreign('specialty_1_id')->references('id')->on('specialties')->nullOnDelete();
             $table->foreign('specialty_2_id')->references('id')->on('specialties')->nullOnDelete();
             $table->foreign('specialty_3_id')->references('id')->on('specialties')->nullOnDelete();
-            $table->enum('membership_status', ['active', 'inactive']);
+            $table->enum('membership_status', ['active', 'inactive','pending']);
             $table->date('membership_expiration_date')->nullable();
             $table->timestamps();
         });

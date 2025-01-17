@@ -7,6 +7,7 @@ use App\Models\Doctor;
 use App\Models\Invoice;
 use App\Models\Pricing;
 use App\Enums\DoctorType;
+use Illuminate\Support\Str;
 use App\Enums\InvoiceStatus;
 use App\Enums\RequestStatus;
 use Illuminate\Http\Request;
@@ -142,7 +143,6 @@ class DoctorRequestController extends Controller
             $doctorRequest->save();
     
 
-            $this->createInvoice($doctorRequest);
 
 
             return redirect()
@@ -208,6 +208,7 @@ class DoctorRequestController extends Controller
             ]);
 
 
+            $this->createInvoice($doctorRequest);
 
             return redirect()
                 ->route(get_area_name() . '.doctor-requests.index', ['doctor_type' => $doctorRequest->doctor_type])
@@ -267,6 +268,35 @@ class DoctorRequestController extends Controller
                 return redirect()
                     ->back()
                     ->withErrors(['لا يمكن إكمال الطلب إذا لم يكن في حالة "قيد المعالجة".']);
+            }
+
+
+            if(env('APP_ENV') == "production")
+            {
+                if(in_array($doctorRequest->pricing_id, [72,48,38]))
+                {
+
+                    $email = $doctorRequest->doctor->email;
+                    $password = Str::random(9);
+
+                    $cpanel = new \GuzzleHttp\Client();
+                    $cpanelResponse = $cpanel->post('https://your-cpanel-url:2083/execute/Email/add_pop', [
+                        'headers' => [
+                            'Authorization' => 'Basic ' . base64_encode('username:password'), 
+                        ],
+                        'form_params' => [
+                            'email' => $email,
+                            'domain' => 'lgmc.ly',
+                            'password' => $password,
+                            'quota' => 1024, 
+                        ],
+                    ]);
+
+                    $responseBody = json_decode($cpanelResponse->getBody(), true);
+                    if ($responseBody['status'] !== 1) {
+                        throw new \Exception('Failed to create email: ' . ($responseBody['errors'][0] ?? 'Unknown error'));
+                    }
+                }
             }
 
             $doctorRequest->update([

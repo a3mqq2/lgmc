@@ -94,6 +94,37 @@
                                     </span>
                                 </td>
                                 <td>
+
+
+                                    @if (get_area_name() == "user" && $doctor->membership_status->value == "pending")
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approve{{ $doctor->id }}">قبول العضوية</button>
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="approve{{ $doctor->id }}" tabindex="-1" aria-labelledby="approveLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="approveLabel">تأكيد العضوية</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    هل أنت متأكد من رغبتك في قبول عضوية هذا الطبيب؟
+                                                    
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                                    <form action="{{ route('user.doctors.approve', $doctor->id) }}" method="POST">
+                                                        @csrf
+                                                        @method('POST')
+                                                        <button type="submit" class="btn btn-success">قبول</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+
+
+
                                     <a href="{{ route(get_area_name() . '.doctors.show', $doctor) }}" class="btn btn-primary btn-sm text-light">عرض <i class="fa fa-eye"></i></a>
                                     <a href="{{ route(get_area_name() . '.doctors.edit', $doctor) }}" class="btn btn-info btn-sm text-light">تعديل <i class="fa fa-edit"></i></a>
                                     <a href="{{ route(get_area_name() . '.doctors.print', $doctor) }}" class="btn btn-secondary btn-sm text-light">طباعة <i class="fa fa-print"></i></a>

@@ -130,7 +130,7 @@ class TicketController extends Controller
             'department'     => $request->department,
             'category'       => $request->category,
             'status'         => Status::New,  // or fetch from $request if your form includes status
-            'attachement'    => $attachmentPath,  // store the path in DB
+            'attachment'    => $attachmentPath,  // store the path in DB
             'priority'        => $request->priority,
             'closed_at'      => null,
             'closed_by'      => null,

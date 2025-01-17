@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Services\DoctorService;
 use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorRequest;
+use PhpParser\Comment\Doc;
 
 class DoctorController extends Controller
 {
@@ -89,5 +90,15 @@ class DoctorController extends Controller
     {
         $data['doctor'] = $doctor;
         return view('general.doctors.print', $data);
+    }
+
+    public function approve(Doctor $doctor)
+    {
+        try {
+            $this->doctorService->approve($doctor);
+            return redirect()->route('admin.doctors.index')->with('success', 'تم الموافقة على الطبيب بنجاح');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني']);
+        }
     }
 }

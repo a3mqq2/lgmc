@@ -18,6 +18,7 @@ use App\Models\University;
 use App\Models\AcademicDegree;
 use App\Models\MedicalFacility;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log as FacadesLog;
 
@@ -126,6 +127,7 @@ class DoctorService
 
     public function create(array $data): Doctor
     {
+
         // استخراج نوع الطبيب من البيانات
         $doctorType = $data['type'];
 
@@ -157,13 +159,18 @@ class DoctorService
             $data['branch_id'] = get_area_name() == "admin" ? $data['branch_id'] : auth()->user()->branch_id;
             
             // إنشاء السجل الجديد للطبيب
+            $data['password'] = Hash::make($data['password']);
+
+            // 
+
+            $data['email'] = strtolower(str_replace(' ', '.', $data['name_en'])) . env('EMAIL_HOST');
             $doctor = Doctor::create($data);
 
             // ربط المرافق الطبية
             $doctor->medicalFacilities()->attach($data['medical_facilities'] ?? []);
 
             // تحديث رمز الطبيب بناءً على الفرع
-            $doctor->code = $doctor->branch->code . '-' . $doctor->id;
+            $doctor->code = $doctor->branch->code . '-' . Invoice::count()+1;
             $doctor->membership_status = 'inactive';
             $doctor->membership_expiration_date = null;
             $doctor->save();
@@ -316,7 +323,7 @@ class DoctorService
 
        
         $data = [
-            'invoice_number' => "RGS-" . $doctor->id,
+            'invoice_number' => "RGS-" . Invoice::count() + 1,
             'invoiceable_id' => $doctor->id,
             'invoiceable_type' => 'App\Models\Doctor',
             'description' => "رسوم العضوية الخاصة بالطبيب",
@@ -346,7 +353,7 @@ class DoctorService
         if(isset($price))
         {
             $data = [
-                'invoice_number' => "FIL-" . $doctor->id,
+                'invoice_number' => "FIL-" . Invoice::latest()->first()->id + 1,
                 'invoiceable_id' => $doctor->id,
                 'invoiceable_type' => 'App\Models\Doctor',
                 'description' => "رسوم فتح ملف للطبيب",
@@ -387,6 +394,12 @@ class DoctorService
         DB::beginTransaction();
 
         try {
+
+            if(isset($data['password']))
+            {
+                $data['password'] = Hash::make($data['password']);
+            }
+            
             $doctor->update($data);
 
             // Sync the medical facilities
@@ -463,6 +476,29 @@ class DoctorService
             if ($doctor->$file) {
                 Storage::delete($doctor->$file);
             }
+        }
+    }
+
+
+    public function approve(Doctor $doctor)
+    {
+        DB::beginTransaction();
+
+        try {
+            $doctor->membership_status = 'inactive';
+            $this->createInvoice($doctor);
+            $doctor->save();
+
+            // Log the approval
+            Log::create([
+                'user_id' => auth()->user()->id,
+                'details' => 'تم الموافقة على الطبيب: ' . $doctor->name,
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            throw $e;  // Re-throw the exception after rolling back
         }
     }
 }

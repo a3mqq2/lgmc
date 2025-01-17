@@ -8,10 +8,12 @@ use App\Enums\MaritalStatus;
 use App\Enums\MembershipStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Doctor extends Model
+class Doctor extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory,Notifiable;
 
     protected $fillable = [
         'name',
@@ -59,8 +61,18 @@ class Doctor extends Model
         'type',
         'due',
         'membership_status',
-        'membership_expiration_date'
+        'membership_expiration_date',
+        'password',
     ];
+
+
+
+
+
+    protected $hidden = [
+        'remember_token',
+    ];
+
 
     protected $casts = [
         'date_of_birth' => 'datetime',
@@ -132,11 +144,32 @@ class Doctor extends Model
 
     public function licenses()
     {
-        return $this->hasMany(Licence::class, 'licensable_id')->where('licensable_type', 'App\Models\Doctor');
+        return $this->hasMany(Licence::class, 'licensable_id')->where('licensable_type', 'App\Models\Doctor')->orderBy('created_at', 'desc');
     }
 
     public function countryGraduation()
     {
         return $this->belongsTo(Country::class, 'country_graduation_id');
+    }
+
+
+    public function getSpecializationAttribute()
+    {
+        return $this->specialty1->name . ' - ' . $this->specialty2?->name . ' - ' . $this->specialty3?->name;
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'init_doctor_id')->orderby('created_at', 'desc');
+    }
+
+    public function doctorRequests()
+    {
+        return $this->hasMany(DoctorRequest::class)->orderBy('created_at', 'desc');
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'invoiceable_id')->where('invoiceable_type', 'App\Models\Doctor')->orderBy('created_at', 'desc');
     }
 }

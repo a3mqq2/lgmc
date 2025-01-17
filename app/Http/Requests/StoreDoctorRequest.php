@@ -41,7 +41,6 @@ class StoreDoctorRequest extends FormRequest
             'phone' => ['required', 'regex:/^09[1-9][0-9]{7}$/'],
             'phone_2' => ['nullable', 'regex:/^09[1-9][0-9]{7}$/'],
             'address' => 'required|string|max:255',
-            'email' => 'required|email|unique:doctors,email',
             'hand_graduation_id' => 'required|numeric',
             'internership_complete' => 'required|date',
             'academic_degree_id' => 'required|numeric',
@@ -59,6 +58,7 @@ class StoreDoctorRequest extends FormRequest
             'doctor_number' => 'required|string|max:255',
             'documents' => "required",
             'type' => "required|in:libyan,palestinian,foreign,visitor",
+            'password' => 'required|min:6|confirmed',
             
             // قواعد التحقق المخصصة للتحقق من البلاك ليست
             'blacklist_check' => [
@@ -118,9 +118,6 @@ class StoreDoctorRequest extends FormRequest
             'address.required' => 'حقل العنوان مطلوب.',
             'address.string' => 'حقل العنوان يجب أن يكون نصاً.',
             'address.max' => 'حقل العنوان لا يجب أن يتجاوز 255 حرفاً.',
-            'email.required' => 'حقل البريد الإلكتروني مطلوب.',
-            'email.email' => 'حقل البريد الإلكتروني يجب أن يكون عنوان بريد إلكتروني صالحاً.',
-            'email.unique' => 'هذا البريد الإلكتروني مستخدم بالفعل.',
             'hand_graduation_id.required' => 'حقل رقم شهادة التخرج مطلوب.',
             'hand_graduation_id.numeric' => 'حقل رقم شهادة التخرج يجب أن يكون رقمياً.',
             'internership_complete.required' => 'حقل تاريخ إتمام التدريب مطلوب.',

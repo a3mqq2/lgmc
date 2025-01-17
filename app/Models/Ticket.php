@@ -28,7 +28,7 @@ class Ticket extends Model
         'department',
         'category',
         'status',
-        'attachement',
+        'attachment',
         'priority',
         'closed_at',
         'closed_by',

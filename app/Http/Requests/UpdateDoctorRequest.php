@@ -40,6 +40,7 @@ class UpdateDoctorRequest extends FormRequest
             'gender' => 'required|string|in:male,female',
             'passport_number' => 'required|string|max:20',
             'passport_expiration' => 'required|date|after:today',
+            'password' => 'nullable|min:6|confirmed',
             'phone' => [
                 'required',
                 'regex:/^09[1-9][0-9]{7}$/',
@@ -64,7 +65,6 @@ class UpdateDoctorRequest extends FormRequest
                 },
             ],
             'address' => 'required|string|max:255',
-            'email' => 'required|email|unique:doctors,email,' . $doctorId,
             'hand_graduation_id' => 'required|numeric',
             'internership_complete' => 'required|date',
             'academic_degree_id' => 'required|numeric',

@@ -18,6 +18,7 @@ Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations'
     Route::resource('vaults', VaultController::class)->only(['index']);
     Route::resource("transactions", TransactionController::class);
     Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->name('doctors.print');
+    Route::post('/doctors/{doctor}/approve', [DoctorController::class, 'approve'])->name('doctors.approve');
     Route::resource('doctors', DoctorController::class);
     Route::resource('doctors.files', DoctorFileController::class)->shallow();
     Route::resource('medical-facilities', MedicalFacilityController::class);

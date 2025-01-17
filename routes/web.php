@@ -17,10 +17,13 @@ use App\Http\Controllers\Common\AuthController;
 
 
 Route::get('/', [WebsiteController::class, 'index'])->name('index');
-
+Route::get('/doc-login', [WebsiteController::class, 'doctor_login'])->name('doctor-login');
+Route::post('/doc-auth', [WebsiteController::class, 'doctor_auth'])->name('doctor-auth');
 
 
 Route::get("/login", [AuthController::class, 'login'])->name('login');
+Route::get("/register", [AuthController::class, 'register'])->name('register');
+Route::post("/register", [AuthController::class, 'register_store'])->name('register');
 Route::post("/do-login", [AuthController::class, 'do_login'])->name('do_login');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('change-branch', [AuthController::class, 'change_branch'])->name('change_branch');
@@ -30,3 +33,4 @@ Route::middleware('auth')->group(function() {
 require __DIR__.'/admin.php';
 require __DIR__.'/user.php';
 require __DIR__.'/finance.php';
+require __DIR__.'/doctor.php';

@@ -41,8 +41,6 @@
                                     <th>النوع</th>
                                     <th>العنوان</th>
                                     <th>رقم الهاتف</th>
-                                    <th>حالة العضوية</th>
-                                    <th>تاريخ الانتهاء</th>
                                     <th>مالك النشاط</th>
                                     <th>الإجراءات</th>
                                 </tr>
@@ -57,14 +55,6 @@
                                         <td>{{ $facility->type->name }}</td>
                                         <td>{{ $facility->address }}</td>
                                         <td>{{ $facility->phone_number }}</td>
-                                        <td>
-                                            <span class="badge {{$facility->membership_status->badgeClass()}}">
-                                                {{$facility->membership_status->label()}}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {{$facility->membership_expiration_date}}
-                                        </td>
                                         <td>{{$facility->manager ? $facility->manager->name : "لا آحد"}}</td>
                                         <td>
 

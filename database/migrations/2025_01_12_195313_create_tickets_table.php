@@ -36,7 +36,7 @@ return new class extends Migration
             $table->enum('category', ['question', 'suggestion', 'complaint']);
             $table->enum('status', ['new', 'pending', 'customer_reply', 'complete', 'user_reply']);
             
-            $table->text('attachement')->nullable();
+            $table->text('attachment')->nullable();
             
             $table->enum('priority', ['low','medium','high']);
             
