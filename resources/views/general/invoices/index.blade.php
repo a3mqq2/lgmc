@@ -88,16 +88,18 @@
                                 <td>
                                     
                                     @if ($invoice->status == App\Enums\InvoiceStatus::unpaid)
-                                        <a href="{{ route(get_area_name().'.invoices.edit', $invoice->id) }}" class="btn btn-sm btn-warning">تعديل <i class="fa fa-edit"></i> </a>
 
                                         <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#received_{{$invoice->id}}">
                                             استلام القيمة <i class="fa fa-check"></i>
                                         </button>
 
 
+                                        @if (!auth()->user()->branch_id)
+                                        <a href="{{ route(get_area_name().'.invoices.edit', $invoice->id) }}" class="btn btn-sm btn-warning">تعديل <i class="fa fa-edit"></i> </a>
                                         <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#relief_{{$invoice->id}}">
                                             اعفاء عن الدفع <i class="fa fa-times"></i>
-                                    </button>
+                                        </button>
+                                        @endif
                                     @endif
                                     <a href="{{ route(get_area_name().'.invoices.print', $invoice->id) }}" class="btn btn-sm btn-secondary">
                                         طباعة
@@ -144,6 +146,7 @@
         </div>
     </div>
 
+    @if (!auth()->user()->branch_id)
     <div class="modal fade" id="relief_{{$invoice->id}}" tabindex="-1" aria-labelledby="relief_{{$invoice->id}}Label" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -167,6 +170,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     @endif
 

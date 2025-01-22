@@ -77,9 +77,9 @@
                                     <th class="bg-primary text-light">جامعة التخرج</th>
                                     <th class="bg-primary text-light">تاريخ إنهاء الامتياز</th>
                                     <th class="bg-primary text-light">الدرجة العلمية</th>
-                                    <th class="bg-primary text-light">جامعة التأهيل</th>
+                                    <th class="bg-primary text-light">جهة التخرج</th>
                                     <th class="bg-primary text-light">تاريخ التأهيل</th>
-                                    <th class="bg-primary text-light">شهادة الإمتياز</th>
+                                    <th class="bg-primary text-light">سنة  الإمتياز</th>
                                 </tr>
                                 <tr>
                                     <td>{{ $doctor->handGraduation->name ?? 'N/A' }}</td>

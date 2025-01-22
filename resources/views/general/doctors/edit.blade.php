@@ -456,7 +456,108 @@ $(document).ready(function () {
 });
 
 </script>
-
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // التحقق من الاسم
+        document.querySelector('input[name="name"]').addEventListener('input', function() {
+            if (this.value.trim() === '') {
+                showError(this, 'حقل الاسم مطلوب.');
+            } else if (this.value.length > 255) {
+                showError(this, 'حقل الاسم لا يجب أن يتجاوز 255 حرفاً.');
+            } else {
+                removeError(this);
+            }
+        });
+    
+        // التحقق من الاسم بالإنجليزية
+        document.querySelector('input[name="name_en"]').addEventListener('input', function() {
+            if (this.value.trim() === '') {
+                showError(this, 'حقل الاسم باللغة الإنجليزية مطلوب.');
+            } else if (this.value.length > 255) {
+                showError(this, 'حقل الاسم باللغة الإنجليزية لا يجب أن يتجاوز 255 حرفاً.');
+            } else {
+                removeError(this);
+            }
+        });
+    
+        // التحقق من الرقم الوطني في حال كان الطبيب ليبي
+        const nationalNumberInput = document.querySelector('input[name="national_number"]');
+        if (nationalNumberInput) {
+            nationalNumberInput.addEventListener('input', function() {
+                const gender = document.querySelector('select[name="gender"]').value;
+                if (this.value.length !== 12) {
+                    showError(this, 'الرقم الوطني يجب أن يتكون من 12 رقمًا.');
+                } else if (gender === 'male' && this.value[0] !== '1') {
+                    showError(this, 'الرقم الوطني للذكور يجب أن يبدأ بالرقم 1.');
+                } else if (gender === 'female' && this.value[0] !== '2') {
+                    showError(this, 'الرقم الوطني للإناث يجب أن يبدأ بالرقم 2.');
+                } else {
+                    removeError(this);
+                }
+            });
+        }
+    
+        // التحقق من رقم الهاتف
+        document.querySelector('input[name="phone"]').addEventListener('input', function() {
+            const phonePattern = /^09[1-9][0-9]{7}$/;
+            if (!phonePattern.test(this.value)) {
+                showError(this, 'رقم الهاتف غير صالح، يجب أن يكون بالصيغة 09XXXXXXXX.');
+            } else {
+                removeError(this);
+            }
+        });
+    
+        // التحقق من تاريخ انتهاء الجواز
+        document.querySelector('input[name="passport_expiration"]').addEventListener('change', function() {
+            const expirationDate = new Date(this.value);
+            const today = new Date();
+            if (expirationDate <= today) {
+                showError(this, 'تاريخ انتهاء الجواز يجب أن يكون بعد اليوم.');
+            } else {
+                removeError(this);
+            }
+        });
+    
+        // التحقق من كلمة المرور
+        document.querySelector('input[name="password"]').addEventListener('input', function() {
+            if (this.value.length < 6) {
+                showError(this, 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.');
+            } else {
+                removeError(this);
+            }
+        });
+    
+        // التحقق من تأكيد كلمة المرور
+        document.querySelector('input[name="password_confirmation"]').addEventListener('input', function() {
+            const password = document.querySelector('input[name="password"]').value;
+            if (this.value !== password) {
+                showError(this, 'كلمة المرور غير متطابقة.');
+            } else {
+                removeError(this);
+            }
+        });
+    
+        // دالة لإظهار الخطأ
+        function showError(element, message) {
+            removeError(element);
+            const errorDiv = document.createElement('div');
+            errorDiv.classList.add('text-danger', 'mt-1');
+            errorDiv.innerText = message;
+            element.classList.add('is-invalid');
+            element.parentNode.appendChild(errorDiv);
+        }
+    
+        // دالة لإزالة الخطأ
+        function removeError(element) {
+            element.classList.remove('is-invalid');
+            const errorDiv = element.parentNode.querySelector('.text-danger');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        }
+    });
+    </script>
+    
 @endsection
 @section('styles')
     <style> 

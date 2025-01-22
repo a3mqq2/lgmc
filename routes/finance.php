@@ -15,7 +15,7 @@ Route::prefix('finance')->name('finance.')->middleware('auth','permission:financ
    Route::get('/home', [HomeController::class, 'home'])->name('home');
    Route::resource("vaults", VaultController::class)->middleware('permission:financial-administration');
     Route::resource("transaction-types", TransactionTypeController::class);
-    Route::resource("transactions", TransactionController::class)->middleware('permission:financial-administration');
+    Route::resource("transactions", TransactionController::class);
     Route::post('/invoices/{invoice}/received', [InvoiceController::class, 'received'])->name('invoices.received');
     Route::post('invoices/{invoice}/relief', [InvoiceController::class, 'relief'])->name('invoices.relief');
     Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
