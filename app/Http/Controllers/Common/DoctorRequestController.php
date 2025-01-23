@@ -144,6 +144,8 @@ class DoctorRequestController extends Controller
     
 
 
+            $this->createInvoice($doctorRequest);
+
 
             return redirect()
                 ->route(get_area_name() . '.doctor-requests.index', ['doctor_type' => $request->doctor_type])
