@@ -7,7 +7,6 @@ enum Department: string
     case Finance = 'finance';
     case Operation = 'operation';
     case Management = 'management';
-    case IT = 'it';
 
     /**
      * Get the Arabic label for the department.

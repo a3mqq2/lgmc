@@ -121,7 +121,7 @@
 
     @foreach ($invoices as $invoice)
 
-    @if (auth()->user()->branch_id == $invoice->branch_id && $invoice->status->value == App\Enums\InvoiceStatus::unpaid->value)
+    @if ((!auth()->user()->branch_id || (auth()->user()->branch_id == $invoice->branch_id ) ) && $invoice->status->value == App\Enums\InvoiceStatus::unpaid->value)
     <div class="modal fade" id="received_{{$invoice->id}}" tabindex="-1" aria-labelledby="received_{{$invoice->id}}Label" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

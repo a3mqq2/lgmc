@@ -2,6 +2,29 @@
 
 @section('title', 'إنشاء تذكرة جديدة')
 
+@section('styles')
+    <style>
+        .select2-container {
+    width: 100% !important;
+}
+
+.form-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#user_select_wrapper, #doctor_select_wrapper {
+    display: none;
+}
+
+
+.selectize-control.form-control.select2.single.rtl
+{
+    display: none !important;
+}
+    </style>
+@endsection
+
 @section('content')
 <div class="row">
     <div class="col-md-12">
@@ -12,13 +35,10 @@
                 </h4>
             </div>
             <div class="card-body">
-                {{-- Include enctype to handle file uploads --}}
                 <form action="{{ route(get_area_name() . '.tickets.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
-                    {{-- First Row: Title & Department --}}
                     <div class="row g-3">
-                        {{-- Ticket Title --}}
                         <div class="col-md-6">
                             <label for="title" class="form-label">
                                 <i class="fa fa-heading"></i> عنوان التذكرة
@@ -37,7 +57,6 @@
                             @enderror
                         </div>
 
-                        {{-- Department (Example) --}}
                         <div class="col-md-6">
                             <label for="department" class="form-label">
                                 <i class="fa fa-sitemap"></i> القسم
@@ -62,88 +81,30 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                    </div> {{-- End Row --}}
+                    </div>
 
                     <hr>
 
-                    {{-- Second Row: Ticket Body & Category --}}
-                    <div class="row g-3">
-                        {{-- Ticket Body/Description --}}
-                        <div class="col-md-12">
-                            <label for="body" class="form-label">
-                                <i class="fa fa-info-circle"></i> وصف التذكرة
-                            </label>
-                            <textarea 
-                                name="body" 
-                                id="body" 
-                                rows="4" 
-                                class="form-control @error('body') is-invalid @enderror"
-                                placeholder="أدخل وصفًا مفصلًا للتذكرة"
-                                required
-                            >{{ old('body') }}</textarea>
-                            @error('body')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        {{-- Category (Example) --}}
-                        <div class="col-md-12">
-                            <label for="category" class="form-label">
-                                <i class="fa fa-folder-open"></i> الفئة
+                    <div class="row g-3 mt-7">
+                        <div class="col-md-6">
+                            <label for="ticket_type" class="form-label">
+                                <i class="fa fa-user-md"></i> نوع التذكرة
                             </label>
                             <select 
-                                name="category" 
-                                id="category" 
-                                class="form-control @error('category') is-invalid @enderror"
+                                name="ticket_type" 
+                                id="ticket_type" 
+                                class="form-control @error('ticket_type') is-invalid @enderror"
                                 required
                             >
-                                <option value="">-- اختر الفئة --</option>
-                                @foreach(App\Enums\Category::cases() as $cat)
-                                    <option 
-                                        value="{{ $cat->value }}" 
-                                        {{ old('category') == $cat->value ? 'selected' : '' }}
-                                    >
-                                        {{ $cat->label() }}
-                                    </option>
-                                @endforeach
+                                <option value="-" selected>-- اختر نوع المنشيء --</option>
+                                <option value="user">مستخدم</option>
+                                <option value="doctor">طبيب</option>
                             </select>
-                            @error('category')
+                            @error('ticket_type')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                    </div> {{-- End Row --}}
 
-                    <hr>
-
-                    {{-- Third Row: Ticket Type (User/Doctor) & Priority --}}
-                    <div class="row g-3">
-                        {{-- Ticket Type (User/Doctor) --}}
-                        
-                        @if (auth()->user()->permissions->where('name', 'manage-all-tickets')->count())
-                        <div class="col-md-6">
-                           <label for="ticket_type" class="form-label">
-                               <i class="fa fa-user-md"></i> نوع التذكرة
-                           </label>
-                           <select 
-                               name="ticket_type" 
-                               id="ticket_type" 
-                               class="form-control @error('ticket_type') is-invalid @enderror"
-                               required
-                           >
-                               <option value="">-- اختر نوع المنشيء --</option>
-                               <option value="user" {{ old('ticket_type') === 'user' ? 'selected' : '' }}>مستخدم</option>
-                               <option value="doctor" {{ old('ticket_type') === 'doctor' ? 'selected' : '' }}>طبيب</option>
-                           </select>
-                           @error('ticket_type')
-                               <div class="invalid-feedback">{{ $message }}</div>
-                           @enderror
-                       </div>
-                       @else 
-                       <input type="hidden" name="ticket_type" value="user">
-                        @endif
-
-
-                        {{-- Priority (Example) --}}
                         <div class="col-md-6">
                             <label for="priority" class="form-label">
                                 <i class="fa fa-exclamation-circle"></i> الأولوية
@@ -168,65 +129,78 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                    </div> {{-- End Row --}}
+                    </div>
 
                     <hr>
 
-                    {{-- Fourth Row: User/Doctor Dropdowns & Attachment --}}
                     <div class="row g-3">
-
-                        {{-- User Dropdown (shows if "user" selected) --}}
-                        <div class="col-md-6" id="user_select" style="display: none;">
+                        <div class="col-md-12" id="user_select_wrapper" style="display: none;">
                             <label for="init_user_id" class="form-label">
                                 <i class="fa fa-user"></i> اختر المستخدم
                             </label>
-                            <select 
-                                name="init_user_id" 
-                                id="init_user_id" 
-                                class="form-control @error('init_user_id') is-invalid @enderror"
-                            >
-                                <option value="">-- اختر مستخدم --</option>
-                                @foreach($users as $user)
-                                    <option 
-                                        value="{{ $user->id }}"
-                                        {{ old('init_user_id') == $user->id ? 'selected' : '' }}
-                                    >
-                                        {{ $user->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('init_user_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <select name="init_user_id" id="init_user_id" class="form-control select2"></select>
                         </div>
 
-                        {{-- Doctor Dropdown (shows if "doctor" selected) --}}
-                        <div class="col-md-6" id="doctor_select" style="display: none;">
+                        <div class="col-md-12" id="doctor_select_wrapper" style="display: none;">
                             <label for="init_doctor_id" class="form-label">
                                 <i class="fa fa-stethoscope"></i> اختر الطبيب
                             </label>
+                            <select name="init_doctor_id" id="init_doctor_id" class="form-control select2"></select>
+                        </div>
+                    </div>
+
+
+                    {{-- ticket body --}}
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-12">
+                            <label for="body" class="form-label">
+                                <i class="fa fa-file
+                                "></i> محتوى التذكرة
+                            </label>
+                            <textarea 
+                                name="body" 
+                                id="body" 
+                                class="form-control @error('body') is-invalid @enderror" 
+                                rows="5"
+                                placeholder="أدخل محتوى التذكرة"
+                                required
+                            >{{ old('body') }}</textarea>
+                            @error('body')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">
+                                <i class="fa fa-folder-open"></i> الفئة
+                            </label>
                             <select 
-                                name="init_doctor_id" 
-                                id="init_doctor_id" 
-                                class="form-control @error('init_doctor_id') is-invalid @enderror"
+                                name="category" 
+                                id="category" 
+                                class="form-control @error('category') is-invalid @enderror"
+                                required
                             >
-                                <option value="">-- اختر طبيب --</option>
-                                @foreach($doctors as $doctor)
+                                <option value="">-- اختر الفئة --</option>
+                                @foreach(App\Enums\Category::cases() as $cat)
                                     <option 
-                                        value="{{ $doctor->id }}"
-                                        {{ old('init_doctor_id') == $doctor->id ? 'selected' : '' }}
+                                        value="{{ $cat->value }}" 
+                                        {{ old('category') == $cat->value ? 'selected' : '' }}
                                     >
-                                        {{ $doctor->name }}
+                                        {{ $cat->label() }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('init_doctor_id')
+                            @error('category')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        {{-- Attachment Field --}}
-                        <div class="col-md-6 mt-3">
+                        {{-- for attac --}}
+
+                        <div class="col-md-6">
                             <label for="attachment" class="form-label">
                                 <i class="fa fa-paperclip"></i> المرفقات
                             </label>
@@ -241,18 +215,17 @@
                             @enderror
                         </div>
 
-                    </div> {{-- End Row --}}
+                    </div>
+
 
                     <hr>
 
-                    {{-- Form Actions --}}
+                    <input type="hidden" id="branch_id" name="branch_id" value="{{ auth()->user()->branch_id }}">
+
                     <div class="d-flex justify-content-end mt-4">
-                        <button type="submit" class="btn btn-success me-2">
+                        <button type="submit" class="btn btn-success">
                             <i class="fa fa-check"></i> حفظ
                         </button>
-                        <a href="{{ route(get_area_name() . '.tickets.index') }}" class="btn btn-secondary">
-                            <i class="fa fa-ban"></i> إلغاء
-                        </a>
                     </div>
                 </form>
             </div>
@@ -260,32 +233,66 @@
     </div>
 </div>
 @endsection
-
 @section('scripts')
-<script>
-    // Toggle User/Doctor select fields based on ticket_type
-    const ticketTypeSelect = document.getElementById('ticket_type');
-    const userSelect       = document.getElementById('user_select');
-    const doctorSelect     = document.getElementById('doctor_select');
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
-    function toggleSelects() {
-        if (ticketTypeSelect.value === 'doctor') {
-            doctorSelect.style.display = 'block';
-            userSelect.style.display   = 'none';
-        } else if (ticketTypeSelect.value === 'user') {
-            userSelect.style.display   = 'block';
-            doctorSelect.style.display = 'none';
-        } else {
-            // If no selection or empty, hide both
-            userSelect.style.display   = 'none';
-            doctorSelect.style.display = 'none';
+    <script>
+    $(document).ready(function() {
+        console.log('Page Loaded');
+
+        // دالة إعداد الـ Select2
+        function setupSelect2(selector, url, placeholderText) {
+            $(selector).select2({
+                placeholder: placeholderText,
+                allowClear: true,
+                width: '100%',
+                ajax: {
+                    url: url,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return { query: params.term };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.map(function(item) {
+                                return { id: item.id, text: item.name };
+                            })
+                        };
+                    }
+                },
+                minimumInputLength: 2
+            });
         }
-    }
 
-    // Run toggleSelects on page load (in case there's an old value)
-    toggleSelects();
+        // دالة التحكم بإظهار واختفاء الحقول حسب نوع التذكرة
+        function toggleFields() {
+            let ticketType = $('#ticket_type').val();
+            let branch_id = $('#branch_id').val();
 
-    // Run toggleSelects whenever the ticket_type changes
-    ticketTypeSelect.addEventListener('change', toggleSelects);
-</script>
+            if (ticketType === 'user') {
+                $('#user_select_wrapper').show();
+                $('#doctor_select_wrapper').hide();
+                setupSelect2('#init_user_id', '/search-users?branch_id=' + branch_id, 'ابحث عن مستخدم...');
+                // $('#init_doctor_id').select2('destroy').empty();
+            } else if (ticketType === 'doctor') {
+                $('#doctor_select_wrapper').show();
+                $('#user_select_wrapper').hide();
+                setupSelect2('#init_doctor_id', '/search-licensables?branch_id=' + branch_id, 'ابحث عن طبيب...');
+                // $('#init_user_id').select2('destroy').empty();
+            } else {
+                $('#user_select_wrapper, #doctor_select_wrapper').hide();
+            }
+        }
+
+        // استدعاء التحقق عند تغيير نوع التذكرة
+        $('#ticket_type').on('change', function() {
+            toggleFields();
+        });
+
+        // تهيئة القيم عند تحميل الصفحة
+        toggleFields();
+    });
+    </script>
 @endsection

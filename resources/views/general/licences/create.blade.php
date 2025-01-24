@@ -14,48 +14,39 @@
 
                     <div class="row">
                         @if(request('type'))
-                        <input type="hidden" id="licensable_type" name="licensable_type" value="{{ request('type') === 'doctors' ? 'App\Models\Doctor' : 'App\Models\MedicalFacility' }}">
+                        <input type="hidden" id="licensable_type" name="licensable_type" 
+                               value="{{ request('type') === 'doctors' ? 'App\Models\Doctor' : 'App\Models\MedicalFacility' }}">
                         @endif
+
+                        <!-- المرخص -->
                         <div class="col-md-12">
                             <div class="mb-3">
                                 <label for="licensable_id" class="form-label">اختر المرخص</label>
-                                <select id="licensable_id" name="licensable_id" class="form-control chosen-select">
+                                <select id="licensable_id" name="licensable_id" class="form-control select2-search">
                                     <option value="">اختر المرخص</option>
-                                    @foreach ($doctors as $doctor)
-                                        <option value="{{ $doctor->id }}" data-type="App\Models\Doctor">{{ $doctor->name }}</option>
-                                    @endforeach
-                                    @foreach ($medicalFacilities as $facility)
-                                        <option value="{{ $facility->id }}" data-type="App\Models\MedicalFacility">{{ $facility->name }}</option>
-                                    @endforeach
                                 </select>
                             </div>
+
                             @if (request('type') == "doctors")
-                            <label for="">
-                                @if (request('doctor_type') == App\Enums\DoctorType::Visitor->value)
-                                     الشركة المستضيفه         
-                                    @else 
-                                    مكان العمل
-                                @endif
-                            </label>
-                            <select name="medical_facility_id" id="" class="chosen-select form-control mb-3">
-                                <option value="-">
+                            <div class="mb-3">
+                                <label for="medical_facility_id" class="form-label">
                                     @if (request('doctor_type') == App\Enums\DoctorType::Visitor->value)
-                                        الشركة المستضيفه
-                                        @else 
-                                        مكان العمل 
+                                        الشركة المستضيفه         
+                                    @else 
+                                        مكان العمل
                                     @endif
-                                </option>
-                                @foreach ($medicalFacilities as $facility)
-                                     <option value="{{ $facility->id }}" data-type="App\Models\MedicalFacility">{{ $facility->name }}</option>
-                                 @endforeach
-                            </select>
+                                </label>
+                                <select name="medical_facility_id" id="medical_facility_id" class="form-control select2-search">
+                                    <option value="">اختر مكان العمل</option>
+                                </select>
+                            </div>
                             @endif
                         </div>
 
                         @php
-                                $expiryDate = request('doctor_type') === App\Enums\DoctorType::Visitor->value
-                                    ? Carbon\Carbon::now()->addMonths(6)->toDateString()
-                                    : Carbon\Carbon::now()->addYear()->toDateString();
+                            $expiryDate = request('doctor_type') === App\Enums\DoctorType::Visitor->value
+                                ? Carbon\Carbon::now()->addMonths(6)->toDateString()
+                                : Carbon\Carbon::now()->addYear()->toDateString();
                         @endphp
                        
                         <div class="col-md-6">
@@ -67,9 +58,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="expiry_date" class="form-label">تاريخ الانتهاء</label>
-                                <input type="date" class="form-control" id="expiry_date" 
-                                    value="{{ $expiryDate }}"
-                                    name="expiry_date" required>
+                                <input type="date" class="form-control" id="expiry_date" value="{{ $expiryDate }}" name="expiry_date" required>
                             </div>
                         </div>
                     </div>
@@ -80,43 +69,51 @@
         </div>
     </div>
 </div>
-
 @endsection
+
 @section('scripts')
-    <!-- Include Chosen CSS and JS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+    <!-- Include Select2 CSS and JS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        $('.chosen-select').chosen({ width: '100%' });
+    <script>
+$(window).on('load', function() {
+    console.log('Page Loaded');
+    function setupSelect2(selector, url, placeholderText) {
+        $(selector).select2({
+            placeholder: placeholderText,
+            ajax: {
+                url: url,
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { query: params.term };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.map(function(item) {
+                            return { id: item.id, text: item.name };
+                        })
+                    };
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                },
+                cache: true
+            },
+            minimumInputLength: 2
+        });
+    }
 
-        const licensableTypeInput = document.getElementById('licensable_type');
-        const licensableIdSelect = document.getElementById('licensable_id');
-        const representerSelectContainer = document.getElementById('representer_select');
+    let branch_id  = '{{ auth()->user()->branch_id }}';
+    let licencable_type = '{{ request('type') }}';
+    if(licencable_type == "facilities") {
+        setupSelect2('#licensable_id', '/search-facilities?branch_id=' + branch_id, 'ابحث عن المرخص...');
+    } else {
+        setupSelect2('#licensable_id', '/search-doctors?branch_id=' + branch_id, 'ابحث عن المرخص...');
+        setupSelect2('#medical_facility_id', '/search-facilities?branch_id=' + branch_id, 'ابحث عن مكان العمل...');
+    }
+});
 
-        function filterLicensableOptions() {
-            const selectedType = licensableTypeInput ? licensableTypeInput.value : '';
-            const options = licensableIdSelect.querySelectorAll('option');
-
-            options.forEach(option => {
-                option.style.display = option.getAttribute('data-type') === selectedType ? 'block' : 'none';
-            });
-
-            $(licensableIdSelect).val('').trigger('chosen:updated');
-
-            if (selectedType === 'App\Models\MedicalFacility') {
-                representerSelectContainer.style.display = 'block';
-            } else {
-                representerSelectContainer.style.display = 'none';
-            }
-
-            $('.chosen-select').trigger('chosen:updated');
-        }
-
-        if (licensableTypeInput) {
-            filterLicensableOptions();
-        }
-    });
-</script>
+    </script>
 @endsection

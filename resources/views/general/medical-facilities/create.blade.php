@@ -27,7 +27,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="name" class="form-label"> السجل التجاري </label>
+                                    <label for="name" class="form-label"> رقم السجل التجاري </label>
                                     <input type="text" class="form-control" id="commerical_number" name="commerical_number" required>
                                 </div>
                             </div>
@@ -91,7 +91,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="">مالك النشاط</label>
-                                <select name="manager_id" id="" class="form-control">
+                                <select name="manager_id" id="licensable_id" class="form-control">
                                     <option value="">حدد مالك نشاط</option>
                                     @foreach ($doctors as $doctor)
                                         <option value="{{$doctor->id}}">{{$doctor->name}}</option>
@@ -156,4 +156,44 @@
     <button type="submit" class="btn btn-primary mb-3">إنشاء</button>
 </form>
 
+@endsection
+@section('scripts')
+    <!-- Include Select2 CSS and JS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <script>
+$(window).on('load', function() {
+    console.log('Page Loaded');
+    function setupSelect2(selector, url, placeholderText) {
+        $(selector).select2({
+            placeholder: placeholderText,
+            ajax: {
+                url: url,
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { query: params.term };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.map(function(item) {
+                            return { id: item.id, text: item.name };
+                        })
+                    };
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
+                },
+                cache: true
+            },
+            minimumInputLength: 2
+        });
+    }
+
+    let branch_id  = '{{ auth()->user()->branch_id }}';
+    setupSelect2('#licensable_id', '/search-licensables?branch_id=' + branch_id, 'ابحث عن مالك النشاط...');
+});
+
+    </script>
 @endsection

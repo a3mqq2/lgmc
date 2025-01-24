@@ -109,6 +109,7 @@ class DoctorService
     public function getRequirements()
     {
 
+
         $query = FileType::query()->where('type', 'doctor')->where('doctor_type', request('type'));
         $specialties = Specialty::where('specialty_id', null)->get();
 
@@ -151,13 +152,22 @@ class DoctorService
             return redirect()->back()->withInput()->withErrors(['هذا الطبيب موجود في البلاك ليست ولا يمكن إضافته.']);
         }
 
+        
+
         DB::beginTransaction();
 
         try {
+            
             // توليد رمز الطبيب
             $data['code'] = (get_area_name() == "admin" ? $data['branch_id'] : auth()->user()->branch_id) . '-' . (Doctor::count() + 1);
             $data['branch_id'] = get_area_name() == "admin" ? $data['branch_id'] : auth()->user()->branch_id;
             
+
+            if(!isset($data['branch_id']))
+            {
+                return redirect()->back()->withInput()->withErrors(['يجب تحديد الفرع']);
+            }
+
             // إنشاء السجل الجديد للطبيب
             $data['password'] = Hash::make($data['password']);
 
@@ -191,7 +201,7 @@ class DoctorService
             foreach ($file_types as $file_type) {
                 if (isset($data['documents'][$file_type->id])) {
                     $file = $data['documents'][$file_type->id];
-                    $path = $file->store('doctors');
+                    $path = $file->store('doctors','public');
                     $doctor->files()->create([
                         'file_name' => $file->getClientOriginalName(),
                         'file_type_id' => $file_type->id,
@@ -290,7 +300,7 @@ class DoctorService
 
             if(!$price)
             {
-                return redirect()->back()->withErrors(['لا يمكن اضافة طبيب زائر بدون تحديد الرتبة الصحيحة']);
+                return redirect()->back()->withInput()->withErrors(['لا يمكن اضافة طبيب زائر بدون تحديد الرتبة الصحيحة']);
             }
 
             

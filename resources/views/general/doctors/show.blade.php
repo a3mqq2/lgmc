@@ -148,6 +148,10 @@
                                         <th>{{$file->file_name}}</th>
                                         <th>{{$file->fileType ? $file->fileType->name : ""}}</th>
                                         <td>
+
+                                            {{-- add preview button --}}
+                                            <a href="{{Storage::url($file->file_path)}}" class="btn btn-sm btn-primary" target="_blank"><i class="fa fa-eye"></i></a>
+
                                             <a download href="{{Storage::url($file->file_path)}}" class="btn btn-sm btn-primary"><i class="fa fa-download"></i></a>
                                             {{-- <form action="{{ route(get_area_name().'.files.destroy', ['doctor' => $doctor->id, 'file' => $file->id]) }}" method="POST" class="d-inline">
                                                 @csrf
@@ -183,8 +187,6 @@
                                     <td>{!! $licence->status_badge !!}</td>
                                     <td>
                                         <a href="{{ route(get_area_name().'.licences.show', $licence) }}" class="btn btn-primary btn-sm text-light">عرض <i class="fa fa-eye"></i></a>
-                                        <a href="{{ route(get_area_name().'.licences.edit', $licence) }}" class="btn btn-info btn-sm text-light">تعديل <i class="fa fa-edit"></i></a>
-                                        <button type="button" class="btn btn-danger btn-sm text-light" data-bs-toggle="modal" data-bs-target="#deleteModal" data-licence-id="{{ $licence->id }}">حذف <i class="fa fa-trash"></i></button>
                                     </td>
                                 </tr>
                                 @endforeach

@@ -579,7 +579,7 @@
                         <div class="col-sm-12 text-centeer">
                             {{__('Copyright © 2023 Libyan General Medical Council . All rights reserved')}}
                             <br>
-                            <small>Development By <a href="https://hulul-it.ly">HULUL IT</a></small>
+                            <small>Development By <a href="https://hululit.ly">HULUL IT</a></small>
                         </div>
 
                     </div>

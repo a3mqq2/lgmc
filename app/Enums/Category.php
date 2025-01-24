@@ -6,7 +6,6 @@ enum Category: string
 {
     case Question = 'question';
     case Suggestion = 'suggestion';
-    case Complaint = 'complaint';
 
     /**
      * Get the Arabic label for the category.
@@ -18,7 +17,6 @@ enum Category: string
         return match($this) {
             self::Question => 'استفسار',
             self::Suggestion => 'اقتراح',
-            self::Complaint => 'شكوى',
         };
     }
 
@@ -32,7 +30,6 @@ enum Category: string
         return match($this) {
             self::Question => 'bg-question',
             self::Suggestion => 'bg-suggestion',
-            self::Complaint => 'bg-complaint',
         };
     }
 }

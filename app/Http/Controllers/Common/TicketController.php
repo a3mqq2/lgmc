@@ -102,11 +102,13 @@ class TicketController extends Controller
         // Determine whether it's a doctor or user ticket
         $initUserId   = null;
         $initDoctorId = null;
-
+        $entite = null;
         if ($request->ticket_type === 'user') {
             $initUserId = $request->input('init_user_id');
+            $entite = User::find($initUserId);
         } else {
             $initDoctorId = $request->input('init_doctor_id');
+            $entite  = Doctor::find($initDoctorId);
         }
 
         // Handle file upload if present
@@ -121,7 +123,7 @@ class TicketController extends Controller
 
         // Create the ticket
         $ticket = Ticket::create([
-            'slug'           => auth()->user()->branch->code . '-TICKET' . '-' . Ticket::count() + 1,
+            'slug'           => $entite->branch_id . '-TICKET' . '-' . Ticket::count() + 1,
             'title'          => $request->title,
             'body'           => $request->body,
             'init_user_id'   => $initUserId == null ? auth()->id() : $initUserId,
@@ -134,7 +136,7 @@ class TicketController extends Controller
             'priority'        => $request->priority,
             'closed_at'      => null,
             'closed_by'      => null,
-            'branch_id'      => auth()->user()->branch_id,
+            'branch_id'      => $entite->branch_id,
         ]);
 
         // Redirect or return response

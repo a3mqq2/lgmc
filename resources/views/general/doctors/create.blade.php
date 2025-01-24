@@ -365,11 +365,11 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <label for="">جهات العمل السابقة</label>
-                                <textarea name="ex_medical_facilities" id="" cols="30" rows="4" class="form-control"></textarea>
+                                <textarea name="ex_medical_facilities" id="" cols="30" rows="4" class="form-control">{{old('ex_medical_facilities')}}</textarea>
                             </div>
                             <div class="col-md-12 mt-2">
                                 <label for=""> سنوات الخبره  </label>
-                                <input name="experience" id="" type="number" class="form-control"></textarea>
+                                <input name="experience" id="" type="number" class="form-control" value="{{old('experience')}}" />
                             </div>
                         </div>
                     </div>
@@ -381,7 +381,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <label for=""> بيانات اضافيه</label>
-                                <textarea name="notes" id="" cols="30" rows="4" class="form-control"></textarea>
+                                <textarea name="notes" id="" cols="30" rows="4" class="form-control">{{old('notes')}}</textarea>
                             </div>
                         </div>
                     </div>
@@ -518,7 +518,7 @@ $(document).ready(function () {
                 removeError(this);
             }
         });
-    
+
         // التحقق من الاسم بالإنجليزية
         document.querySelector('input[name="name_en"]').addEventListener('input', function() {
             if (this.value.trim() === '') {
@@ -529,7 +529,7 @@ $(document).ready(function () {
                 removeError(this);
             }
         });
-    
+
         // التحقق من الرقم الوطني في حال كان الطبيب ليبي
         const nationalNumberInput = document.querySelector('input[name="national_number"]');
         if (nationalNumberInput) {
@@ -546,28 +546,30 @@ $(document).ready(function () {
                 }
             });
         }
-    
-        // التحقق من رقم الهاتف
-        document.querySelector('input[name="phone"]').addEventListener('input', function() {
-            const phonePattern = /^09[1-9][0-9]{7}$/;
-            if (!phonePattern.test(this.value)) {
-                showError(this, 'رقم الهاتف غير صالح، يجب أن يكون بالصيغة 09XXXXXXXX.');
-            } else {
-                removeError(this);
+
+        // التحقق من جميع الحقول التي تحتوي على تواريخ
+        const dateInputs = [
+            'date_of_birth',
+            'passport_expiration',
+            'internership_complete',
+            'certificate_of_excellence_date',
+            'start_work_date'
+        ];
+
+        dateInputs.forEach(function(inputName) {
+            const inputElement = document.querySelector(`input[name="${inputName}"]`);
+            if (inputElement) {
+                inputElement.addEventListener('input', function() {
+                    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+                    if (!datePattern.test(this.value)) {
+                        showError(this, 'التاريخ يجب أن يكون بالصيغة YYYY-MM-DD.');
+                    } else {
+                        removeError(this);
+                    }
+                });
             }
         });
-    
-        // التحقق من تاريخ انتهاء الجواز
-        document.querySelector('input[name="passport_expiration"]').addEventListener('change', function() {
-            const expirationDate = new Date(this.value);
-            const today = new Date();
-            if (expirationDate <= today) {
-                showError(this, 'تاريخ انتهاء الجواز يجب أن يكون بعد اليوم.');
-            } else {
-                removeError(this);
-            }
-        });
-    
+
         // التحقق من كلمة المرور
         document.querySelector('input[name="password"]').addEventListener('input', function() {
             if (this.value.length < 6) {
@@ -576,7 +578,7 @@ $(document).ready(function () {
                 removeError(this);
             }
         });
-    
+
         // التحقق من تأكيد كلمة المرور
         document.querySelector('input[name="password_confirmation"]').addEventListener('input', function() {
             const password = document.querySelector('input[name="password"]').value;
@@ -586,7 +588,7 @@ $(document).ready(function () {
                 removeError(this);
             }
         });
-    
+
         // دالة لإظهار الخطأ
         function showError(element, message) {
             removeError(element);
@@ -596,7 +598,7 @@ $(document).ready(function () {
             element.classList.add('is-invalid');
             element.parentNode.appendChild(errorDiv);
         }
-    
+
         // دالة لإزالة الخطأ
         function removeError(element) {
             element.classList.remove('is-invalid');
@@ -606,7 +608,8 @@ $(document).ready(function () {
             }
         }
     });
-    </script>
+</script>
+
     
 @endsection
 @section('styles')

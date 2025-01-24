@@ -18,7 +18,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="name" class="form-label"> السجل التجاري </label>
+                            <label for="name" class="form-label"> رقم السجل التجاري </label>
                             <input type="text" class="form-control" id="name" name="commerical_number" value="{{ $medicalFacility->commerical_number }}" required>
                         </div>
 

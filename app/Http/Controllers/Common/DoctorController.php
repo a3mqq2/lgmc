@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Services\DoctorService;
 use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorRequest;
+use App\Models\FileType;
 use PhpParser\Comment\Doc;
 
 class DoctorController extends Controller
@@ -44,7 +45,7 @@ class DoctorController extends Controller
             return redirect()->route(get_area_name().'.doctors.index')->with('success', 'تم إضافة الطبيب بنجاح');
         } catch (\Exception $e) {
 
-            return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني' . $e->getMessage()]);
+            return redirect()->back()->withInput()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني' . $e->getMessage()]);
         }
     }
 
@@ -53,6 +54,7 @@ class DoctorController extends Controller
     {
         $data = $this->doctorService->getRequirements();
         $data['doctor'] = $doctor;
+        $data['file_types'] = FileType::where('type', 'doctor')->where('doctor_type', $doctor->type)->get();
         return view('general.doctors.edit', $data);
     }
 

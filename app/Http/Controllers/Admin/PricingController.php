@@ -56,14 +56,11 @@ class PricingController extends Controller
     public function update(Request $request, Pricing $pricing)
     {
         $request->validate([
-            'name' => 'required',
             'amount' => 'required|numeric',
-            'type' => 'required',
-            'entity_type' => 'required',
         ]);
 
         $pricing->update($request->all());
-        return redirect()->route('admin.pricings.index');
+        return redirect()->route('admin.pricings.index')->with('success', 'تم تحديث السعر بنجاح');
     }
 
     public function destroy(Pricing $pricing)

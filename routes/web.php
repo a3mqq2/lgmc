@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Controllers\Common\AuthController;
 
@@ -19,6 +20,11 @@ use App\Http\Controllers\Common\AuthController;
 Route::get('/', [WebsiteController::class, 'index'])->name('index');
 Route::get('/doc-login', [WebsiteController::class, 'doctor_login'])->name('doctor-login');
 Route::post('/doc-auth', [WebsiteController::class, 'doctor_auth'])->name('doctor-auth');
+
+
+Route::get('/search-licensables', [SearchController::class, 'searchLicensables']);
+Route::get('/search-facilities', [SearchController::class, 'searchFacilities']);
+Route::get('/search-users', [SearchController::class, 'searchUsers']);
 
 
 Route::get("/login", [AuthController::class, 'login'])->name('login');

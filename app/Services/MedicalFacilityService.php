@@ -46,9 +46,12 @@ class MedicalFacilityService
 
         $data['membership_status'] = "inactive";
 
-        $checkIfManagerHaveFacilityBefore = MedicalFacility::where('manager_id', request('manager_id'))->first();
-        if($checkIfManagerHaveFacilityBefore) {
-            return redirect()->back()->withErrors(['هذا المدير لديه منشأة طبية مسجلة بالفعل']);
+        if(request('manager_id'))
+        {
+            $checkIfManagerHaveFacilityBefore = MedicalFacility::where('manager_id', request('manager_id'))->first();
+            if($checkIfManagerHaveFacilityBefore) {
+                return redirect()->back()->withErrors(['هذا المدير لديه منشأة طبية مسجلة بالفعل']);
+            }
         }
 
         $medicalFacility = MedicalFacility::create($data);
@@ -56,15 +59,10 @@ class MedicalFacilityService
          ->get();
 
      foreach ($file_types as $file_type) {
-         if ($file_type->is_required && empty($data['documents'][$file_type->id])) {
-             throw new \Exception("الملف {$file_type->name} مطلوب ولم يتم تحميله.");
-         }
-     }
-
-     foreach ($file_types as $file_type) {
          if (isset($data['documents'][$file_type->id])) {
              $file = $data['documents'][$file_type->id];
-             $path = $file->store('doctors');
+
+             $path = $file->store('medical-facilites','public');
              $medicalFacility->files()->create([
                  'file_name' => $file->getClientOriginalName(),
                  'file_type_id' => $file_type->id,

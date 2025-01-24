@@ -1,101 +1,71 @@
-<?php
+@extends('layouts.'.get_area_name())
+@section('title', 'تعديل التسعيرة')
 
-namespace App\Http\Controllers;
+@section('content')
 
-use App\Models\Pricing;
-use Illuminate\Http\Request;
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title text-light mb-0">تعديل التسعيرة</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ route(get_area_name().'.pricings.update', $pricing) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    {{-- Amount --}}
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">القيمة</label>
+                        <input type="number" step="0.01" name="amount" id="amount" 
+                               class="form-control @error('amount') is-invalid @enderror" 
+                               value="{{ old('amount', $pricing->amount) }}" required>
+                        @error('amount')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
 
-class PricingController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $pricings = Pricing::all();
-        return view('pricings.index', compact('pricings'));
-    }
+             
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('pricings.create');
-    }
+                    {{-- Submit Button --}}
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success">حفظ</button>
+                        <a href="{{ route(get_area_name().'.pricings.index') }}" class="btn btn-secondary ms-2">إلغاء</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0',
-            'type' => 'required|string|in:membership,license,service',
-            'entity_type' => 'required|string|in:doctor,medical_facility',
-            'doctor_type' => 'nullable|string|in:libyan,foreign,visitor,palestinian',
-        ]);
+@endsection
 
-        // If entity_type is not 'doctor', ensure doctor_type is null
-        if ($validated['entity_type'] !== 'doctor') {
-            $validated['doctor_type'] = null;
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const entityTypeSelect = document.getElementById('entity_type');
+        const doctorTypeContainer = document.getElementById('doctorTypeContainer');
+
+        function toggleDoctorType() {
+            if (entityTypeSelect.value === 'doctor') {
+                doctorTypeContainer.style.display = 'block';
+            } else {
+                doctorTypeContainer.style.display = 'none';
+            }
         }
 
-        Pricing::create($validated);
+        // Initial check on page load
+        toggleDoctorType();
 
-        return redirect()->route(get_area_name().'.pricings.index')
-            ->with('success', 'تمت إضافة التسعيرة بنجاح');
+        // Listen for changes
+        entityTypeSelect.addEventListener('change', toggleDoctorType);
+    });
+</script>
+@endsection
+
+@section('styles')
+<style>
+    .form-label {
+        font-weight: bold;
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Pricing $pricing)
-    {
-        return view('pricings.show', compact('pricing'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Pricing $pricing)
-    {
-        return view('pricings.edit', compact('pricing'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Pricing $pricing)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0',
-            'type' => 'required|string|in:membership,license,service',
-            'entity_type' => 'required|string|in:doctor,medical_facility',
-            'doctor_type' => 'nullable|string|in:libyan,foreign,visitor,palestinian',
-        ]);
-
-        // If entity_type is not 'doctor', ensure doctor_type is null
-        if ($validated['entity_type'] !== 'doctor') {
-            $validated['doctor_type'] = null;
-        }
-
-        $pricing->update($validated);
-
-        return redirect()->route(get_area_name().'.pricings.index')
-            ->with('success', 'تم تحديث التسعيرة بنجاح');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Pricing $pricing)
-    {
-        $pricing->delete();
-
-        return redirect()->route(get_area_name().'.pricings.index')
-            ->with('success', 'تم حذف التسعيرة بنجاح');
-    }
-}
+</style>
+@endsection
