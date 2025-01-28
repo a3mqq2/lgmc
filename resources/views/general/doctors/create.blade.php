@@ -71,7 +71,7 @@
                                     @if (request('type') == "libyan")
                                     <div class="col-md-6 mt-2">
                                         <label for="">الرقم الوطني</label>
-                                        <input type="number" required name="national_number" value="{{old('national_number')}}" id="" class="form-control">
+                                        <input type="number" required name="national_number" value="{{old('national_number')}}" id="national_number" class="form-control">
                                     </div>
                                     @endif
                                     <div class="col-md-6 mt-2">
@@ -103,10 +103,41 @@
                                     </select>
                                     
                                     </div>
-                                    <div class="col-md-6 mt-2">
-                                        <label for=""> تاريخ الميلاد  </label>
-                                        <input type="date" required name="date_of_birth" value="{{old('date_of_birth', date('Y-m-d'))}}" id="" class="form-control">
+                                    @if (request('type') == "libyan")
+                                    <div class="col-md-2 mt-2">
+                                        <label for="birth_year">سنة الميلاد</label>
+                                        <input type="text"  required name="birth_year" value="{{ old('birth_year') }}" id="birth_year" class="form-control" readonly>
                                     </div>
+                                
+                                    <!-- Month & Day -->
+                                    <div class="col-md-2 mt-2">
+                                        <label for="date_of_birth">الشهر </label>
+                                        <select name="month" required id="" class="form-control">
+                                            <option value=""> حدد </option>
+                                            @foreach (range(1, 12) as $month)
+                                                <option value="{{ $month }}" {{ old('month') == $month ? 'selected' : '' }}>
+                                                    {{ $month }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 mt-2">
+                                        <label for="day"> اليوم </label>
+                                        <select name="day" required id="" class="form-control">
+                                            <option value=""> حدد </option>
+                                            @foreach (range(1, 31) as $day)
+                                                <option value="{{ $day }}" {{ old('day') == $day ? 'selected' : '' }}>
+                                                    {{ $day }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @else 
+                                    <div class="col-md-6 mt-2">
+                                        <label for=""> تاريخ الميلاد </label>
+                                        <input type="date" required name="date_of_birth" value="{{old('date_of_birth')}}" id="" class="form-control">
+                                    </div>
+                                    @endif
                                     <div class="col-md-6 mt-2">
                                         <label for="">  الحالة الاجتماعية  </label>
                                         <select name="marital_status"  required id="" class="form-control">
@@ -116,14 +147,14 @@
                                     </div>
                                     <div class="col-md-6 mt-2">
                                         <label for="">  النوع   </label>
-                                        <select name="gender" required id="" class="form-control">
+                                        <select name="gender" required id="gender" required  class="form-control" >
                                             <option value="male" {{old('gender') == "male" ? "selected" : ""}}>ذكر</option>
                                             <option value="female" {{old('gender') == "female" ? "selected" : ""}}>انثى</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6 mt-2">
                                         <label for=""> رقم جواز السفر   </label>
-                                        <input type="text" name="passport_number" required value="{{old('passport_number')}}" id="" class="form-control">
+                                        <input type="text"  name="passport_number" required value="{{old('passport_number')}}" id="" class="form-control">
                                     </div>
                                     <div class="col-md-6 mt-2">
                                         <label for="">  تاريخ انتهاء صلاحية الجواز     </label>
@@ -151,15 +182,20 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="">العنوان</label>
-                                        <input type="text" name="address" value="{{old('address')}}" id="" class="form-control">
+                                        <input type="text" required name="address" value="{{old('address')}}" id="" class="form-control">
                                     </div>
                                     <div class="col-md-6">
                                         <label for=""> كلمة المرور </label>
-                                        <input type="password" name="password" value="{{old('password')}}" id="" class="form-control">
+                                        <input type="password" required  name="password" value="{{old('password')}}" id="" class="form-control">
                                     </div>
                                     <div class="col-md-6">
                                         <label for=""> تأكيد كلمة المرور  </label>
-                                        <input type="password" name="password_confirmation" value="{{old('password_confirmation')}}" id="" class="form-control">
+                                        <input type="password" required name="password_confirmation" value="{{old('password_confirmation')}}" id="" class="form-control">
+                                    </div>
+                                    {{-- email input --}}
+                                    <div class="col-md-6">
+                                        <label for="">البريد الالكتروني</label>
+                                        <input type="email" required name="email" value="{{old('email')}}" id="email" class="form-control" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -174,7 +210,7 @@
                                     @if (request('type') == "visitor")
                                     <div class="col-md-4">
                                         <label for=""> دولة التخرج </label>
-                                        <select name="country_graduation_id" id="" class="form-control select2">
+                                        <select name="country_graduation_id" required  id="" class="form-control select2">
                                             <option value="">حدد دولة التخرج </option>
                                             @foreach ($countries as $country)
                                                 <option value="{{$country->id}}" {{old('country_graduation_id') == $country->id ? "selected" : ""}}>{{$country->name}}</option>
@@ -184,7 +220,7 @@
                                     @endif
                                     <div class="col-md-4">
                                         <label for=""> جهة التخرج </label>
-                                        <select name="hand_graduation_id" id="" class="form-control">
+                                        <select name="hand_graduation_id"  required id="" class="form-control">
                                             <option value="">حدد جهة التخرج </option>
                                             @foreach ($universities as $university)
                                                 <option value="{{$university->id}}" {{old('hand_graduation_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
@@ -193,7 +229,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for=""> تاريخ انتهاء الامتياز   </label>
-                                        <input type="date" name="internership_complete" value="{{old('internership_complete')}}" id="" class="form-control">
+                                        <input type="date" name="internership_complete" required value="{{old('internership_complete')}}" id="" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -213,7 +249,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="">الدرجة العلمية</label>
-                                <select name="academic_degree_id" id="" class="form-control select2">
+                                <select name="academic_degree_id" id="" class="form-control select2" required>
                                     <option value="">حدد درجة علمية</option>
                                     @foreach ($academicDegrees as $academicDegree)
                                         <option value="{{$academicDegree->id}}" {{old('academic_degree_id') == $academicDegree->id ? "selected" : ""}}>{{$academicDegree->name}}</option>
@@ -222,11 +258,11 @@
                             </div>
                             <div class="col-md-6">
                                 <label for=""> تاريخ الحصول عليها </label>
-                                <input type="date" name="certificate_of_excellence_date" value="{{old('certificate_of_excellence_date', date('Y-m-d'))}}" id="" class="form-control">
+                                <input type="date" name="certificate_of_excellence_date" required value="{{old('certificate_of_excellence_date', date('Y-m-d'))}}" id="" class="form-control">
                             </div>
                             <div class="col-md-6">
                                 <label for=""> الجهة  </label>
-                                <select name="qualification_university_id" id="" class="form-control select2">
+                                <select name="qualification_university_id" required id="" class="form-control select2">
                                     <option value="">حدد جهة  </option>
                                     @foreach ($universities as $university)
                                         <option value="{{$university->id}}" {{old('qualification_university_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
@@ -303,11 +339,11 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <label for="">الرقم النقابي الأول</label>
-                                <input type="text" name="doctor_number" value="{{old('doctor_number')}}"  id="" class="form-control">
+                                <input type="text" name="doctor_number" required  value="{{old('doctor_number')}}"  id="" class="form-control">
                             </div>
                             <div class="col-md-12">
                                 <label for="">الصفة</label>
-                                <select name="doctor_rank_id" id="" class="form-control select2">
+                                <select name="doctor_rank_id" id="" required class="form-control select2">
                                     <option value="">حدد الصفة</option>
                                     @foreach ($doctor_ranks as $doctor_rank)
                                         @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
@@ -325,7 +361,7 @@
                                     @if (get_area_name() == "admin")
                                     <div class="col-md-12 mt-1 mb-2">
                                         <label for="">حدد فرع</label>
-                                        <select name="branch_id" id="" class="form-control select2">
+                                        <select name="branch_id" id="" required class="form-control select2">
                                             <option value="">حدد فرع</option>
                                             @foreach (App\Models\Branch::all() as $branch)
                                             <option value="{{$branch->id}}">{{$branch->name}}</option>
@@ -335,7 +371,7 @@
                                     @endif
                                     <div class="col-md-4">
                                         <label for=""> تخصص اول</label>
-                                        <select name="specialty_1_id" id="" class="form-control">
+                                        <select name="specialty_1_id" required id="" class="form-control">
                                             <option value="">حدد تخصص اول</option>
                                             @foreach ($specialties as $specialty)
                                                 <option value="{{$specialty->id}}" {{old('specialty_1_id') == $specialty->id ? "selected" : ""}}>{{$specialty->name}}</option>
@@ -344,7 +380,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label for=""> تخصص ثاني</label>
-                                        <select name="specialty_2_id" data-old="{{old('specialty_2_id')}}" id="" class="form-control">
+                                        <select name="specialty_2_id"  data-old="{{old('specialty_2_id')}}" id="" class="form-control">
                                             <option value="">حدد تخصص ثاني</option>
                                         </select>
                                     </div>
@@ -353,6 +389,10 @@
                                         <select name="specialty_3_id" data-old="{{old('specialty_3_id')}}" id="" class="form-control">
                                             <option value="">حدد تخصص ثالث</option>
                                         </select>
+                                    </div>
+                                    <div class="col-md-12 mt-2">
+                                        <label for=""> سنوات الخبره  </label>
+                                        <input name="experience" required id="" type="number" class="form-control" value="{{old('experience')}}" />
                                     </div>
                                 </div>
                             </div>
@@ -367,10 +407,7 @@
                                 <label for="">جهات العمل السابقة</label>
                                 <textarea name="ex_medical_facilities" id="" cols="30" rows="4" class="form-control">{{old('ex_medical_facilities')}}</textarea>
                             </div>
-                            <div class="col-md-12 mt-2">
-                                <label for=""> سنوات الخبره  </label>
-                                <input name="experience" id="" type="number" class="form-control" value="{{old('experience')}}" />
-                            </div>
+                           
                         </div>
                     </div>
                 </div>
@@ -395,6 +432,53 @@
 @endsection
 
 @section('scripts')
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const nationalNumberInput = document.getElementById('national_number');
+        const birthYearInput = document.getElementById('birth_year');
+        const dateOfBirthInput = document.getElementById('date_of_birth');
+        const genderSelect = document.getElementById('gender');
+
+        // Initialize Flatpickr for the date input
+        flatpickr(dateOfBirthInput, {
+            dateFormat: "Y-m", // Year and month only
+            altInput: true,
+            altFormat: "F Y", // Pretty format
+            locale: "ar"
+        });
+
+        // Handle National Number Input
+        nationalNumberInput.addEventListener('input', function () {
+            const nationalNumber = this.value;
+            console.log(nationalNumber);
+
+            // Ensure the national number has 12 digits
+            if (nationalNumber.length === 12) {
+                // Extract Gender
+                const genderDigit = parseInt(nationalNumber.substring(0, 1)); // The first digit determines gender
+                const gender = (genderDigit === 1) ? 'male' : 'female';
+
+                // Extract Year of Birth (next 4 digits)
+                const year = nationalNumber.substring(1, 5);
+
+                // Update Inputs
+                birthYearInput.value = year;
+                dateOfBirthInput.value = `${year}`; // Only the year for Flatpickr
+                genderSelect.value = gender;
+            } else {
+                // Clear inputs if the national number is not valid
+                birthYearInput.value = '';
+                dateOfBirthInput.value = '';
+                genderSelect.value = '';
+            }
+        });
+
+    });
+</script>
     <script>
         $(document).ready(function() {
             // Function to show/hide tbody based on selected country
@@ -562,7 +646,7 @@ $(document).ready(function () {
                 inputElement.addEventListener('input', function() {
                     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
                     if (!datePattern.test(this.value)) {
-                        showError(this, 'التاريخ يجب أن يكون بالصيغة YYYY-MM-DD.');
+                        // showError(this, 'التاريخ يجب أن يكون بالصيغة الصحيحة (سنة-شهر-يوم).');
                     } else {
                         removeError(this);
                     }
@@ -610,7 +694,247 @@ $(document).ready(function () {
     });
 </script>
 
-    
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Input elements
+    const nationalNumberInput = document.getElementById('national_number');
+    const birthYearInput = document.getElementById('birth_year');
+    const monthSelect = document.querySelector('select[name="month"]');
+    const daySelect = document.querySelector('select[name="day"]');
+    const genderSelect = document.getElementById('gender');
+    const nameEnInput = document.querySelector('input[name="name_en"]');
+    const emailInput = document.querySelector('input[name="email"]');
+
+    // Event listener for national number input
+    nationalNumberInput.addEventListener('input', function () {
+        const nationalNumber = this.value;
+
+        // Validate the length of the national number
+        if (nationalNumber.length === 12) {
+            // Extract Gender
+            const genderDigit = parseInt(nationalNumber.charAt(0)); // First digit determines gender
+            const gender = genderDigit === 1 ? 'male' : 'female';
+            genderSelect.value = gender;
+
+            // Extract Birth Year, Month, and Day
+            const year = nationalNumber.substring(1, 5); // 2nd to 5th digits are the year
+            const month = parseInt(nationalNumber.substring(5, 7)); // 6th and 7th digits are the month
+            const day = parseInt(nationalNumber.substring(7, 9)); // 8th and 9th digits are the day
+
+            // Update inputs
+            birthYearInput.value = year;
+            monthSelect.value = month;
+            daySelect.value = day;
+
+            // Generate email if name_en is filled
+            generateEmail();
+        } else {
+            // Clear inputs if the national number is invalid
+            birthYearInput.value = '';
+            monthSelect.value = '';
+            daySelect.value = '';
+            genderSelect.value = '';
+        }
+    });
+
+    // Event listener for English name input
+    nameEnInput.addEventListener('input', generateEmail);
+
+    // Function to generate email
+    function generateEmail() {
+        console.log('test');
+        const nameEn = nameEnInput.value.trim().toLowerCase().replace(/\s+/g, '.'); // Format name as lowercase with dots
+        const year = birthYearInput.value;
+        const month = monthSelect.value.padStart(2, '0'); // Ensure month is two digits
+
+        if (nameEn && year && month && day) {
+            const email = `${nameEn}${year}${month}${day}@lgmc.ly`; // Concatenate to form email
+            emailInput.value = email;
+        } else {
+            emailInput.value = ''; // Clear email if required fields are missing
+        }
+    }
+});
+
+    </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Input elements
+    const nationalNumberInput = document.getElementById('national_number');
+    const birthYearInput = document.getElementById('birth_year');
+    const monthSelect = document.querySelector('select[name="month"]');
+    const daySelect = document.querySelector('select[name="day"]');
+    const genderSelect = document.getElementById('gender');
+    const nameEnInput = document.querySelector('input[name="name_en"]');
+    const emailInput = document.querySelector('input[name="email"]');
+
+    // Event listener for national number input
+    nationalNumberInput.addEventListener('input', function () {
+        const nationalNumber = this.value;
+
+        // Validate the length of the national number
+        if (nationalNumber.length === 12) {
+            // Extract Gender
+            const genderDigit = parseInt(nationalNumber.charAt(0)); // First digit determines gender
+            const gender = genderDigit === 1 ? 'male' : 'female';
+            genderSelect.value = gender;
+
+            // Extract Birth Year, Month, and Day
+            const year = nationalNumber.substring(1, 5); // 2nd to 5th digits are the year
+            const month = parseInt(nationalNumber.substring(5, 7)); // 6th and 7th digits are the month
+            const day = parseInt(nationalNumber.substring(7, 9)); // 8th and 9th digits are the day
+
+            // Update inputs
+            birthYearInput.value = year;
+            monthSelect.value = month;
+            daySelect.value = day;
+
+            // Regenerate email
+            generateEmail();
+        } else {
+            // Clear inputs if the national number is invalid
+            birthYearInput.value = '';
+            monthSelect.value = '';
+            daySelect.value = '';
+            genderSelect.value = '';
+        }
+    });
+
+    // Event listeners for English name, birth year, month, and day
+    nameEnInput.addEventListener('input', generateEmail);
+    birthYearInput.addEventListener('input', generateEmail);
+    monthSelect.addEventListener('change', generateEmail);
+    daySelect.addEventListener('change', generateEmail);
+
+    // Function to generate email
+    function generateEmail() {
+        const nameEn = nameEnInput.value.trim().toLowerCase().replace(/\s+/g, '.'); // Format name as lowercase with dots
+        const year = birthYearInput.value;
+        const month = monthSelect.value.padStart(2, '0'); // Ensure month is two digits
+        const day = daySelect.value.padStart(2, '0'); // Ensure day is two digits
+
+        if (nameEn && year && month && day) {
+            const email = `${nameEn}${year}${month}${day}@lgmc.ly`; // Concatenate to form email
+            emailInput.value = email;
+        } else {
+            emailInput.value = ''; // Clear email if required fields are missing
+        }
+    }
+});
+
+    </script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Input elements
+        const nationalNumberInput = document.getElementById('national_number');
+        const birthYearInput = document.getElementById('birth_year');
+        const monthSelect = document.querySelector('select[name="month"]');
+        const daySelect = document.querySelector('select[name="day"]');
+        const dateOfBirthInput = document.querySelector('input[name="date_of_birth"]'); // For non-Libyan
+        const nameEnInput = document.querySelector('input[name="name_en"]');
+        const emailInput = document.querySelector('input[name="email"]');
+
+        // Check if request type is Libyan or not
+        const isLibyan = "{{ request('type') }}" === "libyan";
+
+        // Event listener for Libyan national number input
+        if (isLibyan && nationalNumberInput) {
+            nationalNumberInput.addEventListener('input', function () {
+                const nationalNumber = this.value;
+
+                if (nationalNumber.length === 12) {
+                    // Extract Gender (optional if needed)
+                    const genderDigit = parseInt(nationalNumber.charAt(0));
+                    const gender = genderDigit === 1 ? 'male' : 'female';
+
+                    // Extract Birth Year, Month, Day
+                    const year = nationalNumber.substring(1, 5);
+                    const month = parseInt(nationalNumber.substring(5, 7));
+                    const day = parseInt(nationalNumber.substring(7, 9));
+
+                    // Update fields
+                    if (birthYearInput) birthYearInput.value = year;
+                    if (monthSelect) monthSelect.value = month;
+                    if (daySelect) daySelect.value = day;
+
+                    // Regenerate email
+                    generateEmail(year, month, day);
+                } else {
+                    // Clear fields if the national number is invalid
+                    if (birthYearInput) birthYearInput.value = '';
+                    if (monthSelect) monthSelect.value = '';
+                    if (daySelect) daySelect.value = '';
+                    emailInput.value = '';
+                }
+            });
+        }
+
+        // Event listener for date of birth (non-Libyan)
+        if (!isLibyan && dateOfBirthInput) {
+            dateOfBirthInput.addEventListener('input', function () {
+                const dob = this.value; // Format: YYYY-MM-DD
+                if (dob) {
+                    const [year, month, day] = dob.split('-');
+                    generateEmail(year, month, day);
+                } else {
+                    emailInput.value = '';
+                }
+            });
+        }
+
+        // Event listener for English name input
+        nameEnInput?.addEventListener('input', function () {
+            if (isLibyan) {
+                // Libyan: Regenerate email using year, month, day
+                const year = birthYearInput?.value || '';
+                const month = monthSelect?.value.padStart(2, '0') || '';
+                const day = daySelect?.value.padStart(2, '0') || '';
+                generateEmail(year, month, day);
+            } else {
+                // Non-Libyan: Regenerate email using date_of_birth input
+                const dob = dateOfBirthInput?.value || '';
+                if (dob) {
+                    const [year, month, day] = dob.split('-');
+                    generateEmail(year, month, day);
+                } else {
+                    emailInput.value = '';
+                }
+            }
+        });
+
+        // Function to generate email
+        function generateEmail(year, month, day) {
+            const nameEn = nameEnInput?.value.trim().toLowerCase().replace(/\s+/g, '.'); // Format name
+            if (nameEn && year && month && day) {
+                emailInput.value = `${nameEn}${year}${month}${day}@lgmc.ly`; // Generate email
+            } else {
+                emailInput.value = ''; // Clear email if required fields are missing
+            }
+        }
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Find all input, select, and textarea fields with the "required" attribute
+        const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+
+        requiredFields.forEach(function (field) {
+            // Find the corresponding label for the field
+            const label = field.closest('.form-group, .col-md-6, .col-md-4, .col-md-2, .col-md-12')?.querySelector('label');
+
+            if (label && !label.querySelector('.required-asterisk')) {
+                // Append a red asterisk to the label
+                const asterisk = document.createElement('span');
+                asterisk.classList.add('required-asterisk');
+                asterisk.innerHTML = ' *';
+                asterisk.style.color = 'red';
+                label.appendChild(asterisk);
+            }
+        });
+    });
+</script>
 @endsection
 @section('styles')
     <style> 

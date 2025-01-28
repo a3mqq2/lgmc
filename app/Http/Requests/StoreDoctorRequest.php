@@ -33,7 +33,11 @@ class StoreDoctorRequest extends FormRequest
             ],
             'mother_name' => 'required|string|max:255',
             'country_id' => 'required_if:type,foreign|required_if:type,visitor',
-            'date_of_birth' => 'required|date',
+            'date_of_birth' => 'nullable|date',
+            'day' => 'nullable|numeric|min:1|max:31',
+            'month' => 'nullable|numeric|min:1|max:12',
+            'birth_year' => 'nullable|numeric|min:1900|max:2100',
+            'email' => "required|unique:doctors,email",
             'marital_status' => 'required|string|in:single,married',
             'gender' => 'required|string|in:male,female',
             'passport_number' => 'required|string|max:20',
@@ -59,6 +63,7 @@ class StoreDoctorRequest extends FormRequest
             'documents' => "required",
             'type' => "required|in:libyan,palestinian,foreign,visitor",
             'password' => 'required|min:6|confirmed',
+            
             
             // قواعد التحقق المخصصة للتحقق من البلاك ليست
             'blacklist_check' => [

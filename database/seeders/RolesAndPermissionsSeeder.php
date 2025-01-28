@@ -44,6 +44,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'financial-administration'  => 'الاداره المالية',
             'manage-branches'           => 'اداره الفروع',
             'logs'                      => 'السجلات',
+            'approve-licences-admin'          => 'الموافقه علي التراخيص الاداريه',
         ];
 
         $branchOperationsPermissions = [
@@ -56,6 +57,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'branch-reports'             => 'التقارير',
             'administration'             => 'الاداره',
             'financial-branch'    => 'الاداره المالية',
+            'approve-licences-branch'    => 'الموافقه علي التراخيص الفرعيه',
         ];
 
         /**

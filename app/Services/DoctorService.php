@@ -129,6 +129,7 @@ class DoctorService
     public function create(array $data): Doctor
     {
 
+
         // استخراج نوع الطبيب من البيانات
         $doctorType = $data['type'];
 
@@ -161,7 +162,7 @@ class DoctorService
             // توليد رمز الطبيب
             $data['code'] = (get_area_name() == "admin" ? $data['branch_id'] : auth()->user()->branch_id) . '-' . (Doctor::count() + 1);
             $data['branch_id'] = get_area_name() == "admin" ? $data['branch_id'] : auth()->user()->branch_id;
-            
+            $data['date_of_birth'] = isset($data['date_of_birth']) ? $data['date_of_birth'] : $data['birth_year'] . '-' . $data['month'] . '-' . $data['day'];
 
             if(!isset($data['branch_id']))
             {
@@ -173,7 +174,6 @@ class DoctorService
 
             // 
 
-            $data['email'] = strtolower(str_replace(' ', '.', $data['name_en'])) . env('EMAIL_HOST');
             $doctor = Doctor::create($data);
 
             // ربط المرافق الطبية

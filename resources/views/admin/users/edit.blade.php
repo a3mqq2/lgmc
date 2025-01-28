@@ -281,4 +281,61 @@
         }
     }
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Input fields
+        const phoneInput = document.getElementById('phone');
+        const nationalIdInput = document.getElementById('ID_number');
+        const emailInput = document.getElementById('email');
+
+        // Validation messages
+        const phoneMessage = document.createElement('small');
+        phoneMessage.style.color = 'red';
+        phoneInput.parentNode.appendChild(phoneMessage);
+
+        const nationalIdMessage = document.createElement('small');
+        nationalIdMessage.style.color = 'red';
+        nationalIdInput.parentNode.appendChild(nationalIdMessage);
+
+        const emailMessage = document.createElement('small');
+        emailMessage.style.color = 'red';
+        emailInput.parentNode.appendChild(emailMessage);
+
+        // Phone validation (Libyan phone numbers)
+        phoneInput.addEventListener('input', function () {
+            const phoneRegex = /^(091|092|093|095)\d{7}$/; // Starts with 091, 092, 093, or 095 and 7 digits
+            if (!phoneRegex.test(this.value)) {
+                phoneMessage.textContent = "رقم الهاتف يجب أن يبدأ بـ 091 أو 092 أو 093 أو 095 ويتكون من 10 أرقام.";
+                this.classList.add('is-invalid');
+            } else {
+                phoneMessage.textContent = "";
+                this.classList.remove('is-invalid');
+            }
+        });
+
+        // National ID validation (12 digits starting with 1 or 2)
+        nationalIdInput.addEventListener('input', function () {
+            const nationalIdRegex = /^(1|2)\d{11}$/; // Starts with 1 or 2 and followed by 11 digits
+            if (!nationalIdRegex.test(this.value)) {
+                nationalIdMessage.textContent = "الرقم الوطني يجب أن يبدأ بـ 1 أو 2 ويتكون من 12 رقمًا.";
+                this.classList.add('is-invalid');
+            } else {
+                nationalIdMessage.textContent = "";
+                this.classList.remove('is-invalid');
+            }
+        });
+
+        // Email validation (valid email format)
+        emailInput.addEventListener('input', function () {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Standard email validation regex
+            if (!emailRegex.test(this.value)) {
+                emailMessage.textContent = "يرجى إدخال بريد إلكتروني صحيح.";
+                this.classList.add('is-invalid');
+            } else {
+                emailMessage.textContent = "";
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
+</script>
 @endsection

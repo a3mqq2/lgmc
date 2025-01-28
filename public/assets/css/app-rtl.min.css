@@ -13404,7 +13404,7 @@ span.flatpickr-weekday {
 
 .flatpickr-input[readonly] {
     cursor: pointer;
-    background-color: var(--vz-input-bg)
+    background-color: #fff;
 }
 
 [data-inline-date=true],
