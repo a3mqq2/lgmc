@@ -46,7 +46,7 @@
                                     <td>{{ number_format($transfer->amount, 2) }}</td>
                                     <td>{{ $transfer->description ?? 'لا يوجد' }}</td>
                                     <td>{{ $transfer->user->name ?? '-' }}</td>
-                                    <td>{{ $transfer->branch->name ?? '-' }}</td>
+                                    <td>{{ $transfer->branch?->name ?? '-' }}</td>
                                     <td>
                                         <span class="badge bg-{{ $transfer->status === 'approved' ? 'success' : ($transfer->status === 'rejected' ? 'danger' : 'warning') }}">
                                             {{ $transfer->status === 'approved' ? 'موافق عليه' : ($transfer->status === 'rejected' ? 'مرفوض' : 'قيد الانتظار') }}

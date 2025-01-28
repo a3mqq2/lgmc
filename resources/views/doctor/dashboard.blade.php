@@ -248,7 +248,7 @@
                                                     </div>
                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
                                                         <span><i class="fa fa-map-marker-alt text-info"></i> الفرع:</span>
-                                                        <span>{{ $request->branch->name }}</span>
+                                                        <span>{{ $request->branch?->name }}</span>
                                                     </div>
                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
                                                         <span><i class="fa fa-file-alt text-info"></i> نوع الطلب:</span>

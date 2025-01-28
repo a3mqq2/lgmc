@@ -39,7 +39,7 @@ return new class extends Migration
             $table->text('ex_medical_facilities')->nullable();
             $table->integer('experience')->default(0);
             $table->text('notes')->nullable();
-            $table->foreignId('branch_id')->constrained();
+            $table->foreignId('branch_id')->constrained()->onDelete('cascade');
             $table->unsignedBigInteger('specialty_1_id')->nullable();
             $table->unsignedBigInteger('specialty_2_id')->nullable();
             $table->unsignedBigInteger('specialty_3_id')->nullable();

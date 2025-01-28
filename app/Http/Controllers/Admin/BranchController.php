@@ -110,6 +110,36 @@ class BranchController extends Controller
      */
     public function destroy(Branch $branch)
     {
-        //
-    }
+        try {
+            DB::beginTransaction();
+    
+            // Manually delete related records
+            $branch->users()->detach();  // Detach users from the branch (many-to-many)
+            $branch->medicalFacilities()->delete();  // Delete all medical facilities (one-to-many)
+            $branch->invoices()->delete();  // Delete all invoices (one-to-many)
+            $branch->doctors()->delete();  // Delete all doctors (one-to-many)
+            $branch->transactions()->delete();  // Delete all transactions (one-to-many)
+            $branch->licences()->delete();  // Delete all licences (one-to-many)
+            $branch->doctorRequests()->delete();  // Delete all doctor requests (one-to-many)
+            $branch->tickets()->delete();  // Delete all tickets (one-to-many)
+            $branch->branchUsers()->delete();  // Delete all related branch-users (one-to-many)
+            $branch->vault()->delete();  // Delete the related vault (one-to-one)
+            // Delete the branch itself
+            $branch->delete();
+    
+            // Log the deletion
+            Log::create([
+                'user_id' => auth()->user()->id,
+                'details' => "تم حذف فرع  " . $branch->name
+            ]);
+    
+            DB::commit();
+    
+            return redirect()->route(get_area_name() . '.branches.index')
+                ->with('success', 'تم حذف الفرع بنجاح');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withErrors([$e->getMessage()]);
+        }
+    }    
 }

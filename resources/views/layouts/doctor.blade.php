@@ -381,7 +381,7 @@
                                     {{auth('doctor')->user()->specialization}}
                                  </p>
                                  <div class="hstack text-white-50 gap-1">
-                                     <div class="me-2"><i class="ri-map-pin-user-line me-1 text-white-75 fs-16 align-middle"></i>{{auth('doctor')->user()->branch->name}}</div>
+                                     <div class="me-2"><i class="ri-map-pin-user-line me-1 text-white-75 fs-16 align-middle"></i>{{auth('doctor')->user()->branch?->name}}</div>
                                  </div>
                                  @if ($errors->any())
                                  @foreach ($errors->all() as $errorMessage)

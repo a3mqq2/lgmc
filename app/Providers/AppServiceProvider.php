@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Models\Doctor;
 use App\Models\Licence;
-use Illuminate\Support\ServiceProvider;
+use App\Models\Pricing;
+use App\Observers\PricingObserver;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

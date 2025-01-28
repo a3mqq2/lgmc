@@ -48,7 +48,7 @@ return new class extends Migration
                   ->onDelete('cascade');
 
 
-            $table->foreignId('branch_id')->nullable()->constrained();
+            $table->foreignId('branch_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
         });
     }

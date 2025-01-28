@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('licence_id')->constrained();
             $table->string('details');
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');   
             $table->timestamps();
         });
     }

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('openning_balance', 11,4);
             $table->decimal('balance', 11, 4);
-            $table->foreignId('branch_id')->nullable()->constrained();
+            $table->foreignId('branch_id')->nullable()->constrained()->onDelete('set null'); // Modify here to set null on delete
             $table->timestamps();
         });
     }

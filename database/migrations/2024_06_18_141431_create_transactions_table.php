@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('vault_id')->constrained();
             $table->string('desc');
             $table->decimal('amount', 11,2);
             $table->decimal('balance', 11,2);
-            $table->foreignId('branch_id')->nullable()->constrained();
+            $table->foreignId('branch_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('transaction_type_id')->constrained();
             $table->enum('type', ['deposit', 'withdrawal']);
             $table->timestamps();

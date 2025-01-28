@@ -129,7 +129,7 @@
                     <tbody>
                         <tr>
                             <th class="bg-light">الفرع</th>
-                            <td>{{ $doctor->branch->name ?? 'N/A' }}</td>
+                            <td>{{ $doctor->branch?->name ?? 'N/A' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">التخصص الأول</th>

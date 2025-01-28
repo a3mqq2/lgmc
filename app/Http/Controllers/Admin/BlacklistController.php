@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Log;
 use App\Enums\DoctorType;
 use App\Models\Blacklist;
 use Illuminate\Http\Request;
@@ -112,7 +113,7 @@ class BlacklistController extends Controller
          ]);
  
          Blacklist::create($validated);
- 
+         Log::create(['user_id' => auth()->user()->id, 'details' => "تم إضافة شخص إلى البلاك ليست: " . $request->name]);         
          return redirect()->route(get_area_name() . '.blacklists.index')
                           ->with('success', 'تمت إضافة الشخص إلى البلاك ليست بنجاح.');
      }
@@ -149,6 +150,7 @@ class BlacklistController extends Controller
 
         $blacklist->update($validated);
 
+        Log::create(['user_id' => auth()->user()->id, 'details' => "تم تعديل بيانات شخص في البلاك ليست: " . $blacklist->name]);
         return redirect()->route('admin.blacklists.index')->with('success', ['تم تحديث بيانات الشخص في البلاك ليست بنجاح.']);
     }
 
@@ -158,7 +160,7 @@ class BlacklistController extends Controller
     public function destroy(Blacklist $blacklist)
     {
         $blacklist->delete();
-
+        Log::create(['user_id' => auth()->user()->id, 'details' => "تم إزالة شخص من البلاك ليست: " . $blacklist->name]);
         return redirect()->route('admin.blacklists.index')->with('success', ['تمت إزالة الشخص من البلاك ليست بنجاح.']);
     }
 }

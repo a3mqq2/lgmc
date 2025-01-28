@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('expiry_date');
             $table->enum('status', ['active', 'expired', 'revoked', 'under_payment', 'under_approve_admin', 'under_approve_branch']);
             $table->foreignId('doctor_id')->nullable()->constrained();
-            $table->foreignId('branch_id')->constrained();
+            $table->foreignId('branch_id')->constrained()->onDelete('cascade');
             $table->unsignedBigInteger('created_by');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->dateTime('approved_at')->nullable();

@@ -133,13 +133,15 @@ class UserService
      */
     public function deleteUser(User $user): void
     {
-        $name = $user->name;
-        $user->delete();
+
 
         Log::create([
             'user_id' => Auth::id(),
-            'details' => 'تم حذف الموظف: ' . $name
+            'details' => 'تم حذف الموظف: ' . $user->name
         ]);
+
+        $name = $user->name;
+        $user->delete();
     }
 
     /**

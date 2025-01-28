@@ -68,7 +68,7 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $request->doctor->name }}</td>
-                                <td>{{ $request->branch->name }}</td>
+                                <td>{{ $request->branch?->name }}</td>
                                 <td>{{ $request->pricing->name }}</td>
                                 <td>{{ number_format($request->pricing->amount, 2) }} د.ل</td>
                                 <td>{{ $request->date->format('Y-m-d') }}</td>

@@ -69,7 +69,7 @@
                     {{$licence->licensable->name}}
                 </div>
                 <div class="libyan-branch">
-                    {{$licence->branch->name}}
+                    {{$licence->branch?->name}}
                 </div>
                 <div class="libyan-doctor-id">
                     {{$licence->licensable->id}}
@@ -207,7 +207,7 @@
                     {{$licence->licensable->name}}
                 </div>
                 <div class="facility_branch">
-                    {{$licence->licensable->branch ? $licence->licensable->branch->name : "/"}}
+                    {{$licence->licensable->branch ? $licence->licensable->branch?->name : "/"}}
                 </div>
                 <div class="lincable_id_facilities">
                     000{{$licence->licensable->id ? $licence->licensable->id : "/"}}
