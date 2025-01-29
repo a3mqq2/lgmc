@@ -16,6 +16,8 @@ class CheckPermission
     public function handle(Request $request, Closure $next, $permission): Response
     {
 
+        dd($permission);
+        
         if(auth()->user()->permissions->where('name',$permission)->count()) {
             return $next($request);
         } else {
