@@ -16,12 +16,11 @@ class CheckPermission
     public function handle(Request $request, Closure $next, $permission): Response
     {
 
-        dd($permission);
-        
-        if(auth()->user()->permissions->where('name',$permission)->count()) {
+
+        if (auth()->user()->hasPermissionTo($permission)) {
             return $next($request);
         } else {
-            abort(404);
+            abort(403, 'ليس لديك الصلاحية للوصول إلى هذه الصفحة');
         }
 
     }

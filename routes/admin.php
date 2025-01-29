@@ -26,6 +26,7 @@ use App\Http\Controllers\Common\MedicalFacilityController;
 use App\Http\Controllers\Common\TransactionTypeController;
 use App\Http\Controllers\Admin\MedicalFacilityFileController;
 use App\Http\Controllers\Admin\MedicalFacilityTypeController;
+use App\Http\Controllers\StaffController;
 
 Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')->group(function () {
     Route::get('/home', [AdminController::class, 'home'])->name('home');
@@ -37,6 +38,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
     Route::resource('branches', BranchController::class)->middleware('permission:manage-branches');
     Route::get('/users/{user}/change-status', [UsersController::class, 'change_status'])->name('users.change-status');
     Route::resource('users', UsersController::class)->middleware('permission:manage-staff');
+    Route::resource('staffs', StaffController::class);
     Route::resource('medical-facility-types', MedicalFacilityTypeController::class)->middleware('permission:registration-settings');
     Route::resource('medical-facilities.medical-facility-files', MedicalFacilityFileController::class)->shallow()->middleware('permission:manage-medical-facilities');
     Route::resource('universities', UniversityController::class)->middleware('permission:registration-settings'); 

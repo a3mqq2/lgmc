@@ -12,7 +12,7 @@
             <div class="card-body">
                 
                 {{-- Use PUT method for updates --}}
-                <form action="{{ route(get_area_name() . '.users.update', $user->id) }}" method="POST">
+                <form action="{{ route(get_area_name() . '.staffs.update', $user->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 

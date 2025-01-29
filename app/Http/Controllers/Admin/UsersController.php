@@ -58,6 +58,7 @@ class UsersController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        dd($request->validated());
         $this->userService->updateUser($user, $request->validated());
         return redirect()->route(get_area_name().'.users.index')->with('success', 'تم تحديث الموظف بنجاح.');
     }
