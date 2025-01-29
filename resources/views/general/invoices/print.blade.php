@@ -169,9 +169,9 @@
              <tr>
                  <td class="bg-light"><strong>الحالة:</strong></td>
                  <td>
-                     @if($invoice->status == 'paid')
+                     @if($invoice->status->value == 'paid')
                          مدفوعة
-                     @elseif($invoice->status == 'relief')
+                     @elseif($invoice->status->value == 'relief')
                          معفى عنها
                      @else
                          غير مدفوعة
