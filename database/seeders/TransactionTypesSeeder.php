@@ -46,5 +46,12 @@ class TransactionTypesSeeder extends Seeder
             "name" => "تحويل اموال",
             "type" => "withdrawal",
         ]);
+
+
+        TransactionType::create([
+            "name" => "فواتير كلية",
+            "type" => "deposit",
+        ]);
+
     }
 }

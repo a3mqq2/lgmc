@@ -10,21 +10,7 @@ class MedicalFacility extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'ownership',
-        'medical_facility_type_id',
-        'address',
-        'phone_number',
-        'user_id',
-        'commerical_number',
-        'activity_start_date',
-        'due',
-        'branch_id',
-        'membership_status',
-        "membership_expiration_date",
-    ];
-
+    protected $guarded = [];
 
     protected $casts =
     [

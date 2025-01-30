@@ -1,6 +1,7 @@
 <?php 
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DoctorHomeController;
 
 
@@ -16,4 +17,6 @@ Route::prefix('doctor')->name('doctor.')->middleware('auth:doctor')->group(funct
    Route::delete('/tickets/{ticket}', [DoctorHomeController::class, 'print_ticket'])->name('tickets.print');
    Route::get('/doctor-requests/create', [DoctorHomeController::class, 'create_doctor_request'])->name('doctor-requests.create');
    Route::post('/doctor-requests/store', [DoctorHomeController::class, 'store_doctor_request'])->name('doctor-requests.store');
+   Route::get('profile/change-password', [ProfileController::class, 'change_password'])->name('profile.change-password');
+   Route::post('profile/change-password', [ProfileController::class, 'change_password_store'])->name('profile.change-password');
 });

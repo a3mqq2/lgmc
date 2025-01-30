@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Log;
+use App\Models\Doctor;
 use App\Models\Invoice;
 use App\Models\Pricing;
 use App\Models\FileType;
@@ -44,6 +45,11 @@ class MedicalFacilityService
         }
 
 
+        if (isset($data['documents'])) {
+            unset($data['documents']);
+        }
+
+
         $data['membership_status'] = "inactive";
 
         if(request('manager_id'))
@@ -52,9 +58,24 @@ class MedicalFacilityService
             if($checkIfManagerHaveFacilityBefore) {
                 return redirect()->back()->withErrors(['هذا المدير لديه منشأة طبية مسجلة بالفعل']);
             }
+
+
+            // manager id should have licence active
+            $manager = Doctor::find(request('manager_id'));
+            if(!$manager->licenses()->where('status', 'active')->first()) {
+                return redirect()->back()->withErrors(['هذا المدير ليس لديه ترخيص نشط']);
+            }
         }
 
         $medicalFacility = MedicalFacility::create($data);
+        if(isset($data['manager_id'])) {
+            // get first licence add medical facility id to it
+            $manager = Doctor::find(request('manager_id'));
+            $licence = $manager->licenses()->where('status', 'active')->first();
+            $licence->update([
+                'medical_facility_id' => $medicalFacility->id
+            ]);
+        }
         $file_types = FileType::where('type', 'medical_facility')
          ->get();
 
@@ -86,24 +107,75 @@ class MedicalFacilityService
      * @param  array  $data
      * @return \App\Models\MedicalFacility
      */
-    public function update(MedicalFacility $medicalFacility, array $data): MedicalFacility
-    {
-        // If 'date' is provided, rename it to 'activity_start_date'
+
+     public function update(MedicalFacility $medicalFacility, array $data): MedicalFacility
+{
+
+    \DB::beginTransaction();
+
+    try {
+        $data['user_id'] = Auth::id();
+
+        if($data['manager_id'] == null)
+        {
+            unset($data['manager_id']);
+        }
+        // معالجة تاريخ بدء النشاط
         if (isset($data['date'])) {
             $data['activity_start_date'] = $data['date'];
             unset($data['date']);
         }
 
+        // التحقق من أن المدير ليس لديه منشأة طبية أخرى
+        if (isset($data['manager_id']) && $medicalFacility->manager_id != $data['manager_id']) {
+            $existingFacility = MedicalFacility::where('manager_id', $data['manager_id'])->where('id', '!=', $medicalFacility->id)->first();
+            if ($existingFacility) {
+                throw new \Exception('هذا المدير لديه منشأة طبية مسجلة بالفعل');
+            }
+        }
+
+        // تحديث بيانات المنشأة
         $medicalFacility->update($data);
 
-        // Create a log entry
+        // تحديث الملفات (المستندات)
+        if (isset($data['documents'])) {
+            $fileTypes = FileType::where('type', 'medical_facility')->get();
+
+            foreach ($fileTypes as $fileType) {
+                if (isset($data['documents'][$fileType->id])) {
+                    $file = $data['documents'][$fileType->id];
+
+                    // حفظ الملف في التخزين العام
+                    $path = $file->store('medical-facilites', 'public');
+
+                    // تحديث المستند إذا كان موجودًا، أو إنشاؤه إذا لم يكن موجودًا
+                    $medicalFacility->files()->updateOrCreate(
+                        ['file_type_id' => $fileType->id],
+                        [
+                            'file_name' => $file->getClientOriginalName(),
+                            'file_type_id' => $fileType->id,
+                            'file_path' => $path,
+                        ]
+                    );
+                }
+            }
+        }
+
+        // تسجيل العملية في السجلات
         Log::create([
             'user_id' => Auth::id(),
-            'details' => 'تم تحديث بيانات منشأة طبية: ' . $medicalFacility->name,
+            'details' => 'تم تحديث بيانات المنشأة الطبية: ' . $medicalFacility->name,
         ]);
 
+        \DB::commit();
+
         return $medicalFacility;
+    } catch (\Exception $e) {
+        \DB::rollBack();
+        throw new \Exception('حدث خطأ أثناء تحديث المنشأة الطبية: ' . $e->getMessage());
     }
+}
+
 
     /**
      * Delete a medical facility.

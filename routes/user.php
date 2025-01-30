@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Common\VaultController;
 use App\Http\Controllers\Common\DoctorController;
@@ -42,4 +43,7 @@ Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations'
     Route::get('/reports/licences/print', [ReportController::class, 'licences_print'])->name('reports.licences_print');
     Route::get('/reports/transactions/print', [ReportController::class, 'transactions_print'])->name('reports.transactions_print');
     // =============== REPORTS ================ //
+
+    Route::get('profile/change-password', [ProfileController::class, 'change_password'])->name('profile.change-password');
+    Route::post('profile/change-password', [ProfileController::class, 'change_password_store'])->name('profile.change-password');
 });

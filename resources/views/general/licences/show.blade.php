@@ -5,7 +5,7 @@
 <!-- Approval Button -->
 <div class="row mt-4 mb-3">
     <div class="col-12">
-        @if (($licence->status == "under_approve_branch" && get_area_name() == "user") || ($licence->status == "under_approve_admin" && get_area_name() == "admin" ) )
+        @if (($licence->status == "under_approve_branch" && get_area_name() == "user" && auth()->user()->permissions->where('name', 'approve-licences-branch')->count()) || ($licence->status == "under_approve_admin" && get_area_name() == "admin"  && auth()->user()->permissions->where('name', 'approve-licences-admin')->count()))
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approveModal">
             موافقة
         </button>

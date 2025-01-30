@@ -29,10 +29,25 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                 <a class="nav-link fs-14" data-bs-toggle="tab" href="{{route('doctor.dashboard', ['invoices' => 1])}}"  role="tab">
+                 <a class="nav-link fs-14"  href="{{route('doctor.dashboard', ['invoices' => 1])}}"  role="tab">
                         <i class="fa fa-file d-inline-block d-m"></i> <span class=" d-md-inline-block">الفواتير</span>
                     </a>
                 </li>
+
+
+                <li class="nav-item">
+                    <a class="nav-link fs-14"    href="{{route('doctor.dashboard', ['change-password' => 1])}}"   role="tab">
+                           <i class="ri-lock-password-line d-inline-block d-m"></i> <span class=" d-md-inline-block">تغيير كلمة المرور</span>
+                       </a>
+                   </li>
+
+                <li class="nav-item">
+                    <a class="nav-link fs-14" href="{{route('doctor.logout')}}"  role="tab">
+                           <i class="ri-logout-box-line d-inline-block d-m"></i> <span class=" d-md-inline-block">تسجيل خروج</span>
+                       </a>
+                   </li>
+
+
             </ul>
         </div>
            <div class="tab-content pt-4 text-muted">

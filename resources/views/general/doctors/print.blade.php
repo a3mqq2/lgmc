@@ -64,7 +64,7 @@
                             <td>{{ $doctor->phone }}</td>
                         </tr>
                         <tr>
-                            <th class="bg-light">رقم الهاتف 2</th>
+                            <th class="bg-light">رقم الواتساب</th>
                             <td>{{ $doctor->phone_2 }}</td>
                         </tr>
                         <tr>

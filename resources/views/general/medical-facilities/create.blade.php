@@ -75,8 +75,8 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="date" class="form-label"> تاريخ بدء النشاط  </label>
-                                    <input type="date" class="form-control" id="date" name="date"  required>
+                                    <label for="activity_start_date" class="form-label"> تاريخ بدء النشاط  </label>
+                                    <input type="date" class="form-control" id="activity_start_date" name="activity_start_date"  required>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -91,7 +91,11 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="">مالك النشاط</label>
-                                <select name="manager_id" id="licensable_id" class="form-control">
+                                <select name="manager_id" id="licensable_id" class="form-control" 
+                                    @if (get_area_name() == "user")
+                                        required
+                                    @endif
+                                >
                                     <option value="">حدد مالك نشاط</option>
                                     @foreach ($doctors as $doctor)
                                         <option value="{{$doctor->id}}">{{$doctor->name}}</option>
@@ -192,7 +196,7 @@ $(window).on('load', function() {
     }
 
     let branch_id  = '{{ auth()->user()->branch_id }}';
-    setupSelect2('#licensable_id', '/search-licensables?branch_id=' + branch_id, 'ابحث عن مالك النشاط...');
+    setupSelect2('#licensable_id', '/search-licensables?branch_id=' + branch_id + "&justactive=1", 'ابحث عن مالك النشاط...');
 });
 
     </script>

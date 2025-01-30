@@ -1,6 +1,25 @@
 
 
 
+
+@if (auth()->user()->permissions->where('name','total_invoices')->count() && auth()->user()->branch_id)
+<li class="nav-item">
+    <a class="nav-link menu-link" href="#doctors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fa fa-user-doctor"></i><span data-key="t-layouts">    الفواتير الكلية   </span>
+    </a>
+    <div class="collapse menu-dropdown" id="doctors">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctors.index') }}" class="nav-link" data-key="t-horizontal">    عرض جميع الآطباء   </a>
+                <a href="{{ route(get_area_name().'.total_invoices.index') }}" class="nav-link" data-key="t-horizontal">    عرض جميع الفواتير   </a>
+            </li>
+
+        </ul>
+    </div>
+</li>
+@endif
+
+
 <li class="nav-item">
     <a class="nav-link menu-link" href="#tickets" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-ticket"></i><span data-key="t-layouts">     التذاكر    </span>
@@ -103,4 +122,10 @@
             </li>
         </ul>
     </div>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link menu-link" href="{{ route(get_area_name().'.profile.change-password') }}">
+        <i class="ri-lock-password-line"></i> <span>تغيير كلمة المرور</span>
+    </a>
 </li>

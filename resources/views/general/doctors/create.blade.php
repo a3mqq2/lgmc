@@ -154,7 +154,7 @@
                                     </div>
                                     <div class="col-md-6 mt-2">
                                         <label for=""> رقم جواز السفر   </label>
-                                        <input type="text"  name="passport_number" required value="{{old('passport_number')}}" id="" class="form-control">
+                                        <input type="text"  name="passport_number" pattern="[A-Z0-9]+"  required value="{{old('passport_number')}}" id="" class="form-control">
                                     </div>
                                     <div class="col-md-6 mt-2">
                                         <label for="">  تاريخ انتهاء صلاحية الجواز     </label>
@@ -177,7 +177,7 @@
                                         <input type="phone" required name="phone" maxlength="10" value="{{old('phone')}}" id="" class="form-control">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="">رقم الهاتف 2</label>
+                                        <label for=""> رقم الواتساب </label>
                                         <input type="phone" name="phone_2" value="{{old('phone_2')}}" id="" maxlength="10" class="form-control">
                                     </div>
                                     <div class="col-md-6">
@@ -339,7 +339,11 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <label for="">الرقم النقابي الأول</label>
-                                <input type="text" name="doctor_number" required  value="{{old('doctor_number')}}"  id="" class="form-control">
+                                <input type="text" name="doctor_number"  
+                                    @if (request('type') == "libyan")
+                                        required
+                                    @endif
+                                value="{{old('doctor_number')}}"  id="" class="form-control">
                             </div>
                             <div class="col-md-12">
                                 <label for="">الصفة</label>
@@ -748,7 +752,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const month = monthSelect.value.padStart(2, '0'); // Ensure month is two digits
 
         if (nameEn && year && month && day) {
-            const email = `${nameEn}${year}${month}${day}@lgmc.ly`; // Concatenate to form email
+            const email = `${nameEn}${year}@lgmc.ly`; // Concatenate to form email
             emailInput.value = email;
         } else {
             emailInput.value = ''; // Clear email if required fields are missing
@@ -814,7 +818,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const day = daySelect.value.padStart(2, '0'); // Ensure day is two digits
 
         if (nameEn && year && month && day) {
-            const email = `${nameEn}${year}${month}${day}@lgmc.ly`; // Concatenate to form email
+            const email = `${nameEn}${year}@lgmc.ly`; // Concatenate to form email
             emailInput.value = email;
         } else {
             emailInput.value = ''; // Clear email if required fields are missing
@@ -908,7 +912,7 @@ document.addEventListener('DOMContentLoaded', function () {
         function generateEmail(year, month, day) {
             const nameEn = nameEnInput?.value.trim().toLowerCase().replace(/\s+/g, '.'); // Format name
             if (nameEn && year && month && day) {
-                emailInput.value = `${nameEn}${year}${month}${day}@lgmc.ly`; // Generate email
+                emailInput.value = `${nameEn}${year}@lgmc.ly`; // Generate email
             } else {
                 emailInput.value = ''; // Clear email if required fields are missing
             }

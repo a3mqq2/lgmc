@@ -38,7 +38,9 @@ class MedicalFacilityController extends Controller
     {
         $medicalFacilityTypes = MedicalFacilityType::all();
         $file_types = FileType::where('type', 'medical_facility')->get();
-        $doctors = auth()->user()->branch ? auth()->user()->branch->doctors : Doctor::all();
+        $doctors = auth()->user()->branch ? auth()->user()->branch->doctors()->whereHas('licenses', function($q) {
+            $q->where('status', 'active');
+        }) : Doctor::all();
         $branches = Branch::all();
         return view('general.medical-facilities.create', compact('medicalFacilityTypes','file_types','doctors','branches'));
     }
@@ -58,10 +60,16 @@ class MedicalFacilityController extends Controller
         return view('general.medical-facilities.show', compact('medicalFacility'));
     }
 
-    public function edit(MedicalFacility $medicalFacility)
+    public function edit($id)
     {
         $medicalFacilityTypes = MedicalFacilityType::all();
-        return view('general.medical-facilities.edit', compact('medicalFacility','medicalFacilityTypes'));
+        $file_types = FileType::where('type', 'medical_facility')->get();
+        $doctors = auth()->user()->branch ? auth()->user()->branch->doctors()->whereHas('licenses', function($q) {
+            $q->where('status', 'active');
+        }) : Doctor::all();
+        $branches = Branch::all();
+        $medicalFacility = MedicalFacility::findOrFail($id);
+        return view('general.medical-facilities.edit', compact('medicalFacility','medicalFacilityTypes','file_types','doctors','branches'));
     }
 
     public function update(Request $request, MedicalFacility $medicalFacility)

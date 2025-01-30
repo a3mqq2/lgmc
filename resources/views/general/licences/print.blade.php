@@ -91,7 +91,7 @@
                     @endif
                 </div>
                 <div class="libyan-facility">
-                    {{$licence->MedicalFacility?->name}}
+                    {{$licence->MedicalFacility? $licence->MedicalFacility->name : "-"}}
                 </div>
                 <div class="expired_at">
                     {{$licence->expiry_date}}
@@ -137,7 +137,7 @@
                     @endif
                 </div>
                 <div class="foreign-facility">
-                    {{$licence->MedicalFacility?->name}}
+                    {{$licence->MedicalFacility? $licence->MedicalFacility->name : "-"}}
                 </div>
                 <div class="expired_at">
                     {{$licence->expiry_date}}
@@ -154,13 +154,13 @@
                         <p>#{{$licence->id}}</p>
                     </div>
                     <div class="hoster-name">
-                        {{$licence->MedicalFacility->name}}
+                        {{$licence->MedicalFacility? $licence->MedicalFacility->name : "-"}}
                     </div>
                     <div class="hoster-id">
-                        {{$licence->MedicalFacility->id}}
+                        {{$licence->MedicalFacility? $licence->MedicalFacility->id : "-"}}
                     </div>
                     <div class="hoster-licence">
-                        {{$licence->MedicalFacility->commerical_number}}
+                        {{$licence->MedicalFacility? $licence->MedicalFacility->commercial_number : "-"}}
                     </div>
                     <div class="visitor-name">
                         {{$licence->licensable->name}}

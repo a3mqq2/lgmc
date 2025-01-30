@@ -580,7 +580,15 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
         </ul>
     </div>
 </li>
+
 @endif
+
+<li class="nav-item">
+    <a class="nav-link menu-link" href="{{ route(get_area_name().'.profile.change-password') }}">
+        <i class="ri-lock-password-line"></i> <span>تغيير كلمة المرور</span>
+    </a>
+</li>
+
 
 
 

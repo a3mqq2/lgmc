@@ -482,7 +482,7 @@
                                                          </div>
                                                          <div class="col-md-6 mt-2">
                                                              <label for=""> رقم جواز السفر   </label>
-                                                             <input type="text" name="passport_number" required value="{{old('passport_number')}}" id="" class="form-control">
+                                                             <input type="text" name="passport_number"  pattern="[A-Z0-9]+"  required value="{{old('passport_number')}}" id="" class="form-control">
                                                          </div>
                                                          <div class="col-md-6 mt-2">
                                                              <label for="">  تاريخ انتهاء صلاحية الجواز     </label>
@@ -498,7 +498,7 @@
                                                              <input type="phone" required name="phone" maxlength="10" value="{{old('phone')}}" id="" class="form-control">
                                                          </div>
                                                          <div class="col-md-6">
-                                                             <label for="">رقم الهاتف 2</label>
+                                                             <label for="">رقم الواتساب</label>
                                                              <input type="phone" name="phone_2" value="{{old('phone_2')}}" id="" maxlength="10" class="form-control">
                                                          </div>
                                                          <div class="col-md-6">

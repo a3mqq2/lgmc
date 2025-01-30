@@ -125,7 +125,7 @@ class LicenceController extends Controller
 
                             $licence->status = "under_approve_admin";
                         } else {
-                            $licence->status = "active";
+                            $licence->status = "under_payment";
                         }
 
 

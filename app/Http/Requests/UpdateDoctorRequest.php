@@ -35,12 +35,17 @@ class UpdateDoctorRequest extends FormRequest
             ],
             'mother_name' => 'required|string|max:255',
             'country_id' => 'required_if:type,foreign|required_if:type,visitor',
-            'date_of_birth' => 'required|date',
+            'date_of_birth' => 'nullable',
+            'birth_year' => 'nullable|numeric|min:1900|max:2100',
+            'email' => "required|unique:doctors,email,$doctorId",
+            'month' => 'nullable|numeric|min:1|max:12',
+            'day' => 'nullable|numeric|min:1|max:31',
             'marital_status' => 'required|string|in:single,married',
             'gender' => 'required|string|in:male,female',
             'passport_number' => 'required|string|max:20',
             'passport_expiration' => 'required|date|after:today',
             'password' => 'nullable|min:6|confirmed',
+            'country_graduation_id' => 'nullable|numeric',
             'phone' => [
                 'required',
                 'regex:/^09[1-9][0-9]{7}$/',
@@ -49,17 +54,6 @@ class UpdateDoctorRequest extends FormRequest
                         // تحقق من تنسيق رقم الهاتف الليبي: يبدأ بـ 218 ويتبعه 8 أرقام أو يبدأ بـ 0 ويتبعه 9 أرقام
                         if (!preg_match('/^(218\d{8}|0\d{9})$/', $value)) {
                             $fail('رقم الهاتف غير صالح. يجب أن يبدأ بـ 218 ويتبعه 8 أرقام أو بـ 0 ويتبعه 9 أرقام.');
-                        }
-                    }
-                },
-            ],
-            'phone_2' => [
-                'nullable',
-                'regex:/^09[1-9][0-9]{7}$/',
-                function ($attribute, $value, $fail) {
-                    if ($this->input('type') === 'libyan' && !empty($value)) {
-                        if (!preg_match('/^(218\d{8}|0\d{9})$/', $value)) {
-                            $fail('رقم الهاتف الثاني غير صالح. يجب أن يبدأ بـ 218 ويتبعه 8 أرقام أو بـ 0 ويتبعه 9 أرقام.');
                         }
                     }
                 },
@@ -79,7 +73,7 @@ class UpdateDoctorRequest extends FormRequest
             'notes' => 'nullable|string',
             'branch_id' => 'nullable|numeric',
             'qualification_university_id' => 'required|numeric',
-            'doctor_number' => 'required|string|max:255',
+            'doctor_number' => 'nullable|string|max:255',
             'documents' => 'nullable',
             'type' => 'required|in:libyan,palestinian,foreign,visitor',
 
@@ -136,7 +130,6 @@ class UpdateDoctorRequest extends FormRequest
             'passport_expiration.after' => 'حقل تاريخ انتهاء الجواز يجب أن يكون بعد اليوم.',
             'phone.required' => 'حقل رقم الهاتف مطلوب.',
             'phone.regex' => 'رقم الهاتف غير صالح.',
-            'phone_2.regex' => 'رقم الهاتف الثاني غير صالح.',
             'address.required' => 'حقل العنوان مطلوب.',
             'address.string' => 'حقل العنوان يجب أن يكون نصاً.',
             'address.max' => 'حقل العنوان لا يجب أن يتجاوز 255 حرفاً.',

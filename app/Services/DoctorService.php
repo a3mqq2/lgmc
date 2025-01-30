@@ -38,73 +38,67 @@ class DoctorService
             $this->invoiceService = $invoiceService;
      }
 
-    public function getDoctors()
-    {
-            $query = Doctor::query();
-            if (request()->filled('branch_id')) {
-                $query->where('branch_id', request('branch_id'));
-            }
-    
-            if(request('name'))
-            {
-                $query->where('name', 'like', '%' . request('name') . '%');
-            }
-
-            if(request('phone'))
-            {
-                $query->where('phone', 'like', '%' . request('phone') . '%');
-            }
-
-            if(request('email'))
-            {
-                $query->where('email', 'like', '%' . request('email') . '%');
-            }
-
-            if(request('national_number'))
-            {
-                $query->where('national_number', 'like', '%' . request('national_number') . '%');
-            }
-
-            if(request('passport_number'))
-            {
-                $query->where('passport_number', 'like', '%' . request('passport_number') . '%');
-            }
-
-            if(request('academic_degree'))
-            {
-                $query->where('academic_degree_id', request('academic_degree'));
-            }
-
-
-            if(request('type') == "libyan")
-            {
-                $query->where('type', 'libyan');
-            }
-
-            if(request('type') == "palestinian")
-            {
-                $query->where('type', 'palestinian');
-            }
-
-            if(request('type') == "visitor" )
-
-            {
-                $query->where('type', 'visitor');
-            }
-
-            if(request('type') == "foreign")
-            {
-                $query->where('type', 'foreign');
-            }
-
-            if(get_area_name() == "user")
-            {
-                $query->where('branch_id', auth()->user()->branch_id);
-            }
-
-
-            return $query->with('branch')->paginate(50);
-    }
+     public function getDoctors()
+     {
+         $query = Doctor::query();
+         
+         if (request()->filled('branch_id')) {
+             $query->where('branch_id', request('branch_id'));
+         }
+     
+         if (request('name')) {
+             $query->where('name', 'like', '%' . request('name') . '%');
+         }
+     
+         if (request('phone')) {
+             $query->where('phone', 'like', '%' . request('phone') . '%');
+         }
+     
+         if (request('email')) {
+             $query->where('email', 'like', '%' . request('email') . '%');
+         }
+     
+         if (request('national_number')) {
+             $query->where('national_number', 'like', '%' . request('national_number') . '%');
+         }
+     
+         if (request('passport_number')) {
+             $query->where('passport_number', 'like', '%' . request('passport_number') . '%');
+         }
+     
+         if (request('academic_degree')) {
+             $query->where('academic_degree_id', request('academic_degree'));
+         }
+     
+         if (request('type') == "libyan") {
+             $query->where('type', 'libyan');
+         }
+     
+         if (request('type') == "palestinian") {
+             $query->where('type', 'palestinian');
+         }
+     
+         if (request('type') == "visitor") {
+             $query->where('type', 'visitor');
+         }
+     
+         if (request('type') == "foreign") {
+             $query->where('type', 'foreign');
+         }
+     
+         if (get_area_name() == "user" || get_area_name() == "finance") {
+             $query->where('branch_id', auth()->user()->branch_id);
+         }
+     
+         if (get_area_name() == "finance") {
+             $query->withCount(['invoices as total_unpaid_invoices' => function ($q) {
+                 $q->where('status', \App\Enums\InvoiceStatus::unpaid);
+             }])->orderByDesc('total_unpaid_invoices');
+         }
+     
+         return $query->with('branch')->paginate(50);
+     }
+     
 
     public function getRequirements()
     {
@@ -405,11 +399,20 @@ class DoctorService
 
         try {
 
-            if(isset($data['password']))
+            if(isset($data['password']) && !empty($data['password']))
             {
                 $data['password'] = Hash::make($data['password']);
+            } else {
+                unset($data['password']);
             }
             
+
+
+            if($data['type'] == "libyan")
+            {
+                $data['date_of_birth'] = $data['birth_year'] . '-' . $data['month'] . '-' . $data['day'];
+            }
+
             $doctor->update($data);
 
             // Sync the medical facilities

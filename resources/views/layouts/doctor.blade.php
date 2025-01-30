@@ -456,7 +456,28 @@
 
 <!-- App js -->
 <script src="{{ asset('assets/js/app.js') }}"></script>
-
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[name="passport_number"]').forEach(function (input) {
+            input.addEventListener('input', function () {
+                this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            });
+        });
+    });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('input[type="date"]').forEach(function (input) {
+                input.addEventListener('input', function () {
+                    let dateParts = this.value.split('-'); // تقسيم القيمة إلى [السنة، الشهر، اليوم]
+                    if (dateParts.length === 3) {
+                        this.value = `0000-${dateParts[1]}-${dateParts[2]}`;
+                    }
+                });
+            });
+        });
+        </script>
+        
 </body>
 
 

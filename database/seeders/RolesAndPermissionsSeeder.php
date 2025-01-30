@@ -55,9 +55,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'doctor-practice-permits'    => 'اذونات المزاوله',
             'manage-medical-licenses'    => 'تراخيص المنشات الطبيه',
             'branch-reports'             => 'التقارير',
-            'administration'             => 'الاداره',
             'financial-branch'    => 'الاداره المالية',
             'approve-licences-branch'    => 'الموافقه علي التراخيص الفرعيه',
+            'total_invoices'             => 'الفواتير الكليه',
         ];
 
         /**

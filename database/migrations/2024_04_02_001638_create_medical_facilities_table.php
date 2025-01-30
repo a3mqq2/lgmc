@@ -26,6 +26,7 @@ class CreateMedicalFacilitiesTable extends Migration
             $table->date('membership_expiration_date')->nullable();
             $table->foreignId('user_id')->constrained();
             $table->string('serial_number')->nullable();
+            $table->enum('activity_type', ['commercial_record', 'negative_certificate']);
             $table->foreignId('branch_id')->constrained();
             $table->timestamps();
         });

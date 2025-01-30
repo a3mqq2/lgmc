@@ -46,7 +46,7 @@
                                     <th class="bg-primary text-light">تاريخ انتهاء الجواز</th>
                                     <th class="bg-primary text-light">العنوان</th>
                                     <th class="bg-primary text-light">رقم الهاتف</th>
-                                    <th class="bg-primary text-light">رقم الهاتف 2</th>
+                                    <th class="bg-primary text-light"> رقم الواتساب  </th>
                                     <th class="bg-primary text-light">البريد الالكتروني</th>
                                     <th class="bg-primary text-light">حالة العضوية</th>
                                     <th class="bg-primary text-light">تاريخ انتهاء العضوية</th>

@@ -43,7 +43,6 @@ class StoreDoctorRequest extends FormRequest
             'passport_number' => 'required|string|max:20',
             'passport_expiration' => 'required|date|after:today',
             'phone' => ['required', 'regex:/^09[1-9][0-9]{7}$/'],
-            'phone_2' => ['nullable', 'regex:/^09[1-9][0-9]{7}$/'],
             'address' => 'required|string|max:255',
             'hand_graduation_id' => 'required|numeric',
             'internership_complete' => 'required|date',
@@ -59,11 +58,11 @@ class StoreDoctorRequest extends FormRequest
             'notes' => 'nullable|string',
             'branch_id' => 'nullable|numeric',
             'qualification_university_id' => 'required|numeric',
-            'doctor_number' => 'required|string|max:255',
+            'doctor_number' => 'required_if:type,==,libyan|max:255',
             'documents' => "required",
             'type' => "required|in:libyan,palestinian,foreign,visitor",
             'password' => 'required|min:6|confirmed',
-            
+            'country_graduation_id' => 'nullable|numeric',
             
             // قواعد التحقق المخصصة للتحقق من البلاك ليست
             'blacklist_check' => [
@@ -119,7 +118,6 @@ class StoreDoctorRequest extends FormRequest
             'passport_expiration.after' => 'حقل تاريخ انتهاء الجواز يجب أن يكون بعد اليوم.',
             'phone.required' => 'حقل رقم الهاتف مطلوب.',
             'phone.regex' => 'رقم الهاتف غير صالح.',
-            'phone_2.regex' => 'رقم الهاتف الثاني غير صالح.',
             'address.required' => 'حقل العنوان مطلوب.',
             'address.string' => 'حقل العنوان يجب أن يكون نصاً.',
             'address.max' => 'حقل العنوان لا يجب أن يتجاوز 255 حرفاً.',

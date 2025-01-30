@@ -425,3 +425,9 @@
     </a>
 </li>
 @endif
+
+<li class="nav-item">
+    <a class="nav-link menu-link" href="{{ route(get_area_name().'.profile.change-password') }}">
+        <i class="ri-lock-password-line"></i> <span>تغيير كلمة المرور</span>
+    </a>
+</li>

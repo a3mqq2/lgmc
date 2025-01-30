@@ -23,7 +23,7 @@
                                     <input type="text" class="form-control" name="phone" placeholder="البحث بالهاتف" value="{{ request('phone') }}">
                                 </div>
                                 <div class="col-md-3">
-                                    <input type="text" class="form-control" name="passport_number" placeholder="البحث برقم الجواز" value="{{ request('passport_number') }}">
+                                    <input type="text" class="form-control" name="passport_number" pattern="[A-Z0-9]+"  placeholder="البحث برقم الجواز" value="{{ request('passport_number') }}">
                                 </div>
                                 <div class="col-md-3">
                                     <input type="text" class="form-control" name="ID_number" placeholder="البحث برقم الهوية" value="{{ request('ID_number') }}">

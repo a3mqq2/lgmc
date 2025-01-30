@@ -107,6 +107,7 @@
                                 class="form-control" 
                                 id="passport_number" 
                                 name="passport_number" 
+                                pattern="[A-Z0-9]+" 
                                 value="{{ old('passport_number') }}"
                             >
                         </div>

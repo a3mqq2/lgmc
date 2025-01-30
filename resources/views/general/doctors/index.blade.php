@@ -3,9 +3,11 @@
 
 @section('content')
 <div class="row">
+    @if (get_area_name() != "finance")
     <div class="col-md-12">
         <a href="{{ route(get_area_name().'.doctors.create', ['type' => request('type')] ) }}" class="btn btn-success mb-2"><i class="fa fa-plus"></i> إنشاء جديد </a>
     </div>
+    @endif
     <div class="col-12">
         <div class="card">
             <div class="card-header bg-primary text-light">
@@ -67,6 +69,11 @@
                                 <th class="bg-light">الدرجة العلمية</th>
                                 <th class="bg-light">تاريخ الاضافة</th>
                                 <th class="bg-light">حالة العضوية</th>
+                                @if (get_area_name() == "finance")
+                                <th class="bg-danger text-light">القيمة المستحقة من الطبيب</th>
+                                <th class="bg-success text-light">القيمة المدفوعة الكلية</th>
+                                <th class="bg-warning text-light">القيمة المعفى عنه</th>
+                                @endif
                                 <th class="bg-light">الإجراءات</th>
                             </tr>
                         </thead>
@@ -90,9 +97,26 @@
                                 <td>{{ $doctor->created_at->format('Y-m-d') }}</td>
                                 <td>
                                     <span class="badge {{$doctor->membership_status->badgeClass()}} ">
-                                        {{ $doctor->membership_status->label() }}
-                                    </span>
-                                </td>
+                                                {{ $doctor->membership_status->label() }}
+                                            </span>
+                                        </td>
+                                    @if (get_area_name() == "finance")
+                                    <td>
+                                        @php
+                                        $total = $doctor->invoices->where('status', \App\Enums\InvoiceStatus::unpaid)->sum('amount');
+                                        $paid = $doctor->invoices->where('status', \App\Enums\InvoiceStatus::paid)->sum('amount');
+                                        $relief = $doctor->invoices->where('status', \App\Enums\InvoiceStatus::relief)->sum('amount');
+                                        @endphp
+
+                                        {{ number_format($total, 2) }} د.ل
+                                    </td>
+                                    <td>
+                                        {{ number_format($paid, 2) }} د.ل
+                                    </td>
+                                    <td>
+                                        {{ number_format($relief, 2) }} د.ل
+                                    </td>
+                               @endif
                                 <td>
 
 
@@ -123,12 +147,16 @@
                                     </div>
                                     @endif
 
-
-
+                                    @if (get_area_name() != "finance")
                                     <a href="{{ route(get_area_name() . '.doctors.show', $doctor) }}" class="btn btn-primary btn-sm text-light">عرض <i class="fa fa-eye"></i></a>
                                     <a href="{{ route(get_area_name() . '.doctors.edit', $doctor) }}" class="btn btn-info btn-sm text-light">تعديل <i class="fa fa-edit"></i></a>
                                     <a href="{{ route(get_area_name() . '.doctors.print', $doctor) }}" class="btn btn-secondary btn-sm text-light">طباعة <i class="fa fa-print"></i></a>
                                     <button type="button" class="btn btn-danger btn-sm text-light" data-bs-toggle="modal" data-bs-target="#deleteModal" data-doctor-id="{{ $doctor->id }}">حذف <i class="fa fa-trash"></i></button>
+                                    @endif
+
+                                    @if (get_area_name() == "finance")
+                                        <a href="{{route('finance.total_invoices.create', $doctor)}}" class="btn btn-primary text-light">دفع الفواتير</a>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach

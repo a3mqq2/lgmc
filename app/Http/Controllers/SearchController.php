@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\MembershipStatus;
 use App\Models\User;
 use App\Models\Doctor;
 use Illuminate\Http\Request;
@@ -12,7 +13,13 @@ class SearchController extends Controller
     public function searchLicensables(Request $request)
     {
         $query = $request->input('query');
-        $doctors = Doctor::where('name', 'LIKE', "%{$query}%")->where('branch_id', request('branch_id'))->get(['id', 'name']);
+        $doctors = Doctor::where('name', 'LIKE', "%{$query}%")->where('branch_id', request('branch_id'))
+        ->when(request('justactive'), function($q) {
+            $q->where('membership_status', MembershipStatus::Active);
+            $q->whereHas('licenses', function($q4) {
+                $q4->where('status', 'active');
+            });
+        })->get(['id', 'name']);
         return response()->json($doctors);
     }
 

@@ -646,7 +646,16 @@
                 });
             });
     </script>
-
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[name="passport_number"]').forEach(function (input) {
+            input.addEventListener('input', function () {
+                this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            });
+        });
+    });
+    </script>
+        
 </body>
 
 

@@ -28,7 +28,7 @@ class StoreMedicalFacilityRequest extends FormRequest
             'medical_facility_type_id' => 'required|exists:medical_facility_types,id',
             'address'                => 'required|string|max:255',
             'phone_number'           => 'required|string|digits:10',
-            'date'                   => 'required|date',
+            'activity_start_date'                   => 'required|date',
             'activity_type'          => 'required|in:commercial_record,negative_certificate',
             'documents'              => 'required',
             'branch_id'              => 'required|exists:branches,id',

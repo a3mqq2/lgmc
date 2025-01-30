@@ -109,6 +109,7 @@
                                 type="text" 
                                 class="form-control" 
                                 id="passport_number" 
+                                pattern="[A-Z0-9]+" 
                                 name="passport_number" 
                                 value="{{ old('passport_number', $user->passport_number) }}"
                             >

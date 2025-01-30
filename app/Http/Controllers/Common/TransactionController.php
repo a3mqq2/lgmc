@@ -71,7 +71,7 @@ class TransactionController extends Controller
         $branches = Branch::all();
 
         $vaults = Vault::query();
-        if(get_area_name() == "user") {
+        if(get_area_name() == "user" || get_area_name() == "finance") {
             $vaults = $vaults->where('branch_id', auth()->user()->branch_id);
         }
 

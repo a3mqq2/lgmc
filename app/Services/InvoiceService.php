@@ -71,6 +71,7 @@ class InvoiceService
             'type' => 'deposit',
             'transaction_type_id' => $transaction_type_id,
             'desc' => ' دفع لقيمة الفاتورة '.$invoice->id,
+            'branch_id' => $invoice->branch_id,
             'user_id' => Auth::id(),
          ]); 
 
@@ -150,7 +151,6 @@ class InvoiceService
         $membership = $invoice->invoiceable;
         $membership->membership_status = MembershipStatus::Active;
         $membership->membership_expiration_date = now()->addYear();
-        $membership->save();
         $membership->save();
     }
 }

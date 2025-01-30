@@ -26,7 +26,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="passport_number" class="form-label">رقم الجواز (اجباري في حال طبيب غير ليبي) </label>
-                        <input type="text" name="passport_number" id="passport_number" value="{{ old('passport_number') }}" class="form-control" placeholder="رقم الجواز">
+                        <input type="text" pattern="[A-Z0-9]+"  name="passport_number" id="passport_number" value="{{ old('passport_number') }}" class="form-control" placeholder="رقم الجواز">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="id_number" class="form-label">الرقم الوطني (اجباري في حال طبيب ليبي ) </label>
