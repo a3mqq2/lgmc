@@ -208,6 +208,7 @@ class LicenceController extends Controller
                         }
                     }
 
+
                     if($getPrice) {
                         $invoice = new Invoice();
                         $invoice->invoice_number = "LIC" . last_invoice_id();
