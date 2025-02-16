@@ -367,15 +367,7 @@
         let csrfToken = '{{csrf_token()}}'
     </script>
 
-    @if (request()->cookie('ast'))
-    <meta name="ast" content="{{ request()->cookie('ast') }}" />
-    @else
-    <script>
-        setTimeout(() => {
-            document.getElementById('logout-form').submit();
-        }, 200);
-    </script>
-    @endif
+   
 </head>
 
 <body>
