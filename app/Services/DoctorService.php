@@ -91,16 +91,16 @@ class DoctorService
          }
      
 
-         if(request('regestration'))
-         {
-            $query->where('membership_status','pending');
-         } else if(request('init_approve')) {
-            $query->where('membership_status','init_approve');
-         } else if(request('rejection')) {
-            $query->where('membership_status','rejected');
-         } else   {
-            $query->where('membership_status','!=','pending');
-         }
+        //  if(request('regestration'))
+        //  {
+        //     $query->where('membership_status','pending');
+        //  } else if(request('init_approve')) {
+        //     $query->where('membership_status','init_approve');
+        //  } else if(request('rejection')) {
+        //     $query->where('membership_status','rejected');
+        //  } else   {
+        //     $query->where('membership_status','!=','pending');
+        //  }
 
 
          if (get_area_name() == "user" || get_area_name() == "finance") {
