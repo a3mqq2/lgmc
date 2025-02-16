@@ -3,6 +3,14 @@
 
 @section('content')
     <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="main-content-label"> الاجراءات </h4>
+                    <a href="{{route(get_area_name().'.doctors.print-id', $doctor)}}" class="btn btn-primary text-light">طباعة بطاقة الهوية</a>
+                </div>
+            </div>
+        </div>
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
@@ -26,7 +34,7 @@
                                 </tr>
                                 <tr>
                                     <td  class="{{$doctor->type->badgeClass()}}" >{{ $doctor->type->label() }}</td>
-                                    <td>{{ $doctor->code }}</td>
+                                    <td>{{ $doctor->ecode }}</td>
                                     <td>{{ $doctor->doctor_number }}</td>
                                     <td>{{ $doctor->name }}</td>
                                     <td>{{ $doctor->name_en }}</td>
@@ -126,7 +134,11 @@
                                 </tr>
                                 <tr>
                                     <td>{{ $doctor->experience }}</td>
-                                    <td>{{ $doctor->ex_medical_facilities }}</td>
+                                    <td>
+                                        @foreach ($doctor->medicalFacilities as $medicalFacility)
+                                            <span class="badge badge-primary text-light">{{ $medicalFacility->name }}</span>
+                                        @endforeach
+                                    </td>
                                     <td>{{ $doctor->notes }}</td>
                                 </tr>
                             </tbody>

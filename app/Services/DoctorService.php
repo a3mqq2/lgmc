@@ -15,10 +15,14 @@ use App\Models\Blacklist;
 use App\Models\Specialty;
 use App\Models\DoctorRank;
 use App\Models\University;
+use App\Mail\FinalApproval;
+use App\Mail\FirstApproval;
+use App\Mail\RejectionEmail;
 use App\Models\AcademicDegree;
 use App\Models\MedicalFacility;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log as FacadesLog;
 
@@ -86,6 +90,19 @@ class DoctorService
              $query->where('type', 'foreign');
          }
      
+
+         if(request('regestration'))
+         {
+            $query->where('membership_status','pending');
+         } else if(request('init_approve')) {
+            $query->where('membership_status','init_approve');
+         } else if(request('rejection')) {
+            $query->where('membership_status','rejected');
+         } else   {
+            $query->where('membership_status','!=','pending');
+         }
+
+
          if (get_area_name() == "user" || get_area_name() == "finance") {
              $query->where('branch_id', auth()->user()->branch_id);
          }
@@ -147,14 +164,26 @@ class DoctorService
             return redirect()->back()->withInput()->withErrors(['هذا الطبيب موجود في البلاك ليست ولا يمكن إضافته.']);
         }
 
+
+        // check the doctor is exists before
+        $doctor = Doctor::where('name', $data['name'])
+            ->where('phone', $data['phone'])
+            ->where('email', $data['email'])
+            ->where('passport_number', $data['passport_number'])
+            ->where('type', $data['type'])
+            ->first();
+
+        if($doctor)
+        {
+            return redirect()->back()->withInput()->withErrors(['هذا الطبيب موجود بالفعل']);
+        }
         
 
-        DB::beginTransaction();
+        DB::beginTransaction(); 
 
         try {
             
             // توليد رمز الطبيب
-            $data['code'] = (get_area_name() == "admin" ? $data['branch_id'] : auth()->user()->branch_id) . '-' . (Doctor::count() + 1);
             $data['branch_id'] = get_area_name() == "admin" ? $data['branch_id'] : auth()->user()->branch_id;
             $data['date_of_birth'] = isset($data['date_of_birth']) ? $data['date_of_birth'] : $data['birth_year'] . '-' . $data['month'] . '-' . $data['day'];
 
@@ -162,6 +191,17 @@ class DoctorService
             {
                 return redirect()->back()->withInput()->withErrors(['يجب تحديد الفرع']);
             }
+
+
+            if(isset($data['ex_medical_facilities']))
+            {
+                $medicalFacilities = $data['ex_medical_facilities'];
+                $medicalFacilities = array_filter($medicalFacilities, function($value) {
+                    return $value != '-';
+                });
+                unset($data['ex_medical_facilities']);
+            } 
+
 
             // إنشاء السجل الجديد للطبيب
             $data['password'] = Hash::make($data['password']);
@@ -171,10 +211,9 @@ class DoctorService
             $doctor = Doctor::create($data);
 
             // ربط المرافق الطبية
-            $doctor->medicalFacilities()->attach($data['medical_facilities'] ?? []);
-
+            $doctor->medicalFacilities()->attach($medicalFacilities ?? []);
+            $doctor->code = Doctor::max('id') + 1;
             // تحديث رمز الطبيب بناءً على الفرع
-            $doctor->code = $doctor->branch->code . '-' . Invoice::count()+1;
             $doctor->membership_status = 'inactive';
             $doctor->membership_expiration_date = null;
             $doctor->save();
@@ -206,6 +245,11 @@ class DoctorService
 
             // إنشاء الفاتورة الخاصة بالطبيب
             $this->createInvoice($doctor);
+
+            // initize invoice for issued the id card
+
+            $this->initCardID($doctor);
+
 
             // تسجيل العملية في السجل
             Log::create([
@@ -498,20 +542,169 @@ class DoctorService
         DB::beginTransaction();
 
         try {
-            $doctor->membership_status = 'inactive';
-            $this->createInvoice($doctor);
-            $doctor->save();
+            
+            if(request('init'))
+            {
+
+                $doctor->update([
+                    "membership_status" => \App\Enums\MembershipStatus::InActive,
+                ]);
+
+                Log::create([
+                    'user_id' => auth()->user()->id,
+                    'details' => 'تم الموافقة النهائية على الطبيب: ' . $doctor->name,
+                ]);
+
+
+                $doctor->code = Doctor::max('code') + 1;
+
+                // create invoice
+                $this->createInvoice($doctor);
+                $this->sendFinalApprovalEmail($doctor);
+            } else {
+                $doctor->update([
+                    "visiting_date" => request('meet_date'),
+                    "membership_status" => "init_approve",
+                ]);
+
+                $this->sendFirstApprovalEmail($doctor);
+
+                Log::create([
+                    'user_id' => auth()->user()->id,
+                    'details' => 'تم الموافقة المبدئية على الطبيب: ' . $doctor->name,
+                ]);
+            }
+
 
             // Log the approval
-            Log::create([
-                'user_id' => auth()->user()->id,
-                'details' => 'تم الموافقة على الطبيب: ' . $doctor->name,
-            ]);
+    
 
             DB::commit();
         } catch (\Exception $e) {
+            dd($e->getMessage());
             DB::rollback();
             throw $e;  // Re-throw the exception after rolling back
         }
     }
+
+
+
+    public function reject(Doctor $doctor)
+    {
+        DB::beginTransaction();
+
+        try {
+            
+            $doctor->update([
+                "membership_status" => \App\Enums\MembershipStatus::Rejected,
+                "notes" =>  request('notes'),
+            ]);
+
+
+            Log::create([
+                'user_id' => auth()->user()->id,
+                'details' => 'تم  الرفض على الطبيب: ' . $doctor->name . " وذلك بسبب :  " . request('notes'),
+            ]);
+
+
+            $this->sendRejectionEmail($doctor,request('notes'));
+
+
+
+
+            DB::commit();
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+            DB::rollback();
+            throw $e;  
+        }
+    }
+
+
+
+    public function sendFinalApprovalEmail($doctor)
+    {
+        // send email to the doctor
+        Mail::to($doctor->email)
+        ->send(new FinalApproval($doctor));
+    }
+
+    public function sendFirstApprovalEmail($doctor)
+    {
+        try {
+            Mail::to($doctor->email)
+                ->send(new FirstApproval($doctor));
+    
+        } catch (\Exception $e) {
+            \Log::error('Error sending first approval email: ' . $e->getMessage());
+        }
+    }
+
+
+        public function sendRejectionEmail($doctor, $reason)
+        {
+            try {
+                // Send email to the doctor
+                Mail::to($doctor->email)
+                    ->send(new RejectionEmail($doctor, $reason));
+
+            } catch (\Exception $e) {
+                \Log::error('Error sending rejection email: ' . $e->getMessage());
+            }
+        }
+
+
+        public function initCardID($doctor)
+        {
+            $doctorType = $doctor->type;
+            if($doctorType == \App\Enums\DoctorType::Libyan)
+            {
+                $price = Pricing::find(82);
+                $data = [
+                    'invoice_number' => "ID-" . Invoice::latest()->first()->id + 1,
+                    'invoiceable_id' => $doctor->id,
+                    'invoiceable_type' => 'App\Models\Doctor',
+                    'description' => "رسوم إصدار بطاقة الهوية",
+                    'user_id' => auth()->id(),
+                    'amount' => $price->amount,
+                    'pricing_id' => $price->id,
+                    'status' => 'unpaid',
+                    'branch_id' => auth()->user()->branch_id,
+                ];
+
+                $invoice = Invoice::create($data);
+            } else if($doctorType == \App\Enums\DoctorType::Foreign)
+            {
+                $price = Pricing::find(83);
+                $data = [
+                    'invoice_number' => "ID-" . Invoice::latest()->first()->id + 1,
+                    'invoiceable_id' => $doctor->id,
+                    'invoiceable_type' => 'App\Models\Doctor',
+                    'description' => "رسوم إصدار بطاقة الهوية",
+                    'user_id' => auth()->id(),
+                    'amount' => $price->amount,
+                    'pricing_id' => $price->id,
+                    'status' => 'unpaid',
+                    'branch_id' => auth()->user()->branch_id,
+                ];
+                $invoice = Invoice::create($data);
+
+            } else if($doctorType == \App\Enums\DoctorType::Palestinian)
+            {
+                $price = Pricing::find(84);
+                $data = [
+                    'invoice_number' => "ID-" . Invoice::latest()->first()->id + 1,
+                    'invoiceable_id' => $doctor->id,
+                    'invoiceable_type' => 'App\Models\Doctor',
+                    'description' => "رسوم إصدار بطاقة الهوية",
+                    'user_id' => auth()->id(),
+                    'amount' => $price->amount,
+                    'pricing_id' => $price->id,
+                    'status' => 'unpaid',
+                    'branch_id' => auth()->user()->branch_id,
+                ];
+                $invoice = Invoice::create($data);
+            } 
+        }
+
 }

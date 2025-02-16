@@ -2,7 +2,6 @@
 
 
 
-
 <li class="nav-item">
     <a class="nav-link menu-link" href="#tickets" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-ticket"></i><span data-key="t-layouts">     التذاكر    </span>
@@ -19,6 +18,8 @@
         </ul>
     </div>
 </li>
+
+
 
 
 @if(auth()->user()->permissions->where('name', 'doctor-requests')->count())
@@ -58,6 +59,28 @@
 @endif
 
 
+
+@if(auth()->user()->permissions->where('name', 'manage-doctor-transfers')->count())
+<li class="nav-item">
+    <a class="nav-link menu-link" href="#doctor-transfers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fa fa-exchange-alt"></i><span data-key="t-layouts"> تحويلات الأطباء </span>
+    </a>
+    <div class="collapse menu-dropdown" id="doctor-transfers">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctor-transfers.create') }}" class="nav-link" data-key="t-horizontal"> إضافة طلب نقل جديد </a>
+                <a href="{{ route(get_area_name().'.doctor-transfers.index', ['status' => 'pending']) }}" class="nav-link" data-key="t-horizontal"> التحويلات قيد الانتظار </a>
+                <a href="{{ route(get_area_name().'.doctor-transfers.index', ['status' => 'approved']) }}" class="nav-link" data-key="t-horizontal"> التحويلات الموافق عليها </a>
+                <a href="{{ route(get_area_name().'.doctor-transfers.index', ['status' => 'rejected']) }}" class="nav-link" data-key="t-horizontal"> التحويلات المرفوضة </a>
+                <a href="{{ route(get_area_name().'.doctor-transfers.index') }}" class="nav-link" data-key="t-horizontal"> عرض جميع التحويلات </a>
+            </li>
+        </ul>
+    </div>
+</li>
+@endif
+
+
+
 @if(auth()->user()->permissions->where('name','manage-doctors')->count())
     
 <li class="nav-item">
@@ -67,6 +90,9 @@
     <div class="collapse menu-dropdown" id="doctors">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctors.index', ['regestration' => "1"]) }}" class="nav-link" data-key="t-horizontal">    طلبات العضوية   </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['init_approve' => "1"]) }}" class="nav-link" data-key="t-horizontal">     اطباء تمت الموافقة عليهم بشكل مبدئي    </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['rejection' => "1"]) }}" class="nav-link" data-key="t-horizontal">    اطباء تم رفض عضوياتهم    </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan"]) }}" class="nav-link" data-key="t-horizontal">    الاطباء الليبيين  </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign"]) }}" class="nav-link" data-key="t-horizontal">    الاطباء الآجانب  </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor"]) }}" class="nav-link" data-key="t-horizontal">    الاطباء الزوار  </a>

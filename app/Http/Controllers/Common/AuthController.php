@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Common;
-use App\Models\Log;
+use Carbon\Carbon;
 
+use App\Models\Otp;
 use App\Models\Branch;
 use App\Models\Doctor;
+use App\Mail\VerifyOtp;
 use App\Models\Country;
 use App\Models\Invoice;
 use App\Models\FileType;
@@ -14,13 +16,15 @@ use App\Models\DoctorRank;
 use App\Models\University;
 use Illuminate\Http\Request;
 use App\Models\AcademicDegree;
+use App\Models\MedicalFacility;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cookie;
 use App\Http\Requests\StoreDoctorRequest;
-
 class AuthController extends Controller
 {
     public function login() {
@@ -95,7 +99,8 @@ class AuthController extends Controller
         $doctor_ranks = DoctorRank::all();
         $specialties = Specialty::whereNull('specialty_id')->get();
         $branches = Branch::all();
-        return view('doctor.register', compact('countries','academicDegrees','universities','file_types','doctor_ranks','specialties','branches'));
+        $medicalFacilities = MedicalFacility::all();
+        return view('doctor.register', compact('countries','academicDegrees','universities','file_types','doctor_ranks','specialties','branches','medicalFacilities'));
     }
 
 
@@ -127,29 +132,49 @@ class AuthController extends Controller
 
             // إذا كان الطبيب موجودًا في البلاك ليست، إلقاء استثناء
             if ($blacklistQuery->exists()) {
-                return redirect()->back()->withInput()->withErrors(['هذا الطبيب موجود في البلاك ليست ولا يمكن إضافته.']);
+                return redirect()->back()->withInput()->withErrors(['حسابك موجود من ضمن القائمة السوداء للاطباء !! يرجى التواصل مع الادارة']);
             }
+
+
+             // check the doctor is exists before
+            $doctor = Doctor::where('name', $data['name'])
+            ->where('phone', $data['phone'])
+            ->where('email', $data['email'])
+            ->where('passport_number', $data['passport_number'])
+            ->where('type', $data['type'])
+            ->first();
+
+            if($doctor)
+            {
+                return redirect()->back()->withInput()->withErrors(["لقد تم تسجيلك مسبقاََ يرجى تسجيل الدخول"]);
+            }
+            
 
             DB::beginTransaction();
 
             try {
-                // توليد رمز الطبيب
-                $data['code'] = ($request->branch_id ? $data['branch_id'] : auth()->user()->branch_id) . '-' . (Doctor::count() + 1);
                 
-                // إنشاء السجل الجديد للطبيب
                 $data['password'] = Hash::make($data['password']);
 
-                // 
 
-                $data['email'] = strtolower(str_replace(' ', '.', $data['name_en'])) . env('EMAIL_HOST');
-                $data['branch_id'] = $data['branch_id'] ?? auth()->user()->branch_id;
+                $medicalFacilities = [];    
+                if(isset($data['ex_medical_facilities']))
+                {
+                    $medicalFacilities = $data['ex_medical_facilities'];
+                    $medicalFacilities = array_filter($medicalFacilities, function($value) {
+                        return $value != '-';
+                    });
+                    unset($data['ex_medical_facilities']);
+                }
+
+
+                $data['branch_id'] = $data['branch_id'];
                 $doctor = Doctor::create($data);
 
                 // ربط المرافق الطبية
-                $doctor->medicalFacilities()->attach($data['medical_facilities'] ?? []);
 
-                // تحديث رمز الطبيب بناءً على الفرع
-                $doctor->code = $doctor->branch->code . '-' . Doctor::count()+1;
+
+                $doctor->medicalFacilities()->attach($medicalFacilities ?? []);
                 $doctor->membership_status = 'pending';
                 $doctor->membership_expiration_date = null;
                 $doctor->save();
@@ -185,10 +210,35 @@ class AuthController extends Controller
 
                 DB::commit();
 
-                return redirect()->route('doctor-login')->with('success', 'تم تسجيل عضويتك بنجاح يرجى التوجه للفرع الذي قمت بالتسجيل به لإكمال الاجراءات نشكرك على التسجيل ');
+                // sending email to confirm his email
+                $this->sendEmailVerificationNotification($doctor);
+                return redirect()->route('otp.verify', ['email' => $doctor->email]);
+                // return redirect()->route('doctor-login')->with('success', 'تم تسجيل عضويتك بنجاح يرجى التوجه للفرع الذي قمت بالتسجيل به لإكمال الاجراءات نشكرك على التسجيل ');
             } catch (\Exception $e) {
                 DB::rollback();
                 throw $e; // إعادة إلقاء الاستثناء بعد التراجع عن العملية
             }
+    }
+
+    public function sendEmailVerificationNotification($doctor)
+    {
+        // Generate a 6-digit OTP
+        $otpCode = rand(100000, 999999);
+    
+        // Save OTP to the database
+        Otp::create([
+            'email' => $doctor->email,
+            'otp_code' => $otpCode,
+            'is_verified' => false,
+            'expires_at' => Carbon::now()->addMinutes(30), // OTP expires in 10 minutes
+        ]);
+    
+        // Send OTP via email
+        try {
+            Mail::to($doctor->email)
+            ->send(new VerifyOtp($otpCode, $doctor->email));
+        } catch(\Exception $e) {
+            Log::error('Error sending email: ' . $e->getMessage());
+        }
     }
 }

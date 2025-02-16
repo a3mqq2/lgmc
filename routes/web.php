@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OtpController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Controllers\Common\AuthController;
@@ -22,6 +23,12 @@ Route::get('/doc-login', [WebsiteController::class, 'doctor_login'])->name('doct
 Route::post('/doc-auth', [WebsiteController::class, 'doctor_auth'])->name('doctor-auth');
 
 
+Route::get('/checker', [WebsiteController::class, 'checker'])->name('checker');
+
+Route::get('/verify-otp', [OtpController::class, 'showVerifyOtpForm'])->name('otp.verify');
+Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->name('otp.check');
+
+
 Route::get('/search-licensables', [SearchController::class, 'searchLicensables']);
 Route::get('/search-facilities', [SearchController::class, 'searchFacilities']);
 Route::get('/search-users', [SearchController::class, 'searchUsers']);
@@ -29,7 +36,7 @@ Route::get('/search-users', [SearchController::class, 'searchUsers']);
 
 Route::get("/login", [AuthController::class, 'login'])->name('login');
 Route::get("/register", [AuthController::class, 'register'])->name('register');
-Route::post("/register", [AuthController::class, 'register_store'])->name('register');
+Route::post("/register", [AuthController::class, 'register_store'])->name('register-store');
 Route::post("/do-login", [AuthController::class, 'do_login'])->name('do_login');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('change-branch', [AuthController::class, 'change_branch'])->name('change_branch');

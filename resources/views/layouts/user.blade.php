@@ -507,6 +507,30 @@
                         {{auth()->user()->branch ? auth()->user()->branch->name : "-"}}
                     </div>
                 </div>
+
+
+
+
+                <form action="{{ route(get_area_name().'.search') }}" method="GET">
+                    <div class="input-group">
+                        <input type="text" name="code" placeholder="ابحث بكود الطبيب" class="form-control" id="">
+                        <button type="submit" class="btn btn-info btn-sm">
+                            <i class="fa fa-search"></i> بحث
+                        </button>
+                    </div>
+                    <div class="input-group mt-2">
+                        <input type="text" name="phone" placeholder="ابحث برقم هاتف الطبيب" class="form-control" id="">
+                        <button type="submit" class="btn btn-info btn-sm">
+                            <i class="fa fa-search"></i> بحث
+                        </button>
+                    </div>
+                </form>
+                
+
+             
+
+
+
                 <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
                     <i class="ri-record-circle-line"></i>
                 </button>

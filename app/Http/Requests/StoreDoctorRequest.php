@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Blacklist;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDoctorRequest extends FormRequest
 {
@@ -14,6 +15,12 @@ class StoreDoctorRequest extends FormRequest
 
     public function rules(): array
     {
+
+
+            $routeName = Route::currentRouteName();
+            $isLocalEnv = env('APP_ENV') === 'local' && env('APP_DEBUG') === true;
+
+            
         return [
             'name' => 'required|string|max:255',
             'name_en' => 'required|string|max:255',
@@ -53,7 +60,7 @@ class StoreDoctorRequest extends FormRequest
             'specialty_1_id' => 'required|numeric',
             'specialty_2_id' => 'nullable|numeric',
             'specialty_3_id' => 'nullable|numeric',
-            'ex_medical_facilities' => 'nullable|string',
+            'ex_medical_facilities' => 'nullable|array',
             'experience' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
             'branch_id' => 'nullable|numeric',
@@ -63,6 +70,8 @@ class StoreDoctorRequest extends FormRequest
             'type' => "required|in:libyan,palestinian,foreign,visitor",
             'password' => 'required|min:6|confirmed',
             'country_graduation_id' => 'nullable|numeric',
+            'g-recaptcha-response' => ($routeName === 'register-store' && !$isLocalEnv) ? 'required|captcha' : '',
+
             
             // قواعد التحقق المخصصة للتحقق من البلاك ليست
             'blacklist_check' => [

@@ -273,33 +273,7 @@ class DoctorRequestController extends Controller
             }
 
 
-            if(env('APP_ENV') == "production")
-            {
-                if(in_array($doctorRequest->pricing_id, [72,48,38]))
-                {
-
-                    $email = $doctorRequest->doctor->email;
-                    $password = Str::random(9);
-
-                    $cpanel = new \GuzzleHttp\Client();
-                    $cpanelResponse = $cpanel->post('https://your-cpanel-url:2083/execute/Email/add_pop', [
-                        'headers' => [
-                            'Authorization' => 'Basic ' . base64_encode('username:password'), 
-                        ],
-                        'form_params' => [
-                            'email' => $email,
-                            'domain' => 'lgmc.ly',
-                            'password' => $password,
-                            'quota' => 1024, 
-                        ],
-                    ]);
-
-                    $responseBody = json_decode($cpanelResponse->getBody(), true);
-                    if ($responseBody['status'] !== 1) {
-                        throw new \Exception('Failed to create email: ' . ($responseBody['errors'][0] ?? 'Unknown error'));
-                    }
-                }
-            }
+         
 
             $doctorRequest->update([
                 'status' => \App\Enums\RequestStatus::done,

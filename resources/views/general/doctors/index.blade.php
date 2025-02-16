@@ -69,6 +69,9 @@
                                 <th class="bg-light">الدرجة العلمية</th>
                                 <th class="bg-light">تاريخ الاضافة</th>
                                 <th class="bg-light">حالة العضوية</th>
+                                @if (request('init_approve') )
+                                    <th class="bg-light"> تاريخ الزيارة</th>
+                                @endif
                                 @if (get_area_name() == "finance")
                                 <th class="bg-danger text-light">القيمة المستحقة من الطبيب</th>
                                 <th class="bg-success text-light">القيمة المدفوعة الكلية</th>
@@ -81,7 +84,7 @@
                             @foreach ($doctors as $doctor)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $doctor->code }}</td>
+                                <td>{{ $doctor->ecode }}</td>
                                 <td>{{ $doctor->doctor_number }}</td>
                                 <td>{{ $doctor->name }}</td>
                                 <td>{{ $doctor->phone }}</td>
@@ -99,7 +102,12 @@
                                     <span class="badge {{$doctor->membership_status->badgeClass()}} ">
                                                 {{ $doctor->membership_status->label() }}
                                             </span>
-                                        </td>
+                                </td>
+                                @if (request('init_approve'))
+                                    <td>
+                                        {{$doctor->visiting_date}}
+                                    </td>
+                                @endif
                                     @if (get_area_name() == "finance")
                                     <td>
                                         @php
@@ -120,8 +128,9 @@
                                 <td>
 
 
-                                    @if (get_area_name() == "user" && $doctor->membership_status->value == "pending")
-                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approve{{ $doctor->id }}">قبول العضوية</button>
+
+                                    @if (get_area_name() == "user" && $doctor->code == null && $doctor->membership_status == \App\Enums\MembershipStatus::Pending)
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approve{{ $doctor->id }}"> القبول النهائي للعضوية </button>
                                     <!-- Delete Modal -->
                                     <div class="modal fade" id="approve{{ $doctor->id }}" tabindex="-1" aria-labelledby="approveLabel" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -131,21 +140,105 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    هل أنت متأكد من رغبتك في قبول عضوية هذا الطبيب؟
-                                                    
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                                                    <form action="{{ route('user.doctors.approve', $doctor->id) }}" method="POST">
+                                                    <form action="{{route(get_area_name().'.doctors.approve', $doctor)}}" method="POST">
                                                         @csrf
                                                         @method('POST')
-                                                        <button type="submit" class="btn btn-success">قبول</button>
+                                                        <div class="row">
+                                                            <div class="col-md-12 text-right">
+                                                                <label for="">حدد موعد الزيارة</label>
+                                                                <input type="date" name="meet_date" value="{{Carbon\Carbon::now()->addDay()->format('Y-m-d')}}" id="" class="form-control">
+                                                            </div>
+                                                            <div class="row mt-3">
+                                                                <div class="col">
+                                                                    <button class="btn btn-primary text-light" type="submit">تأكيد</button>
+                                                                {{-- close button --}}
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </form>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     @endif
+
+
+
+
+
+
+                                    @if (get_area_name() == "user" && $doctor->code == null && $doctor->membership_status == \App\Enums\MembershipStatus::InitApprove)
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approve_init{{ $doctor->id }}">قبول العضوية</button>
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="approve_init{{ $doctor->id }}" tabindex="-1" aria-labelledby="approveLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="approveLabel">تأكيد العضوية</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="{{route(get_area_name().'.doctors.approve', ['doctor' => $doctor, 'init' => 1])}}" method="POST">
+                                                        @csrf
+                                                        @method('POST')
+                                                        <div class="row">
+                                                            <div class="row mt-3">
+                                                                <div class="col">
+                                                                    <button class="btn btn-primary text-light" type="submit">تأكيد</button>
+                                                                {{-- close button --}}
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+
+
+
+                                    @if (get_area_name() == "user" && $doctor->code == null && $doctor->membership_status == \App\Enums\MembershipStatus::InitApprove || get_area_name() == "user" && $doctor->code == null && $doctor->membership_status == \App\Enums\MembershipStatus::Pending)
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejected_{{ $doctor->id }}">رفض العضوية</button>
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="rejected_{{ $doctor->id }}" tabindex="-1" aria-labelledby="rejectApproval" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="rejectApproval">تأكيد رفض العضوية</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form action="{{route(get_area_name().'.doctors.reject', ['doctor' => $doctor, 'init' => 1])}}" method="POST">
+                                                        @csrf
+                                                        @method('POST')
+                                                        <div class="row">
+                                                            <div class="row mt-3">
+                                                                
+                                                                <div class="col-md-12">
+                                                                    <label for="">سبب الرفض</label>
+                                                                    <textarea name="notes" id="" cols="10" rows="5" required class="form-control">
+                                                                        
+                                                                    </textarea>
+                                                                </div>
+                                                                <div class="col-md-12 mt-3">
+                                                                    <button class="btn btn-primary text-light" type="submit">تأكيد</button>
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+
+
+
+
 
                                     @if (get_area_name() != "finance")
                                     <a href="{{ route(get_area_name() . '.doctors.show', $doctor) }}" class="btn btn-primary btn-sm text-light">عرض <i class="fa fa-eye"></i></a>

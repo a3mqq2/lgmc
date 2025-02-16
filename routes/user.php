@@ -8,6 +8,7 @@ use App\Http\Controllers\Common\DoctorController;
 use App\Http\Controllers\Common\ReportController;
 use App\Http\Controllers\Common\TicketController;
 use App\Http\Controllers\Common\LicenceController;
+use App\Http\Controllers\DoctorTransferController;
 use App\Http\Controllers\Admin\DoctorFileController;
 use App\Http\Controllers\Common\TransactionController;
 use App\Http\Controllers\Common\DoctorRequestController;
@@ -15,11 +16,14 @@ use App\Http\Controllers\Common\MedicalFacilityController;
 use App\Http\Controllers\Admin\MedicalFacilityFileController;
 
 Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations')->group(function () {
+    Route::get('/search', [UserController::class, 'search'])->name('search');
     Route::get('/home', [UserController::class, 'home'])->name('home');
     Route::resource('vaults', VaultController::class)->only(['index']);
     Route::resource("transactions", TransactionController::class);
     Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->name('doctors.print');
+    Route::get('/doctors/{doctor}/print-id', [DoctorController::class, 'print_id'])->name('doctors.print-id');
     Route::post('/doctors/{doctor}/approve', [DoctorController::class, 'approve'])->name('doctors.approve');
+    Route::post('/doctors/{doctor}/reject', [DoctorController::class, 'reject'])->name('doctors.reject');
     Route::resource('doctors', DoctorController::class);
     Route::resource('doctors.files', DoctorFileController::class)->shallow();
     Route::resource('medical-facilities', MedicalFacilityController::class);
@@ -43,6 +47,12 @@ Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations'
     Route::get('/reports/licences/print', [ReportController::class, 'licences_print'])->name('reports.licences_print');
     Route::get('/reports/transactions/print', [ReportController::class, 'transactions_print'])->name('reports.transactions_print');
     // =============== REPORTS ================ //
+
+
+    // approve and reject doctor transfer route
+    Route::patch('/doctor-transfers/{doctor_transfer}/approve', [DoctorTransferController::class, 'approve'])->name('doctor-transfers.approve');
+    Route::patch('/doctor-transfers/{doctor_transfer}/reject', [DoctorTransferController::class, 'reject'])->name('doctor-transfers.reject');
+    Route::resource('doctor-transfers', DoctorTransferController::class);
 
     Route::get('profile/change-password', [ProfileController::class, 'change_password'])->name('profile.change-password');
     Route::post('profile/change-password', [ProfileController::class, 'change_password_store'])->name('profile.change-password');

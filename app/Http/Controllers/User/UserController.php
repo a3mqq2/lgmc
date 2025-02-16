@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Doctor;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -30,5 +31,34 @@ class UserController extends Controller
         }
 
         return view('user.home');
+    }
+
+
+    public function search(Request $request)
+    {
+        if(request('phone'))
+        {
+            $doctor = Doctor::where('phone', 'like', '%' . request('phone') . '%')
+            ->orWhere('phone_2', 'like', '%' . request('phone') . "%")->first();
+        }
+
+        if(request('code'))
+        {
+            $doctor = Doctor::where('code', 'like', '%' . request('code') . '%')->first();
+        }
+
+        if($doctor)
+        {
+
+            if($doctor->branch_id != auth()->user()->branch_id)
+            {
+                return back()->withErrors(['هذا الطبيب ليس من فرعك']);
+            }
+
+            return redirect()->route(get_area_name().'.doctors.show', $doctor);
+        } else {
+            return back()->withErrors(['لم يتم العثور على هذا الطبيب']);
+        }
+
     }
 }

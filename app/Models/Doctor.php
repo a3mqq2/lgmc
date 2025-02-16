@@ -63,6 +63,7 @@ class Doctor extends Authenticatable
         'membership_status',
         'membership_expiration_date',
         'password',
+        'visiting_date',
     ];
 
 
@@ -84,6 +85,7 @@ class Doctor extends Authenticatable
         'gender' => GenderEnum::class,
         'type' => DoctorType::class,
         'membership_status' => MembershipStatus::class,
+        'visiting_date' => 'datetime',
     ];
 
     public function country()
@@ -171,5 +173,12 @@ class Doctor extends Authenticatable
     public function invoices()
     {
         return $this->hasMany(Invoice::class, 'invoiceable_id')->where('invoiceable_type', 'App\Models\Doctor')->orderBy('created_at', 'desc');
+    }
+
+
+    public function getEcodeAttribute()
+    {
+
+        return $this->branch->code . '-' . $this->code;
     }
 }

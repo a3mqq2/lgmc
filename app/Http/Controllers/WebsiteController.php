@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Licence;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -43,7 +44,7 @@ class WebsiteController extends Controller
     if (Auth::guard('doctor')->attempt($credentials, $request->boolean('remember'))) {
         // Successful login
         RateLimiter::clear($throttleKey); // Clear rate limiter on successful login
-        return redirect()->intended('/doctor/dashboard')->with('success', 'مرحباً بك في بوابة النظام.');
+        return redirect()->route('doctor.dashboard')->with('success', 'تم تسجيل الدخول بنجاح.');
     }
 
     // Increment failed login attempts
@@ -53,4 +54,11 @@ class WebsiteController extends Controller
         'email' => 'بيانات الدخول غير صحيحة. الرجاء التحقق من البريد الإلكتروني أو كلمة المرور.',
     ]);
 }
+
+
+    public function checker()
+    {
+        $licence = Licence::where('id', request('licence'))->first();
+        return view('website.checker', compact('licence'));
+    }
 }

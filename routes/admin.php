@@ -1,7 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\LogController;
+use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\BranchController;
@@ -26,11 +29,10 @@ use App\Http\Controllers\Common\MedicalFacilityController;
 use App\Http\Controllers\Common\TransactionTypeController;
 use App\Http\Controllers\Admin\MedicalFacilityFileController;
 use App\Http\Controllers\Admin\MedicalFacilityTypeController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\StaffController;
 
 Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')->group(function () {
     Route::get('/home', [AdminController::class, 'home'])->name('home');
+    Route::get('/search', [UserController::class, 'search'])->name('search');
     Route::get('/reports', [ReportController::class, 'index'])->middleware('permission:manage-branches-reports')->name('reports.index');
     Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->middleware('permission:manage-doctors')->name('doctors.print');
     Route::resource('doctors', DoctorController::class)->middleware('permission:manage-doctors');

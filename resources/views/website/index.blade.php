@@ -32,7 +32,7 @@
       <nav class="navbar navbar-expand-lg center-nav transparent navbar-dark" dir="rtl">
         <div class="container flex-lg-row flex-nowrap align-items-center">
           <div class="navbar-brand w-100">
-            <a href="{{ asset('index.html') }}">
+            <a href="/">
               <img class="logo-dark" src="{{ asset('/assets/images/lgmc-dark.png?v=44') }}" srcset="{{ asset('/assets/images/lgmc-dark.png?v=44') }} 2x" width="200" alt="" />
               <img class="logo-light" src="{{ asset('/assets/images/lgmc-light.png?v=2') }}" srcset="{{ asset('/assets/images/lgmc-light.png?v=2') }} 2x" width="200" alt="" />
             </a>
@@ -259,6 +259,9 @@
         </div>
     </div>
     <!-- /section -->
+
+
+    
     <section class="wrapper bg-light" id="services"  dir="rtl">
       <div class="container">
         <div class="row">
@@ -389,6 +392,35 @@
       <!-- /.container -->
     </section>
     <!-- /section -->
+
+
+
+    <section class="wrapper  " dir="rtl">
+      <div class="container py-14 pt-md-17 ">
+        <div class="row gx-lg-8 gx-xl-12 gy-10 gy-lg-0 mb-2 align-items-end">
+          <div class="col-md-12 d-flex justify-content-center mb-3">
+            <img src="{{asset('/assets/images/shield.png')}}" width="50" alt="" style="width: 80px!important;">
+          </div>
+        <div class="col-lg-12 text-center">
+            <h2 class="fs-16 text-center text-uppercase text-line text-primary mb-3">
+              تأكّد من إذن المزاولة بواسطة الأداة
+            </h2>
+            <h3 class="display-4 mb-0 text-danger text-center">
+              متحقّق الأذونات
+            </h3>
+          </div>
+          <div class="col-md-12 text-center text-danger">
+            <a href="/checker" class="btn btn-primary mt-3"><strong class="font-weight-bold">انقر هنا</strong></a>
+          </div>
+
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container -->
+    </section>
+    
+
+
     <section class="wrapper bg-soft-primary" dir="rtl">
       <div class="container py-14 pt-md-17 ">
         <div class="row gx-lg-8 gx-xl-12 gy-10 gy-lg-0 mb-2 align-items-end">

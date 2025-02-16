@@ -94,9 +94,8 @@ class TotalInvoiceController extends Controller
         // TODO CHANGE TO 7
         $transaction->save();
 
-        $vault->update([
-            'balance' => $vault->balance + $request->total_amount,
-        ]);
+        $vault->increment('balance', $request->total_amount);
+        $vault->save();
 
 
         return redirect()->route(get_area_name().'.total_invoices.index')->with('success', 'تم دفع الفواتير بنجاح.');

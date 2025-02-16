@@ -393,6 +393,10 @@
                                 </span>
                             </a>
 
+
+
+                          
+
                             <a href="{{route('sections')}}"   class="logo logo-light">
                                 <span class="favicon">
                                     <img src="{{{asset('/assets/images/lgmc-dark.png?v=44')}}}" alt="" height="50">
@@ -401,7 +405,10 @@
                                     <img src="{{asset('/assets/images/lgmc-light.png?v=2')}}" alt="" height="17">
                                 </span>
                             </a>
+
+                            
                         </div>
+
 
 
                         <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger" id="topnav-hamburger-icon">
@@ -503,6 +510,23 @@
             <div id="scrollbar">
                 <div class="container-fluid">
 
+
+                    <div class="p-3">
+                        <form action="{{ route(get_area_name().'.search') }}" method="GET">
+                            <div class="input-group">
+                                <input type="text" name="code" placeholder="ابحث بكود الطبيب" class="form-control" id="">
+                                <button type="submit" class="btn btn-info btn-sm">
+                                    <i class="fa fa-search"></i> بحث
+                                </button>
+                            </div>
+                            <div class="input-group mt-2">
+                                <input type="text" name="phone" placeholder="ابحث برقم هاتف الطبيب" class="form-control" id="">
+                                <button type="submit" class="btn btn-info btn-sm">
+                                    <i class="fa fa-search"></i> بحث
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                     <div id="two-column-menu">
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">

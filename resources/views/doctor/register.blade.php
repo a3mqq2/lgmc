@@ -19,6 +19,7 @@
     <!-- custom Css-->
     <link href="assets/css/custom.min.css" rel="stylesheet" type="text/css" />
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.5/css/selectize.bootstrap5.min.css" integrity="sha512-w4sRMMxzHUVAyYk5ozDG+OAyOJqWAA+9sySOBWxiltj63A8co6YMESLeucKwQ5Sv7G4wycDPOmlHxkOhPW7LRg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     {{-- import font awesome --}}
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -349,6 +350,7 @@
         <div class="auth-page-content overflow-hidden pt-lg-5">
             <div class="container">
                 <div class="row">
+
                     <div class="col-lg-12">
                         <div class="card overflow-hidden">
                             <div class="row g-0">
@@ -425,12 +427,12 @@
                                                          </div>
                                                          <div class="col-md-6">
                                                              <label for="">الاسم بالكامل باللغه الانجليزيه</label>
-                                                             <input type="text" required name="name_en" value="{{old('name_en')}}"  id="" class="form-control">
+                                                             <input type="text" required name="name_en" value="{{old('name_en')}}"  id="name_en" class="form-control">
                                                          </div>
                                                          @if (request('type') == "libyan")
                                                          <div class="col-md-6 mt-2">
                                                              <label for="">الرقم الوطني</label>
-                                                             <input type="number" required name="national_number" value="{{old('national_number')}}" id="" class="form-control">
+                                                             <input type="number" required name="national_number" value="{{old('national_number')}}" id="national_number" class="form-control">
                                                          </div>
                                                          @endif
                                                          <div class="col-md-6 mt-2">
@@ -462,10 +464,41 @@
                                                          </select>
                                                          
                                                          </div>
-                                                         <div class="col-md-6 mt-2">
-                                                             <label for=""> تاريخ الميلاد  </label>
-                                                             <input type="date" required name="date_of_birth" value="{{old('date_of_birth', date('Y-m-d'))}}" id="" class="form-control">
-                                                         </div>
+                                                         @if (request('type') == "libyan")
+                                                            <div class="col-md-2 mt-2">
+                                                                <label for="birth_year">سنة الميلاد</label>
+                                                                <input type="text"  required name="birth_year" value="{{ old('birth_year') }}" id="birth_year" class="form-control" readonly>
+                                                            </div>
+                                                        
+                                                            <!-- Month & Day -->
+                                                            <div class="col-md-2 mt-2">
+                                                                <label for="date_of_birth">الشهر </label>
+                                                                <select name="month" required id="" class="form-control">
+                                                                    <option value=""> حدد </option>
+                                                                    @foreach (range(1, 12) as $month)
+                                                                        <option value="{{ $month }}" {{ old('month') == $month ? 'selected' : '' }}>
+                                                                            {{ $month }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-2 mt-2">
+                                                                <label for="day"> اليوم </label>
+                                                                <select name="day" required id="" class="form-control">
+                                                                    <option value=""> حدد </option>
+                                                                    @foreach (range(1, 31) as $day)
+                                                                        <option value="{{ $day }}" {{ old('day') == $day ? 'selected' : '' }}>
+                                                                            {{ $day }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            @else 
+                                                            <div class="col-md-6 mt-2">
+                                                                <label for=""> تاريخ الميلاد </label>
+                                                                <input type="date" required name="date_of_birth" value="{{old('date_of_birth')}}" id="" class="form-control">
+                                                            </div>
+                                                            @endif
                                                          <div class="col-md-6 mt-2">
                                                              <label for="">  الحالة الاجتماعية  </label>
                                                              <select name="marital_status"  required id="" class="form-control">
@@ -475,14 +508,17 @@
                                                          </div>
                                                          <div class="col-md-6 mt-2">
                                                              <label for="">  النوع   </label>
-                                                             <select name="gender" required id="" class="form-control">
+                                                             <select name="gender" required id="gender" class="form-control" >
                                                                  <option value="male" {{old('gender') == "male" ? "selected" : ""}}>ذكر</option>
                                                                  <option value="female" {{old('gender') == "female" ? "selected" : ""}}>انثى</option>
                                                              </select>
+                                    
                                                          </div>
+
+                                                         
                                                          <div class="col-md-6 mt-2">
                                                              <label for=""> رقم جواز السفر   </label>
-                                                             <input type="text" name="passport_number"  pattern="[A-Z0-9]+"  required value="{{old('passport_number')}}" id="" class="form-control">
+                                                             <input type="text"  name="passport_number" pattern="[A-Z0-9]+"  required value="{{old('passport_number')}}" id="" class="form-control">
                                                          </div>
                                                          <div class="col-md-6 mt-2">
                                                              <label for="">  تاريخ انتهاء صلاحية الجواز     </label>
@@ -513,6 +549,11 @@
                                                              <label for=""> تأكيد كلمة المرور  </label>
                                                              <input type="password" name="password_confirmation" value="{{old('password_confirmation')}}" id="" class="form-control">
                                                          </div>
+                                                         <div class="col-md-6">
+                                                            <label for="">البريد الالكتروني الشخصي</label>
+                                                            <input type="email" required name="email" value="{{old('email')}}" id="email" class="form-control">
+                                                            <span class="text-info"> <i class="fa fa-info-circle pr-2"></i> يستخدم هذا البريد لتسجيل الدخول على النظام</span>
+                                                        </div>
                                                      </div>
 
 
@@ -678,9 +719,14 @@
 
 
                                                    <div class="text-primary mt-2 mb-2">بيانات العمل السابق</div>
-                                                   <div class="col-md-12">
-                                                      <label for="">جهات العمل السابقة</label>
-                                                      <textarea name="ex_medical_facilities" id="" cols="30" rows="4" class="form-control"></textarea>
+                                                      <div class="col-md-12">
+                                                        <label for="">جهات العمل السابقة</label>
+                                                        <select name="ex_medical_facilities[]" multiple id="" class="selectize form-control">
+                                                            <option value="-">---</option>
+                                                            @foreach ($medicalFacilities as $item)
+                                                                <option value="{{$item->id}}">{{$item->name}}</option>
+                                                            @endforeach
+                                                        </select>
                                                   </div>
                                                   <div class="col-md-12 mt-2">
                                                       <label for=""> سنوات الخبره  </label>
@@ -693,11 +739,25 @@
                                                </div>
 
 
+
+                                               <div class="form-group">
+                                                {!! NoCaptcha::display() !!}
+                                                @error('g-recaptcha-response')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+
+
                                                    <div class="mt-4">
                                                       <button type="submit" class="btn btn-primary w-100">تسجيل</button>
                                                   </div>
 
                                           </form>
+
+
+                                          {!! NoCaptcha::renderJs() !!}
+
+
                                                @endif
 
                                       </div>
@@ -732,8 +792,468 @@
         </footer>
         <!-- end Footer -->
     </div>
-    <!-- end auth-page-wrapper -->
-    <!-- JAVASCRIPT -->
-    <script src="assets/libs/bootstrap
-::contentReference[oaicite:0]{index=0}
- 
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.5/js/standalone/selectize.min.js" integrity="sha512-JFjt3Gb92wFay5Pu6b0UCH9JIOkOGEfjIi7yykNWUwj55DBBp79VIJ9EPUzNimZ6FvX41jlTHpWFUQjog8P/sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const nationalNumberInput = document.getElementById('national_number');
+            const birthYearInput = document.getElementById('birth_year');
+            const dateOfBirthInput = document.getElementById('date_of_birth');
+            const genderSelect = document.getElementById('gender');
+            const genderInput = document.getElementById('gender_input');
+            // Initialize Flatpickr for the date input
+            flatpickr(dateOfBirthInput, {
+                dateFormat: "Y-m", // Year and month only
+                altInput: true,
+                altFormat: "F Y", // Pretty format
+                locale: "ar"
+            });
+    
+            // Handle National Number Input
+            nationalNumberInput.addEventListener('input', function () {
+                const nationalNumber = this.value;
+                console.log(nationalNumber);
+    
+                // Ensure the national number has 12 digits
+                if (nationalNumber.length === 12) {
+                    // Extract Gender
+                    const genderDigit = parseInt(nationalNumber.substring(0, 1)); // The first digit determines gender
+                    const gender = (genderDigit === 1) ? 'male' : 'female';
+    
+                    // Extract Year of Birth (next 4 digits)
+                    const year = nationalNumber.substring(1, 5);
+    
+                    // Update Inputs
+                    birthYearInput.value = year;
+                    dateOfBirthInput.value = `${year}`; // Only the year for Flatpickr
+                    genderSelect.value = gender;
+                    genderInput.value = gender;
+                } else {
+                    // Clear inputs if the national number is not valid
+                    birthYearInput.value = '';
+                    dateOfBirthInput.value = '';
+                    genderSelect.value = '';
+                    genderInput.value = '';
+                }
+            });
+    
+        });
+    </script>
+        <script>
+            $(document).ready(function() {
+                // Function to show/hide tbody based on selected country
+                function toggleTbody() {
+                    const selectedCountryId = $('#country_id').val();
+                    const libyanDoctorsTbody = $('#libyan_doctors');
+                    const foreignDoctorsTbody = $('#foreign_doctors');
+                    
+                    // Show Libyan doctors if selected country is Libya, otherwise show foreign doctors
+                    if (selectedCountryId === '1') {
+                        libyanDoctorsTbody.show();
+                        foreignDoctorsTbody.hide();
+                    } else {
+                        libyanDoctorsTbody.hide();
+                        foreignDoctorsTbody.show();
+                    }
+                }
+        
+                // Call toggleTbody when the page loads
+                toggleTbody();
+        
+                // Listen for changes in the selected country
+                $('#country_id').change(function() {
+                    // Update the hidden input field with the selected country ID
+                    $('#selected_country_id').val($(this).val());
+                    // Call toggleTbody to show/hide tbody based on the selected country
+                    toggleTbody();
+                });
+            });
+        </script>
+    <script>
+        $(document).ready(function() {
+            // Set data-old attribute for Specialty 2 and Specialty 3 selects
+            $('select[name="specialty_2_id"]').attr('data-old', '{{ old("specialty_2_id") }}');
+            $('select[name="specialty_3_id"]').attr('data-old', '{{ old("specialty_3_id") }}');
+    
+            // Initialize Specialty 1 selectize
+            var selectizeSpecialty1 = $('select[name="specialty_1_id"]').selectize({
+                onChange: function(value) {
+                    if (!value.length) return;
+                    // Clear existing options
+                    var selectizeSpecialty2 = selectizeSpecialty2Instance[0].selectize;
+                    selectizeSpecialty2.clearOptions();
+                    // Fetch data for specialty 2 based on selected value of specialty 1
+                    $.ajax({
+                        url: '/api/get-sub-specialties/' + value,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(response) {
+                            $.each(response, function(index, specialty) {
+                                selectizeSpecialty2.addOption({value: specialty.id, text: specialty.name});
+                            });
+                            // Restore old value for Specialty 2
+                            selectizeSpecialty2.setValue($('select[name="specialty_2_id"]').data('old'));
+                        }
+                    });
+                }
+            });
+    
+            // Trigger change event for Specialty 1 select to populate Specialty 2
+            $('select[name="specialty_1_id"]').trigger('change');
+    
+            // Initialize Specialty 2 selectize
+            var selectizeSpecialty2Instance = $('select[name="specialty_2_id"]').selectize({
+                onChange: function(value) {
+                    if (!value.length) return;
+                    // Clear existing options
+                    var selectizeSpecialty3 = selectizeSpecialty3Instance[0].selectize;
+                    selectizeSpecialty3.clearOptions();
+                    // Fetch data for specialty 3 based on selected value of specialty 2
+                    $.ajax({
+                        url: '/api/get-sub-specialties/' + value,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(response) {
+                            $.each(response, function(index, specialty) {
+                                selectizeSpecialty3.addOption({value: specialty.id, text: specialty.name});
+                            });
+                            // Restore old value for Specialty 3
+                            selectizeSpecialty3.setValue($('select[name="specialty_3_id"]').data('old'));
+                        }
+                    });
+                }
+            });
+    
+            // Initialize Specialty 3 selectize
+            var selectizeSpecialty3Instance = $('select[name="specialty_3_id"]').selectize();
+        });
+    </script>
+    
+    <script>
+    $(document).ready(function () {
+        $('.custom-file-input').on('change', function () {
+            let fileName = $(this).val().split('\\').pop();
+            $(this).next('.custom-file-label').html(fileName);
+    
+            let fileId = $(this).attr('id').split('_')[1];
+            let statusElement = $('#status_' + fileId);
+    
+            statusElement.html('✅ تم الرفع: ' + fileName)
+                         .removeClass('text-muted')
+                         .addClass('text-success');
+    
+            // تأكد من عدم عرض النص المكرر
+            if (statusElement.hasClass('text-success')) {
+                $(this).siblings('.file-name-display').remove();
+            }
+        });
+    });
+    
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // التحقق من الاسم
+            document.querySelector('input[name="name"]').addEventListener('input', function() {
+                if (this.value.trim() === '') {
+                    showError(this, 'حقل الاسم مطلوب.');
+                } else if (this.value.length > 255) {
+                    showError(this, 'حقل الاسم لا يجب أن يتجاوز 255 حرفاً.');
+                } else {
+                    removeError(this);
+                }
+            });
+    
+            // التحقق من الاسم بالإنجليزية
+            document.querySelector('input[name="name_en"]').addEventListener('input', function() {
+                if (this.value.trim() === '') {
+                    showError(this, 'حقل الاسم باللغة الإنجليزية مطلوب.');
+                } else if (this.value.length > 255) {
+                    showError(this, 'حقل الاسم باللغة الإنجليزية لا يجب أن يتجاوز 255 حرفاً.');
+                } else {
+                    removeError(this);
+                }
+            });
+    
+            // التحقق من الرقم الوطني في حال كان الطبيب ليبي
+            const nationalNumberInput = document.querySelector('input[name="national_number"]');
+            if (nationalNumberInput) {
+                nationalNumberInput.addEventListener('input', function() {
+                    const gender = document.querySelector('select[name="gender"]').value;
+                    if (this.value.length !== 12) {
+                        showError(this, 'الرقم الوطني يجب أن يتكون من 12 رقمًا.');
+                    } else if (gender === 'male' && this.value[0] !== '1') {
+                        showError(this, 'الرقم الوطني للذكور يجب أن يبدأ بالرقم 1.');
+                    } else if (gender === 'female' && this.value[0] !== '2') {
+                        showError(this, 'الرقم الوطني للإناث يجب أن يبدأ بالرقم 2.');
+                    } else {
+                        removeError(this);
+                    }
+                });
+            }
+    
+            // التحقق من جميع الحقول التي تحتوي على تواريخ
+            const dateInputs = [
+                'date_of_birth',
+                'passport_expiration',
+                'internership_complete',
+                'certificate_of_excellence_date',
+                'start_work_date'
+            ];
+    
+            dateInputs.forEach(function(inputName) {
+                const inputElement = document.querySelector(`input[name="${inputName}"]`);
+                if (inputElement) {
+                    inputElement.addEventListener('input', function() {
+                        const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+                        if (!datePattern.test(this.value)) {
+                            // showError(this, 'التاريخ يجب أن يكون بالصيغة الصحيحة (سنة-شهر-يوم).');
+                        } else {
+                            removeError(this);
+                        }
+                    });
+                }
+            });
+    
+            // التحقق من كلمة المرور
+            document.querySelector('input[name="password"]').addEventListener('input', function() {
+                if (this.value.length < 6) {
+                    showError(this, 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.');
+                } else {
+                    removeError(this);
+                }
+            });
+    
+            // التحقق من تأكيد كلمة المرور
+            document.querySelector('input[name="password_confirmation"]').addEventListener('input', function() {
+                const password = document.querySelector('input[name="password"]').value;
+                if (this.value !== password) {
+                    showError(this, 'كلمة المرور غير متطابقة.');
+                } else {
+                    removeError(this);
+                }
+            });
+    
+            // دالة لإظهار الخطأ
+            function showError(element, message) {
+                removeError(element);
+                const errorDiv = document.createElement('div');
+                errorDiv.classList.add('text-danger', 'mt-1');
+                errorDiv.innerText = message;
+                element.classList.add('is-invalid');
+                element.parentNode.appendChild(errorDiv);
+            }
+    
+            // دالة لإزالة الخطأ
+            function removeError(element) {
+                element.classList.remove('is-invalid');
+                const errorDiv = element.parentNode.querySelector('.text-danger');
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
+            }
+        });
+    </script>
+    
+        <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Input elements
+        const nationalNumberInput = document.getElementById('national_number');
+        const birthYearInput = document.getElementById('birth_year');
+        const monthSelect = document.querySelector('select[name="month"]');
+        const daySelect = document.querySelector('select[name="day"]');
+        const genderSelect = document.getElementById('gender');
+        const genderInput = document.getElementById('gender_input');
+        const nameEnInput = document.querySelector('input[name="name_en"]');
+        const emailInput = document.querySelector('input[name="email"]');
+    
+        // Event listener for national number input
+        nationalNumberInput.addEventListener('input', function () {
+            const nationalNumber = this.value;
+    
+            // Validate the length of the national number
+            if (nationalNumber.length === 12) {
+                // Extract Gender
+                const genderDigit = parseInt(nationalNumber.charAt(0)); // First digit determines gender
+                const gender = genderDigit === 1 ? 'male' : 'female';
+                genderSelect.value = gender;
+                genderInput.value = gender;
+    
+                // Extract Birth Year, Month, and Day
+                const year = nationalNumber.substring(1, 5); // 2nd to 5th digits are the year
+                const month = parseInt(nationalNumber.substring(5, 7)); // 6th and 7th digits are the month
+                const day = parseInt(nationalNumber.substring(7, 9)); // 8th and 9th digits are the day
+    
+                // Update inputs
+                birthYearInput.value = year;
+                monthSelect.value = month;
+                daySelect.value = day;
+    
+            } else {
+                // Clear inputs if the national number is invalid
+                birthYearInput.value = '';
+                monthSelect.value = '';
+                daySelect.value = '';
+                genderSelect.value = '';
+                genderInput.value = '';
+            }
+        });
+    
+
+    });
+    
+        </script>
+        <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Input elements
+        const nationalNumberInput = document.getElementById('national_number');
+        const birthYearInput = document.getElementById('birth_year');
+        const monthSelect = document.querySelector('select[name="month"]');
+        const daySelect = document.querySelector('select[name="day"]');
+        const genderSelect = document.getElementById('gender');
+        const nameEnInput = document.querySelector('input[name="name_en"]');
+        const emailInput = document.querySelector('input[name="email"]');
+    
+        // Event listener for national number input
+        nationalNumberInput.addEventListener('input', function () {
+            const nationalNumber = this.value;
+    
+            // Validate the length of the national number
+            if (nationalNumber.length === 12) {
+                // Extract Gender
+                const genderDigit = parseInt(nationalNumber.charAt(0)); // First digit determines gender
+                const gender = genderDigit === 1 ? 'male' : 'female';
+                genderSelect.value = gender;
+    
+                // Extract Birth Year, Month, and Day
+                const year = nationalNumber.substring(1, 5); // 2nd to 5th digits are the year
+                const month = parseInt(nationalNumber.substring(5, 7)); // 6th and 7th digits are the month
+                const day = parseInt(nationalNumber.substring(7, 9)); // 8th and 9th digits are the day
+    
+                // Update inputs
+                birthYearInput.value = year;
+                monthSelect.value = month;
+                daySelect.value = day;
+            } else {
+                // Clear inputs if the national number is invalid
+                birthYearInput.value = '';
+                monthSelect.value = '';
+                daySelect.value = '';
+                genderSelect.value = '';
+            }
+        });
+    
+   
+    });
+    
+        </script>
+    
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Input elements
+            const nationalNumberInput = document.getElementById('national_number');
+            const birthYearInput = document.getElementById('birth_year');
+            const monthSelect = document.querySelector('select[name="month"]');
+            const daySelect = document.querySelector('select[name="day"]');
+            const dateOfBirthInput = document.querySelector('input[name="date_of_birth"]'); // For non-Libyan
+            const nameEnInput = document.querySelector('input[name="name_en"]');
+            const emailInput = document.querySelector('input[name="email"]');
+    
+            // Check if request type is Libyan or not
+            const isLibyan = "{{ request('type') }}" === "libyan";
+    
+            // Event listener for Libyan national number input
+            if (isLibyan && nationalNumberInput) {
+                nationalNumberInput.addEventListener('input', function () {
+                    const nationalNumber = this.value;
+    
+                    if (nationalNumber.length === 12) {
+                        // Extract Gender (optional if needed)
+                        const genderDigit = parseInt(nationalNumber.charAt(0));
+                        const gender = genderDigit === 1 ? 'male' : 'female';
+    
+                        // Extract Birth Year, Month, Day
+                        const year = nationalNumber.substring(1, 5);
+                        const month = parseInt(nationalNumber.substring(5, 7));
+                        const day = parseInt(nationalNumber.substring(7, 9));
+    
+                        // Update fields
+                        if (birthYearInput) birthYearInput.value = year;
+                        if (monthSelect) monthSelect.value = month;
+                        if (daySelect) daySelect.value = day;
+                    } else {
+                        // Clear fields if the national number is invalid
+                        if (birthYearInput) birthYearInput.value = '';
+                        if (monthSelect) monthSelect.value = '';
+                        if (daySelect) daySelect.value = '';
+                    }
+                });
+            }
+    
+            // Event listener for date of birth (non-Libyan)
+            if (!isLibyan && dateOfBirthInput) {
+                dateOfBirthInput.addEventListener('input', function () {
+                    const dob = this.value; // Format: YYYY-MM-DD
+                    if (dob) {
+                        const [year, month, day] = dob.split('-');
+                    } else {
+                    }
+                });
+            }
+    
+            // Event listener for English name input
+            nameEnInput?.addEventListener('input', function () {
+                if (isLibyan) {
+                    // Libyan: Regenerate email using year, month, day
+                    const year = birthYearInput?.value || '';
+                    const month = monthSelect?.value.padStart(2, '0') || '';
+                    const day = daySelect?.value.padStart(2, '0') || '';
+                    generateEmail(year, month, day);
+                } else {
+                    // Non-Libyan: Regenerate email using date_of_birth input
+                    const dob = dateOfBirthInput?.value || '';
+                    if (dob) {
+                        const [year, month, day] = dob.split('-');
+                        generateEmail(year, month, day);
+                    } else {
+                        emailInput.value = '';
+                    }
+                }
+            });
+    
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Find all input, select, and textarea fields with the "required" attribute
+            const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+    
+            requiredFields.forEach(function (field) {
+                // Find the corresponding label for the field
+                const label = field.closest('.form-group, .col-md-6, .col-md-4, .col-md-2, .col-md-12')?.querySelector('label');
+    
+                if (label && !label.querySelector('.required-asterisk')) {
+                    // Append a red asterisk to the label
+                    const asterisk = document.createElement('span');
+                    asterisk.classList.add('required-asterisk');
+                    asterisk.innerHTML = ' *';
+                    asterisk.style.color = 'red';
+                    label.appendChild(asterisk);
+                }
+            });
+        });
+    </script>
+    <script>
+
+        $(".selectize").selectize({
+            dir: "rtl",
+            width: "100%",
+            placeholder: "اختر",
+            allowClear: true,
+        });
+    </script>
+</body>
+</html>

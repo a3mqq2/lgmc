@@ -58,6 +58,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'financial-branch'    => 'الاداره المالية',
             'approve-licences-branch'    => 'الموافقه علي التراخيص الفرعيه',
             'total_invoices'             => 'الفواتير الكليه',
+            'manage-doctor-transfers'   => 'نقل الاطباء'
         ];
 
         /**

@@ -12,8 +12,8 @@
                     <div class="card">
                         <div class="card-header bg-primary text-light">
                             <h4 class="card-title"> المعلومات الشخصية </h4>
-                        </div>
-                        <div class="card-body">
+                            </div>
+                            <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="">الاسم بالكامل</label>
@@ -103,9 +103,9 @@
                                 </div>
                                 <div class="col-md-6 mt-2">
                                     <label for="">  النوع   </label>
-                                    <select name="gender" required id="gender" required  class="form-control" >
+                                    <select name="gender" required id="gender"   class="form-control" readonly disabled >
                                         <option value="male" {{old('gender', $doctor->gender) == "male" ? "selected" : ""}}>ذكر</option>
-                                        <option value="female" {{old('gender', $doctor->gender) == "female" ? "selected" : ""}}>انثى</option>
+                                        <option value="female" {{old('gender', $doctor->gender) == "female  " ? "selected" : ""}}>انثى</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 mt-2">
@@ -150,8 +150,8 @@
                                 </div>
                                 {{-- email input --}}
                                 <div class="col-md-6">
-                                    <label for="">البريد الالكتروني</label>
-                                    <input type="email" required name="email" value="{{old('email', $doctor->email)}}" id="email" class="form-control" readonly>
+                                    <label for="">البريد الالكتروني الشخصي</label>
+                                    <input type="email" required name="email" value="{{old('email', $doctor->email)}}" id="email" class="form-control" >
                                 </div>
                             </div>
                         </div>
@@ -352,8 +352,17 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <label for="">جهات العمل السابقة</label>
-                            <textarea name="ex_medical_facilities" id="" cols="30" rows="4" class="form-control">{{old('ex_medical_facilities', $doctor->ex_medical_facilities)}}</textarea>
+                            <label for="ex_medical_facilities">جهات العمل السابقة</label>
+                            <select name="ex_medical_facilities[]" multiple id="ex_medical_facilities" class="select2 form-control">
+                                <option value="-">---</option>
+                                @foreach ($medicalFacilities as $item)
+                                    <option 
+                                        value="{{ $item->id }}" 
+                                        {{ in_array($item->id, old('ex_medical_facilities', $doctor->medicalFacilities->pluck('id')->toArray())) ? 'selected' : '' }}>
+                                        {{ $item->name }}
+                                    </option>
+                                @endforeach
+                            </select>                               
                         </div>
                         <div class="col-md-12 mt-2">
                             <label for=""> سنوات الخبره  </label>
@@ -362,6 +371,8 @@
                     </div>
                 </div>
             </div>
+
+            <input type="hidden" name="gender" value="{{$doctor->gender}}">
 
             <div class="card">
                 <div class="card-header bg-primary text-light">بيانات اخرى   </div>
@@ -392,7 +403,7 @@
         const birthYearInput = document.getElementById('birth_year');
         const dateOfBirthInput = document.getElementById('date_of_birth');
         const genderSelect = document.getElementById('gender');
-
+        const genderInput = document.getElementById('gender_input');
         // Initialize Flatpickr for the date input
         flatpickr(dateOfBirthInput, {
             dateFormat: "Y-m", // Year and month only
@@ -419,11 +430,13 @@
                 birthYearInput.value = year;
                 dateOfBirthInput.value = `${year}`; // Only the year for Flatpickr
                 genderSelect.value = gender;
+                genderInput.value = gender;
             } else {
                 // Clear inputs if the national number is not valid
                 birthYearInput.value = '';
                 dateOfBirthInput.value = '';
                 genderSelect.value = '';
+                genderInput.value = '';
             }
         });
 
@@ -572,9 +585,10 @@ $(document).ready(function () {
                 if (this.value.length !== 12) {
                     showError(this, 'الرقم الوطني يجب أن يتكون من 12 رقمًا.');
                 } else if (gender === 'male' && this.value[0] !== '1') {
-                    showError(this, 'الرقم الوطني للذكور يجب أن يبدأ بالرقم 1.');
+                    console.log(this.value[0]);
+                    // showError(this, 'الرقم الوطني للذكور يجب أن يبدأ بالرقم 1.');
                 } else if (gender === 'female' && this.value[0] !== '2') {
-                    showError(this, 'الرقم الوطني للإناث يجب أن يبدأ بالرقم 2.');
+                    // showError(this, 'الرقم الوطني للإناث يجب أن يبدأ بالرقم 2.');
                 } else {
                     removeError(this);
                 }
@@ -654,7 +668,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const genderSelect = document.getElementById('gender');
     const nameEnInput = document.querySelector('input[name="name_en"]');
     const emailInput = document.querySelector('input[name="email"]');
-
+    const genderInput = document.querySelector('gender_input');
     // Event listener for national number input
     nationalNumberInput.addEventListener('input', function () {
         const nationalNumber = this.value;
@@ -665,7 +679,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const genderDigit = parseInt(nationalNumber.charAt(0)); // First digit determines gender
             const gender = genderDigit === 1 ? 'male' : 'female';
             genderSelect.value = gender;
-
+            genderInput.value = gender;
             // Extract Birth Year, Month, and Day
             const year = nationalNumber.substring(1, 5); // 2nd to 5th digits are the year
             const month = parseInt(nationalNumber.substring(5, 7)); // 6th and 7th digits are the month
@@ -676,8 +690,6 @@ document.addEventListener('DOMContentLoaded', function () {
             monthSelect.value = month;
             daySelect.value = day;
 
-            // Generate email if name_en is filled
-            generateEmail();
         } else {
             // Clear inputs if the national number is invalid
             birthYearInput.value = '';
@@ -687,23 +699,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Event listener for English name input
-    nameEnInput.addEventListener('input', generateEmail);
-
-    // Function to generate email
-    function generateEmail() {
-        console.log('test');
-        const nameEn = nameEnInput.value.trim().toLowerCase().replace(/\s+/g, '.'); // Format name as lowercase with dots
-        const year = birthYearInput.value;
-        const month = monthSelect.value.padStart(2, '0'); // Ensure month is two digits
-
-        if (nameEn && year && month && day) {
-            const email = `${nameEn}${year}@lgmc.ly`; // Concatenate to form email
-            emailInput.value = email;
-        } else {
-            emailInput.value = ''; // Clear email if required fields are missing
-        }
-    }
 });
 
     </script>
@@ -740,7 +735,6 @@ document.addEventListener('DOMContentLoaded', function () {
             daySelect.value = day;
 
             // Regenerate email
-            generateEmail();
         } else {
             // Clear inputs if the national number is invalid
             birthYearInput.value = '';
@@ -749,27 +743,6 @@ document.addEventListener('DOMContentLoaded', function () {
             genderSelect.value = '';
         }
     });
-
-    // Event listeners for English name, birth year, month, and day
-    nameEnInput.addEventListener('input', generateEmail);
-    birthYearInput.addEventListener('input', generateEmail);
-    monthSelect.addEventListener('change', generateEmail);
-    daySelect.addEventListener('change', generateEmail);
-
-    // Function to generate email
-    function generateEmail() {
-        const nameEn = nameEnInput.value.trim().toLowerCase().replace(/\s+/g, '.'); // Format name as lowercase with dots
-        const year = birthYearInput.value;
-        const month = monthSelect.value.padStart(2, '0'); // Ensure month is two digits
-        const day = daySelect.value.padStart(2, '0'); // Ensure day is two digits
-
-        if (nameEn && year && month && day) {
-            const email = `${nameEn}${year}@lgmc.ly`; // Concatenate to form email
-            emailInput.value = email;
-        } else {
-            emailInput.value = ''; // Clear email if required fields are missing
-        }
-    }
 });
 
     </script>
@@ -810,7 +783,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (daySelect) daySelect.value = day;
 
                     // Regenerate email
-                    generateEmail(year, month, day);
                 } else {
                     // Clear fields if the national number is invalid
                     if (birthYearInput) birthYearInput.value = '';
@@ -827,7 +799,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const dob = this.value; // Format: YYYY-MM-DD
                 if (dob) {
                     const [year, month, day] = dob.split('-');
-                    generateEmail(year, month, day);
                 } else {
                     emailInput.value = '';
                 }
@@ -841,28 +812,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 const year = birthYearInput?.value || '';
                 const month = monthSelect?.value.padStart(2, '0') || '';
                 const day = daySelect?.value.padStart(2, '0') || '';
-                generateEmail(year, month, day);
             } else {
                 // Non-Libyan: Regenerate email using date_of_birth input
                 const dob = dateOfBirthInput?.value || '';
                 if (dob) {
                     const [year, month, day] = dob.split('-');
-                    generateEmail(year, month, day);
                 } else {
                     emailInput.value = '';
                 }
             }
         });
 
-        // Function to generate email
-        function generateEmail(year, month, day) {
-            const nameEn = nameEnInput?.value.trim().toLowerCase().replace(/\s+/g, '.'); // Format name
-            if (nameEn && year && month && day) {
-                emailInput.value = `${nameEn}${year}@lgmc.ly`; // Generate email
-            } else {
-                emailInput.value = ''; // Clear email if required fields are missing
-            }
-        }
     });
 </script>
 <script>

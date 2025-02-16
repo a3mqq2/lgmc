@@ -72,7 +72,7 @@ class DoctorController extends Controller
             $validatedData = $request->validated();
             $doctor = Doctor::findOrFail($id);
             $this->doctorService->update($doctor, $validatedData);
-            return redirect()->route('admin.doctors.index')->with('success', 'تم تعديل الطبيب بنجاح');
+            return redirect()->route(get_area_name().'.doctors.index')->with('success', 'تم تعديل الطبيب بنجاح');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني']);
         }
@@ -82,7 +82,7 @@ class DoctorController extends Controller
     {
         try {
             $this->doctorService->delete($doctor);
-            return redirect()->route('admin.doctors.index')->with('success', 'تم حذف الطبيب بنجاح');
+            return redirect()->route(get_area_name().'.doctors.index')->with('success', 'تم حذف الطبيب بنجاح');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني']);
         }
@@ -98,9 +98,24 @@ class DoctorController extends Controller
     {
         try {
             $this->doctorService->approve($doctor);
-            return redirect()->route('admin.doctors.index')->with('success', 'تم الموافقة على الطبيب بنجاح');
+            return redirect()->route(get_area_name().'.doctors.index')->with('success', 'تم الموافقة على الطبيب بنجاح');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني']);
         }
+    }
+
+    public function reject(Doctor $doctor)
+    {
+        try {
+            $this->doctorService->reject($doctor);
+            return redirect()->route(get_area_name().'.doctors.index')->with('success', 'تم الرفض على الطبيب بنجاح');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني']);
+        }
+    }
+
+    public function print_id(Doctor $doctor)
+    {
+        return view('general.doctors.print_id', ['doctor' => $doctor]);
     }
 }
