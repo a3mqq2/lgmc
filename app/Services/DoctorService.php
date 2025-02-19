@@ -557,7 +557,9 @@ class DoctorService
 
                 // create invoice
                 $this->createInvoice($doctor);
+                $this->generateCode($doctor);
                 $this->sendFinalApprovalEmail($doctor);
+
             } else {
                 $doctor->update([
                     "visiting_date" => request('meet_date'),
@@ -704,4 +706,10 @@ class DoctorService
             } 
         }
 
+
+        public function generateCode($doctor)
+        {
+            $doctor->code = Doctor::max('code') + 1;
+            $doctor->save();
+        }
 }
