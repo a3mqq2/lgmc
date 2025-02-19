@@ -557,7 +557,7 @@
     </div>
  </div>
 
- @elseif( auth('doctor')->user()->membership_status == \App\Enums\MembershipStatus::Inactive )
+ @elseif( auth('doctor')->user()->membership_status == \App\Enums\MembershipStatus::InActive )
  <div class="card">
     <div class="card-body">
         <div class="image d-flex justify-content-center">
