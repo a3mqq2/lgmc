@@ -133,12 +133,12 @@
 
                                 </tr>
                                 <tr>
-                                    <td>{{ $doctor->experience }}</td>
                                     <td>
                                         @foreach ($doctor->medicalFacilities as $medicalFacility)
                                             <span class="badge badge-primary text-light">{{ $medicalFacility->name }}</span>
                                         @endforeach
                                     </td>
+                                    <td>{{ $doctor->experience }}</td>
                                     <td>{{ $doctor->notes }}</td>
                                 </tr>
                             </tbody>
