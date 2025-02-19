@@ -564,7 +564,7 @@
             <img src="{{asset('/assets/images/inactive.jpg')}}" width="400" alt="">
         </div>
         <h1 class="text-center">
-            <strong class="text-success">عضويتك غير مفعله </strong>
+            <strong class="text-danger">عضويتك غير مفعله </strong>
         </h1>
 
         <p class="text-center h3"> يجب عليك زيارة الفرع الخاص بك لمزيد من التفاصيل </p>
