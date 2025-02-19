@@ -556,6 +556,25 @@
         </div>
     </div>
  </div>
+
+ @elseif( auth('doctor')->user()->membership_status == \App\Enums\MembershipStatus::Inactive )
+ <div class="card">
+    <div class="card-body">
+        <div class="image d-flex justify-content-center">
+            <img src="{{asset('/assets/images/init-approve.jpg')}}" width="400" alt="">
+        </div>
+        <h1 class="text-center">
+            <strong class="text-success">عضويتك غير مفعله </strong>
+        </h1>
+
+        <p class="text-center h3"> يجب عليك زيارة الفرع الخاص بك لمزيد من التفاصيل </p>
+
+        <div class="text-center">
+            <a href="/logout" class="btn btn-primary text-light">تسجيل خروج</a>
+        </div>
+    </div>
+ </div>
+
  @elseif( auth('doctor')->user()->membership_status == \App\Enums\MembershipStatus::Rejected )
  <div class="card">
     <div class="card-body">
