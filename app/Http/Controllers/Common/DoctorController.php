@@ -62,7 +62,6 @@ class DoctorController extends Controller
     public function show(Doctor $doctor)
     {
         $data['doctor'] = $doctor;
-        dd($doctor->medicalFacilities);
         return view('general.doctors.show', $data);
     }
 
