@@ -128,6 +128,12 @@ class TotalInvoiceController extends Controller
         if ($request->has('date_to')) {
             $query->whereDate('created_at', '<=', $request->date_to);
         }
+
+
+        if(auth()->user()->branch_id)
+        {
+            $query->where('branch_id', auth()->user()->branch_id);
+        }
     
         $totalInvoices = $query->orderBy('created_at', 'desc')->paginate(10);
     
