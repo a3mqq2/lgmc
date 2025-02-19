@@ -561,7 +561,7 @@
  <div class="card">
     <div class="card-body">
         <div class="image d-flex justify-content-center">
-            <img src="{{asset('/assets/images/init-approve.jpg')}}" width="400" alt="">
+            <img src="{{asset('/assets/images/inactive.jpg')}}" width="400" alt="">
         </div>
         <h1 class="text-center">
             <strong class="text-success">عضويتك غير مفعله </strong>
