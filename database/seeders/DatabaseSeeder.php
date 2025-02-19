@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
         $user = \App\Models\User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'admin@demo.com',
+            'name' => 'Administrator',
+            'email' => 'admin@lgmc.ly',
             'password' => '123123123',
         ]);
 

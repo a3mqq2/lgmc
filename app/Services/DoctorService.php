@@ -219,6 +219,8 @@ class DoctorService
             $doctor->membership_expiration_date = null;
             $doctor->save();
 
+            $this->generateCode($doctor);
+
             // جلب أنواع الملفات للأطباء
             $file_types = FileType::where('type', 'doctor')
                 ->where('doctor_type', $data['type'])
