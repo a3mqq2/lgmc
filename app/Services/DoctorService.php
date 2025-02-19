@@ -709,6 +709,7 @@ class DoctorService
 
         public function generateCode($doctor)
         {
+            dd(Doctor::max('code') );
             $doctor->code = Doctor::max('code') + 1;
             $doctor->save();
         }
