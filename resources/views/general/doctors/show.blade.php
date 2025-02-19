@@ -135,7 +135,7 @@
                                 <tr>
                                     <td>
                                         @foreach ($doctor->medicalFacilities as $medicalFacility)
-                                            <span class="badge badge-primary text-light">{{ $medicalFacility->name }}</span>
+                                            <span class="badge bg-primary badge-primary text-light">{{ $medicalFacility->name }}</span>
                                         @endforeach
                                     </td>
                                     <td>{{ $doctor->experience }}</td>
