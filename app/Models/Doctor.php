@@ -179,6 +179,11 @@ class Doctor extends Authenticatable
     public function getEcodeAttribute()
     {
 
-        return $this->branch->code . '-' . $this->code;
+        if($this->code)
+        {
+            return $this->branch->code . '-' . $this->code;
+        } else {
+            return null;
+        }
     }
 }
