@@ -214,7 +214,6 @@ class DoctorService
 
             // ربط المرافق الطبية
             $doctor->medicalFacilities()->attach($medicalFacilities ?? []);
-            $doctor->code = Doctor::max('id') + 1;
             // تحديث رمز الطبيب بناءً على الفرع
             $doctor->membership_status = 'inactive';
             $doctor->membership_expiration_date = null;
@@ -553,7 +552,6 @@ class DoctorService
                 ]);
 
 
-                $doctor->code = Doctor::max('code') + 1;
 
                 // create invoice
                 $this->createInvoice($doctor);
@@ -709,7 +707,6 @@ class DoctorService
 
         public function generateCode($doctor)
         {
-            dd(Doctor::max('code') );
             $doctor->code = Doctor::max('code') + 1;
             $doctor->save();
         }
