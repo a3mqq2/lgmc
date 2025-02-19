@@ -130,7 +130,7 @@
 
 
                                     @if (get_area_name() == "user" && $doctor->code == null && $doctor->membership_status == \App\Enums\MembershipStatus::Pending)
-                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approve{{ $doctor->id }}"> القبول النهائي للعضوية </button>
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approve{{ $doctor->id }}"> القبول المبدئي للعضوية </button>
                                     <!-- Delete Modal -->
                                     <div class="modal fade" id="approve{{ $doctor->id }}" tabindex="-1" aria-labelledby="approveLabel" aria-hidden="true">
                                         <div class="modal-dialog">
@@ -169,7 +169,7 @@
 
 
                                     @if (get_area_name() == "user" && $doctor->code == null && $doctor->membership_status == \App\Enums\MembershipStatus::InitApprove)
-                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approve_init{{ $doctor->id }}">قبول العضوية</button>
+                                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approve_init{{ $doctor->id }}">القبول النهائي  العضوية</button>
                                     <!-- Delete Modal -->
                                     <div class="modal fade" id="approve_init{{ $doctor->id }}" tabindex="-1" aria-labelledby="approveLabel" aria-hidden="true">
                                         <div class="modal-dialog">
