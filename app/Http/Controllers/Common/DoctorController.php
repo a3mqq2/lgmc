@@ -1,15 +1,18 @@
 <?php
 
 namespace App\Http\Controllers\Common;
-use App\Http\Controllers\Controller;
-
 use App\Models\Doctor;
-use Illuminate\Http\Request;
-use App\Services\DoctorService;
-use App\Http\Requests\StoreDoctorRequest;
-use App\Http\Requests\UpdateDoctorRequest;
+
 use App\Models\FileType;
 use PhpParser\Comment\Doc;
+use Illuminate\Http\Request;
+use App\Imports\DoctorsImport;
+use App\Services\DoctorService;
+use App\Imports\DoctorsSheetImport;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\StoreDoctorRequest;
+use App\Http\Requests\UpdateDoctorRequest;
 
 class DoctorController extends Controller
 {
@@ -117,5 +120,20 @@ class DoctorController extends Controller
     public function print_id(Doctor $doctor)
     {
         return view('general.doctors.print_id', ['doctor' => $doctor]);
+    }
+
+    public function import(Request $request)
+    {
+        return view('general.doctors.import');
+    }
+
+    public function import_store(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+        // import excel
+        Excel::import(new DoctorsSheetImport, $request->file('file'));
+        return redirect()->route(get_area_name().'.doctors.index')->with('success', 'تم إضافة الأطباء بنجاح');
     }
 }

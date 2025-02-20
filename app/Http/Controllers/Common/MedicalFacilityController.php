@@ -1,16 +1,18 @@
 <?php
 
 namespace App\Http\Controllers\Common;
-use App\Http\Controllers\Controller;
+use App\Models\Branch;
 
+use App\Models\Doctor;
+use App\Models\FileType;
 use Illuminate\Http\Request;
 use App\Models\MedicalFacility;
 use App\Models\MedicalFacilityType;
-use App\Http\Requests\StoreMedicalFacilityRequest;
-use App\Models\Branch;
-use App\Models\Doctor;
-use App\Models\FileType;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ImportMedicalFacilities;
 use App\Services\MedicalFacilityService;
+use App\Http\Requests\StoreMedicalFacilityRequest;
 
 class MedicalFacilityController extends Controller
 {
@@ -96,5 +98,24 @@ class MedicalFacilityController extends Controller
 
         return redirect()->route(get_area_name().'.medical-facilities.index')
             ->with('success', 'تم حذف منشأة طبية بنجاح.');
+    }
+
+    public function import()
+    {
+        return view('general.medical-facilities.import');
+    }
+
+    public function import_store(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls',
+        ]);
+
+
+        Excel::import(new ImportMedicalFacilities, $request->file('file'));
+
+        
+        return redirect()->route(get_area_name().'.medical-facilities.index')
+            ->with('success', 'تم استيراد المنشآت الطبية بنجاح.');
     }
 }

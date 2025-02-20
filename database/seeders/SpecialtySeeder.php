@@ -14,6 +14,7 @@ class SpecialtySeeder extends Seeder
     {
         $specialties = [
             // تخصصات رئيسية
+            ['name' => 'بدون', 'specialty_id' => null],
             ['name' => 'الطب العام', 'specialty_id' => null],
             ['name' => 'طب الأطفال', 'specialty_id' => null],
             ['name' => 'طب النساء والتوليد', 'specialty_id' => null],

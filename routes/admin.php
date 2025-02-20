@@ -34,7 +34,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
     Route::get('/home', [AdminController::class, 'home'])->name('home');
     Route::get('/search', [UserController::class, 'search'])->name('search');
     Route::get('/reports', [ReportController::class, 'index'])->middleware('permission:manage-branches-reports')->name('reports.index');
+    Route::get('/doctors/{doctor}/print-id', [DoctorController::class, 'print_id'])->name('doctors.print-id');
     Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->middleware('permission:manage-doctors')->name('doctors.print');
+    Route::post('/doctors/import-store', [DoctorController::class, 'import_store'])->middleware('permission:manage-doctors')->name('doctors.import-store');
+    Route::get('/doctors/import', [DoctorController::class, 'import'])->middleware('permission:manage-doctors')->name('doctors.import');
     Route::resource('doctors', DoctorController::class)->middleware('permission:manage-doctors');
     Route::resource('specialties', SpecialtyController::class)->middleware('permission:registration-settings');
     Route::resource('countries', CountryController::class)->middleware('permission:registration-settings');
@@ -46,6 +49,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
     Route::resource('medical-facilities.medical-facility-files', MedicalFacilityFileController::class)->shallow()->middleware('permission:manage-medical-facilities');
     Route::resource('universities', UniversityController::class)->middleware('permission:registration-settings'); 
     Route::resource('academic-degrees', AcademicDegreeController::class)->middleware('permission:registration-settings');
+    Route::get('medical-facilities/import', [ MedicalFacilityController::class, 'import'])->middleware('permission:manage-medical-facilities')->name('medical-facilities.import');
+    Route::post('medical-facilities/import', [ MedicalFacilityController::class, 'import_store'])->middleware('permission:manage-medical-facilities')->name('medical-facilities.import-store');
     Route::resource('medical-facilities', MedicalFacilityController::class)->middleware('permission:manage-medical-facilities');
     Route::resource('doctor_ranks', DoctorRankController::class)->middleware('permission:manage-doctors');
     Route::resource('file-types', FileTypeController::class)->middleware('permission:registration-settings');

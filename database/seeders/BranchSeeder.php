@@ -18,7 +18,7 @@ class BranchSeeder extends Seeder
             ['name' => 'بنغازي', 'code' => 'BEN', 'phone' => '0923456789', 'city' => 'بنغازي'],
             ['name' => 'سبها', 'code' => 'SEB', 'phone' => '0934567890', 'city' => 'سبها'],
             ['name' => 'طبرق', 'code' => 'TOB', 'phone' => '0945678901', 'city' => 'طبرق'],
-            ['name' => 'البيضاء', 'code' => 'BYD', 'phone' => '0956789012', 'city' => 'البيضاء'],
+            ['name' => 'الجبل الآخضر', 'code' => 'BYD', 'phone' => '0956789012', 'city' => 'البيضاء'],
             ['name' => 'درنة', 'code' => 'DER', 'phone' => '0967890123', 'city' => 'درنة'],
             ['name' => 'مصراتة', 'code' => 'MIS', 'phone' => '0978901234', 'city' => 'مصراتة'],
             ['name' => 'غريان', 'code' => 'GHR', 'phone' => '0989012345', 'city' => 'غريان'],

@@ -64,6 +64,7 @@ class Doctor extends Authenticatable
         'membership_expiration_date',
         'password',
         'visiting_date',
+        'registered_at'
     ];
 
 
@@ -86,6 +87,7 @@ class Doctor extends Authenticatable
         'type' => DoctorType::class,
         'membership_status' => MembershipStatus::class,
         'visiting_date' => 'datetime',
+        'registered_at' => 'datetime',
     ];
 
     public function country()

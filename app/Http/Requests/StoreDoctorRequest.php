@@ -66,7 +66,7 @@ class StoreDoctorRequest extends FormRequest
             'branch_id' => 'nullable|numeric',
             'qualification_university_id' => 'required|numeric',
             'doctor_number' => 'required_if:type,==,libyan|max:255',
-            'documents' => "required",
+            'documents' => "nullable",
             'type' => "required|in:libyan,palestinian,foreign,visitor",
             'password' => 'required|min:6|confirmed',
             'country_graduation_id' => 'nullable|numeric',

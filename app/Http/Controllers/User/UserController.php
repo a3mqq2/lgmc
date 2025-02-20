@@ -21,8 +21,6 @@ class UserController extends Controller
             }
         } else {
             $user = auth()->user();
-            $user->branch_id = auth()->user()->branches->first()->id;
-            $user->save();
         }
 
 

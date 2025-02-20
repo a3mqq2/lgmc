@@ -60,14 +60,15 @@
                                 <th class="bg-light"> الرقم النقابي الاول </th>
                                 <th class="bg-light">الاسم</th>
                                 <th class="bg-light">رقم الهاتف</th>
-                                <th class="bg-light">البريد الالكتروني</th>
+                                <th class="bg-light"> الصفة / التخصص </th>
                                 <th class="bg-light">العنوان</th>
                                 @if (request('type') == "libyan")
                                 <th class="bg-light">الرقم الوطني</th>
                                 @endif
                                 <th class="bg-light text-dark" >نوع الطبيب</th>
                                 <th class="bg-light">الدرجة العلمية</th>
-                                <th class="bg-light">تاريخ الاضافة</th>
+                                <th class="bg-light">تاريخ الانضمام</th>
+                                <th class="bg-light">المؤهل</th>
                                 <th class="bg-light">حالة العضوية</th>
                                 @if (request('init_approve') )
                                     <th class="bg-light"> تاريخ الزيارة</th>
@@ -88,7 +89,15 @@
                                 <td>{{ $doctor->doctor_number }}</td>
                                 <td>{{ $doctor->name }}</td>
                                 <td>{{ $doctor->phone }}</td>
-                                <td>{{ $doctor->email }}</td>
+                                <td>
+                                    {{-- rank &  --}}
+                                    @if ($doctor->rank)
+                                    <span class="badge badge-primary">
+                                        {{ $doctor->rank->name }}
+                                    </span>
+                                    @endif
+                                    {{$doctor->specialization}}
+                                </td>
                                 <td>{{ $doctor->address }}</td>
                                 @if (request('type') == "libyan")
                                 <td>{{ $doctor->national_number }}</td>
@@ -97,7 +106,8 @@
                                     {{ $doctor->type->label() }}
                                 </td>
                                 <td>{{ $doctor->academicDegree->name ?? 'N/A' }}</td>
-                                <td>{{ $doctor->created_at->format('Y-m-d') }}</td>
+                                <td>{{ $doctor->registered_at?->format('Y-m-d') }}</td>
+                                <td>{{ $doctor->certificate_of_excellence }}</td>
                                 <td>
                                     <span class="badge {{$doctor->membership_status->badgeClass()}} ">
                                                 {{ $doctor->membership_status->label() }}

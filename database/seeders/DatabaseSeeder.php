@@ -25,6 +25,20 @@ class DatabaseSeeder extends Seeder
             'password' => '123123123',
         ]);
 
+
+        $user = \App\Models\User::factory()->create([
+            'name' => 'ولاء',
+            'email' => 'walaa@lgmc.ly',
+            'password' => '123123123',
+        ]);
+
+        $user = \App\Models\User::factory()->create([
+            'name' => 'نعمة',
+            'email' => 'naema@lgmc.ly',
+            'password' => '123123123',
+        ]);
+
+
         
         DB::table('doctor_ranks')->insert([
             ['name' => 'طبيب ممارس'],       
