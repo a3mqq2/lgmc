@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('national_number');
             $table->string('mother_name');
             $table->foreignId('country_id')->nullable()->constrained();
-            $table->timestamp('date_of_birth');
+            $table->string('date_of_birth');
             $table->enum('marital_status', ['married', 'single']);
             $table->enum('gender', ['male', 'female']);
             $table->string('passport_number');
