@@ -36,7 +36,8 @@ class UpdateUserRequest extends FormRequest
             'ID_number'       => ['nullable', 'regex:/^(1|2)\d{11}$/'],
 
             'permissions'     => 'nullable|array',
-            'permissions.*'   => 'string'
+            'permissions.*'   => 'string',
+            'roles'           => 'nullable|array',
         ];
     }
 
