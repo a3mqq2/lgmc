@@ -182,7 +182,7 @@ class DoctorTransferController extends Controller
             'details' => "تم رفض طلب نقل الطبيب: {$doctorTransfer->doctor->name}. السبب: {$request->rejected_reason}",
             'loggable_id' => $doctorTransfer->doctor->id,
             'loggable_type' => Doctor::class,
-            "aciton" => "reject_doctor_transfer",
+            "action" => "reject_doctor_transfer",
         ]);
 
         return redirect()->route('user.doctor-transfers.index')->with('success', 'تم رفض طلب النقل.');
@@ -205,7 +205,7 @@ class DoctorTransferController extends Controller
             'details' => "تم حذف طلب نقل الطبيب: {$doctorName}",
             'loggable_id' => $doctorTransfer->doctor->id,
             'loggable_type' => Doctor::class,
-            "aciton" => "delete_doctor_transfer",
+            "action" => "delete_doctor_transfer",
         ]);
 
         return redirect()->route('user.doctor-transfers.index')->with('success', 'تم حذف طلب النقل.');

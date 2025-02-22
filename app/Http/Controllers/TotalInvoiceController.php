@@ -24,6 +24,7 @@ class TotalInvoiceController extends Controller
             'details' => "تم فتح صفحة إنشاء فاتورة كلية للطبيب: {$doctor->name}",
             'loggable_id' => $doctor->id,
             'loggable_type' => Doctor::class,
+            "action" => "create_total_invoice",
         ]);
 
         return view('finance.total_invoices.create', compact('doctor'));
@@ -95,6 +96,7 @@ class TotalInvoiceController extends Controller
             'details' => "تم إنشاء فاتورة كلية رقم {$totalInvoiceNumber} للطبيب: {$invoices->first()->invoiceable->name} بقيمة {$request->total_amount}",
             'loggable_id' => $totalInvoice->doctor_id,
             'loggable_type' => Doctor::class,
+            "action" => "create_total_invoice",
         ]);
 
         return redirect()->route(get_area_name() . '.total_invoices.index')->with('success', 'تم دفع الفواتير بنجاح.');
@@ -133,11 +135,6 @@ class TotalInvoiceController extends Controller
 
         $totalInvoices = $query->orderBy('created_at', 'desc')->paginate(10);
 
-        // Log viewing invoices list
-        Log::create([
-            'user_id' => auth()->id(),
-            'details' => "تم عرض قائمة الفواتير الكلية",
-        ]);
 
         return view(get_area_name() . '.total_invoices.index', compact('totalInvoices'));
     }
@@ -154,6 +151,7 @@ class TotalInvoiceController extends Controller
             'details' => "تم عرض تفاصيل الفاتورة الكلية رقم {$totalInvoice->invoice_number}",
             'loggable_id' => $totalInvoice->doctor->id,
             'loggable_type' => Doctor::class,
+            "action" => "show_total_invoice",
         ]);
 
         return view('finance.total_invoices.show', compact('totalInvoice'));
@@ -171,6 +169,7 @@ class TotalInvoiceController extends Controller
             'details' => "تم طباعة الفاتورة الكلية رقم {$totalInvoice->invoice_number}",
             'loggable_id' => $totalInvoice->doctor->id,
             'loggable_type' => Doctor::class,
+            "action" => "print_total_invoice",
         ]);
 
         return view('finance.total_invoices.print', compact('totalInvoice'));

@@ -41,6 +41,7 @@ class StaffController extends Controller
                 'details' => "تم تحديث كلمة مرور الموظف: {$user->name}",
                 'loggable_id' => $user->id,
                 'loggable_type' => User::class,
+                "action" => "change_password",
             ]);
         } else {
             unset($validatedData['password']);
@@ -54,6 +55,7 @@ class StaffController extends Controller
             'details' => "تم تحديث بيانات الموظف: {$user->name}",
             'loggable_id' => $user->id,
             'loggable_type' => User::class,
+            "action" => "update_user",
         ]);
 
         // مزامنة الفروع إذا تم تحديدها
@@ -65,6 +67,7 @@ class StaffController extends Controller
                 'details' => "تم تحديث الفروع المرتبطة بالموظف: {$user->name}",
                 'loggable_id' => $user->id,
                 'loggable_type' => User::class,
+                "action" => "update_user_branches",
             ]);
         }
 
@@ -77,6 +80,7 @@ class StaffController extends Controller
                 'details' => "تم تحديث صلاحيات الموظف: {$user->name}",
                 'loggable_id' => $user->id,
                 'loggable_type' => User::class,
+                "action" => "update_user_permissions",
             ]);
         }
 

@@ -28,11 +28,6 @@ class VaultTransferController extends Controller
 
         $vaultTransfers = $query->paginate(50);
 
-        // Log viewing transfers
-        Log::create([
-            'user_id' => auth()->id(),
-            'details' => "تم عرض قائمة التحويلات بين الخزائن"
-        ]);
 
         return view('finance.vault_transfers.index', compact('vaultTransfers'));
     }
@@ -48,11 +43,6 @@ class VaultTransferController extends Controller
 
         $to_vaults = Vault::all();
 
-        // Log access to create form
-        Log::create([
-            'user_id' => auth()->id(),
-            'details' => "تم الدخول إلى صفحة إنشاء تحويل جديد بين الخزائن"
-        ]);
 
         return view('finance.vault_transfers.create', compact('from_vaults', 'to_vaults'));
     }
@@ -107,6 +97,7 @@ class VaultTransferController extends Controller
             'details' => "تم إنشاء تحويل من خزينة رقم {$from_vault->id} إلى خزينة رقم {$request->to_vault_id} بمبلغ {$request->amount}",
             'loggable_id' => $transfer->id,
             'loggable_type' => VaultTransfer::class,
+            "action" => "create_vault_transfer",
         ]);
 
         return redirect()->route('finance.vault-transfers.index')->with('success', 'تم إضافة التحويل بنجاح.');
@@ -127,6 +118,7 @@ class VaultTransferController extends Controller
             'details' => "تم عرض تفاصيل التحويل رقم #{$vaultTransfer->id}",
             'loggable_id' => $vaultTransfer->id,
             'loggable_type' => VaultTransfer::class,
+            "action" => "view_vault_transfer",
         ]);
 
         return view('finance.vault_transfers.show', compact('vaultTransfer'));
@@ -157,6 +149,7 @@ class VaultTransferController extends Controller
             'details' => "تم تعديل التحويل رقم #{$vaultTransfer->id}",
             'loggable_id' => $vaultTransfer->id,
             'loggable_type' => VaultTransfer::class,
+            "action" => "update_vault_transfer",
         ]);
 
         return redirect()->route('finance.vault-transfers.index')->with('success', 'تم تحديث التحويل بنجاح.');
@@ -182,6 +175,7 @@ class VaultTransferController extends Controller
             'details' => "تم حذف التحويل رقم #{$vaultTransfer->id}",
             'loggable_id' => $vaultTransfer->id,
             'loggable_type' => VaultTransfer::class,
+            "action" => "delete_vault_transfer",
         ]);
 
         return redirect()->route('finance.vault-transfers.index')->with('success', 'تم حذف التحويل بنجاح.');
@@ -208,6 +202,7 @@ class VaultTransferController extends Controller
             'details' => "تمت الموافقة على التحويل رقم #{$vaultTransfer->id}",
             'loggable_id' => $vaultTransfer->id,
             'loggable_type' => VaultTransfer::class,
+            "action" => "approve_vault_transfer",
         ]);
 
         return redirect()->route('finance.vault-transfers.index')->with('success', 'تمت الموافقة على التحويل بنجاح.');
@@ -234,6 +229,7 @@ class VaultTransferController extends Controller
             'details' => "تم رفض التحويل رقم #{$vaultTransfer->id}",
             'loggable_id' => $vaultTransfer->id,
             'loggable_type' => VaultTransfer::class,
+            "action" => "reject_vault_transfer",
         ]);
 
         return redirect()->route('finance.vault-transfers.index')->with('success', 'تم رفض التحويل بنجاح.');

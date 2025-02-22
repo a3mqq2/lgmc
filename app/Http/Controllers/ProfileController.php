@@ -28,6 +28,7 @@ class ProfileController extends Controller
                 'details' => 'فشل في محاولة تغيير كلمة المرور بسبب كلمة مرور حالية غير صحيحة',
                 'loggable_id' => auth()->id(),
                 'loggable_type' => \App\Models\User::class,
+                "action" => "change_password_failed",
             ]);
 
             return back()->withErrors(['current_password' => 'كلمة المرور الحالية غير صحيحة']);
@@ -44,6 +45,7 @@ class ProfileController extends Controller
             'details' => 'تم تغيير كلمة المرور بنجاح',
             'loggable_id' => auth()->id(),
             'loggable_type' => \App\Models\User::class,
+            "action" => "change_password_success",
         ]);
 
         return redirect()->to(url()->previous() . '?change-password=1')->with('success', 'تم تغيير كلمة المرور بنجاح');

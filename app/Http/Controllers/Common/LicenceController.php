@@ -415,7 +415,7 @@ class LicenceController extends Controller
             'details' => "تم تعديل الاذن مزاولة: نوع الاذن مزاولة {$request->licensable_type}، معرف الاذن مزاولة {$request->licensable_id}",
             'loggable_id' => $licence->licensable_id,
             'loggable_type' => Doctor::class,
-            "aciton" => "edit_licence",
+            "action" => "edit_licence",
         ]);
 
         return redirect()->route(get_area_name().'.licences.index', ['type' => $licence->type, 'status' => $licence->status])
@@ -448,7 +448,7 @@ class LicenceController extends Controller
             'details' => "تم حذف الاذن مزاولة: معرف الاذن مزاولة {$licence->id}",
             'loggable_id' => $licence->licensable_id,
             'loggable_type' => Doctor::class,
-            "aciton" => "delete_licence",
+            "action" => "delete_licence",
         ]);
 
         return redirect()->route(get_area_name().'.licences.index', ['type' => $type, 'status' => $licence->status])
@@ -495,7 +495,7 @@ class LicenceController extends Controller
             "details" => " تمت طباعة اذن المزاولة " . $licence->id, 
             'loggable_id' => $licence->licensable_id,
             'loggable_type' => Doctor::class,
-            "aciton" => "print_licence",
+            "action" => "print_licence",
         ]);
 
 
@@ -503,6 +503,7 @@ class LicenceController extends Controller
             "user_id" => auth()->id(),
             "details" => "تمت طباعة اذن المزاولة",
             "licence_id" => $licence->id,
+
         ]);
 
         return view('general.licences.print', compact('licence'));

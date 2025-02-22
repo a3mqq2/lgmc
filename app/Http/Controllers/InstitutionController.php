@@ -20,10 +20,7 @@ class InstitutionController extends Controller
             ->paginate(10);
 
         // Log the access to the institutions list
-        Log::create([
-            'user_id' => auth()->id(),
-            'details' => "تم عرض قائمة جهات العمل",
-        ]);
+
 
         return view('user.institutions.index', compact('institutions'));
     }
@@ -36,10 +33,7 @@ class InstitutionController extends Controller
     public function create()
     {
         // Log access to create institution form
-        Log::create([
-            'user_id' => auth()->id(),
-            'details' => "تم الدخول إلى صفحة إنشاء جهة عمل جديدة",
-        ]);
+  
 
         return view('user.institutions.create');
     }
