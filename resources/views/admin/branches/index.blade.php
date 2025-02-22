@@ -59,7 +59,6 @@
             </div>
             <div class="modal-body">
                 <p>هل أنت متأكد أنك تريد حذف هذا الفرع؟</p>
-                <p>سيتم حذف الفرع: <strong id="branch-name"></strong>، بالإضافة إلى جميع السجلات المرتبطة به (الموظفين، الفواتير، الأطباء، ...).</p>
             </div>
             <div class="modal-footer">
                 <form action="{{ route('admin.branches.destroy', 'branch_id') }}" method="POST" id="delete-form">

@@ -1,19 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\Log;
 use App\Models\Country;
 use Illuminate\Http\Request;
-
 
 class CountryController extends Controller
 {
     /**
      * Display a listing of the countries.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
@@ -23,8 +20,6 @@ class CountryController extends Controller
 
     /**
      * Show the form for creating a new country.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -33,30 +28,30 @@ class CountryController extends Controller
 
     /**
      * Store a newly created country in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'en_name' => 'required|string|max:255'
+            'en_name' => 'required|string|max:255',
         ]);
 
-        Country::create($request->all());
+        $country = Country::create($request->all());
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم إنشاء دولة جديدة"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم إنشاء دولة جديدة: {$country->name}",
+            'loggable_id' => $country->id,
+            'loggable_type' => Country::class,
+            'action' => 'create_country',
+        ]);
 
-        return redirect()->route(get_area_name().'.countries.index')->with('success', 'تم إنشاء الدولة بنجاح.');
+        return redirect()->route(get_area_name() . '.countries.index')
+            ->with('success', 'تم إنشاء الدولة بنجاح.');
     }
 
     /**
      * Show the form for editing the specified country.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
@@ -66,43 +61,48 @@ class CountryController extends Controller
 
     /**
      * Update the specified country in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'en_name' => 'required|string|max:255'
+            'en_name' => 'required|string|max:255',
         ]);
 
         $country = Country::findOrFail($id);
-        $country->name = $request->name;
-        $country->en_name = $request->en_name;
-        $country->save();
+        $country->update($request->all());
 
-        // Log update with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم تعديل بيانات الدولة"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم تعديل بيانات الدولة: {$country->name}",
+            'loggable_id' => $country->id,
+            'loggable_type' => Country::class,
+            'action' => 'update_country',
+        ]);
 
-        return redirect()->route(get_area_name().'.countries.index')->with('success', 'تم تحديث الدولة بنجاح.');
+        return redirect()->route(get_area_name() . '.countries.index')
+            ->with('success', 'تم تحديث الدولة بنجاح.');
     }
 
     /**
      * Remove the specified country from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         $country = Country::findOrFail($id);
+        $countryName = $country->name;
+        $countryId = $country->id;
         $country->delete();
 
-        // Log deletion with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم حذف الدولة"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم حذف الدولة: {$countryName}",
+            'loggable_id' => $countryId,
+            'loggable_type' => Country::class,
+            'action' => 'delete_country',
+        ]);
 
-        return redirect()->route(get_area_name().'.countries.index')->with('success', 'تم حذف الدولة بنجاح.');
+        return redirect()->route(get_area_name() . '.countries.index')
+            ->with('success', 'تم حذف الدولة بنجاح.');
     }
 }

@@ -87,7 +87,7 @@
                             <tr>
                                 <th class="bg-light">#</th>
                                 <th class="bg-light">كود التذكرة</th>
-                                <th class="bg-light">العنوان</th>
+                                <th class="bg-light">الإقامة</th>
                                 <th class="bg-light">القسم</th>
                                 <th class="bg-light">الفئة</th>
                                 <th class="bg-light">الحالة</th>

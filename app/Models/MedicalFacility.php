@@ -19,6 +19,12 @@ class MedicalFacility extends Model
         "membership_status" => MembershipStatus::class,
     ];
 
+
+    public function logs()
+    {
+        return $this->morphMany(Log::class, 'loggable');
+    }
+
     public function branch()
     {
         return $this->belongsTo(Branch::class);

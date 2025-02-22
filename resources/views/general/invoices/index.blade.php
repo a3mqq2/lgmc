@@ -4,6 +4,13 @@
 
 @section('content')
 <div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-12">
+            <a href="{{ route(get_area_name().'.invoices.create') }}" class="btn btn-success btn-sm mb-3">إضافة فاتورة جديدة <i class="fa fa-plus mb-2"></i></a>
+        </div>
+    </div>
+
     <h4 class="mb-4">قائمة الفواتير</h4>
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">🔍 تصفية الفواتير</div>

@@ -1,22 +1,18 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\Doctor;
 use App\Models\DoctorFile;
 use App\Models\Log;
 use Illuminate\Http\Request;
-
 use App\Models\FileType;
 
 class DoctorFileController extends Controller
 {
     /**
      * Display a listing of the doctor files.
-     *
-     * @param  \App\Models\Doctor  $doctor
-     * @return \Illuminate\Http\Response
      */
     public function index(Doctor $doctor)
     {
@@ -26,67 +22,56 @@ class DoctorFileController extends Controller
 
     /**
      * Show the form for creating a new doctor file.
-     *
-     * @param  \App\Models\Doctor  $doctor
-     * @return \Illuminate\Http\Response
      */
     public function create(Doctor $doctor)
     {
         $fileTypes = FileType::where("type", "doctor")->get();
-        return view('general.doctor_files.create', compact('doctor','fileTypes'));
+        return view('general.doctor_files.create', compact('doctor', 'fileTypes'));
     }
 
     /**
      * Store a newly created doctor file in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Doctor  $doctor
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request, Doctor $doctor)
     {
-        // Validate the incoming file
         $request->validate([
-            "file_type_id" => "required",
-            'document' => 'required', // Adjust allowed file types and max file size as needed
+            "file_type_id" => "required|exists:file_types,id",
+            'document' => 'required|file',
         ]);
 
         try {
-            // Store the uploaded file
             $file = $request->file('document');
             $fileName = $file->getClientOriginalName();
-            $filePath = $file->storeAs('/public/doctor_files', $fileName, 'public'); // Store file in storage/app/public/doctor_files directory
+            $filePath = $file->storeAs('/public/doctor_files', $fileName, 'public');
 
-            // Create a record in the database
-            DoctorFile::create([
+            $doctorFile = DoctorFile::create([
                 'doctor_id' => $doctor->id,
                 'file_name' => $fileName,
                 'file_path' => $filePath,
                 "file_type_id" => $request->file_type_id,
-                'file_type' => $file->getMimeType(), // Get the MIME type of the file
+                'file_type' => $file->getMimeType(),
                 'uploaded_at' => now(),
             ]);
 
-            // Log creation with details
-            Log::create(['user_id' => auth()->user()->id, 'details' => "تم رفع ملف جديد للطبيب: " . $doctor->name]);
+            Log::create([
+                'user_id' => auth()->id(),
+                'details' => "تم رفع ملف جديد للطبيب: {$doctor->name}",
+                'loggable_id' => $doctorFile->id,
+                'loggable_type' => DoctorFile::class,
+                'action' => 'upload_doctor_file',
+            ]);
 
-            // Redirect back with success message
             return redirect()->route(get_area_name() . '.doctors.show', $doctor->id)
                 ->with('success', 'تم رفع الملف بنجاح.');
         } catch (\Exception $e) {
-            // If an exception occurs during file upload
-            $errorMessage = $e->getMessage();
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['file' => 'فشل رفع الملف: ' . $errorMessage]);
+                ->withErrors(['file' => 'فشل رفع الملف: ' . $e->getMessage()]);
         }
     }
 
     /**
      * Display the specified doctor file.
-     *
-     * @param  \App\Models\DoctorFile  $file
-     * @return \Illuminate\Http\Response
      */
     public function show(DoctorFile $file)
     {
@@ -95,9 +80,6 @@ class DoctorFileController extends Controller
 
     /**
      * Show the form for editing the specified doctor file.
-     *
-     * @param  \App\Models\DoctorFile  $file
-     * @return \Illuminate\Http\Response
      */
     public function edit(DoctorFile $file)
     {
@@ -106,10 +88,6 @@ class DoctorFileController extends Controller
 
     /**
      * Update the specified doctor file in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\DoctorFile  $file
-     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, DoctorFile $file)
     {
@@ -122,26 +100,34 @@ class DoctorFileController extends Controller
 
         $file->update($request->all());
 
-        // Log update with details
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم تعديل بيانات ملف الطبيب: " . $file->doctor->name]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم تعديل بيانات ملف الطبيب: {$file->doctor->name}",
+            'loggable_id' => $file->id,
+            'loggable_type' => DoctorFile::class,
+            'action' => 'update_doctor_file',
+        ]);
 
-        return redirect()->route(get_area_name().'.doctors.files.index', $file->doctor_id)
+        return redirect()->route(get_area_name() . '.doctors.files.index', $file->doctor_id)
             ->with('success', 'تم تعديل بيانات ملف الطبيب بنجاح.');
     }
 
     /**
      * Remove the specified doctor file from storage.
-     *
-     * @param  \App\Models\DoctorFile  $file
-     * @return \Illuminate\Http\Response
      */
     public function destroy(DoctorFile $file)
     {
-        $doctorName = $file->doctor->name; // Save the doctor's name for logging
+        $doctorName = $file->doctor->name;
+        $fileId = $file->id;
         $file->delete();
 
-        // Log deletion with details
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم حذف ملف الطبيب: " . $doctorName]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم حذف ملف الطبيب: {$doctorName}",
+            'loggable_id' => $fileId,
+            'loggable_type' => DoctorFile::class,
+            'action' => 'delete_doctor_file',
+        ]);
 
         return redirect()->back()
             ->with('success', 'تم حذف ملف الطبيب بنجاح.');

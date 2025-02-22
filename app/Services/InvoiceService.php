@@ -35,7 +35,7 @@ class InvoiceService
 
       //   create transaction in the vault
 
-        $transaction_type_id = "";
+        $transaction_type_id = $invoice->transaction_type_id ? $invoice->transaction_type_id : null;
         if($invoice->pricing)
         {
 

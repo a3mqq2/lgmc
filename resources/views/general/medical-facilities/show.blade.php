@@ -27,7 +27,7 @@
                             <td>{{ $medicalFacility->medicalFacilityType->name }}</td>
                         </tr>
                         <tr>
-                            <th class="bg-light">العنوان</th>
+                            <th class="bg-light">الإقامة</th>
                             <td>{{ $medicalFacility->address }}</td>
                         </tr>
                         <tr>
@@ -84,6 +84,38 @@
         </div>
         <div class="col-md-12">
             <a href="{{ route(get_area_name().'.medical-facilities.index') }}" class="btn btn-secondary mt-3">عودة إلى القائمة</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="main-content-label">  سجلات المنشأة  </h4>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="bg-primary text-light">#</th>
+                                    <th class="bg-primary text-light">المستخدم</th>
+                                    <th class="bg-primary text-light">تفاصيل</th>
+                                    <th class="bg-primary text-light">تاريخ الانشاء</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($medicalFacility->logs as $log)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $log->user->name }}</td>
+                                    <td>{{ $log->details}}</td>
+                                    <td>{{ $log->created_at}}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

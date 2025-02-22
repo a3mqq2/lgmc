@@ -17,6 +17,7 @@ use App\Http\Controllers\Common\TicketController;
 use App\Http\Controllers\Admin\FileTypeController;
 use App\Http\Controllers\Common\InvoiceController;
 use App\Http\Controllers\Common\LicenceController;
+use App\Http\Controllers\DoctorTransferController;
 use App\Http\Controllers\Admin\BlacklistController;
 use App\Http\Controllers\Admin\SpecialtyController;
 use App\Http\Controllers\Admin\DoctorFileController;
@@ -33,6 +34,8 @@ use App\Http\Controllers\Admin\MedicalFacilityTypeController;
 Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')->group(function () {
     Route::get('/home', [AdminController::class, 'home'])->name('home');
     Route::get('/search', [UserController::class, 'search'])->name('search');
+
+    Route::post('/doctors/{doctor}/ban', [DoctorController::class, 'ban'])->name('doctors.toggle-ban');
     Route::get('/reports', [ReportController::class, 'index'])->middleware('permission:manage-branches-reports')->name('reports.index');
     Route::get('/doctors/{doctor}/print-id', [DoctorController::class, 'print_id'])->name('doctors.print-id');
     Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->middleware('permission:manage-doctors')->name('doctors.print');
@@ -72,6 +75,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
      Route::get('/reports/licences/print', [ReportController::class, 'licences_print'])->middleware('permission:manage-branches-reports')->name('reports.licences_print');
      Route::get('/reports/transactions/print', [ReportController::class, 'transactions_print'])->middleware('permission:manage-branches-reports')->name('reports.transactions_print');
      // =============== REPORTS ================ //
+
+     Route::patch('/doctor-transfers/{doctor_transfer}/approve', [DoctorTransferController::class, 'approve'])->name('doctor-transfers.approve');
+     Route::patch('/doctor-transfers/{doctor_transfer}/reject', [DoctorTransferController::class, 'reject'])->name('doctor-transfers.reject');
+     Route::resource('doctor-transfers', DoctorTransferController::class);
+     
     Route::get('profile/change-password', [ProfileController::class, 'change_password'])->name('profile.change-password');
     Route::post('profile/change-password', [ProfileController::class, 'change_password_store'])->name('profile.change-password');
 });

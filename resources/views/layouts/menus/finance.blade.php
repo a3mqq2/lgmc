@@ -20,7 +20,7 @@
 @endif
 
 
-<li class="nav-item">
+{{-- <li class="nav-item">
     <a class="nav-link menu-link" href="#tickets" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-ticket"></i><span data-key="t-layouts">     التذاكر    </span>
     </a>
@@ -36,7 +36,7 @@
             </li>
         </ul>
     </div>
-</li>
+</li> --}}
 
 
 

@@ -39,7 +39,8 @@ class Invoice extends Model
         'received_by',
         'relief_by',
         'relief_reason',
-        'branch_id'
+        'branch_id',
+        'transaction_type_id',
     ];
 
     /**
@@ -140,7 +141,7 @@ class Invoice extends Model
      */
     public function isPaid(): bool
     {
-        return $this->status === 'paid';
+        return $this->status->value === 'paid';
     }
 
     /**
@@ -150,7 +151,7 @@ class Invoice extends Model
      */
     public function isRelief(): bool
     {
-        return $this->status === 'relief';
+        return $this->status->value === 'relief';
     }
 
     /**
@@ -160,7 +161,7 @@ class Invoice extends Model
      */
     public function isUnpaid(): bool
     {
-        return $this->status === 'unpaid';
+        return $this->status->value === 'unpaid';
     }
 
 

@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\Doctor;
-use Illuminate\Http\Request;
+use App\Models\Log;
 use App\Models\DoctorTransfer;
+use Illuminate\Http\Request;
 
 class DoctorTransferController extends Controller
 {
@@ -22,17 +23,16 @@ class DoctorTransferController extends Controller
 
         if (request()->q) {
             $query->where('id', request()->q)
-                ->orWhere('note', 'like', '%' . request()->q . '%');
+                  ->orWhere('note', 'like', '%' . request()->q . '%');
         }
 
         $query->where(function ($q) {
             $q->where('from_branch_id', auth()->user()->branch_id)
               ->orWhere('to_branch_id', auth()->user()->branch_id);
-        });
-
-        $query->with(['doctor', 'fromBranch', 'toBranch', 'createdBy', 'approvedBy', 'rejectedBy']);
+        })->with(['doctor', 'fromBranch', 'toBranch', 'createdBy', 'approvedBy', 'rejectedBy']);
 
         $doctorTransfers = $query->latest()->paginate(10);
+
         return view('user.doctor_transfers.index', compact('doctorTransfers'));
     }
 
@@ -42,8 +42,9 @@ class DoctorTransferController extends Controller
     public function create()
     {
         $doctors = Doctor::where('branch_id', auth()->user()->branch_id)->select('id', 'name')->get();
-        $branches = Branch::select('id', 'name')->where('id', '!=', auth()->user()->branch_id)->get();
-        return view('user.doctor_transfers.create', compact('doctors','branches'));
+        $branches = Branch::where('id', '!=', auth()->user()->branch_id)->select('id', 'name')->get();
+
+        return view('user.doctor_transfers.create', compact('doctors', 'branches'));
     }
 
     /**
@@ -66,11 +67,19 @@ class DoctorTransferController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('user.doctor-transfers.index')->with('success', 'تم طلب نقل الطبيب بنجاح');
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم إنشاء طلب نقل للطبيب: {$doctorTransfer->doctor->name} من الفرع {$doctorTransfer->fromBranch->name} إلى الفرع {$doctorTransfer->toBranch->name}",
+            'loggable_id' => $doctorTransfer->doctor->id,
+            'loggable_type' => Doctor::class,
+            "action" => "create_doctor_transfer",
+        ]);
+
+        return redirect()->route('user.doctor-transfers.index')->with('success', 'تم طلب نقل الطبيب بنجاح.');
     }
 
     /**
-     * Display the specified resource.
+     * Show the specified resource.
      */
     public function show(DoctorTransfer $doctorTransfer)
     {
@@ -108,7 +117,15 @@ class DoctorTransferController extends Controller
             'note' => $request->note,
         ]);
 
-        return redirect()->route('user.doctor-transfers.index')->with('success', 'تم تحديث طلب النقل بنجاح');
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم تعديل طلب نقل للطبيب: {$doctorTransfer->doctor->name}. الفرع الجديد: {$doctorTransfer->toBranch->name}",
+            'loggable_id' => $doctorTransfer->doctor->id,
+            'loggable_type' => Doctor::class,
+            "action" => "edit_doctor_transfer",
+        ]);
+
+        return redirect()->route('user.doctor-transfers.index')->with('success', 'تم تحديث طلب النقل بنجاح.');
     }
 
     /**
@@ -120,16 +137,21 @@ class DoctorTransferController extends Controller
             return redirect()->route('user.doctor-transfers.index')->with('error', 'هذا الطلب تم اتخاذ إجراء عليه مسبقًا.');
         }
 
-
-        $doctor = Doctor::find($doctorTransfer->doctor_id);
-        $doctor->update([
-            'branch_id' => $doctorTransfer->to_branch_id,
-        ]);
+        $doctor = $doctorTransfer->doctor;
+        $doctor->update(['branch_id' => $doctorTransfer->to_branch_id]);
 
         $doctorTransfer->update([
             'status' => 'approved',
             'approved_by' => auth()->id(),
             'approved_at' => now(),
+        ]);
+
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تمت الموافقة على طلب نقل الطبيب: {$doctor->name} إلى الفرع {$doctorTransfer->toBranch->name}",
+            'loggable_id' => $doctorTransfer->doctor->id,
+            'loggable_type' => Doctor::class,
+            "action" => "approve_doctor_transfer",
         ]);
 
         return redirect()->route('user.doctor-transfers.index')->with('success', 'تمت الموافقة على طلب النقل.');
@@ -155,6 +177,14 @@ class DoctorTransferController extends Controller
             'rejected_at' => now(),
         ]);
 
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم رفض طلب نقل الطبيب: {$doctorTransfer->doctor->name}. السبب: {$request->rejected_reason}",
+            'loggable_id' => $doctorTransfer->doctor->id,
+            'loggable_type' => Doctor::class,
+            "aciton" => "reject_doctor_transfer",
+        ]);
+
         return redirect()->route('user.doctor-transfers.index')->with('success', 'تم رفض طلب النقل.');
     }
 
@@ -167,7 +197,16 @@ class DoctorTransferController extends Controller
             return redirect()->route('user.doctor-transfers.index')->with('error', 'لا يمكن حذف الطلب بعد الموافقة أو الرفض.');
         }
 
+        $doctorName = $doctorTransfer->doctor->name;
         $doctorTransfer->delete();
+
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم حذف طلب نقل الطبيب: {$doctorName}",
+            'loggable_id' => $doctorTransfer->doctor->id,
+            'loggable_type' => Doctor::class,
+            "aciton" => "delete_doctor_transfer",
+        ]);
 
         return redirect()->route('user.doctor-transfers.index')->with('success', 'تم حذف طلب النقل.');
     }

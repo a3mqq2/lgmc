@@ -14,15 +14,7 @@ class FileTypeSeeder extends Seeder
     {
         $fileTypes = [
             // أنواع مستندات خاصة بالأطباء
-            ['name' => 'شهادة البكالوريوس', 'type' => 'doctor', 'doctor_rank_id' => null, 'doctor_type' => 'libyan', 'is_required' => true],
-            ['name' => 'شهادة الماجستير', 'type' => 'doctor', 'doctor_rank_id' => null, 'doctor_type' => 'foreign', 'is_required' => false],
-            ['name' => 'جواز السفر', 'type' => 'doctor', 'doctor_rank_id' => null, 'doctor_type' => 'visitor', 'is_required' => true],
-            ['name' => 'رقم التسجيل النقابي', 'type' => 'doctor', 'doctor_rank_id' => null, 'doctor_type' => 'libyan', 'is_required' => false],
-
-            // أنواع مستندات خاصة بالمنشآت الطبية
-            ['name' => 'ترخيص المنشأة', 'type' => 'medical_facility', 'doctor_rank_id' => null, 'doctor_type' => null, 'is_required' => true],
-            ['name' => 'سجل تجاري', 'type' => 'medical_facility', 'doctor_rank_id' => null, 'doctor_type' => null, 'is_required' => true],
-            ['name' => 'شهادة الضمان الصحي', 'type' => 'medical_facility', 'doctor_rank_id' => null, 'doctor_type' => null, 'is_required' => false],
+            ['name' => 'الصورة الشخصية', 'type' => 'doctor', 'doctor_rank_id' => null, 'is_required' => true],
         ];
 
         foreach ($fileTypes as $fileType) {

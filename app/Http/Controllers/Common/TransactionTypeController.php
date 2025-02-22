@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Common;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\Log;
 use Illuminate\Http\Request;
 use App\Models\TransactionType;
@@ -38,12 +38,19 @@ class TransactionTypeController extends Controller
 
         $transactionType = new TransactionType();
         $transactionType->name = $request->name;
-        $transactionType->type= $request->type;
+        $transactionType->type = $request->type;
         $transactionType->save();
 
-        Log::create(['user_id' => auth()->id(), 'details' => "تم انشاء تصنيف مالي جديد " . $transactionType->name]);
-        return redirect()->route(get_area_name().'.transaction-types.index')
-        ->with('success','تم انشاء تصنيف مالي جديد');
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم إنشاء تصنيف مالي جديد: " . $transactionType->name,
+            'loggable_id' => $transactionType->id,
+            'loggable_type' => TransactionType::class,
+            'action' => 'create_transaction_type',
+        ]);
+
+        return redirect()->route(get_area_name() . '.transaction-types.index')
+            ->with('success', 'تم إنشاء تصنيف مالي جديد بنجاح');
     }
 
     /**
@@ -51,7 +58,7 @@ class TransactionTypeController extends Controller
      */
     public function show(TransactionType $transactionType)
     {
-        //
+        // عرض التفاصيل إذا لزم الأمر
     }
 
     /**
@@ -72,13 +79,21 @@ class TransactionTypeController extends Controller
             "type" => "required|in:deposit,withdrawal",
         ]);
 
-        $transactionType->name = $request->name;
-        $transactionType->type= $request->type;
-        $transactionType->save();
+        $transactionType->update([
+            'name' => $request->name,
+            'type' => $request->type,
+        ]);
 
-        Log::create(['user_id' => auth()->id(), 'details' => "تم تحديث تصنيف مالي  " . $transactionType->name]);
-        return redirect()->route(get_area_name().'.transaction-types.index')
-        ->with('success','تم تحديث تصنيف مالي ');
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم تحديث تصنيف مالي: " . $transactionType->name,
+            'loggable_id' => $transactionType->id,
+            'loggable_type' => TransactionType::class,
+            'action' => 'update_transaction_type',
+        ]);
+
+        return redirect()->route(get_area_name() . '.transaction-types.index')
+            ->with('success', 'تم تحديث تصنيف مالي بنجاح');
     }
 
     /**
@@ -86,12 +101,21 @@ class TransactionTypeController extends Controller
      */
     public function destroy(TransactionType $transactionType)
     {
-        if($transactionType->transactions->count()) {
+        if ($transactionType->transactions->count()) {
             return redirect()->back()->withErrors(['لا يمكنك حذف تصنيف مالي يحتوي على معاملات']);
         }
-        Log::create(['user_id' => auth()->id(), 'details' => "تم حذف تصنيف مالي  " . $transactionType->name]);
+
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم حذف تصنيف مالي: " . $transactionType->name,
+            'loggable_id' => $transactionType->id,
+            'loggable_type' => TransactionType::class,
+            'action' => 'delete_transaction_type',
+        ]);
+
         $transactionType->delete();
-        return redirect()->route(get_area_name().'.transaction-types.index')
-        ->with('success','تم حذف تصنيف مالي ');
+
+        return redirect()->route(get_area_name() . '.transaction-types.index')
+            ->with('success', 'تم حذف تصنيف مالي بنجاح');
     }
 }

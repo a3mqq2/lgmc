@@ -56,7 +56,7 @@
                             <td>{{ $doctor->passport_expiration ? $doctor->passport_expiration->format('Y-m-d') : 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <th class="bg-light">العنوان</th>
+                            <th class="bg-light">الإقامة</th>
                             <td>{{ $doctor->address }}</td>
                         </tr>
                         <tr>
@@ -101,7 +101,7 @@
                         </tr>
                         <tr>
                             <th class="bg-light">تاريخ التأهيل</th>
-                            <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date->format('Y-m-d') : 'N/A' }}</td>
+                            <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date: 'N/A' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">شهادة الإمتياز</th>
@@ -109,7 +109,7 @@
                         </tr>
                         <tr>
                             <th class="bg-light">تاريخ شهادة الإمتياز</th>
-                            <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date->format('Y-m-d') : 'N/A' }}</td>
+                            <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date: 'N/A' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">شهادة التخرج</th>

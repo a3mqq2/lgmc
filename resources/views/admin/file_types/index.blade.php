@@ -67,12 +67,14 @@
                                                 @endif
                                             </td>
                                             <td>
+                                                @if ($fileType->id != 1)
                                                 <a href="{{ route(get_area_name().'.file-types.edit', $fileType->id) }}" class="btn btn-sm btn-primary">تعديل</a>
                                                 <form action="{{ route(get_area_name().'.file-types.destroy', $fileType->id) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد أنك تريد حذف هذا النوع من المستندات؟')">حذف</button>
                                                 </form>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('amount', 11,2);
             $table->decimal('balance', 11,2);
             $table->foreignId('branch_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('transaction_type_id')->constrained();
+            $table->foreignId('transaction_type_id')->nullable()->constrained();
             $table->enum('type', ['deposit', 'withdrawal']);
             $table->timestamps();
         });

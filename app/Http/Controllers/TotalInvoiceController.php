@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Vault;
 use App\Models\Doctor;
 use App\Models\Invoice;
+use App\Models\Log;
 use App\Enums\PricingType;
 use App\Models\Transaction;
 use App\Models\TotalInvoice;
@@ -13,19 +14,28 @@ use App\Enums\MembershipStatus;
 
 class TotalInvoiceController extends Controller
 {
+    /**
+     * Show form for creating a total invoice.
+     */
     public function show(Doctor $doctor)
     {
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم فتح صفحة إنشاء فاتورة كلية للطبيب: {$doctor->name}",
+            'loggable_id' => $doctor->id,
+            'loggable_type' => Doctor::class,
+        ]);
+
         return view('finance.total_invoices.create', compact('doctor'));
     }
 
-
+    /**
+     * Store a newly created total invoice.
+     */
     public function store(Request $request)
     {
-
-        // check if the use has  branch id is null
-
-        if(auth()->user()->branch_id == null) {
-            return redirect()->route(get_area_name().'.total_invoices.index')->with('error', 'لا يمكنك إضافة فاتورة كلية لأنك لم تحدد فرعك بعد.');
+        if (auth()->user()->branch_id === null) {
+            return redirect()->route(get_area_name() . '.total_invoices.index')->with('error', 'لا يمكنك إضافة فاتورة كلية لأنك لم تحدد فرعك بعد.');
         }
 
         $request->validate([
@@ -34,12 +44,9 @@ class TotalInvoiceController extends Controller
             'notes' => 'nullable|string|max:255',
         ]);
 
-        // إنشاء رقم الفاتورة الكلية
-        $totalInvoiceNumber = 'TINV-' . TotalInvoice::count()+1;
-
-        // إنشاء الفاتورة الكلية
-
+        $totalInvoiceNumber = 'TINV-' . (TotalInvoice::count() + 1);
         $invoices = Invoice::whereIn('id', $request->invoices)->get();
+
         $totalInvoice = TotalInvoice::create([
             'invoice_number' => $totalInvoiceNumber,
             'doctor_id' => $invoices->first()->invoiceable_id,
@@ -49,109 +56,123 @@ class TotalInvoiceController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        // تحديث الفواتير وإسنادها للفاتورة الكلية
         Invoice::whereIn('id', $request->invoices)->update([
             'status' => \App\Enums\InvoiceStatus::paid,
             'total_invoice_id' => $totalInvoice->id,
         ]);
 
-
-        foreach($invoices as $invoice)
-        {
-            if($invoice->pricing)
-            {
-                
-                if($invoice->pricing->type == PricingType::Membership)
-                {
+        foreach ($invoices as $invoice) {
+            if ($invoice->pricing) {
+                if ($invoice->pricing->type === PricingType::Membership) {
                     $membership = $invoice->invoiceable;
                     $membership->membership_status = MembershipStatus::Active;
                     $membership->membership_expiration_date = now()->addYear();
                     $membership->save();
-
-                } else if($invoice->pricing->type == PricingType::License)
-                {
-                    if($invoice->licence && ($invoice->licence->status == "under_payment"))
-                    {   
-                        $invoice->licence->status = "active";
-                        $invoice->licence->save();
-                    }
-              
+                } elseif ($invoice->pricing->type === PricingType::License && $invoice->licence && $invoice->licence->status === "under_payment") {
+                    $invoice->licence->status = "active";
+                    $invoice->licence->save();
                 }
             }
         }
 
-
-        // create transaction 
         $vault = auth()->user()->branch_id ? auth()->user()->branch->vault : Vault::first();
-        $transaction = new Transaction();
-        $transaction->desc = "فاتورة كلية رقم $totalInvoiceNumber";
-        $transaction->amount = $request->total_amount;
-        $transaction->type = "deposit";
-        $transaction->branch_id = auth()->user()->branch_id;
-        $transaction->user_id = auth()->id();
-        $transaction->vault_id  = $vault->id;
-        $transaction->transaction_type_id = 6; 
-        // TODO CHANGE TO 7
-        $transaction->save();
+
+        $transaction = Transaction::create([
+            'desc' => "فاتورة كلية رقم {$totalInvoiceNumber}",
+            'amount' => $request->total_amount,
+            'type' => "deposit",
+            'branch_id' => auth()->user()->branch_id,
+            'user_id' => auth()->id(),
+            'vault_id' => $vault->id,
+            'transaction_type_id' => 7, // Updated to the correct type
+        ]);
 
         $vault->increment('balance', $request->total_amount);
-        $vault->save();
 
+        // Log the total invoice creation
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم إنشاء فاتورة كلية رقم {$totalInvoiceNumber} للطبيب: {$invoices->first()->invoiceable->name} بقيمة {$request->total_amount}",
+            'loggable_id' => $totalInvoice->doctor_id,
+            'loggable_type' => Doctor::class,
+        ]);
 
-        return redirect()->route(get_area_name().'.total_invoices.index')->with('success', 'تم دفع الفواتير بنجاح.');
+        return redirect()->route(get_area_name() . '.total_invoices.index')->with('success', 'تم دفع الفواتير بنجاح.');
     }
 
+    /**
+     * Display a listing of total invoices.
+     */
     public function index(Request $request)
     {
         $query = TotalInvoice::with(['doctor', 'user']);
-    
-        if ($request->has('invoice_number')) {
+
+        if ($request->filled('invoice_number')) {
             $query->where('invoice_number', 'like', '%' . $request->invoice_number . '%');
         }
-    
-        if ($request->has('doctor_name')) {
-            $query->whereHas('doctor', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->doctor_name . '%');
-            });
+
+        if ($request->filled('doctor_name')) {
+            $query->whereHas('doctor', fn($q) => $q->where('name', 'like', '%' . $request->doctor_name . '%'));
         }
-    
-        if ($request->has('user_name')) {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->user_name . '%');
-            });
+
+        if ($request->filled('user_name')) {
+            $query->whereHas('user', fn($q) => $q->where('name', 'like', '%' . $request->user_name . '%'));
         }
-    
-        if ($request->has('date_from')) {
+
+        if ($request->filled('date_from')) {
             $query->whereDate('created_at', '>=', $request->date_from);
         }
-    
-        if ($request->has('date_to')) {
+
+        if ($request->filled('date_to')) {
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-
-        if(auth()->user()->branch_id)
-        {
+        if (auth()->user()->branch_id) {
             $query->where('branch_id', auth()->user()->branch_id);
         }
-    
+
         $totalInvoices = $query->orderBy('created_at', 'desc')->paginate(10);
-    
+
+        // Log viewing invoices list
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم عرض قائمة الفواتير الكلية",
+        ]);
+
         return view(get_area_name() . '.total_invoices.index', compact('totalInvoices'));
     }
 
-
+    /**
+     * Show a specific total invoice.
+     */
     public function show_invoice($id)
     {
         $totalInvoice = TotalInvoice::findOrFail($id);
+
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم عرض تفاصيل الفاتورة الكلية رقم {$totalInvoice->invoice_number}",
+            'loggable_id' => $totalInvoice->doctor->id,
+            'loggable_type' => Doctor::class,
+        ]);
+
         return view('finance.total_invoices.show', compact('totalInvoice'));
     }
 
-
+    /**
+     * Print a total invoice.
+     */
     public function print($id)
     {
         $totalInvoice = TotalInvoice::findOrFail($id);
+
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم طباعة الفاتورة الكلية رقم {$totalInvoice->invoice_number}",
+            'loggable_id' => $totalInvoice->doctor->id,
+            'loggable_type' => Doctor::class,
+        ]);
+
         return view('finance.total_invoices.print', compact('totalInvoice'));
     }
-
 }

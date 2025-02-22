@@ -1,9 +1,8 @@
 <?php
 
-
 namespace App\Http\Controllers\Admin;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\Log;
 use App\Models\AcademicDegree;
 use Illuminate\Http\Request;
@@ -12,8 +11,6 @@ class AcademicDegreeController extends Controller
 {
     /**
      * Display a listing of the academic degrees.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
@@ -23,8 +20,6 @@ class AcademicDegreeController extends Controller
 
     /**
      * Show the form for creating a new academic degree.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -33,9 +28,6 @@ class AcademicDegreeController extends Controller
 
     /**
      * Store a newly created academic degree in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -43,20 +35,22 @@ class AcademicDegreeController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        AcademicDegree::create($request->all());
+        $academicDegree = AcademicDegree::create($request->all());
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم إنشاء درجة علمية جديدة"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم إنشاء درجة علمية جديدة: {$academicDegree->name}",
+            'loggable_id' => $academicDegree->id,
+            'loggable_type' => AcademicDegree::class,
+            'action' => 'create_academic_degree',
+        ]);
 
-        return redirect()->route(get_area_name().'.academic-degrees.index')
+        return redirect()->route(get_area_name() . '.academic-degrees.index')
             ->with('success', 'تم إنشاء درجة علمية جديدة بنجاح.');
     }
 
     /**
      * Display the specified academic degree.
-     *
-     * @param  \App\Models\AcademicDegree  $academicDegree
-     * @return \Illuminate\Http\Response
      */
     public function show(AcademicDegree $academicDegree)
     {
@@ -65,9 +59,6 @@ class AcademicDegreeController extends Controller
 
     /**
      * Show the form for editing the specified academic degree.
-     *
-     * @param  \App\Models\AcademicDegree  $academicDegree
-     * @return \Illuminate\Http\Response
      */
     public function edit(AcademicDegree $academicDegree)
     {
@@ -76,10 +67,6 @@ class AcademicDegreeController extends Controller
 
     /**
      * Update the specified academic degree in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\AcademicDegree  $academicDegree
-     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, AcademicDegree $academicDegree)
     {
@@ -89,27 +76,36 @@ class AcademicDegreeController extends Controller
 
         $academicDegree->update($request->all());
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم تعديل بيانات درجة علمية"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم تعديل بيانات درجة علمية: {$academicDegree->name}",
+            'loggable_id' => $academicDegree->id,
+            'loggable_type' => AcademicDegree::class,
+            'action' => 'update_academic_degree',
+        ]);
 
-        return redirect()->route(get_area_name().'.academic-degrees.index')
+        return redirect()->route(get_area_name() . '.academic-degrees.index')
             ->with('success', 'تم تعديل بيانات درجة علمية بنجاح.');
     }
 
     /**
      * Remove the specified academic degree from storage.
-     *
-     * @param  \App\Models\AcademicDegree  $academicDegree
-     * @return \Illuminate\Http\Response
      */
     public function destroy(AcademicDegree $academicDegree)
     {
+        $academicDegreeName = $academicDegree->name;
+        $academicDegreeId = $academicDegree->id;
         $academicDegree->delete();
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم حذف درجة علمية"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم حذف درجة علمية: {$academicDegreeName}",
+            'loggable_id' => $academicDegreeId,
+            'loggable_type' => AcademicDegree::class,
+            'action' => 'delete_academic_degree',
+        ]);
 
-        return redirect()->route(get_area_name().'.academic-degrees.index')
+        return redirect()->route(get_area_name() . '.academic-degrees.index')
             ->with('success', 'تم حذف درجة علمية بنجاح.');
     }
 }

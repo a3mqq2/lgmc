@@ -85,7 +85,16 @@ class AuthController extends Controller
         }
         $user->branch_id = $request->branch_id;
         $user->save();
-        return redirect()->back();
+
+
+
+        if(request('area'))
+        {
+            return redirect()->route('finance.home');
+        } else {
+            return redirect()->route('user.home');
+        }
+
     }
 
 

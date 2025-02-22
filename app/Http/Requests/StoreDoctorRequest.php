@@ -44,7 +44,7 @@ class StoreDoctorRequest extends FormRequest
             'day' => 'nullable|numeric|min:1|max:31',
             'month' => 'nullable|numeric|min:1|max:12',
             'birth_year' => 'nullable|numeric|min:1900|max:2100',
-            'email' => "required|unique:doctors,email",
+            'email' => "nullable|email:rfc,dns,spoof|unique:doctors,email",
             'marital_status' => 'required|string|in:single,married',
             'gender' => 'required|string|in:male,female',
             'passport_number' => 'required|string|max:20',
@@ -54,10 +54,10 @@ class StoreDoctorRequest extends FormRequest
             'hand_graduation_id' => 'required|numeric',
             'internership_complete' => 'required|date',
             'academic_degree_id' => 'required|numeric',
-            'certificate_of_excellence_date' => 'required|date',
+            'certificate_of_excellence_date' => 'required|string',
             'doctor_rank_id' => 'required|numeric',
             'medical_facilities' => 'nullable|array',
-            'specialty_1_id' => 'required|numeric',
+            'specialty_1_id' => 'required_unless:doctor_rank_id,1',
             'specialty_2_id' => 'nullable|numeric',
             'specialty_3_id' => 'nullable|numeric',
             'ex_medical_facilities' => 'nullable|array',
@@ -68,8 +68,9 @@ class StoreDoctorRequest extends FormRequest
             'doctor_number' => 'required_if:type,==,libyan|max:255',
             'documents' => "nullable",
             'type' => "required|in:libyan,palestinian,foreign,visitor",
-            'password' => 'required|min:6|confirmed',
+            'password' => 'nullable|min:6|confirmed',
             'country_graduation_id' => 'nullable|numeric',
+            'institution_id' => 'nullable',
             'g-recaptcha-response' => ($routeName === 'register-store' && !$isLocalEnv) ? 'required|captcha' : '',
 
             
@@ -127,9 +128,9 @@ class StoreDoctorRequest extends FormRequest
             'passport_expiration.after' => 'حقل تاريخ انتهاء الجواز يجب أن يكون بعد اليوم.',
             'phone.required' => 'حقل رقم الهاتف مطلوب.',
             'phone.regex' => 'رقم الهاتف غير صالح.',
-            'address.required' => 'حقل العنوان مطلوب.',
-            'address.string' => 'حقل العنوان يجب أن يكون نصاً.',
-            'address.max' => 'حقل العنوان لا يجب أن يتجاوز 255 حرفاً.',
+            'address.required' => 'حقل الإقامة مطلوب.',
+            'address.string' => 'حقل الإقامة يجب أن يكون نصاً.',
+            'address.max' => 'حقل الإقامة لا يجب أن يتجاوز 255 حرفاً.',
             'hand_graduation_id.required' => 'حقل رقم شهادة التخرج مطلوب.',
             'hand_graduation_id.numeric' => 'حقل رقم شهادة التخرج يجب أن يكون رقمياً.',
             'internership_complete.required' => 'حقل تاريخ إتمام التدريب مطلوب.',
@@ -160,6 +161,7 @@ class StoreDoctorRequest extends FormRequest
             'type.required' => 'حقل نوع الطبيب مطلوب.',
             'type.in' => 'حقل نوع الطبيب غير صالح.',
             'blacklist_check' => 'هذا الطبيب موجود في البلاك ليست ولا يمكن إضافته.',
+            'password.required' => 'حقل كلمة المرور مطلوب.',
         ];
     }
 }

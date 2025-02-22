@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Common;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\Log;
 use App\Models\Branch;
 use App\Models\Transaction;
@@ -19,11 +19,9 @@ class TransactionController extends Controller
     {
         $query = Transaction::query();
 
-        // Filtering
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->user_id);
         }
-
 
         if ($request->filled('vault_id')) {
             $query->where('vault_id', $request->vault_id);
@@ -41,26 +39,21 @@ class TransactionController extends Controller
             $query->where('type', $request->type);
         }
 
-        // Retrieve transactions with pagination
-
-        if(get_area_name() == "finance") {
+        if (get_area_name() == "finance") {
             $query->where('branch_id', auth()->user()->branch_id);
         }
 
         $transactions = $query->latest()->paginate(10);
-
-        // Retrieve all transaction types for the filter dropdown
         $transactionTypes = TransactionType::all();
+
         $vaults = Vault::query();
-        if(auth()->user()->branch_id) {
-            $vaults = $vaults->where('branch_id', auth()->user()->branch_id);
+        if (auth()->user()->branch_id) {
+            $vaults->where('branch_id', auth()->user()->branch_id);
         }
-
         $vaults = $vaults->get();
-        // Return the view with data
-        return view('general.transactions.index', compact('transactions', 'transactionTypes','vaults'));
-    }
 
+        return view('general.transactions.index', compact('transactions', 'transactionTypes', 'vaults'));
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -71,12 +64,12 @@ class TransactionController extends Controller
         $branches = Branch::all();
 
         $vaults = Vault::query();
-        if(get_area_name() == "user" || get_area_name() == "finance") {
-            $vaults = $vaults->where('branch_id', auth()->user()->branch_id);
+        if (get_area_name() == "user" || get_area_name() == "finance") {
+            $vaults->where('branch_id', auth()->user()->branch_id);
         }
-
         $vaults = $vaults->get();
-        return view('general.transactions.create', compact('transactionTypes', 'branches','vaults'));
+
+        return view('general.transactions.create', compact('transactionTypes', 'branches', 'vaults'));
     }
 
     /**
@@ -89,15 +82,13 @@ class TransactionController extends Controller
             'amount' => 'required|numeric',
             'transaction_type_id' => 'required|exists:transaction_types,id',
             'type' => 'required|in:deposit,withdrawal',
-            'vault_id' => "required|exists:vaults,id",
+            'vault_id' => 'required|exists:vaults,id',
         ]);
 
         $vault = Vault::findOrFail($request->vault_id);
 
-        if ($request->type == "withdrawal") {
-            if ($vault->balance < $request->amount) {
-                return redirect()->back()->withErrors(["لا يوجد رصيد كافي في الخزينة المحددة"]);
-            }
+        if ($request->type == "withdrawal" && $vault->balance < $request->amount) {
+            return redirect()->back()->withErrors(["لا يوجد رصيد كافي في الخزينة المحددة"]);
         }
 
         $validatedData['user_id'] = auth()->id();
@@ -109,20 +100,20 @@ class TransactionController extends Controller
             $vault->decrement('balance', $request->amount);
         }
 
-        // Save the updated vault balance in the transaction
-        $transaction->balance = $vault->balance;
-        $transaction->branch_id = $vault->branch_id;
-        $transaction->save();
+        $transaction->update([
+            'balance' => $vault->balance,
+            'branch_id' => $vault->branch_id,
+        ]);
 
-        $vault->save();
-
-        Log::create(['user_id' => auth()->user()->id, 'details' => 'تم إضافة معاملة جديدة: ' . $transaction->desc]);
+        Log::create([
+            'user_id' => auth()->user()->id,
+            'details' => 'تم إضافة معاملة جديدة: ' . $transaction->desc,
+            'loggable_id' => $transaction->id,
+            'loggable_type' => Transaction::class,
+            'action' => 'create_transaction',
+        ]);
 
         return redirect()->route(get_area_name() . '.transactions.index')
             ->with('success', 'تم إضافة معاملة جديدة بنجاح.');
     }
-
-    
-
-
 }

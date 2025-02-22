@@ -14,9 +14,8 @@ use Illuminate\Http\Request;
 use App\Models\DoctorRequest;
 use App\Services\VaultService;
 use App\Services\InvoiceService;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-
+use App\Models\Log;
 class DoctorRequestController extends Controller
 {
 
@@ -142,7 +141,13 @@ class DoctorRequestController extends Controller
             $doctorRequest->doctor_type = $request->doctor_type;
             $doctorRequest->save();
     
-
+            Log::create([
+                'user_id' => auth()->id(),
+                'loggable_id' => $doctorRequest->doctor->id,
+                'loggable_type' => Doctor::class,
+                'details' => "تمت الموافقة على طلب خدمة للطبيب: {$doctorRequest->doctor->name} برقم الطلب: {$doctorRequest->id}",
+                "action" => "create_doctor_request",
+            ]);
 
             $this->createInvoice($doctorRequest);
 
@@ -239,6 +244,16 @@ class DoctorRequestController extends Controller
                 'notes' => $request->notes,
             ]);
 
+
+            Log::create([
+                'user_id' => auth()->id(),
+                'loggable_id' => $doctorRequest->doctor->id,
+                'loggable_type' => Doctor::class,
+                'details' => "تم رفض طلب خدمة للطبيب: {$doctorRequest->doctor->name} برقم الطلب: {$doctorRequest->id} - السبب: {$request->reason}",
+                "action" => "reject_doctor_request",
+            ]);
+
+
             return redirect()
                 ->route(get_area_name() . '.doctor-requests.index', ['doctor_type' => $doctorRequest->doctor_type])
                 ->with('success', 'تم رفض الطلب بنجاح.');
@@ -274,6 +289,16 @@ class DoctorRequestController extends Controller
 
 
          
+
+
+            Log::create([
+                'user_id' => auth()->id(),
+                'loggable_id' => $doctorRequest->doctor->id,
+                'loggable_type' => Doctor::class,
+                'details' => "تم إكمال طلب خدمة للطبيب: {$doctorRequest->doctor->name} برقم الطلب: {$doctorRequest->id}",
+                "action" => "done_doctor_request",
+            ]);
+
 
             $doctorRequest->update([
                 'status' => \App\Enums\RequestStatus::done,
@@ -318,6 +343,15 @@ class DoctorRequestController extends Controller
 
         // $this->invoiceService->markAsPaid($this->vault, $invoice, $invoice->description);
 
+
+        Log::create([
+            'user_id' => auth()->id(),
+            'loggable_id' => $doctorRequest->doctor->id,
+            'loggable_type' => Doctor::class,
+            'details' => "تم إنشاء فاتورة للطبيب: {$doctorRequest->doctor->name} بمبلغ: {$doctorRequest->pricing->amount} - رقم الفاتورة: REQ-{$doctorRequest->id}",
+            "action" => "create_invoice",
+        ]);
+        
     }
 
 

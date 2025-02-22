@@ -37,7 +37,7 @@
                             @enderror
                         </div>
 
-                        <!-- Doctor Fields (Initially Hidden) -->
+                        {{-- <!-- Doctor Fields (Initially Hidden) -->
                         <div id="doctor-fields" style="display: none;">
                             <div class="mb-3">
                                 <label for="doctor_rank_id" class="form-label">الرتبة الطبية</label>
@@ -59,7 +59,7 @@
                                     <option value="palestinian">فلسطيني</option>
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="mb-3">
                             <input type="checkbox" name="is_required" id="is_required" class="mr-3" value="1">

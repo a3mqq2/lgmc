@@ -1,19 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\Log;
 use App\Models\DoctorRank;
 use Illuminate\Http\Request;
 
-
 class DoctorRankController extends Controller
 {
     /**
-     * Display a listing of the doctor_ranks.
-     *
-     * @return \Illuminate\Http\Response
+     * Display a listing of the doctor ranks.
      */
     public function index()
     {
@@ -22,9 +19,7 @@ class DoctorRankController extends Controller
     }
 
     /**
-     * Show the form for creating a new capacity.
-     *
-     * @return \Illuminate\Http\Response
+     * Show the form for creating a new doctor rank.
      */
     public function create()
     {
@@ -32,10 +27,7 @@ class DoctorRankController extends Controller
     }
 
     /**
-     * Store a newly created capacity in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * Store a newly created doctor rank in storage.
      */
     public function store(Request $request)
     {
@@ -43,43 +35,38 @@ class DoctorRankController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        DoctorRank::create($request->all());
+        $doctorRank = DoctorRank::create($request->all());
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم إنشاء صفه طبيب جديدة"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم إنشاء صفه طبيب جديدة: {$doctorRank->name}",
+            'loggable_id' => $doctorRank->id,
+            'loggable_type' => DoctorRank::class,
+            'action' => 'create_doctor_rank',
+        ]);
 
-        return redirect()->route(get_area_name().'.doctor_ranks.index')
+        return redirect()->route(get_area_name() . '.doctor_ranks.index')
             ->with('success', 'تم إنشاء صفه طبيب جديدة بنجاح.');
     }
 
     /**
-     * Display the specified capacity.
-     *
-     * @param  \App\Models\DoctorRank  $doctor_rank
-     * @return \Illuminate\Http\Response
+     * Display the specified doctor rank.
      */
     public function show(DoctorRank $doctor_rank)
     {
-        return view('admin.doctor_ranks.show', compact('capacity'));
+        return view('admin.doctor_ranks.show', compact('doctor_rank'));
     }
 
     /**
-     * Show the form for editing the specified capacity.
-     *
-     * @param  \App\Models\DoctorRank  $doctor_rank
-     * @return \Illuminate\Http\Response
+     * Show the form for editing the specified doctor rank.
      */
     public function edit(DoctorRank $doctor_rank)
     {
-        return view('admin.doctor_ranks.edit', compact('capacity'));
+        return view('admin.doctor_ranks.edit', compact('doctor_rank'));
     }
 
     /**
-     * Update the specified capacity in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\DoctorRank  $doctor_rank
-     * @return \Illuminate\Http\Response
+     * Update the specified doctor rank in storage.
      */
     public function update(Request $request, DoctorRank $doctor_rank)
     {
@@ -89,27 +76,35 @@ class DoctorRankController extends Controller
 
         $doctor_rank->update($request->all());
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم تعديل بيانات صفه طبيب"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم تعديل بيانات صفه طبيب: {$doctor_rank->name}",
+            'loggable_id' => $doctor_rank->id,
+            'loggable_type' => DoctorRank::class,
+            'action' => 'update_doctor_rank',
+        ]);
 
-        return redirect()->route(get_area_name().'.doctor_ranks.index')
+        return redirect()->route(get_area_name() . '.doctor_ranks.index')
             ->with('success', 'تم تعديل بيانات صفه طبيب بنجاح.');
     }
 
     /**
-     * Remove the specified capacity from storage.
-     *
-     * @param  \App\Models\DoctorRank  $doctor_rank
-     * @return \Illuminate\Http\Response
+     * Remove the specified doctor rank from storage.
      */
     public function destroy(DoctorRank $doctor_rank)
     {
+        $name = $doctor_rank->name;
         $doctor_rank->delete();
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم حذف صفه طبيب"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم حذف صفه طبيب: {$name}",
+            'loggable_id' => $doctor_rank->id,
+            'loggable_type' => DoctorRank::class,
+            'action' => 'delete_doctor_rank',
+        ]);
 
-        return redirect()->route(get_area_name().'.doctor_ranks.index')
+        return redirect()->route(get_area_name() . '.doctor_ranks.index')
             ->with('success', 'تم حذف صفه طبيب بنجاح.');
     }
 }

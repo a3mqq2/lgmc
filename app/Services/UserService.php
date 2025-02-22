@@ -45,6 +45,9 @@ class UserService
         Log::create([
             'user_id' => Auth::id(),
             'details' => 'تم إنشاء الموظف: ' . $user->name,
+            'loggable_id' => $user->id,
+            'loggable_type' => User::class,
+            'action' => 'create_user',
         ]);
 
         return $user;
@@ -120,6 +123,9 @@ class UserService
     Log::create([
         'user_id' => Auth::id(),
         'details' => 'تم تحديث بيانات الموظف: ' . $user->name,
+        'loggable_id' => $user->id,
+            'loggable_type' => User::class,
+            'action' => 'update_user',
     ]);
 
     return $user;
@@ -137,7 +143,10 @@ class UserService
 
         Log::create([
             'user_id' => Auth::id(),
-            'details' => 'تم حذف الموظف: ' . $user->name
+            'details' => 'تم حذف الموظف: ' . $user->name,
+            'loggable_id' => $user->id,
+            'loggable_type' => User::class,
+            'action' => 'delete_user',
         ]);
 
         $name = $user->name;
@@ -157,7 +166,10 @@ class UserService
 
         Log::create([
             'user_id' => Auth::id(),
-            'details' => "تم تغيير حالة الموظف  " . $user->name
+            'details' => "تم تغيير حالة الموظف  " . $user->name,
+            'loggable_id' => $user->id,
+            'loggable_type' => User::class,
+            'action' => 'change_user_status',
         ]);
     }
 }

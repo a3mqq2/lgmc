@@ -688,16 +688,19 @@
                 <div class="container-fluid">
 
                      
+                  @if (auth()->user()->branches->count() > 1)
                   <form  action="{{route('change_branch')}}" method="GET" class="p-3">
-                     <select name="branch_id" id="branch_id" class="form-control" onchange="this.form.submit()">
-                         <option value="">الفرع الرئيسي</option>
-                         @foreach (auth()->user()->branches as $branch)
-                             <option value="{{ $branch->id }}" {{ auth()->user()->branch_id == $branch->id ? 'selected' : '' }}>
-                                 {{ $branch->name }}
-                             </option>
-                         @endforeach
-                     </select>
-                 </form>
+                    <input type="hidden" name="area" value="1">
+                    <select name="branch_id" id="branch_id" class="form-control" onchange="this.form.submit()">
+                        <option value="">الفرع الرئيسي</option>
+                        @foreach (auth()->user()->branches as $branch)
+                            <option value="{{ $branch->id }}" {{ auth()->user()->branch_id == $branch->id ? 'selected' : '' }}>
+                                {{ $branch->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+                  @endif
                  
 
                     <ul class="navbar-nav" id="navbar-nav">

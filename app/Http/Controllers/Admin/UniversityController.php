@@ -1,19 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\Log;
 use App\Models\University;
 use Illuminate\Http\Request;
-
 
 class UniversityController extends Controller
 {
     /**
      * Display a listing of the universities.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
@@ -23,8 +20,6 @@ class UniversityController extends Controller
 
     /**
      * Show the form for creating a new university.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -33,9 +28,6 @@ class UniversityController extends Controller
 
     /**
      * Store a newly created university in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -43,20 +35,22 @@ class UniversityController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        University::create($request->all());
+        $university = University::create($request->all());
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم إنشاء جامعة جديدة"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم إنشاء جامعة جديدة: {$university->name}",
+            'loggable_id' => $university->id,
+            'loggable_type' => University::class,
+            'action' => 'create_university',
+        ]);
 
-        return redirect()->route(get_area_name().'.universities.index')
+        return redirect()->route(get_area_name() . '.universities.index')
             ->with('success', 'تم إنشاء جامعة جديدة بنجاح.');
     }
 
     /**
      * Display the specified university.
-     *
-     * @param  \App\Models\University  $university
-     * @return \Illuminate\Http\Response
      */
     public function show(University $university)
     {
@@ -65,9 +59,6 @@ class UniversityController extends Controller
 
     /**
      * Show the form for editing the specified university.
-     *
-     * @param  \App\Models\University  $university
-     * @return \Illuminate\Http\Response
      */
     public function edit(University $university)
     {
@@ -76,10 +67,6 @@ class UniversityController extends Controller
 
     /**
      * Update the specified university in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\University  $university
-     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, University $university)
     {
@@ -89,27 +76,35 @@ class UniversityController extends Controller
 
         $university->update($request->all());
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم تعديل بيانات جامعة"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم تعديل بيانات الجامعة: {$university->name}",
+            'loggable_id' => $university->id,
+            'loggable_type' => University::class,
+            'action' => 'update_university',
+        ]);
 
-        return redirect()->route(get_area_name().'.universities.index')
-            ->with('success', 'تم تعديل بيانات جامعة بنجاح.');
+        return redirect()->route(get_area_name() . '.universities.index')
+            ->with('success', 'تم تعديل بيانات الجامعة بنجاح.');
     }
 
     /**
      * Remove the specified university from storage.
-     *
-     * @param  \App\Models\University  $university
-     * @return \Illuminate\Http\Response
      */
     public function destroy(University $university)
     {
+        $universityName = $university->name;
         $university->delete();
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم حذف جامعة"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم حذف الجامعة: {$universityName}",
+            'loggable_id' => $university->id,
+            'loggable_type' => University::class,
+            'action' => 'delete_university',
+        ]);
 
-        return redirect()->route(get_area_name().'.universities.index')
-            ->with('success', 'تم حذف جامعة بنجاح.');
+        return redirect()->route(get_area_name() . '.universities.index')
+            ->with('success', 'تم حذف الجامعة بنجاح.');
     }
 }

@@ -9,6 +9,7 @@ enum MembershipStatus: string
     case Pending = "pending";
     case InitApprove = "init_approve";
     case Rejected = "rejected";
+    case Banned = "banned";
     public function label(): string
     {
         return match($this) {
@@ -17,6 +18,7 @@ enum MembershipStatus: string
             self::Pending => 'قيد الانتظار',
             self::InitApprove => 'موافقة مبدئية',
             self::Rejected => "مرفوض",
+            self::Banned => "محظور",
         };
     }
 
@@ -28,6 +30,7 @@ enum MembershipStatus: string
             self::Pending => 'bg-warning',
             self::InitApprove => 'bg-info',
             self::Rejected => 'bg-danger',
+            self::Banned => 'bg-danger',
         };
     }
 }

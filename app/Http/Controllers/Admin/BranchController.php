@@ -1,13 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\Log;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
 
 class BranchController extends Controller
 {
@@ -40,31 +39,31 @@ class BranchController extends Controller
             "code" => "required",
         ]);
 
-
         try {
             DB::beginTransaction();
-            $branch = new Branch();
-            $branch->code = $request->code;
-            $branch->name = $request->name;
-            $branch->phone = $request->phone;
-            $branch->city = $request->city;
-            $branch->save();
 
-            Log::create(['user_id' => auth()->user()->id, 'details' => "تم انشاء فرع جديد " . $branch->name]);
+            $branch = Branch::create([
+                'code' => $request->code,
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'city' => $request->city,
+            ]);
+
+            Log::create([
+                'user_id' => auth()->id(),
+                'details' => "تم انشاء فرع جديد: {$branch->name}",
+                'loggable_id' => $branch->id,
+                'loggable_type' => Branch::class,
+                'action' => 'create_branch',
+            ]);
+
             DB::commit();
-            return redirect()->route(get_area_name().'.branches.index')->with('success', 'تم انشاء الفرع بنجاح');
-        } catch(\Exception $e) {
+            return redirect()->route(get_area_name() . '.branches.index')
+                ->with('success', 'تم انشاء الفرع بنجاح');
+        } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()->withErrors([$e->getMessage()]);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Branch $branch)
-    {
-        //
     }
 
     /**
@@ -87,19 +86,28 @@ class BranchController extends Controller
             "city" => "nullable",
         ]);
 
-
         try {
             DB::beginTransaction();
-            $branch->code = $request->code;
-            $branch->name = $request->name;
-            $branch->phone = $request->phone;
-            $branch->city = $request->city;
-            $branch->save();
 
-            Log::create(['user_id' => auth()->user()->id, 'details' => "تم تعديل بيانات فرع  " . $branch->name]);
+            $branch->update([
+                'code' => $request->code,
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'city' => $request->city,
+            ]);
+
+            Log::create([
+                'user_id' => auth()->id(),
+                'details' => "تم تعديل بيانات فرع: {$branch->name}",
+                'loggable_id' => $branch->id,
+                'loggable_type' => Branch::class,
+                'action' => 'update_branch',
+            ]);
+
             DB::commit();
-            return redirect()->route(get_area_name().'.branches.index')->with('success', 'تم تحديث الفرع بنجاح');
-        } catch(\Exception $e) {
+            return redirect()->route(get_area_name() . '.branches.index')
+                ->with('success', 'تم تحديث الفرع بنجاح');
+        } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()->withErrors([$e->getMessage()]);
         }
@@ -112,34 +120,30 @@ class BranchController extends Controller
     {
         try {
             DB::beginTransaction();
-    
-            // Manually delete related records
-            $branch->users()->detach();  // Detach users from the branch (many-to-many)
-            $branch->medicalFacilities()->delete();  // Delete all medical facilities (one-to-many)
-            $branch->invoices()->delete();  // Delete all invoices (one-to-many)
-            $branch->doctors()->delete();  // Delete all doctors (one-to-many)
-            $branch->transactions()->delete();  // Delete all transactions (one-to-many)
-            $branch->licences()->delete();  // Delete all licences (one-to-many)
-            $branch->doctorRequests()->delete();  // Delete all doctor requests (one-to-many)
-            $branch->tickets()->delete();  // Delete all tickets (one-to-many)
-            $branch->branchUsers()->delete();  // Delete all related branch-users (one-to-many)
-            $branch->vault()->delete();  // Delete the related vault (one-to-one)
-            // Delete the branch itself
+
+            if ($branch->doctors->count() > 0) {
+                return redirect()->back()->withErrors(['error' => 'لا يمكن حذف الفرع لوجود اطباء مرتبطين به']);
+            }
+
+            $branchName = $branch->name;
+            $branchId = $branch->id;
             $branch->delete();
-    
-            // Log the deletion
+
             Log::create([
-                'user_id' => auth()->user()->id,
-                'details' => "تم حذف فرع  " . $branch->name
+                'user_id' => auth()->id(),
+                'details' => "تم حذف فرع: {$branchName}",
+                'loggable_id' => $branchId,
+                'loggable_type' => Branch::class,
+                'action' => 'delete_branch',
             ]);
-    
+
             DB::commit();
-    
+
             return redirect()->route(get_area_name() . '.branches.index')
                 ->with('success', 'تم حذف الفرع بنجاح');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()->withErrors([$e->getMessage()]);
         }
-    }    
+    }
 }

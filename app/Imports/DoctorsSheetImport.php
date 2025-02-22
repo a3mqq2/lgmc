@@ -4,9 +4,9 @@ namespace App\Imports;
 
 use Carbon\Carbon;
 use App\Models\Doctor;
-use App\Models\Invoice;
 use App\Models\Licence;
 use App\Models\Specialty;
+use App\Models\Institution;
 use Maatwebsite\Excel\Concerns\ToModel;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -18,162 +18,125 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
      */
     protected $doctorRankMap = [
         'طبيب' => 1,        // Maps to 'طبيب ممارس'
-        'أخصائي' => 3,      // Maps to 'أخصائي ثاني'
+        'اخصائي' => 3,      // Maps to 'أخصائي ثاني'
         'استشاري' => 5,     // Maps to 'استشاري'
     ];
 
     public function model(array $row)
     {
-
-
         if (empty($row['alasm'])) {
             return null; // Skip if name is missing
         }
 
         // Handle specialty
-        $specialty = !empty($row['altkhss'])
-            ? Specialty::firstOrCreate(['name' => $row['altkhss']])
-            : Specialty::find(1); // Default specialty
+        $specialty = !empty($row['altkhss']) && $row['altkhss'] != "ممارس عام" 
+            ? Specialty::firstOrCreate(['name' => $row['altkhss']]) 
+            : null;
 
-        // Create Doctor instance (not saved yet)
+        // Handle institution
+        $institution = null;
+        if (!empty($row['gh_alaaml'])) {
+            $institution = Institution::firstOrCreate(['name' => $row['gh_alaaml'], 'branch_id' => 5]);
+        }
+
+
+
+
+
         $doctor = new Doctor([
             'doctor_number' => $row['aadoy'],
             'name' => $row['alasm'],
-            'phone' => $row['rkm_alhatf'],
+            'phone' => 0 . $row['rkm_alhatf'],
             'address' => $row['alakam'],
             'doctor_rank_id' => $this->doctorRankMap[$row['alsf']] ?? null,
             'specialty_1_id' => $specialty?->id ?? 1,
-            'certificate_of_excellence_date' => $this->parseDate($row['almohl']),
-            'date_of_birth' => $this->parseDate($row['almohl']),
+            'institution_id' => $institution?->id, // Assign institution_id if exists
+            'certificate_of_excellence_date' =>  !empty($row['almohl']) && is_numeric(preg_replace('/\D/', '', $row['almohl'])) 
+            ? preg_replace('/\D/', '', $row['almohl']) . '-01-01' 
+            : null, 
+            'date_of_birth' => !empty($row['almylad']) && is_numeric(preg_replace('/\D/', '', $row['almylad'])) 
+            ? preg_replace('/\D/', '', $row['almylad']) . '-01-01' 
+            : null,        
             'registered_at' => $this->parseDate($row['alantsab']),
             'branch_id' => 5,
-            'code' => Doctor::max('id') + 1,
+            'code' => $row['aadoy'],
             'membership_status' => "active",
             'type' => "libyan",
             'notes' => $row['mlahthat'],
+            'country_id' => 1,
         ]);
 
-        // ✅ Save doctor to get the ID
+        // Save the doctor to get an ID
         $doctor->save();
 
-        if (!empty($row['tsoy']) && is_numeric($row['tsoy'])) {
-            // Now you can access $doctor->id
-            Invoice::create([
-                'invoiceable_id' => $doctor->id,
-                'invoice_number' => 'SETT-' . $doctor->code,
-                'amount' => $row['tsoy'],
-                'invoiceable_type' => Doctor::class,
-                'description' => "رسوم قيمة التسوية الباقية",
-                'user_id' => auth()->id(),
-                'status' => 'unpaid',
-                'branch_id' => $doctor->branch_id,
-            ]);
+        // Handle licences for specified years
+        $years = ['tgdyd_2023', 'tgdyd_2024', 'tgdyd_2025', 'tgdyd_2026'];
+        foreach ($years as $year) {
+            if (!empty($row[$year])) {
+                $issuedDate = $this->parseDate($row[$year]);
+                $expiryDate = $this->parseDate($row[$year], 1); // Add 1 year to issue date
+
+                // Skip if date parsing fails
+                if (!$issuedDate || !$expiryDate) {
+                    continue;
+                }
+
+                Licence::create([
+                    'licensable_id' => $doctor->id,
+                    'licensable_type' => Doctor::class,
+                    'issued_date' => $issuedDate->format('Y-m-d'),
+                    'expiry_date' => $expiryDate->format('Y-m-d'),
+                    'status' => $expiryDate->isPast() ? 'expired' : 'active',
+                    'doctor_id' => $doctor->id,
+                    'branch_id' => 5,
+                    'created_by' => auth()->id(),
+                    'doctor_type' => "libyan",
+                ]);
+            }
         }
-
-
-        if (!empty($row['tgdyd_2023'])) {
-       
-        
-            $licence = new \App\Models\Licence();
-            $licence->licensable_id = $doctor->id;
-            $licence->licensable_type = \App\Models\Doctor::class;
-            $licence->issued_date = $this->parseDate($row['tgdyd_2023']); // Issue date from Excel
-            $licence->expiry_date = $this->parseDate($row['tgdyd_2023'], 1); // Expiry date +1 year
-            $licence->status = "expired";
-            $licence->doctor_id = $doctor->id;
-            $licence->branch_id = 5;
-            $licence->created_by = auth()->id();
-            $licence->doctor_type = "libyan";
-        
-            $licence->save();
-        }
-
-
-
-        if (!empty($row['tgdyd_2024'])) {
-       
-        
-            $licence = new \App\Models\Licence();
-            $licence->licensable_id = $doctor->id;
-            $licence->licensable_type = \App\Models\Doctor::class;
-            $licence->issued_date = $this->parseDate($row['tgdyd_2023']); // Issue date from Excel
-            $licence->expiry_date = $this->parseDate($row['tgdyd_2023'], 1); // Expiry date +1 year
-            $licence->status = "expired";
-            $licence->doctor_id = $doctor->id;
-            $licence->branch_id = 5;
-            $licence->created_by = auth()->id();
-            $licence->doctor_type = "libyan";
-        
-            $licence->save();
-        }
-
-
-        if (!empty($row['tgdyd_2025'])) {
-       
-        
-            $licence = new \App\Models\Licence();
-            $licence->licensable_id = $doctor->id;
-            $licence->licensable_type = \App\Models\Doctor::class;
-            $licence->issued_date = $this->parseDate($row['tgdyd_2023']); // Issue date from Excel
-            $licence->expiry_date = $this->parseDate($row['tgdyd_2023'], 1); // Expiry date +1 year
-            $licence->status = "active";
-            $licence->doctor_id = $doctor->id;
-            $licence->branch_id = 5;
-            $licence->created_by = auth()->id();
-            $licence->doctor_type = "libyan";
-        
-            $licence->save();
-        }
-
-
-
-        if (!empty($row['tgdyd_2026'])) {
-       
-        
-            $licence = new \App\Models\Licence();
-            $licence->licensable_id = $doctor->id;
-            $licence->licensable_type = \App\Models\Doctor::class;
-            $licence->issued_date = $this->parseDate($row['tgdyd_2023']); // Issue date from Excel
-            $licence->expiry_date = $this->parseDate($row['tgdyd_2023'], 1); // Expiry date +1 year
-            $licence->status = "active";
-            $licence->doctor_id = $doctor->id;
-            $licence->branch_id = 5;
-            $licence->created_by = auth()->id();
-            $licence->doctor_type = "libyan";
-        
-            $licence->save();
-        }
-
-        
-        
 
         return $doctor; // Always return the model in ToModel imports
     }
 
-
     /**
      * Helper function to parse dates safely.
      */
-    private function parseDate($date, $add = 0)
-    {
-        try {
-            // If it's a numeric value, convert from Excel serial date to Carbon
-            if (is_numeric($date)) {
-                $carbonDate = Carbon::instance(Date::excelToDateTimeObject($date)); // Convert to Carbon
-            } else {
-                $carbonDate = Carbon::parse($date);
-            }
-    
-            // ✅ If $add is provided, add the number of years
-            if ($add > 0) {
-                $carbonDate->addYears($add); // Correct Carbon method
-            }
-    
-            return $carbonDate->format('Y-m-d');
-        } catch (\Exception $e) {
-            return null; // Return null if parsing fails
+   /**
+ * Helper function to parse dates safely.
+ */
+private function parseDate($date, $add = 0)
+{
+    try {
+        // Return null if date is empty, null, or not a valid string/number
+        if (empty($date) || (!is_string($date) && !is_numeric($date))) {
+            return null;
         }
+
+        // Clean the date string: remove invalid characters and trim spaces
+        $cleanedDate = trim(preg_replace('/[^0-9\-\/\.]/', '', $date));
+
+        // Skip if cleaned date is empty or too short to be a valid date
+        if (strlen($cleanedDate) < 4) {
+            return null;
+        }
+
+        // Parse date based on type (Excel serial or string)
+        $carbonDate = is_numeric($cleanedDate)
+            ? Carbon::instance(Date::excelToDateTimeObject($cleanedDate))
+            : Carbon::parse(str_replace(['/', '.'], '-', $cleanedDate));
+
+        return $add > 0 ? $carbonDate->addYears($add) : $carbonDate;
+
+    } catch (\Exception $e) {
+        // Optional: Log the problematic date and reason for debugging
+        \Log::warning('Date parsing failed', [
+            'original_date' => $date,
+            'cleaned_date' => $cleanedDate ?? null,
+            'error' => $e->getMessage(),
+        ]);
+
+        return null; // Safely return null if parsing fails
     }
-    
-    
+}
+
 }

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('doctors', function (Blueprint $table) {
-            $table->enum('membership_status', ['pending', 'active','inactive', 'rejected','init_approve'])->change();
+            $table->enum('membership_status', ['pending', 'active','inactive', 'rejected','init_approve','banned'])->change();
             $table->date('visiting_date')->nullable()->after('membership_status');
         });
     }

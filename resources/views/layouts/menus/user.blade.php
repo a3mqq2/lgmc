@@ -1,7 +1,7 @@
 
 
 
-
+{{-- 
 <li class="nav-item">
     <a class="nav-link menu-link" href="#tickets" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-ticket"></i><span data-key="t-layouts">     التذاكر    </span>
@@ -18,7 +18,7 @@
         </ul>
     </div>
 </li>
-
+ --}}
 
 
 
@@ -97,6 +97,7 @@
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign"]) }}" class="nav-link" data-key="t-horizontal">    الاطباء الآجانب  </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor"]) }}" class="nav-link" data-key="t-horizontal">    الاطباء الزوار  </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian"]) }}" class="nav-link" data-key="t-horizontal">    الاطباء الفلسطينيين  </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['banned' => "1"]) }}" class="nav-link" data-key="t-horizontal">    الاطباء المحظورين  </a>
                 <a href="{{ route(get_area_name().'.doctors.index') }}" class="nav-link" data-key="t-horizontal">    عرض جميع الآطباء   </a>
             </li>
 
@@ -442,6 +443,23 @@
 </li>
 @endif
 
+<li class="nav-item">
+    <a class="nav-link menu-link" href="#institutions" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fas fa-building"></i><span data-key="t-layouts"> جهات العمل </span>
+    </a>
+    <div class="collapse menu-dropdown" id="institutions">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.institutions.create') }}" class="nav-link" data-key="t-horizontal">
+                     إضافة جهة جديدة
+                </a>
+                <a href="{{ route(get_area_name().'.institutions.index') }}" class="nav-link" data-key="t-horizontal">
+                     عرض جميع الجهات
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
 
 
 @if(auth()->user()->permissions->where('name', 'branch-reports')->count())
@@ -451,6 +469,13 @@
     </a>
 </li>
 @endif
+
+
+
+
+
+
+
 
 <li class="nav-item">
     <a class="nav-link menu-link" href="{{ route(get_area_name().'.profile.change-password') }}">

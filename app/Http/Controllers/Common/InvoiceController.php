@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Common;
 
 use App\Models\User;
 use App\Models\Vault;
+use App\Models\Doctor;
 use App\Models\Invoice;
 use App\Enums\InvoiceStatus;
 use Illuminate\Http\Request;
+use App\Models\MedicalFacility;
 use App\Services\InvoiceService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -92,16 +94,81 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        //
+        return view('general.invoices.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
+    /**
+     * Store a newly created invoice in storage.
+     */
     public function store(Request $request)
     {
-        //
+        // 1. Validate incoming data
+        $request->validate([
+            'description' => 'required|string|max:255',
+            'amount'      => 'required|numeric|min:0',
+            'invoiceable_type' => 'required|string|in:App\\Models\\Doctor,App\\Models\\MedicalFacility',
+            'invoiceable_id'   => 'required|numeric',
+            'transaction_type_id' => 'required|numeric',
+        ]);
+
+        // 2. Generate an invoice number like "INV-xxx"
+        $nextNumber = Invoice::count() + 1; 
+        $invoiceNumber = "INV-" . $nextNumber;
+
+
+        // if doctor search by code
+
+        if($request->invoiceable_type == "App\Models\Doctor")
+        {
+            $doctor = Doctor::where('code', $request->invoiceable_id)->first();
+            if(!$doctor)
+            {
+                return redirect()->back()->withErrors(['الطبيب غير موجود']);
+            }
+
+            if($doctor->branch_id != auth()->user()->branch_id)
+            {
+                return redirect()->back()->withErrors(['لا يمكن إضافة قيمة فاتورة لطبيب ليس من فرعك']);
+            }
+        } else {
+            $medical_facility = MedicalFacility::find($request->invoiceable_id);
+            if(!$medical_facility)
+            {
+                return redirect()->back()->withErrors(['المنشأة الطبية غير موجودة']);
+            }
+
+            if($medical_facility->branch_id != auth()->user()->branch_id)
+            {
+                return redirect()->back()->withErrors(['لا يمكن إضافة قيمة فاتورة لمنشأة طبية ليست من فرعك']);
+            }
+        }
+
+        
+
+        // 3. Build the invoice data
+        $data = [
+            'invoice_number'    => $invoiceNumber,
+            'invoiceable_id'    => isset($doctor) ? $doctor->id : $request->invoiceable_id,
+            'invoiceable_type'  => $request->invoiceable_type,
+            'description'       => $request->description,
+            'user_id'           => auth()->id(),
+            'amount'            => $request->amount,
+            'status'            => 'unpaid',   // Default status
+            'branch_id'         => auth()->user()->branch_id,
+            'transaction_type_id' => $request->transaction_type_id,
+        ];
+
+        // 4. Create the invoice
+        $invoice = Invoice::create($data);
+
+        // 5. Redirect with a success message
+        return redirect()->route(get_area_name() . '.invoices.index')
+            ->with('success', 'تم إنشاء الفاتورة رقم ' . $invoice->invoice_number . ' بنجاح.');
     }
+
 
     /**
      * Display the specified resource.
@@ -140,7 +207,30 @@ class InvoiceController extends Controller
      */
     public function destroy(Invoice $invoice)
     {
-        //
+
+        // add conditions
+        if($invoice->status != InvoiceStatus::unpaid)
+        {
+            return redirect()->back()
+            ->withErrors(['لا يمكن حذف هذه الفاتورة']);
+        }
+
+        if($invoice->branch_id != auth()->user()->branch_id)
+        {
+            return redirect()->back()->withErrors(['لا يمكن حذف قيمة فاتورة لغير فرعها الحالي']);
+        }
+
+
+        // if the invoice paid you cannot delete it 
+
+        if($invoice->status != InvoiceStatus::unpaid)
+        {
+            return redirect()->back()->withErrors(['لا يمكن حذف فاتورة مدفوعة']);
+        }
+
+
+        $invoice->delete();
+        return redirect()->route(get_area_name().'.invoices.index')->with('success', 'تم حذف الفاتورة بنجاح.');
     }
 
 
@@ -164,6 +254,7 @@ class InvoiceController extends Controller
             }
             $vault = auth()->user()->branch_id ? auth()->user()->branch->vault : Vault::first();
             $this->invoiceService->markAsPaid($vault,$invoice, $request->notes);
+
             DB::commit();
         } catch(\Exception $e)
         {

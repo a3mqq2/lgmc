@@ -10,6 +10,7 @@ use App\Http\Controllers\Common\TicketController;
 use App\Http\Controllers\Common\LicenceController;
 use App\Http\Controllers\DoctorTransferController;
 use App\Http\Controllers\Admin\DoctorFileController;
+use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\Common\TransactionController;
 use App\Http\Controllers\Common\DoctorRequestController;
 use App\Http\Controllers\Common\MedicalFacilityController;
@@ -20,6 +21,7 @@ Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations'
     Route::get('/home', [UserController::class, 'home'])->name('home');
     Route::resource('vaults', VaultController::class)->only(['index']);
     Route::resource("transactions", TransactionController::class);
+    Route::post('/doctors/{doctor}/ban', [DoctorController::class, 'ban'])->name('doctors.toggle-ban');
     Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->name('doctors.print');
     Route::get('/doctors/{doctor}/print-id', [DoctorController::class, 'print_id'])->name('doctors.print-id');
     Route::post('/doctors/{doctor}/approve', [DoctorController::class, 'approve'])->name('doctors.approve');
@@ -47,6 +49,10 @@ Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations'
     Route::get('/reports/licences/print', [ReportController::class, 'licences_print'])->name('reports.licences_print');
     Route::get('/reports/transactions/print', [ReportController::class, 'transactions_print'])->name('reports.transactions_print');
     // =============== REPORTS ================ //
+
+
+
+    Route::resource('institutions', InstitutionController::class);
 
 
     // approve and reject doctor transfer route

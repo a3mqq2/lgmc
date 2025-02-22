@@ -64,7 +64,8 @@ class Doctor extends Authenticatable
         'membership_expiration_date',
         'password',
         'visiting_date',
-        'registered_at'
+        'registered_at',
+        'institution_id',
     ];
 
 
@@ -80,7 +81,6 @@ class Doctor extends Authenticatable
         'date_of_birth' => 'datetime',
         'passport_expiration' => 'datetime',
         'internership_complete' => 'datetime',
-        'certificate_of_excellence_date' => 'datetime',
         'membership_expiration_date' => 'datetime',
         'marital_status' => MaritalStatus::class,
         'gender' => GenderEnum::class,
@@ -151,6 +151,11 @@ class Doctor extends Authenticatable
         return $this->hasMany(Licence::class, 'licensable_id')->where('licensable_type', 'App\Models\Doctor')->orderBy('created_at', 'desc');
     }
 
+    public function logs()
+    {
+        return $this->hasMany(Log::class, 'loggable_id')->where('loggable_type', 'App\Models\Doctor')->orderBy('created_at', 'desc');
+    }
+
     public function countryGraduation()
     {
         return $this->belongsTo(Country::class, 'country_graduation_id');
@@ -159,7 +164,12 @@ class Doctor extends Authenticatable
 
     public function getSpecializationAttribute()
     {
-        return $this->specialty1->name . ' - ' . $this->specialty2?->name . ' - ' . $this->specialty3?->name;
+        return implode(' - ', array_filter([
+            $this->specialty1?->name,
+            $this->specialty2?->name,
+            $this->specialty3?->name,
+        ]));
+        
     }
 
     public function tickets()
@@ -187,5 +197,11 @@ class Doctor extends Authenticatable
         } else {
             return null;
         }
+    }
+
+
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
     }
 }

@@ -103,6 +103,12 @@ class DoctorService
         //  }
 
 
+
+        if(request('banned'))
+        {
+            $query->where('membership_status','banned');
+        }
+
          if (get_area_name() == "user" || get_area_name() == "finance") {
              $query->where('branch_id', auth()->user()->branch_id);
          }
@@ -113,7 +119,7 @@ class DoctorService
              }])->orderByDesc('total_unpaid_invoices');
          }
      
-         return $query->with('branch')->paginate(50);
+         return $query->with('branch')->orderbyDesc('id')->paginate(50);
      }
      
 
@@ -121,7 +127,7 @@ class DoctorService
     {
 
 
-        $query = FileType::query()->where('type', 'doctor')->where('doctor_type', request('type'));
+        $query = FileType::query()->where('type', 'doctor');
         $specialties = Specialty::where('specialty_id', null)->get();
 
         return [
@@ -223,7 +229,6 @@ class DoctorService
 
             // جلب أنواع الملفات للأطباء
             $file_types = FileType::where('type', 'doctor')
-                ->where('doctor_type', $data['type'])
                 ->get();
 
             // التحقق من وجود الملفات المطلوبة
@@ -258,6 +263,9 @@ class DoctorService
             Log::create([
                 'user_id' => auth()->user()->id,
                 'details' => 'تم إنشاء طبيب جديد: ' . $doctor->name,
+                'loggable_id' => $doctor->id,
+                'loggable_type' => Doctor::class,
+                'action' => 'create_doctor',
             ]);
 
             DB::commit();
@@ -460,16 +468,67 @@ class DoctorService
             // Sync the medical facilities
             $doctor->medicalFacilities()->sync($data['medical_facilities'] ?? []);
 
+
+
+            // جلب أنواع الملفات للأطباء
+            $file_types = FileType::where('type', 'doctor')->get();
+
+            // التحقق من وجود الملفات المطلوبة إذا لم تكن موجودة بالفعل
+            foreach ($file_types as $file_type) {
+                if ($file_type->is_required) {
+                    $existingFile = $doctor->files()->where('file_type_id', $file_type->id)->first();
+                    $newFileUploaded = !empty($data['documents'][$file_type->id]);
+
+                    if (!$existingFile && !$newFileUploaded) {
+                        return redirect()->back()->withInput()->withErrors(["الملف {$file_type->name} مطلوب ولم يتم تحميله."]);
+                    }
+                }
+            }
+
+            // معالجة ملفات المستندات
+            foreach ($file_types as $file_type) {
+                if (isset($data['documents'][$file_type->id])) {
+                    $file = $data['documents'][$file_type->id];
+
+                    // التحقق مما إذا كان هناك ملف موجود مسبقًا من نفس النوع
+                    $existingFile = $doctor->files()->where('file_type_id', $file_type->id)->first();
+
+                    if ($existingFile) {
+                        // حذف الملف القديم من التخزين إذا كان موجودًا
+                        if (\Storage::disk('public')->exists($existingFile->file_path)) {
+                            \Storage::disk('public')->delete($existingFile->file_path);
+                        }
+
+                        // تحديث بيانات الملف الموجود
+                        $existingFile->update([
+                            'file_name' => $file->getClientOriginalName(),
+                            'file_path' => $file->store('doctors', 'public'),
+                        ]);
+                    } else {
+                        // إنشاء سجل ملف جديد إذا لم يكن موجودًا مسبقًا
+                        $doctor->files()->create([
+                            'file_name' => $file->getClientOriginalName(),
+                            'file_type_id' => $file_type->id,
+                            'file_path' => $file->store('doctors', 'public'),
+                        ]);
+                    }
+                }
+            }
+
+
             // Log the update
             Log::create([
                 'user_id' => auth()->user()->id,
                 'details' => 'تم تعديل بيانات الطبيب: ' . $doctor->name,
+                'loggable_id' => $doctor->id,
+                'loggable_type' => Doctor::class,
+                'action' => 'update_doctor',
             ]);
-
             DB::commit();
 
             return $doctor;
         } catch (\Exception $e) {
+            dd($e->getMessage());
             DB::rollback();
             throw $e;  // Re-throw the exception after rolling back
         }
@@ -496,7 +555,11 @@ class DoctorService
             Log::create([
                 'user_id' => auth()->user()->id,
                 'details' => 'تم حذف الطبيب: ' . $doctor->name,
+                'loggable_id' => $doctor->id,
+                'loggable_type' => Doctor::class,
+                'action' => 'delete_doctor',
             ]);
+
 
             DB::commit();
         } catch (\Exception $e) {
@@ -551,6 +614,9 @@ class DoctorService
                 Log::create([
                     'user_id' => auth()->user()->id,
                     'details' => 'تم الموافقة النهائية على الطبيب: ' . $doctor->name,
+                    'loggable_id' => $doctor->id,
+                    'loggable_type' => Doctor::class,
+                    'action' => 'final_approval',
                 ]);
 
 
@@ -570,10 +636,15 @@ class DoctorService
 
                 $this->sendFirstApprovalEmail($doctor);
 
+               
                 Log::create([
                     'user_id' => auth()->user()->id,
                     'details' => 'تم الموافقة المبدئية على الطبيب: ' . $doctor->name,
+                    'loggable_id' => $doctor->id,
+                    'loggable_type' => Doctor::class,
+                    'action' => 'initial_approval',
                 ]);
+
             }
 
 
@@ -604,7 +675,10 @@ class DoctorService
 
             Log::create([
                 'user_id' => auth()->user()->id,
-                'details' => 'تم  الرفض على الطبيب: ' . $doctor->name . " وذلك بسبب :  " . request('notes'),
+                'details' => 'تم الرفض على الطبيب: ' . $doctor->name . ' بسبب: ' . request('notes'),
+                'loggable_id' => $doctor->id,
+                'loggable_type' => Doctor::class,
+                'action' => 'reject_doctor',
             ]);
 
 

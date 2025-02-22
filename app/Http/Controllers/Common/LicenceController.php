@@ -407,17 +407,15 @@ class LicenceController extends Controller
 
         $licence->update($validatedData);
 
-        LicenceLog::create([
-            "user_id" => auth()->id(),
-            "details" => $details,
-            "licence_id" => $licence->id,
-        ]);
-
+ 
 
         Log::create([
             'user_id' => Auth::id(),
             'branch_id' => Auth::user()->branch_id,
             'details' => "تم تعديل الاذن مزاولة: نوع الاذن مزاولة {$request->licensable_type}، معرف الاذن مزاولة {$request->licensable_id}",
+            'loggable_id' => $licence->licensable_id,
+            'loggable_type' => Doctor::class,
+            "aciton" => "edit_licence",
         ]);
 
         return redirect()->route(get_area_name().'.licences.index', ['type' => $licence->type, 'status' => $licence->status])
@@ -448,6 +446,9 @@ class LicenceController extends Controller
             'user_id' => Auth::id(),
             'branch_id' => Auth::user()->branch_id,
             'details' => "تم حذف الاذن مزاولة: معرف الاذن مزاولة {$licence->id}",
+            'loggable_id' => $licence->licensable_id,
+            'loggable_type' => Doctor::class,
+            "aciton" => "delete_licence",
         ]);
 
         return redirect()->route(get_area_name().'.licences.index', ['type' => $type, 'status' => $licence->status])
@@ -491,7 +492,10 @@ class LicenceController extends Controller
     public function print(Licence $licence) {
         Log::create([
             "user_id" => auth()->id(),
-            "details" => "تمت طباعة اذن المزاولة"
+            "details" => " تمت طباعة اذن المزاولة " . $licence->id, 
+            'loggable_id' => $licence->licensable_id,
+            'loggable_type' => Doctor::class,
+            "aciton" => "print_licence",
         ]);
 
 
@@ -524,6 +528,9 @@ class LicenceController extends Controller
             Log::create([
                 "user_id" => auth()->id(),
                 "details" => "تم دفع رسوم اذن المزاولة " . $licence->id . 'وذلك بقيمة ' . $licence->amount,
+                'loggable_id' => $licence->licensable_id,
+                'loggable_type' => Doctor::class,
+                'action' => "payment"
             ]);
 
 

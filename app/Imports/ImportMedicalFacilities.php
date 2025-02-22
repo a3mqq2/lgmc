@@ -15,151 +15,106 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
 {
     public function model(array $row)
     {
-        // ✅ Find or create Medical Facility Type
+        // 1. Find or create the Medical Facility Type
         $medicalFacilityType = !empty($row['nshat'])
             ? MedicalFacilityType::firstOrCreate(['name' => $row['nshat'], 'en_name' => $row['nshat']])
             : MedicalFacilityType::first();
 
-        // ✅ Find doctor by name similarity
+        // 2. Find Doctor by name similarity
         $doctor = !empty($row['alasm'])
             ? Doctor::where('name', 'like', '%' . $row['alasm'] . '%')->first()
             : null;
 
-        // ✅ Translate Arabic name to English
+        // 3. Translate Arabic name to English (optional usage)
         $translatedName = $this->translateNameToEnglish($row['asm_alnshat']);
-        // ✅ Create new Medical Facility with manager_id and en_name
+
+        // 4. Create the Medical Facility
         $MedicalFacility = MedicalFacility::create([
             'name' => $row['asm_alnshat'],
             'serial_number' => $row['rkm'],
             'commerical_number' => $row['sgl_tgaryrkyd'],
             'medical_facility_type_id' => $medicalFacilityType?->id,
             'manager_id' => $doctor?->id,
-            "address" => "البيضاء",
-            "branch_id" => 5,
-            "activity_start_date" => $this->parseDate($row['t_altrkhys']),
-            "phone_number" => $doctor->phone ?? '0921234567',
-            "user_id" => auth()->id(),
+            'address' => 'البيضاء',
+            'branch_id' => 5,
+            'activity_start_date' => $this->parseDate($row['t_altrkhys']),
+            'phone_number' => $doctor->phone ?? '0921234567',
+            'user_id' => auth()->id(),
         ]);
 
+        // 5. Check membership status when “إيقاف النشاط” is found
+        //    We'll mark facility as inactive if no valid issued_date is parsed.
+        //    This is handled inside createOrUpdateLicence().
 
-        // add licences 
+        // 6. Create/Update Licences for each relevant year
+        $yearsMap = [
+            'tgdyd_2022',
+            'tgdyd_2023',
+            'tgdyd_2024',
+            'tgdyd_2025'
+        ];
 
-        if(!empty($row['tgdyd_2022']))
-        {
-            $licence = new Licence();
-            $licence->licensable_id = $MedicalFacility->id;
-            $licence->licensable_type = \App\Models\MedicalFacility::class;
-            $licence->issued_date = $this->parseDate($row['tgdyd_2022']); // Issue date from Excel
-            $licence->expiry_date = $this->parseDate($row['tgdyd_2022'], 1); // Expiry date +1 year
-            $licence->status = "expired";
-            $licence->branch_id = 5;
-            $licence->created_by = auth()->id();
-
-
-            if(!$licence->issued_date && $row['tgdyd_2022'] == "ايقاف النشاط"){
-                $MedicalFacility->membership_status = "inactive";
-                $MedicalFacility->save();
-            } else {
-                if(!$licence->issued_date)
-                {
-                    $MedicalFacility->membership_status = "inactive";
-                    $MedicalFacility->save();
-                } else {
-                    $licence->save();
-                }
+        foreach ($yearsMap as $yearKey) {
+            if (!empty($row[$yearKey])) {
+                $this->createOrUpdateLicence($MedicalFacility, $row[$yearKey], $yearKey);
             }
         }
 
+        return $MedicalFacility; // Return the model
+    }
 
+    /**
+     * Create or update license record with proper status (active/expired/inactive).
+     *
+     * @param  \App\Models\MedicalFacility  $facility
+     * @param  mixed  $value               The value from the Excel row (date or 'ايقاف النشاط')
+     * @param  string $yearKey             The row key (e.g., tgdyd_2022)
+     */
+    private function createOrUpdateLicence(MedicalFacility $facility, $value, $yearKey)
+    {
+        // 1. Parse the issue date
+        $issuedDate = $this->parseDate($value);
+        // 2. Calculate expiry date (+1 year)
+        $expiryDate = $issuedDate ? Carbon::parse($issuedDate)->addYear()->format('Y-m-d') : null;
 
-        if(!empty($row['tgdyd_2023']))
-        {
-            $licence = new Licence();
-            $licence->licensable_id = $MedicalFacility->id;
-            $licence->licensable_type = \App\Models\MedicalFacility::class;
-            $licence->issued_date = $this->parseDate($row['tgdyd_2023']); // Issue date from Excel
-            $licence->expiry_date = $this->parseDate($row['tgdyd_2023'], 1); // Expiry date +1 year
-            $licence->status = "expired";
-            $licence->branch_id = 5;
-            $licence->created_by = auth()->id();
+        // 3. Create the Licence model
+        $licence = new Licence();
+        $licence->licensable_id = $facility->id;
+        $licence->licensable_type = MedicalFacility::class;
+        $licence->issued_date = $issuedDate;
+        $licence->expiry_date = $expiryDate;
+        $licence->branch_id = 5;
+        $licence->created_by = auth()->id();
 
-            if(!$licence->issued_date && $row['tgdyd_2023'] == "ايقاف النشاط"){
-                $MedicalFacility->membership_status = "inactive";
-                $MedicalFacility->save();
-            } else {
-                if(!$licence->issued_date)
-                {
-                    $MedicalFacility->membership_status = "inactive";
-                    $MedicalFacility->save();
-                } else {
-                    $licence->save();
-                }
-            }
+        /**
+         * Determine Status:
+         * - If 'ايقاف النشاط' and no valid issue date => membership & licence are inactive.
+         * - If valid dates & expiry is in the future => 'active'.
+         * - Else => 'expired'.
+         */
+        if (!$issuedDate && $value === 'ايقاف النشاط') {
+            $facility->membership_status = 'inactive';
+            $facility->save();
+            // No licence saved because there's no valid date
+            return;
         }
 
-
-
-        if(!empty($row['tgdyd_2024']))
-        {
-            $licence = new Licence();
-            $licence->licensable_id = $MedicalFacility->id;
-            $licence->licensable_type = \App\Models\MedicalFacility::class;
-            $licence->issued_date = $this->parseDate($row['tgdyd_2024']); // Issue date from Excel
-            $licence->expiry_date = $this->parseDate($row['tgdyd_2024'], 1); // Expiry date +1 year
-
-            if($licence->expiry_date > now()) {
-                $licence->status = "active";
-            } else {
-                $licence->status = "expired";
-            }
-
-            $licence->branch_id = 5;
-            $licence->created_by = auth()->id();
-
-            if(!$licence->issued_date && $row['tgdyd_2024'] == "ايقاف النشاط"){
-                $MedicalFacility->membership_status = "inactive";
-                $MedicalFacility->save();
-            } else {
-                if(!$licence->issued_date)
-                {
-                    $MedicalFacility->membership_status = "inactive";
-                    $MedicalFacility->save();
-                } else {
-                    $licence->save();
-                }
-            }
-
+        // If no valid date but not specifically 'ايقاف النشاط'
+        // => Mark facility as inactive, skip licence creation
+        if (!$issuedDate) {
+            $facility->membership_status = 'inactive';
+            $facility->save();
+            return;
         }
 
-
-
-        if(!empty($row['tgdyd_2025']))
-        {
-            $licence = new Licence();
-            $licence->licensable_id = $MedicalFacility->id;
-            $licence->licensable_type = \App\Models\MedicalFacility::class;
-            $licence->issued_date = $this->parseDate($row['tgdyd_2025']); // Issue date from Excel
-            $licence->expiry_date = $this->parseDate($row['tgdyd_2025'], 1); // Expiry date +1 year
-            $licence->status = "active";
-            $licence->branch_id = 5;
-            $licence->created_by = auth()->id();
-
-
-            if(!$licence->issued_date && $row['tgdyd_2025'] == "ايقاف النشاط"){
-                $MedicalFacility->membership_status = "inactive";
-                $MedicalFacility->save();
-            } else {
-                if(!$licence->issued_date)
-                {
-                    $MedicalFacility->membership_status = "inactive";
-                    $MedicalFacility->save();
-                } else {
-                    $licence->save();
-                }
-            }
-
+        // If we have a valid issued_date => set licence status active/expired
+        if (Carbon::parse($expiryDate)->isFuture()) {
+            $licence->status = 'active';
+        } else {
+            $licence->status = 'expired';
         }
 
+        $licence->save();
     }
 
     /**
@@ -168,23 +123,17 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
     private function translateNameToEnglish($name)
     {
         $transliteration = [
-            'ا' => 'a', 'ب' => 'b', 'ت' => 't', 'ث' => 'th', 'ج' => 'j',
-            'ح' => 'h', 'خ' => 'kh', 'د' => 'd', 'ذ' => 'dh', 'ر' => 'r',
-            'ز' => 'z', 'س' => 's', 'ش' => 'sh', 'ص' => 's', 'ض' => 'd',
-            'ط' => 't', 'ظ' => 'z', 'ع' => 'a', 'غ' => 'gh', 'ف' => 'f',
-            'ق' => 'q', 'ك' => 'k', 'ل' => 'l', 'م' => 'm', 'ن' => 'n',
-            'ه' => 'h', 'و' => 'w', 'ي' => 'y', 'ء' => 'a', 'ى' => 'a',
-            'ة' => 'h', 'ﻻ' => 'la', 'ﻷ' => 'la', 'ﻹ' => 'la', 'ﻵ' => 'la',
-            ' ' => ' ', 'ٔ' => '', 'ً' => '', 'ٌ' => '', 'ٍ' => '', 'َ' => '',
-            'ُ' => '', 'ِ' => '', 'ّ' => '', 'ْ' => '', 'ئ' => 'y', 'ؤ' => 'w'
+            'ا' => 'a','ب' => 'b','ت' => 't','ث' => 'th','ج' => 'j','ح' => 'h','خ' => 'kh','د' => 'd','ذ' => 'dh',
+            'ر' => 'r','ز' => 'z','س' => 's','ش' => 'sh','ص' => 's','ض' => 'd','ط' => 't','ظ' => 'z','ع' => 'a',
+            'غ' => 'gh','ف' => 'f','ق' => 'q','ك' => 'k','ل' => 'l','م' => 'm','ن' => 'n','ه' => 'h','و' => 'w',
+            'ي' => 'y','ء' => 'a','ى' => 'a','ة' => 'h','ﻻ' => 'la','ﻷ' => 'la','ﻹ' => 'la','ﻵ' => 'la','ٔ' => '',
+            'ً' => '','ٌ' => '','ٍ' => '','َ' => '','ُ' => '','ِ' => '','ّ' => '','ْ' => '','ئ' => 'y','ؤ' => 'w'
         ];
 
         $translated = '';
         foreach (mb_str_split($name) as $char) {
             $translated .= $transliteration[$char] ?? $char;
         }
-
-        // Capitalize the first letter of each word
         return ucwords($translated);
     }
 
@@ -197,38 +146,34 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
             if (empty($date)) {
                 return null;
             }
-    
-            // ✅ Handle numeric (Excel serial date)
+
+            // ✅ Numeric => Excel serial date
             if (is_numeric($date)) {
                 $carbonDate = Carbon::instance(Date::excelToDateTimeObject($date));
             }
-            // ✅ Handle 'YYYY/MM' or 'YYYY-MM' format
+            // ✅ 'YYYY/MM' or 'YYYY-MM'
             elseif (preg_match('/^\d{4}[\/\-]\d{1,2}$/', $date)) {
-                $carbonDate = Carbon::createFromFormat('Y/m', str_replace('-', '/', $date))
-                    ?: Carbon::createFromFormat('Y-m', $date);
-    
-                // If no day is provided, default to the 1st of the month
+                // Convert to uniform 'YYYY-MM' format if needed
+                $date = str_replace('/', '-', $date);
+                $carbonDate = Carbon::createFromFormat('Y-m', $date);
+                // Default day = 1
                 $carbonDate->day = 1;
             }
-            // ✅ Handle 'DD/MM/YYYY' format
+            // ✅ 'DD/MM/YYYY'
             elseif (preg_match('/^\d{1,2}\/\d{1,2}\/\d{4}$/', $date)) {
                 $carbonDate = Carbon::createFromFormat('d/m/Y', $date);
             }
-            // ✅ Attempt to parse with Carbon if no format matched
+            // ✅ Otherwise parse freely
             else {
                 $carbonDate = Carbon::parse($date);
             }
-    
-            // ✅ Add years if requested
+
             if ($add > 0) {
                 $carbonDate->addYears($add);
             }
-    
             return $carbonDate->format('Y-m-d');
         } catch (\Exception $e) {
-            // Return null if any parsing fails
-            return null;
+            return null; // If parsing fails, return null
         }
     }
-    
 }

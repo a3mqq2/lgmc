@@ -1,19 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\MedicalFacilityType;
 use App\Models\Log;
 use Illuminate\Http\Request;
-
 
 class MedicalFacilityTypeController extends Controller
 {
     /**
      * Display a listing of the medical facility types.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
@@ -23,8 +20,6 @@ class MedicalFacilityTypeController extends Controller
 
     /**
      * Show the form for creating a new medical facility type.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -33,9 +28,6 @@ class MedicalFacilityTypeController extends Controller
 
     /**
      * Store a newly created medical facility type in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -44,20 +36,22 @@ class MedicalFacilityTypeController extends Controller
             'en_name' => 'required|string|max:255',
         ]);
 
-        MedicalFacilityType::create($request->all());
+        $medicalFacilityType = MedicalFacilityType::create($request->all());
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم إنشاء نوع مرفق طبي جديد"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم إنشاء نوع مرفق طبي جديد: {$medicalFacilityType->name}",
+            'loggable_id' => $medicalFacilityType->id,
+            'loggable_type' => MedicalFacilityType::class,
+            'action' => 'create_medical_facility_type',
+        ]);
 
-        return redirect()->route(get_area_name().'.medical-facility-types.index')
+        return redirect()->route(get_area_name() . '.medical-facility-types.index')
             ->with('success', 'تم إنشاء نوع مرفق طبي جديد بنجاح.');
     }
 
     /**
      * Display the specified medical facility type.
-     *
-     * @param  \App\Models\MedicalFacilityType  $medicalFacilityType
-     * @return \Illuminate\Http\Response
      */
     public function show(MedicalFacilityType $medicalFacilityType)
     {
@@ -66,9 +60,6 @@ class MedicalFacilityTypeController extends Controller
 
     /**
      * Show the form for editing the specified medical facility type.
-     *
-     * @param  \App\Models\MedicalFacilityType  $medicalFacilityType
-     * @return \Illuminate\Http\Response
      */
     public function edit(MedicalFacilityType $medicalFacilityType)
     {
@@ -77,10 +68,6 @@ class MedicalFacilityTypeController extends Controller
 
     /**
      * Update the specified medical facility type in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\MedicalFacilityType  $medicalFacilityType
-     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, MedicalFacilityType $medicalFacilityType)
     {
@@ -91,27 +78,35 @@ class MedicalFacilityTypeController extends Controller
 
         $medicalFacilityType->update($request->all());
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم تعديل بيانات نوع مرفق طبي"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم تعديل بيانات نوع مرفق طبي: {$medicalFacilityType->name}",
+            'loggable_id' => $medicalFacilityType->id,
+            'loggable_type' => MedicalFacilityType::class,
+            'action' => 'update_medical_facility_type',
+        ]);
 
-        return redirect()->route(get_area_name().'.medical-facility-types.index')
+        return redirect()->route(get_area_name() . '.medical-facility-types.index')
             ->with('success', 'تم تعديل بيانات نوع مرفق طبي بنجاح.');
     }
 
     /**
      * Remove the specified medical facility type from storage.
-     *
-     * @param  \App\Models\MedicalFacilityType  $medicalFacilityType
-     * @return \Illuminate\Http\Response
      */
     public function destroy(MedicalFacilityType $medicalFacilityType)
     {
+        $name = $medicalFacilityType->name;
         $medicalFacilityType->delete();
 
-        // Log creation with Arabic message
-        Log::create(['user_id' => auth()->user()->id, 'details' => "تم حذف نوع مرفق طبي"]);
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم حذف نوع مرفق طبي: {$name}",
+            'loggable_id' => $medicalFacilityType->id,
+            'loggable_type' => MedicalFacilityType::class,
+            'action' => 'delete_medical_facility_type',
+        ]);
 
-        return redirect()->route(get_area_name().'.medical-facility-types.index')
+        return redirect()->route(get_area_name() . '.medical-facility-types.index')
             ->with('success', 'تم حذف نوع مرفق طبي بنجاح.');
     }
 }

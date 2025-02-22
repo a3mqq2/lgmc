@@ -121,7 +121,7 @@
                                     <td>{{ $licence->licensable->phone_number }}</td>
                                 </tr>
                                 <tr>
-                                    <th class="bg-light">العنوان</th>
+                                    <th class="bg-light">الإقامة</th>
                                     <td>{{ $licence->licensable->address }}</td>
                                 </tr>
                             </tbody>

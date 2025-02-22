@@ -181,23 +181,23 @@
                                         <input type="phone" name="phone_2" value="{{old('phone_2')}}" id="" maxlength="10" class="form-control">
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="">العنوان</label>
+                                        <label for="">الاقامة</label>
                                         <input type="text" required name="address" value="{{old('address')}}" id="" class="form-control">
                                     </div>
                                     <div class="col-md-6">
                                         <label for=""> كلمة المرور </label>
-                                        <input type="password" required  name="password" value="{{old('password')}}" id="" class="form-control">
+                                        <input type="password"   name="password" value="{{old('password')}}" id="" class="form-control">
                                     </div>
                                     <div class="col-md-6">
                                         <label for=""> تأكيد كلمة المرور  </label>
-                                        <input type="password" required name="password_confirmation" value="{{old('password_confirmation')}}" id="" class="form-control">
+                                        <input type="password"  name="password_confirmation" value="{{old('password_confirmation')}}" id="" class="form-control">
                                     </div>
                                     {{-- email input --}}
                                     <div class="col-md-6">
                                         <label for="">البريد الالكتروني الشخصي </label>
-                                        <input type="email" required name="email" value="{{old('email')}}" id="email" class="form-control">
+                                        <input type="email"  name="email" value="{{old('email')}}" id="email" class="form-control">
                                     </div>
-                                </div>
+                                </div> 
                             </div>
                     
                         </div>
@@ -210,7 +210,7 @@
                                     @if (request('type') == "visitor")
                                     <div class="col-md-4">
                                         <label for=""> دولة التخرج </label>
-                                        <select name="country_graduation_id" required  id="" class="form-control select2">
+                                        <select name="country_graduation_id" required  id="" class="form-control form-control select2">
                                             <option value="">حدد دولة التخرج </option>
                                             @foreach ($countries as $country)
                                                 <option value="{{$country->id}}" {{old('country_graduation_id') == $country->id ? "selected" : ""}}>{{$country->name}}</option>
@@ -220,7 +220,7 @@
                                     @endif
                                     <div class="col-md-4">
                                         <label for=""> جهة التخرج </label>
-                                        <select name="hand_graduation_id"  required id="" class="form-control">
+                                        <select name="hand_graduation_id"  required id="" class="form-control form-control select2">
                                             <option value="">حدد جهة التخرج </option>
                                             @foreach ($universities as $university)
                                                 <option value="{{$university->id}}" {{old('hand_graduation_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
@@ -257,9 +257,18 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for=""> تاريخ الحصول عليها </label>
-                                <input type="date" name="certificate_of_excellence_date" required value="{{old('certificate_of_excellence_date', date('Y-m-d'))}}" id="" class="form-control">
+                                <label for="certificate_of_excellence_date">تاريخ الحصول عليها</label>
+                                <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control select2" required>
+                                    @php
+                                        $currentYear = date('Y');
+                                        $selectedYear = old('certificate_of_excellence_date', $currentYear);
+                                    @endphp
+                                    @for($year = $currentYear; $year >= 1950; $year--)
+                                        <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                    @endfor
+                                </select>
                             </div>
+                            
                             <div class="col-md-6">
                                 <label for=""> الجهة  </label>
                                 <select name="qualification_university_id" required id="" class="form-control select2">
@@ -339,15 +348,23 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <label for="">الرقم النقابي الأول</label>
-                                <input type="text" name="doctor_number"  
-                                    @if (request('type') == "libyan")
-                                        required
-                                    @endif
-                                value="{{old('doctor_number')}}"  id="" class="form-control">
+                                <input type="text" name="doctor_number"   value="{{old('doctor_number')}}"  id="" class="form-control">
                             </div>
-                            <div class="col-md-12">
+
+                            <div class="col-md-6">
+                                <label for="">جهة العمل</label>
+                                <select name="institution_id" id="" class="form-control select2">
+                                    <option value="">حدد جهة العمل</option>
+                                    @foreach (\App\Models\Institution::where('branch_id', auth()->user()->branch_id)->get(); as $institution)
+                                        <option value="{{$institution->id}}" {{old('institution_id') == $institution->id ? "selected" : ""}}>{{$institution->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+
+                            <div class="col-md-6">
                                 <label for="">الصفة</label>
-                                <select name="doctor_rank_id" id="" required class="form-control select2">
+                                <select name="doctor_rank_id" id="doctor_rank_id" required class="form-control select2">
                                     <option value="">حدد الصفة</option>
                                     @foreach ($doctor_ranks as $doctor_rank)
                                         @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
@@ -375,7 +392,7 @@
                                     @endif
                                     <div class="col-md-4">
                                         <label for=""> تخصص اول</label>
-                                        <select name="specialty_1_id" required id="" class="form-control">
+                                        <select name="specialty_1_id"  id="" class="form-control">
                                             <option value="">حدد تخصص اول</option>
                                             @foreach ($specialties as $specialty)
                                                 <option value="{{$specialty->id}}" {{old('specialty_1_id') == $specialty->id ? "selected" : ""}}>{{$specialty->name}}</option>
@@ -447,6 +464,24 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
+    $("#doctor_rank_id").change(function() {
+        if($(this).val() == 1) {
+            // hide specialities 
+            $("select[name='specialty_1_id']").parent().hide();
+            $("select[name='specialty_2_id']").parent().hide();
+            $("select[name='specialty_3_id']").parent().hide();
+        } else {
+            // show specialities
+            $("select[name='specialty_1_id']").parent().show();
+            $("select[name='specialty_2_id']").parent().show();
+            $("select[name='specialty_3_id']").parent().show();
+        }
+    });
+</script>
+<script>
+
+
+
     document.addEventListener('DOMContentLoaded', function () {
         const nationalNumberInput = document.getElementById('national_number');
         const birthYearInput = document.getElementById('birth_year');
@@ -523,6 +558,9 @@
     </script>
 <script>
     $(document).ready(function() {
+
+        $(".selectize").selectize();
+        
         // Set data-old attribute for Specialty 2 and Specialty 3 selects
         $('select[name="specialty_2_id"]').attr('data-old', '{{ old("specialty_2_id") }}');
         $('select[name="specialty_3_id"]').attr('data-old', '{{ old("specialty_3_id") }}');
@@ -711,8 +749,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Input elements
     const nationalNumberInput = document.getElementById('national_number');
     const birthYearInput = document.getElementById('birth_year');
-    const monthSelect = document.querySelector('select[name="month"]');
-    const daySelect = document.querySelector('select[name="day"]');
     const genderSelect = document.getElementById('gender');
     const genderInput = document.getElementById('gender_input');
     const nameEnInput = document.querySelector('input[name="name_en"]');
@@ -737,14 +773,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Update inputs
             birthYearInput.value = year;
-            monthSelect.value = month;
-            daySelect.value = day;
 
         } else {
             // Clear inputs if the national number is invalid
             birthYearInput.value = '';
-            monthSelect.value = '';
-            daySelect.value = '';
             genderSelect.value = '';
             genderInput.value = '';
         }
@@ -757,8 +789,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Input elements
     const nationalNumberInput = document.getElementById('national_number');
     const birthYearInput = document.getElementById('birth_year');
-    const monthSelect = document.querySelector('select[name="month"]');
-    const daySelect = document.querySelector('select[name="day"]');
     const genderSelect = document.getElementById('gender');
     const nameEnInput = document.querySelector('input[name="name_en"]');
     const emailInput = document.querySelector('input[name="email"]');
@@ -781,14 +811,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Update inputs
             birthYearInput.value = year;
-            monthSelect.value = month;
-            daySelect.value = day;
 
         } else {
             // Clear inputs if the national number is invalid
             birthYearInput.value = '';
-            monthSelect.value = '';
-            daySelect.value = '';
             genderSelect.value = '';
         }
     });
@@ -802,8 +828,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Input elements
         const nationalNumberInput = document.getElementById('national_number');
         const birthYearInput = document.getElementById('birth_year');
-        const monthSelect = document.querySelector('select[name="month"]');
-        const daySelect = document.querySelector('select[name="day"]');
         const dateOfBirthInput = document.querySelector('input[name="date_of_birth"]'); // For non-Libyan
         const nameEnInput = document.querySelector('input[name="name_en"]');
         const emailInput = document.querySelector('input[name="email"]');
@@ -828,14 +852,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Update fields
                     if (birthYearInput) birthYearInput.value = year;
-                    if (monthSelect) monthSelect.value = month;
-                    if (daySelect) daySelect.value = day;
 
                 } else {
                     // Clear fields if the national number is invalid
                     if (birthYearInput) birthYearInput.value = '';
-                    if (monthSelect) monthSelect.value = '';
-                    if (daySelect) daySelect.value = '';
                     emailInput.value = '';
                 }
             });
@@ -858,8 +878,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (isLibyan) {
                 // Libyan: Regenerate email using year, month, day
                 const year = birthYearInput?.value || '';
-                const month = monthSelect?.value.padStart(2, '0') || '';
-                const day = daySelect?.value.padStart(2, '0') || '';
             } else {
                 // Non-Libyan: Regenerate email using date_of_birth input
                 const dob = dateOfBirthInput?.value || '';

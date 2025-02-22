@@ -128,7 +128,7 @@
                                                  <span>{{ auth('doctor')->user()->passport_expiration ? auth('doctor')->user()->passport_expiration->format('Y-m-d') : 'N/A' }}</span>
                                              </div>
                                              <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                 <span><i class="fas fa-map-marker-alt text-info"></i> العنوان</span>
+                                                 <span><i class="fas fa-map-marker-alt text-info"></i> الإقامة</span>
                                                  <span>{{ auth('doctor')->user()->address }}</span>
                                              </div>
                                              <div class="list-group-item d-flex justify-content-between align-items-center">
@@ -176,7 +176,7 @@
                                                      <span>{{ $ticket->slug }}</span>
                                                  </div>
                                                  <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
-                                                     <span><i class="fas fa-heading text-info"></i> العنوان:</span>
+                                                     <span><i class="fas fa-heading text-info"></i> الإقامة:</span>
                                                      <span>{{ $ticket->title }}</span>
                                                  </div>
                                                  <div class="d-flex justify-content-between align-items-center p-2 border-bottom">

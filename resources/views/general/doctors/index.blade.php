@@ -61,13 +61,13 @@
                                 <th class="bg-light">الاسم</th>
                                 <th class="bg-light">رقم الهاتف</th>
                                 <th class="bg-light"> الصفة / التخصص </th>
-                                <th class="bg-light">العنوان</th>
+                                <th class="bg-light">الإقامة</th>
                                 @if (request('type') == "libyan")
                                 <th class="bg-light">الرقم الوطني</th>
                                 @endif
                                 <th class="bg-light text-dark" >نوع الطبيب</th>
                                 <th class="bg-light">الدرجة العلمية</th>
-                                <th class="bg-light">تاريخ الانضمام</th>
+                                <th class="bg-light">تاريخ الانتساب</th>
                                 <th class="bg-light">المؤهل</th>
                                 <th class="bg-light">حالة العضوية</th>
                                 @if (request('init_approve') )
@@ -78,12 +78,17 @@
                                 <th class="bg-success text-light">القيمة المدفوعة الكلية</th>
                                 <th class="bg-warning text-light">القيمة المعفى عنه</th>
                                 @endif
+                                <th class="bg-light">جهة العمل</th>
                                 <th class="bg-light">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($doctors as $doctor)
-                            <tr>
+                            <tr
+                                @if ($doctor->membership_status->value == "banned")
+                                class="bg-gradient-danger text-light"
+                                @endif
+                            >
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $doctor->ecode }}</td>
                                 <td>{{ $doctor->doctor_number }}</td>
@@ -91,10 +96,8 @@
                                 <td>{{ $doctor->phone }}</td>
                                 <td>
                                     {{-- rank &  --}}
-                                    @if ($doctor->rank)
-                                    <span class="badge badge-primary">
-                                        {{ $doctor->rank->name }}
-                                    </span>
+                                    @if ($doctor->doctor_rank)
+                                    {{ $doctor->doctor_rank->name }} /
                                     @endif
                                     {{$doctor->specialization}}
                                 </td>
@@ -107,7 +110,7 @@
                                 </td>
                                 <td>{{ $doctor->academicDegree->name ?? 'N/A' }}</td>
                                 <td>{{ $doctor->registered_at?->format('Y-m-d') }}</td>
-                                <td>{{ $doctor->certificate_of_excellence }}</td>
+                                <td>{{ $doctor->certificate_of_excellence_date }}</td>
                                 <td>
                                     <span class="badge {{$doctor->membership_status->badgeClass()}} ">
                                                 {{ $doctor->membership_status->label() }}
@@ -135,6 +138,11 @@
                                         {{ number_format($relief, 2) }} د.ل
                                     </td>
                                @endif
+                               <td>
+                                @if ($doctor->institution)
+                                {{ $doctor->institution->name }}
+                                @endif
+                            </td>
                                 <td>
 
 

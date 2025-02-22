@@ -538,7 +538,7 @@
                                                              <input type="phone" name="phone_2" value="{{old('phone_2')}}" id="" maxlength="10" class="form-control">
                                                          </div>
                                                          <div class="col-md-6">
-                                                             <label for="">العنوان</label>
+                                                             <label for="">الإقامة</label>
                                                              <input type="text" name="address" value="{{old('address')}}" id="" class="form-control">
                                                          </div>
                                                          <div class="col-md-6">

@@ -101,13 +101,21 @@
                                         <option value="married" {{old('marital_status', $doctor->marital_status->value) == "married" ? "selected" : ""}}>متزوج</option>
                                     </select>
                                 </div>
-                                <div class="col-md-6 mt-2">
-                                    <label for="">  النوع   </label>
-                                    <select name="gender" required id="gender"   class="form-control" readonly disabled >
-                                        <option value="male" {{old('gender', $doctor->gender) == "male" ? "selected" : ""}}>ذكر</option>
-                                        <option value="female" {{old('gender', $doctor->gender) == "female  " ? "selected" : ""}}>انثى</option>
-                                    </select>
-                                </div>
+                                @php
+                                // Determine gender based on the first digit of the national number if gender is not set
+                                $firstDigit = substr($doctor->national_number, 0, 1);
+                                    $gender = $firstDigit == '1' ? 'male' : ($firstDigit == '2' ? 'female' : null);
+                            @endphp
+                            
+                            <div class="col-md-6 mt-2">
+                                <label for="gender">النوع</label>
+                                <select name="gender" required id="gender" class="form-control">
+                                    <option value=""></option>
+                                    <option value="male" {{ $gender == "male" ? "selected" : "" }}>ذكر</option>
+                                    <option value="female" {{ $gender == "female" ? "selected" : "" }}>أنثى</option>
+                                </select>
+                            </div>
+                            
                                 <div class="col-md-6 mt-2">
                                     <label for=""> رقم جواز السفر   </label>
                                     <input type="text"  name="passport_number" pattern="[A-Z0-9]+"  required value="{{old('passport_number', $doctor->passport_number)}}" id="" class="form-control">
@@ -137,7 +145,7 @@
                                     <input type="phone" name="phone_2" value="{{old('phone_2', $doctor->phone_2)}}" id="" maxlength="10" class="form-control">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="">العنوان</label>
+                                    <label for="">الاقامة</label>
                                     <input type="text" required name="address" value="{{old('address', $doctor->address)}}" id="" class="form-control">
                                 </div>
                                 <div class="col-md-6">
@@ -151,7 +159,7 @@
                                 {{-- email input --}}
                                 <div class="col-md-6">
                                     <label for="">البريد الالكتروني الشخصي</label>
-                                    <input type="email" required name="email" value="{{old('email', $doctor->email)}}" id="email" class="form-control" >
+                                    <input type="email"  name="email" value="{{old('email', $doctor->email)}}" id="email" class="form-control" >
                                 </div>
                             </div>
                         </div>
@@ -176,7 +184,7 @@
                                 @endif
                                 <div class="col-md-4">
                                     <label for=""> جهة التخرج </label>
-                                    <select name="hand_graduation_id"  required id="" class="form-control">
+                                    <select name="hand_graduation_id"  required id="" class="form-control select2">
                                         <option value="">حدد جهة التخرج </option>
                                         @foreach ($universities as $university)
                                             <option value="{{$university->id}}" {{old('hand_graduation_id', $doctor->hand_graduation_id) == $university->id ? "selected" : ""}}>{{$university->name}}</option>
@@ -213,9 +221,20 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for=""> تاريخ الحصول عليها </label>
-                            <input type="date" name="certificate_of_excellence_date" value="{{old('certificate_of_excellence_date', date('Y-m-d', strtotime($doctor->certificate_of_excellence_date)) )}}" id="" class="form-control">
+                            <label for="certificate_of_excellence_date">  تاريخ الحصول عليها
+                            </label>
+                            <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control select2" required>
+                                @php
+                                    $currentYear = now()->year; // Get the current year
+                                    $selectedYear = old('certificate_of_excellence_date', optional($doctor->certificate_of_excellence_date)->format('Y') ?? $currentYear);
+                                @endphp
+                                @for ($year = $currentYear; $year >= 1950; $year--)
+                                    <option value="{{ $year }}" {{ (int)$year === (int)$selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                @endfor
+                            </select>
                         </div>
+                        
+                        
                         <div class="col-md-12">
                             <label for=""> الجهة  </label>
                             <select name="qualification_university_id" id="" class="form-control select2">
@@ -299,6 +318,9 @@
                             <label for="">الرقم النقابي الأول</label>
                             <input type="text" name="doctor_number" value="{{old('doctor_number', $doctor->doctor_number)}}" id="" class="form-control">
                         </div>
+
+                    
+
                         <div class="col-md-12">
                             <label for="">الصفة</label>
                             <select name="doctor_rank_id" id="" class="form-control select2">
@@ -308,6 +330,20 @@
                                 @endforeach
                             </select>
                         </div>
+
+
+                        <div class="col-md-6">
+                            <label for="">جهة العمل</label>
+                            <select name="institution_id" id="" class="form-control select2">
+                                <option value="">حدد جهة العمل</option>
+                                @foreach (\App\Models\Institution::where('branch_id', auth()->user()->branch_id)->get(); as $institution)
+                                    <option value="{{$institution->id}}" {{old('institution_id',$doctor->institution_id) == $institution->id ? "selected" : ""}}>{{$institution->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+
+
                         <div class="col-md-12 mt-2">
                             <div class="row">
                                 @if (get_area_name() == "admin")
@@ -372,7 +408,6 @@
                 </div>
             </div>
 
-            <input type="hidden" name="gender" value="{{$doctor->gender}}">
 
             <div class="card">
                 <div class="card-header bg-primary text-light">بيانات اخرى   </div>
@@ -403,7 +438,6 @@
         const birthYearInput = document.getElementById('birth_year');
         const dateOfBirthInput = document.getElementById('date_of_birth');
         const genderSelect = document.getElementById('gender');
-        const genderInput = document.getElementById('gender_input');
         // Initialize Flatpickr for the date input
         flatpickr(dateOfBirthInput, {
             dateFormat: "Y-m", // Year and month only
@@ -663,8 +697,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Input elements
     const nationalNumberInput = document.getElementById('national_number');
     const birthYearInput = document.getElementById('birth_year');
-    const monthSelect = document.querySelector('select[name="month"]');
-    const daySelect = document.querySelector('select[name="day"]');
     const genderSelect = document.getElementById('gender');
     const nameEnInput = document.querySelector('input[name="name_en"]');
     const emailInput = document.querySelector('input[name="email"]');
@@ -687,14 +719,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Update inputs
             birthYearInput.value = year;
-            monthSelect.value = month;
-            daySelect.value = day;
 
         } else {
             // Clear inputs if the national number is invalid
             birthYearInput.value = '';
-            monthSelect.value = '';
-            daySelect.value = '';
             genderSelect.value = '';
         }
     });
@@ -707,8 +735,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Input elements
     const nationalNumberInput = document.getElementById('national_number');
     const birthYearInput = document.getElementById('birth_year');
-    const monthSelect = document.querySelector('select[name="month"]');
-    const daySelect = document.querySelector('select[name="day"]');
     const genderSelect = document.getElementById('gender');
     const nameEnInput = document.querySelector('input[name="name_en"]');
     const emailInput = document.querySelector('input[name="email"]');
@@ -731,15 +757,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Update inputs
             birthYearInput.value = year;
-            monthSelect.value = month;
-            daySelect.value = day;
 
             // Regenerate email
         } else {
             // Clear inputs if the national number is invalid
             birthYearInput.value = '';
-            monthSelect.value = '';
-            daySelect.value = '';
             genderSelect.value = '';
         }
     });
@@ -753,7 +775,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Input elements
         const nationalNumberInput = document.getElementById('national_number');
         const birthYearInput = document.getElementById('birth_year');
-        const monthSelect = document.querySelector('select[name="month"]');
         const daySelect = document.querySelector('select[name="day"]');
         const dateOfBirthInput = document.querySelector('input[name="date_of_birth"]'); // For non-Libyan
         const nameEnInput = document.querySelector('input[name="name_en"]');
@@ -779,15 +800,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Update fields
                     if (birthYearInput) birthYearInput.value = year;
-                    if (monthSelect) monthSelect.value = month;
-                    if (daySelect) daySelect.value = day;
 
                     // Regenerate email
                 } else {
                     // Clear fields if the national number is invalid
                     if (birthYearInput) birthYearInput.value = '';
-                    if (monthSelect) monthSelect.value = '';
-                    if (daySelect) daySelect.value = '';
                     emailInput.value = '';
                 }
             });
@@ -810,8 +827,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (isLibyan) {
                 // Libyan: Regenerate email using year, month, day
                 const year = birthYearInput?.value || '';
-                const month = monthSelect?.value.padStart(2, '0') || '';
-                const day = daySelect?.value.padStart(2, '0') || '';
             } else {
                 // Non-Libyan: Regenerate email using date_of_birth input
                 const dob = dateOfBirthInput?.value || '';

@@ -1,29 +1,6 @@
 
 {{-- TICKETS --}}
-<li class="nav-item">
-    <a class="nav-link menu-link" href="#tickets" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-        <i class="fa fa-ticket"></i>
-        <span data-key="t-layouts">التذاكر</span>
-    </a>
-    <div class="collapse menu-dropdown" id="tickets">
-        <ul class="nav nav-sm flex-column">
-            <li class="nav-item">
-                {{-- "Add Ticket" might be under the same permission or a separate one if desired --}}
-                <a href="{{ route(get_area_name().'.tickets.create') }}" class="nav-link" data-key="t-horizontal">
-                    إضافة تذكرة جديدة
-                </a>
-                <a href="{{ route(get_area_name().'.tickets.index', ['my' => 1]) }}" class="nav-link" data-key="t-horizontal">
-                    التذاكر المحالة لي
-                </a>
-            @if(auth()->user()->permissions()->where('name','manage-all-tickets')->count())
-                <a href="{{ route(get_area_name().'.tickets.index') }}" class="nav-link" data-key="t-horizontal">
-                    عرض جميع التذاكر
-                </a>
-            </li>
-            @endif
-        </ul>
-    </div>
-</li>
+
 
 {{-- USERS / STAFF --}}
 @if(auth()->user()->permissions()->where('name', 'manage-staff')->count())
@@ -411,7 +388,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 @endif
 
 {{-- BLACKLIST --}}
-@if(auth()->user()->permissions()->where('name','manage-blacklist')->count())
+{{-- @if(auth()->user()->permissions()->where('name','manage-blacklist')->count())
 <li class="nav-item">
     <a class="nav-link menu-link" href="#blacklists" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="blacklists">
         <i class="fa fa-ban"></i>
@@ -426,7 +403,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
         </ul>
     </div>
 </li>
-@endif
+@endif --}}
 
 {{-- REGISTRATION SETTINGS --}}
 @if(auth()->user()->permissions()->where('name','registration-settings')->count())

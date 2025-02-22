@@ -31,7 +31,6 @@ class RolesAndPermissionsSeeder extends Seeder
          * Value => Arabic display name
          */
         $generalAdministrationPermissions = [
-            'manage-all-tickets'        => 'اداره كل التذاكر',
             'manage-staff'              => 'الموظفين',
             'services-pricing'          => 'تسعير الخدمات',
             'manage-doctors'            => 'الاطباء',
@@ -48,7 +47,6 @@ class RolesAndPermissionsSeeder extends Seeder
         ];
 
         $branchOperationsPermissions = [
-            'manage-branch-tickets'      => 'اداره جميع التذاكر',
             'doctor-requests'            => 'طلبات الاطباء',
             'manage-medical-facilities'  => 'المرافق الطبيه',
             'manage-doctors'             => 'الاطباء',

@@ -59,7 +59,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="address" class="form-label">العنوان</label>
+                                    <label for="address" class="form-label">الإقامة</label>
                                     <input type="text" name="address" class="form-control"  id="">
                                 </div>
                             </div>

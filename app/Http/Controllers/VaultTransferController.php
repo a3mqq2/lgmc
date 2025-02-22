@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\Vault;
 use App\Models\VaultTransfer;
+use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,17 +17,23 @@ class VaultTransferController extends Controller
     public function index()
     {
         $query = VaultTransfer::query()->with(['fromVault', 'toVault', 'user', 'branch']);
-        if(auth()->user()->branch_id)
-        {
+
+        if (auth()->user()->branch_id) {
             $query->whereHas('fromVault', function ($q) {
                 $q->where('branch_id', auth()->user()->branch_id);
             })->orWhereHas('toVault', function ($q) {
                 $q->where('branch_id', auth()->user()->branch_id);
             });
-
         }
 
         $vaultTransfers = $query->paginate(50);
+
+        // Log viewing transfers
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم عرض قائمة التحويلات بين الخزائن"
+        ]);
+
         return view('finance.vault_transfers.index', compact('vaultTransfers'));
     }
 
@@ -35,15 +42,19 @@ class VaultTransferController extends Controller
      */
     public function create()
     {
-        if(auth()->user()->branch_id)
-        {
-            $from_vaults = Vault::where('branch_id', auth()->user()->branch_id)->get();
-        } else {
-            $from_vaults = Vault::where('id',1)->get();
-        }
+        $from_vaults = auth()->user()->branch_id
+            ? Vault::where('branch_id', auth()->user()->branch_id)->get()
+            : Vault::where('id', 1)->get();
 
         $to_vaults = Vault::all();
-        return view('finance.vault_transfers.create', compact('from_vaults','to_vaults'));
+
+        // Log access to create form
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم الدخول إلى صفحة إنشاء تحويل جديد بين الخزائن"
+        ]);
+
+        return view('finance.vault_transfers.create', compact('from_vaults', 'to_vaults'));
     }
 
     /**
@@ -61,7 +72,7 @@ class VaultTransferController extends Controller
         $from_vault = Vault::find($request->from_vault_id);
 
         if (auth()->user()->branch_id && $from_vault->branch_id != auth()->user()->branch_id) {
-            return redirect()->back()->withErrors(['لا يمكنك التحويل من خزينة ليست مخصصه لفرعك.']);
+            return redirect()->back()->withErrors(['لا يمكنك التحويل من خزينة ليست مخصصة لفرعك.']);
         }
 
         if ($from_vault->balance < $request->amount) {
@@ -79,16 +90,24 @@ class VaultTransferController extends Controller
 
         $from_vault->decrement('balance', $request->amount);
 
-        $transaction = new Transaction();
-        $transaction->user_id = auth()->id();
-        $transaction->desc = "قيمة التحويل رقم #" . $transfer->id;
-        $transaction->amount = $request->amount;
-        $transaction->branch_id = auth()->user()->branch_id;
-        $transaction->transaction_type_id = 6;
-        $transaction->type = "withdrawal";
-        $transaction->vault_id = $from_vault->id;
-        $transaction->balance = $from_vault->balance;
-        $transaction->save();
+        Transaction::create([
+            'user_id' => auth()->id(),
+            'desc' => "قيمة التحويل رقم #{$transfer->id}",
+            'amount' => $request->amount,
+            'branch_id' => auth()->user()->branch_id,
+            'transaction_type_id' => 6,
+            'type' => "withdrawal",
+            'vault_id' => $from_vault->id,
+            'balance' => $from_vault->balance,
+        ]);
+
+        // Log transfer creation
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم إنشاء تحويل من خزينة رقم {$from_vault->id} إلى خزينة رقم {$request->to_vault_id} بمبلغ {$request->amount}",
+            'loggable_id' => $transfer->id,
+            'loggable_type' => VaultTransfer::class,
+        ]);
 
         return redirect()->route('finance.vault-transfers.index')->with('success', 'تم إضافة التحويل بنجاح.');
     }
@@ -98,34 +117,19 @@ class VaultTransferController extends Controller
      */
     public function show(VaultTransfer $vaultTransfer)
     {
-
-        if($vaultTransfer->toVault->branch_id && ($vaultTransfer->toVault->branch_id != auth()->user()->branch_id)) {
+        if ($vaultTransfer->toVault->branch_id && $vaultTransfer->toVault->branch_id != auth()->user()->branch_id) {
             return redirect()->back()->withErrors(['لا يمكنك عرض تحويل لفرع آخر.']);
         }
 
-
+        // Log viewing of transfer
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم عرض تفاصيل التحويل رقم #{$vaultTransfer->id}",
+            'loggable_id' => $vaultTransfer->id,
+            'loggable_type' => VaultTransfer::class,
+        ]);
 
         return view('finance.vault_transfers.show', compact('vaultTransfer'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(VaultTransfer $vaultTransfer)
-    {
-
-        // add this condition to prevent editing approved transfers
-
-        if ($vaultTransfer->status === 'approved') {
-            return redirect()->back()->withErrors(['لا يمكن تعديل تحويل تمت الموافقة عليه.']);
-        }
-
-        if($vaultTransfer->toVault->branch_id && ($vaultTransfer->toVault->branch_id != auth()->user()->branch_id)) {
-            return redirect()->back()->withErrors(['لا يمكنك تعديل تحويل لفرع آخر.']);
-        }
-
-
-        return view('finance.vault_transfers.edit', compact('vaultTransfer'));
     }
 
     /**
@@ -141,16 +145,19 @@ class VaultTransferController extends Controller
             'status' => 'required|in:pending,approved,rejected',
         ]);
 
-        $from_vault = Vault::find($request->from_vault_id);
         if ($vaultTransfer->status === 'approved') {
             return redirect()->back()->withErrors(['لا يمكن تعديل تحويل تمت الموافقة عليه.']);
         }
 
-        if ($from_vault->balance < $request->amount) {
-            return redirect()->back()->withErrors(['رصيد الخزينة غير كافٍ لإجراء هذا التحويل.']);
-        }
-
         $vaultTransfer->update($request->all());
+
+        // Log update
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم تعديل التحويل رقم #{$vaultTransfer->id}",
+            'loggable_id' => $vaultTransfer->id,
+            'loggable_type' => VaultTransfer::class,
+        ]);
 
         return redirect()->route('finance.vault-transfers.index')->with('success', 'تم تحديث التحويل بنجاح.');
     }
@@ -167,19 +174,15 @@ class VaultTransferController extends Controller
         $from_vault = Vault::find($vaultTransfer->from_vault_id);
         $from_vault->increment('balance', $vaultTransfer->amount);
 
-        $transaction = new Transaction();
-        $transaction->user_id = auth()->id();
-        $transaction->desc = "استرداد قيمة التحويل رقم #" . $vaultTransfer->id;
-        $transaction->amount = $vaultTransfer->amount;
-        $transaction->branch_id = auth()->user()->branch_id;
-        $transaction->transaction_type_id = 5;
-        $transaction->type = "deposit";
-        $transaction->vault_id = $from_vault->id;
-        $transaction->balance = $from_vault->balance;
-        $transaction->save();
-
-        
         $vaultTransfer->delete();
+
+        // Log deletion
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم حذف التحويل رقم #{$vaultTransfer->id}",
+            'loggable_id' => $vaultTransfer->id,
+            'loggable_type' => VaultTransfer::class,
+        ]);
 
         return redirect()->route('finance.vault-transfers.index')->with('success', 'تم حذف التحويل بنجاح.');
     }
@@ -196,25 +199,16 @@ class VaultTransferController extends Controller
             'notes' => $request->notes,
         ]);
 
-
-        if($vaultTransfer->toVault->branch_id && ($vaultTransfer->toVault->branch_id != auth()->user()->branch_id)) {
-            return redirect()->back()->withErrors(['لا يمكنك الموافقة على تحويل لفرع آخر.']);
-        }
-
         $to_vault = Vault::find($vaultTransfer->to_vault_id);
         $to_vault->increment('balance', $vaultTransfer->amount);
 
-        $transaction = new Transaction();
-        $transaction->user_id = auth()->id();
-        $transaction->desc = "ايداع قيمة التحويل رقم #" . $vaultTransfer->id;
-        $transaction->amount = $vaultTransfer->amount;
-        $transaction->branch_id = auth()->user()->branch_id;
-        $transaction->transaction_type_id = 5;
-        $transaction->type = "deposit";
-        $transaction->vault_id = $to_vault->id;
-        $transaction->balance = $to_vault->balance;
-        $transaction->save();
-
+        // Log approval
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تمت الموافقة على التحويل رقم #{$vaultTransfer->id}",
+            'loggable_id' => $vaultTransfer->id,
+            'loggable_type' => VaultTransfer::class,
+        ]);
 
         return redirect()->route('finance.vault-transfers.index')->with('success', 'تمت الموافقة على التحويل بنجاح.');
     }
@@ -231,21 +225,16 @@ class VaultTransferController extends Controller
             'notes' => $request->notes,
         ]);
 
-
-        // depsoit amount back to the from vault
         $from_vault = Vault::find($vaultTransfer->from_vault_id);
         $from_vault->increment('balance', $vaultTransfer->amount);
 
-        $transaction = new Transaction();
-        $transaction->user_id = auth()->id();
-        $transaction->desc = "استرداد قيمة التحويل رقم #" . $vaultTransfer->id;
-        $transaction->amount = $vaultTransfer->amount;
-        $transaction->branch_id = auth()->user()->branch_id;
-        $transaction->transaction_type_id = 5;
-        $transaction->type = "deposit";
-        $transaction->vault_id = $from_vault->id;
-        $transaction->balance = $from_vault->balance;
-        $transaction->save();
+        // Log rejection
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم رفض التحويل رقم #{$vaultTransfer->id}",
+            'loggable_id' => $vaultTransfer->id,
+            'loggable_type' => VaultTransfer::class,
+        ]);
 
         return redirect()->route('finance.vault-transfers.index')->with('success', 'تم رفض التحويل بنجاح.');
     }

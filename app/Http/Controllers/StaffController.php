@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Log;
 
 class StaffController extends Controller
 {
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
-    
+
         // التحقق من صحة المدخلات
         $validatedData = $request->validate([
             'name'            => 'required|string|max:255',
@@ -27,37 +28,58 @@ class StaffController extends Controller
             'permissions'     => 'nullable|array',
             'permissions.*'   => 'string'
         ]);
-    
-        // إزالة `password_confirmation` حتى لا يتم حفظه
-        unset($validatedData['password_confirmation']);
-    
-        // إزالة `branches` من التحديث لأنه يتم تخزينه في جدول وسيط
-        unset($validatedData['branches']);
-        unset($validatedData['permissions']);
-    
-        // إذا لم يتم إدخال كلمة مرور جديدة، لا نقوم بتحديثها
-        if (empty($validatedData['password'])) {
-            unset($validatedData['password']);
-        } else {
-            // تشفير كلمة المرور الجديدة
+
+        unset($validatedData['password_confirmation'], $validatedData['branches'], $validatedData['permissions']);
+
+        // تحديث كلمة المرور إذا تم إدخالها
+        if (!empty($validatedData['password'])) {
             $validatedData['password'] = bcrypt($validatedData['password']);
+
+            // سجل تغيير كلمة المرور
+            Log::create([
+                'user_id' => auth()->id(),
+                'details' => "تم تحديث كلمة مرور الموظف: {$user->name}",
+                'loggable_id' => $user->id,
+                'loggable_type' => User::class,
+            ]);
+        } else {
+            unset($validatedData['password']);
         }
-    
+
         // تحديث بيانات المستخدم
         $user->update($validatedData);
-    
+
+        Log::create([
+            'user_id' => auth()->id(),
+            'details' => "تم تحديث بيانات الموظف: {$user->name}",
+            'loggable_id' => $user->id,
+            'loggable_type' => User::class,
+        ]);
+
         // مزامنة الفروع إذا تم تحديدها
         if ($request->has('branches')) {
             $user->branches()->sync($request->branches);
+
+            Log::create([
+                'user_id' => auth()->id(),
+                'details' => "تم تحديث الفروع المرتبطة بالموظف: {$user->name}",
+                'loggable_id' => $user->id,
+                'loggable_type' => User::class,
+            ]);
         }
-    
+
         // مزامنة الصلاحيات إذا تم تحديدها
         if ($request->has('permissions')) {
             $user->syncPermissions($request->permissions);
+
+            Log::create([
+                'user_id' => auth()->id(),
+                'details' => "تم تحديث صلاحيات الموظف: {$user->name}",
+                'loggable_id' => $user->id,
+                'loggable_type' => User::class,
+            ]);
         }
-    
+
         return redirect()->route('admin.users.index')->with('success', 'تم تحديث الموظف بنجاح');
     }
-    
-    
 }

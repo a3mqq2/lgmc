@@ -11,6 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Almarai&family=Cairo:wght@300&display=swap" rel="stylesheet">
     <link href="{{asset('/assets/css/print_bill.css')}}" rel="stylesheet" type="text/css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
     <title> طباعة اذن مزاولة رقم : #{{$licence->id}} </title>
 
@@ -60,177 +63,144 @@
     @endphp
     <body class="A4">
         <section class="sheet zima bill {{$file_type}} ">
-            @if ($file_type == "libyan")
-            <div class="libyan">
-                <div id="id">
-                    <p>#{{$licence->id}}</p>
-                </div>
-                <div class="libyan-name">
-                    {{$licence->licensable->name}}
-                </div>
-                <div class="libyan-branch">
-                    {{$licence->branch?->name}}
-                </div>
-                <div class="libyan-doctor-id">
-                    {{$licence->licensable->id}}
-                </div>
-                <div class="libyan-specilists">
-                    طبيب
-                    @if ($licence->licensable->specialty1)
-                        {{ $licence->licensable->specialty1->name }}
-                        @endif
 
-                        @if ($licence->licensable->specialty2)
-                            -
-                            {{ $licence->licensable->specialty2->name }}
-                        @endif
 
-                        @if ($licence->licensable->specialty3)
-                        -
-                        {{ $licence->licensable->specialty3->name }}
-                    @endif
-                </div>
-                <div class="libyan-facility">
-                    {{$licence->MedicalFacility? $licence->MedicalFacility->name : "-"}}
-                </div>
-                <div class="expired_at">
-                    {{$licence->expiry_date}}
-                </div>
-                <div class="barcode">
-                    @php
-                    $qrCode = DNS2D::getBarcodePNG('https://example.com', 'QRCODE', 10, 10);
-                    @endphp
-                    <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 100px; height: 100px;" />
-                </div>
+            <div class="issued-licence-date text-muted">
+                {{-- humman readable --}}
+                <p>تاريخ الاصدار : {{$licence->created_at->format('Y-m-d')}}</p>
             </div>
-            @elseif($file_type == "foreign")
-            <div class="foreign">
+
+            <div class="doctor-photo">
+                <img src="{{ Storage::url($licence->licensable->files->first()?->file_path) }}" alt="صورة الطبيب">
+            </div>
+
+            <div class="libyan">
+
+
+                <div class="branch-sett">
+                    <h6 class="font-weight-bold"><strong>وبالإطلاع علـى سجل العضوية لنقابة أطباء {{ $licence->licensable->branch->name }}</strong></h6>
+                </div>
+
+                <div class="doctor-name">
+
+                </div>
+
                 <div id="id">
                     <p>#{{$licence->id}}</p>
                 </div>
-                <div class="foreign-name">
-                    {{$licence->licensable->name}}
+   
+                <div class="permit">
+                    <h6 class="font-weight-bold">
+                        <strong>
+                            يـــــؤذن لل{{$licence->licensable->gender->value == "female" ? "سيدة" : "سيد"}}
+                        </strong>
+                    </h6>
                 </div>
-                <div class="foreign-country">
-                    {{$licence->licensable->country?->name}}
+                <div class="name-box card  p-3">
+                    <h3 class="font-weight-bold">
+                        <strong>{{$licence->licensable->name}}</strong>
+                    </h3>
                 </div>
-                <div class="foreign-passport">
-                    {{$licence->licensable->passport_number}}
-                </div>
-                <div class="foreign-doctor-id">
-                    {{$licence->licensable->id}}
-                </div>
-                <div class="foreign-specilists">
-                    طبيب
-                    @if ($licence->licensable->specialty1)
-                        {{ $licence->licensable->specialty1->name }}
-                        @endif
+                <div class="that-registered">
 
-                        @if ($licence->licensable->specialty2)
-                            -
-                            {{ $licence->licensable->specialty2->name }}
-                        @endif
+                    <h6 class="font-weight-bold">
+                        <strong>
+                             {{$licence->licensable->gender->value == "female" ? "المسجلة" : "المسجل"}} بنقابة
+                        </strong>
+                    </h6>
+                </div>
 
-                        @if ($licence->licensable->specialty3)
-                        -
-                        {{ $licence->licensable->specialty3->name }}
-                    @endif
+                <div class="branch-box card  p-3">
+                    <h6 class="font-weight-bold">
+                        <strong>{{$licence->licensable->branch->name}}</strong>
+                    </h6>
                 </div>
-                <div class="foreign-facility">
-                    {{$licence->MedicalFacility? $licence->MedicalFacility->name : "-"}}
-                </div>
-                <div class="expired_at">
-                    {{$licence->expiry_date}}
-                </div>
-                <div class="barcode">
-                    @php
-                    $qrCode = DNS2D::getBarcodePNG('https://example.com', 'QRCODE', 10, 10);
-                    @endphp
-                    <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 100px; height: 100px;" />
-                </div>
-                @elseif($file_type == "visitor")
-                <div class="visitor">
-                    <div id="id">
-                        <p>#{{$licence->id}}</p>
-                    </div>
-                    <div class="hoster-name">
-                        {{$licence->MedicalFacility? $licence->MedicalFacility->name : "-"}}
-                    </div>
-                    <div class="hoster-id">
-                        {{$licence->MedicalFacility? $licence->MedicalFacility->id : "-"}}
-                    </div>
-                    <div class="hoster-licence">
-                        {{$licence->MedicalFacility? $licence->MedicalFacility->commercial_number : "-"}}
-                    </div>
-                    <div class="visitor-name">
-                        {{$licence->licensable->name}}
-                    </div>
-                    <div class="visitor-country">
-                        {{$licence->licensable->country->name}}
-                    </div>
-                    <div class="visitor-passport">
-                        {{$licence->licensable->passport_number}}
-                    </div>
-                    <div class="visitor-doctor-id">
-                        {{$licence->licensable->id}}
-                    </div>
-                    <div class="visitor-specilists">
-                        طبيب
-                        @if ($licence->licensable->specialty1)
-                            {{ $licence->licensable->specialty1->name }}
-                            @endif
 
-                            @if ($licence->licensable->specialty2)
-                                -
-                                {{ $licence->licensable->specialty2->name }}
-                            @endif
 
-                            @if ($licence->licensable->specialty3)
-                            -
-                            {{ $licence->licensable->specialty3->name }}
-                        @endif
-                    </div>
-                    <div class="expired_at">
-                        {{$licence->expiry_date}}
-                    </div>
-                    <div class="barcode">
+                <div class="under-number">
+
+                    <h6 class="font-weight-bold">
+                        <strong>
+                            تــــحت رقـــــم
+                        </strong>
+                    </h6>
+                </div>
+
+
+                <div class="number-box card  p-3">
+                    <h6 class="font-weight-bold">
+                        <strong>{{$licence->licensable->id}}</strong>
+                    </h6>
+                </div>
+
+
+
+                <div class="work-for">
+
+                    <h6 class="font-weight-bold">
+                        <strong>
+                            بـــــمزاولة مـــهنة 
+                        </strong>
+                    </h6>
+                </div>
+
+
+                <div class="work-box card  p-3">
+                    <h4 class="font-weight-bold">
+                        <strong>{{$licence->licensable->doctor_rank->name}} \ {{$licence->licensable->specialization}}  </strong>
+                    </h4>
+                </div>
+
+
+
+
+
+                <div class="in-place">
+
+                    <h6 class="font-weight-bold">
+                        <strong>
+                            بـالمنشأة الطــبية  
+                        </strong>
+                    </h6>
+                </div>
+
+
+
+                <div class="medical-facility-box card">
+                    <h4 class="font-weight-bold">
+                          <strong>  {{$licence->MedicalFacility ? $licence->MedicalFacility->name : "-"}}  </strong>
+                    </h4>
+
+                </div>
+
+                <div class="expired card">
+                    <h5 class="text-center font-weight-bold">
+                        <strong>ينتهي العمل بهذا الإذن ويعتبر ملغياََ بتاريخ {{ $licence->expiry_date }} </strong>
+                    </h5>
+                </div>
+
+
+
+                <div class="signuture">
+                    <h5><strong>نقابة أطباء {{$licence->licensable->branch->name}} </strong></h5>
+                </div>
+
+                <div class="valid text-danger text-right font-weight-bold">
+                    تحقق من الاذن من هنا
+                </div>
+
+                <div class="qr-code card p-2">
+                    <div class="code">
                         @php
-                        $qrCode = DNS2D::getBarcodePNG('https://example.com', 'QRCODE', 10, 10);
-                        @endphp
-                        <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 100px; height: 100px;" />
-                    </div>
-                @elseif($file_type == "facilities")
-                <div id="id">
-                    <p>#{{$licence->id}}</p>
-                </div>
-                <div class="name_facility">
-                    {{$licence->licensable->name}}
-                </div>
-                <div class="facility_branch">
-                    {{$licence->licensable->branch ? $licence->licensable->branch?->name : "/"}}
-                </div>
-                <div class="lincable_id_facilities">
-                    000{{$licence->licensable->id ? $licence->licensable->id : "/"}}
-                </div>
-                <div class="commerical_number">
-                    {{$licence->licensable->id ? $licence->licensable->commerical_number : "/"}}
-                 </div>
-                 <div class="doctor_name">
-                    {{$licence->licensable->manager ? $licence->licensable->manager->name : "/"}}
-                 </div>
-                 <div class="doctor_id">
-                    000{{$licence->licensable->manager ? $licence->licensable->manager->id : ""}}
-                </div>
-                <div class="expired_at">
-                    {{$licence->expiry_date}}
-                </div>
-                <div class="barcode_facilitiy">
-                    @php
-                    $qrCode = DNS2D::getBarcodePNG('https://example.com', 'QRCODE', 10, 10);
+                        $link = env('APP_URL') . "checker?licence=" . $licence->id;
+                    $qrCode = DNS2D::getBarcodePNG($link, 'QRCODE', 5, 5);
                     @endphp
-                    <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 100px; height: 100px;" />
+                    <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 50px; height: 50px;" />
+                    </div>
                 </div>
-            @endif
+
+
+            </div>
         </section>
     </body>
 
