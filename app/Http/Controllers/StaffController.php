@@ -26,7 +26,9 @@ class StaffController extends Controller
             'passport_number' => 'nullable|string|max:50',
             'ID_number'       => ['nullable', 'regex:/^(1|2)\d{11}$/'],
             'permissions'     => 'nullable|array',
-            'permissions.*'   => 'string'
+            'permissions.*'   => 'string',
+            "roles"            => "nullable|array",
+            "roles.*"          => "string",
         ]);
 
         unset($validatedData['password_confirmation'], $validatedData['branches'], $validatedData['permissions']);
@@ -83,6 +85,21 @@ class StaffController extends Controller
                 "action" => "update_user_permissions",
             ]);
         }
+
+
+        if ($request->has('roles')) {
+            $user->syncRoles($request->roles);
+
+            Log::create([
+                'user_id' => auth()->id(),
+                'details' => "تم تحديث ادوار الموظف: {$user->name}",
+                'loggable_id' => $user->id,
+                'loggable_type' => User::class,
+                "action" => "update_user_roles",
+            ]);
+        }
+
+
 
         return redirect()->route('admin.users.index')->with('success', 'تم تحديث الموظف بنجاح');
     }
