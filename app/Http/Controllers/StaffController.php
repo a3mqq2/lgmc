@@ -31,7 +31,7 @@ class StaffController extends Controller
             "roles.*"          => "string",
         ]);
 
-        unset($validatedData['password_confirmation'], $validatedData['branches'], $validatedData['permissions']);
+        unset($validatedData['password_confirmation'], $validatedData['branches'], $validatedData['permissions'],$validatedData['roles']);
 
         // تحديث كلمة المرور إذا تم إدخالها
         if (!empty($validatedData['password'])) {
