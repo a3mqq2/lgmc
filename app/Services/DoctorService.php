@@ -143,7 +143,7 @@ class DoctorService
         ];
     }
 
-    public function create(array $data): Doctor
+    public function create(array $data)
     {
 
 
@@ -448,7 +448,7 @@ class DoctorService
      * @param  array  $data
      * @return Doctor
      */
-    public function update(Doctor $doctor, array $data): Doctor
+    public function update(Doctor $doctor, array $data)
     {
         DB::beginTransaction();
 
