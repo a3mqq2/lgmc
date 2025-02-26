@@ -653,7 +653,7 @@ class DoctorService
 
             DB::commit();
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            return redirect()->back()->withErrors(['حدث خطأ أثناء الموافقة على الطبيب.']);
             DB::rollback();
             throw $e;  // Re-throw the exception after rolling back
         }
