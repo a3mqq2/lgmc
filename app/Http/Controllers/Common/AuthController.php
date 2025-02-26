@@ -42,6 +42,15 @@ class AuthController extends Controller
     
         if(Auth::attempt($credentials)) {
             $user = auth()->user();
+
+            if(!$user->active)
+            {
+                Auth::logout();
+                return redirect()->back()->withErrors([
+                    'email' => 'حسابك معطل يرجى التواصل مع الاداره',
+                ]);
+            }
+
             $access_token = $user->createToken('authToken')->plainTextToken;
             Cookie::queue('ast', $access_token, 777500);
             return redirect('/sections');
