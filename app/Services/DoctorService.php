@@ -485,27 +485,19 @@ class DoctorService
                 }
             }
 
-            // معالجة ملفات المستندات
             foreach ($file_types as $file_type) {
                 if (isset($data['documents'][$file_type->id])) {
                     $file = $data['documents'][$file_type->id];
 
-                    // التحقق مما إذا كان هناك ملف موجود مسبقًا من نفس النوع
                     $existingFile = $doctor->files()->where('file_type_id', $file_type->id)->first();
 
                     if ($existingFile) {
-                        // حذف الملف القديم من التخزين إذا كان موجودًا
-                        if (\Storage::disk('public')->exists($existingFile->file_path)) {
-                            \Storage::disk('public')->delete($existingFile->file_path);
-                        }
 
-                        // تحديث بيانات الملف الموجود
                         $existingFile->update([
                             'file_name' => $file->getClientOriginalName(),
                             'file_path' => $file->store('doctors', 'public'),
                         ]);
                     } else {
-                        // إنشاء سجل ملف جديد إذا لم يكن موجودًا مسبقًا
                         $doctor->files()->create([
                             'file_name' => $file->getClientOriginalName(),
                             'file_type_id' => $file_type->id,
@@ -516,7 +508,6 @@ class DoctorService
             }
 
 
-            // Log the update
             Log::create([
                 'user_id' => auth()->user()->id,
                 'details' => 'تم تعديل بيانات الطبيب: ' . $doctor->name,
@@ -590,11 +581,7 @@ class DoctorService
             'anotherـcertificate',
         ];
 
-        foreach ($files as $file) {
-            if ($doctor->$file) {
-                Storage::delete($doctor->$file);
-            }
-        }
+     
     }
 
 
