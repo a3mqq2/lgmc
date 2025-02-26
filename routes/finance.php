@@ -12,7 +12,7 @@ use App\Http\Controllers\Common\TransactionController;
 use App\Http\Controllers\Common\TransactionTypeController;
 use App\Http\Controllers\TotalInvoiceController;
 
-Route::prefix('finance')->name('finance.')->middleware('auth','permission:financial-branch|financial-administration')->group(function () {
+Route::prefix('finance')->name('finance.')->middleware('auth', 'check.finance.permission')->group(function () {
    Route::get('/home', [HomeController::class, 'home'])->name('home');
    Route::resource("vaults", VaultController::class)->middleware('permission:financial-administration');
     Route::resource("transaction-types", TransactionTypeController::class);

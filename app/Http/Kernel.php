@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'check_branch' => checkIfBranch::class,
         'role' => \App\Http\Middleware\CheckRole::class,
         'permission' => CheckPermission::class,
+        'check.finance.permission' => \App\Http\Middleware\CheckFinancePermission::class,
     ];
 }
