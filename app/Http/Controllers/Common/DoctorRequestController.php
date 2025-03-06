@@ -60,9 +60,9 @@ class DoctorRequestController extends Controller
             });
         }
 
-        if(request('branch_id'))
+        if(auth()->user()->branch_id)
         {
-            $query->where('branch_id', request('branch_id'));
+            $query->where('branch_id', auth()->user()->branch_id);
         }   
 
 

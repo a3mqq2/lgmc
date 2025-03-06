@@ -470,42 +470,45 @@ class DoctorService
 
 
 
-            // جلب أنواع الملفات للأطباء
-            $file_types = FileType::where('type', 'doctor')->get();
+          if(isset($data['documents']))
+          {
+              // جلب أنواع الملفات للأطباء
+              $file_types = FileType::where('type', 'doctor')->get();
 
-            // التحقق من وجود الملفات المطلوبة إذا لم تكن موجودة بالفعل
-            foreach ($file_types as $file_type) {
-                if ($file_type->is_required) {
-                    $existingFile = $doctor->files()->where('file_type_id', $file_type->id)->first();
-                    $newFileUploaded = !empty($data['documents'][$file_type->id]);
-
-                    if (!$existingFile && !$newFileUploaded) {
-                        return redirect()->back()->withInput()->withErrors(["الملف {$file_type->name} مطلوب ولم يتم تحميله."]);
-                    }
-                }
-            }
-
-            foreach ($file_types as $file_type) {
-                if (isset($data['documents'][$file_type->id])) {
-                    $file = $data['documents'][$file_type->id];
-
-                    $existingFile = $doctor->files()->where('file_type_id', $file_type->id)->first();
-
-                    if ($existingFile) {
-
-                        $existingFile->update([
-                            'file_name' => $file->getClientOriginalName(),
-                            'file_path' => $file->store('doctors', 'public'),
-                        ]);
-                    } else {
-                        $doctor->files()->create([
-                            'file_name' => $file->getClientOriginalName(),
-                            'file_type_id' => $file_type->id,
-                            'file_path' => $file->store('doctors', 'public'),
-                        ]);
-                    }
-                }
-            }
+              // التحقق من وجود الملفات المطلوبة إذا لم تكن موجودة بالفعل
+              foreach ($file_types as $file_type) {
+                  if ($file_type->is_required) {
+                      $existingFile = $doctor->files()->where('file_type_id', $file_type->id)->first();
+                      $newFileUploaded = !empty($data['documents'][$file_type->id]);
+  
+                      if (!$existingFile && !$newFileUploaded) {
+                          return redirect()->back()->withInput()->withErrors(["الملف {$file_type->name} مطلوب ولم يتم تحميله."]);
+                      }
+                  }
+              }
+  
+              foreach ($file_types as $file_type) {
+                  if (isset($data['documents'][$file_type->id])) {
+                      $file = $data['documents'][$file_type->id];
+  
+                      $existingFile = $doctor->files()->where('file_type_id', $file_type->id)->first();
+  
+                      if ($existingFile) {
+  
+                          $existingFile->update([
+                              'file_name' => $file->getClientOriginalName(),
+                              'file_path' => $file->store('doctors', 'public'),
+                          ]);
+                      } else {
+                          $doctor->files()->create([
+                              'file_name' => $file->getClientOriginalName(),
+                              'file_type_id' => $file_type->id,
+                              'file_path' => $file->store('doctors', 'public'),
+                          ]);
+                      }
+                  }
+              }
+          }
 
 
             Log::create([
@@ -772,8 +775,12 @@ class DoctorService
 
         public function generateCode($doctor)
         {
-            $doctor->code = Doctor::max('code') + 1;
-            $doctor->registered_at = now();
+            $lastCode = Doctor::latest()->skip(1)->first() ? Doctor::latest()->skip(1)->first()->code : 0;  
+            $doctor->code =  $lastCode + 1;
+            if(!$doctor->registered_at)
+            {
+                $doctor->registered_at = now();
+            }
             $doctor->save();
         }
 }

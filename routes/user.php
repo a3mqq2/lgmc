@@ -3,18 +3,25 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\Common\VaultController;
+use App\Http\Controllers\Admin\CountryController;
 use App\Http\Controllers\Common\DoctorController;
 use App\Http\Controllers\Common\ReportController;
 use App\Http\Controllers\Common\TicketController;
+use App\Http\Controllers\Admin\FileTypeController;
 use App\Http\Controllers\Common\LicenceController;
 use App\Http\Controllers\DoctorTransferController;
+use App\Http\Controllers\Admin\SpecialtyController;
 use App\Http\Controllers\Admin\DoctorFileController;
-use App\Http\Controllers\InstitutionController;
+use App\Http\Controllers\Admin\DoctorRankController;
+use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Common\TransactionController;
+use App\Http\Controllers\Admin\AcademicDegreeController;
 use App\Http\Controllers\Common\DoctorRequestController;
 use App\Http\Controllers\Common\MedicalFacilityController;
 use App\Http\Controllers\Admin\MedicalFacilityFileController;
+use App\Http\Controllers\Admin\MedicalFacilityTypeController;
 
 Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations')->group(function () {
     Route::get('/search', [UserController::class, 'search'])->name('search');
@@ -29,7 +36,6 @@ Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations'
     Route::resource('doctors', DoctorController::class);
     Route::resource('doctors.files', DoctorFileController::class)->shallow();
     Route::resource('medical-facilities', MedicalFacilityController::class);
-    Route::resource('medical-facilities.medical-facility-files', MedicalFacilityFileController::class);
     Route::resource('doctors.files', DoctorFileController::class)->shallow();
     Route::patch('/licences/{licence}/approve', [LicenceController::class, 'approve'])->name('licences.approve');
     Route::patch('/licences/{licence}/payment', [LicenceController::class, 'payment'])->name('licences.payment');
@@ -62,4 +68,15 @@ Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations'
 
     Route::get('profile/change-password', [ProfileController::class, 'change_password'])->name('profile.change-password');
     Route::post('profile/change-password', [ProfileController::class, 'change_password_store'])->name('profile.change-password');
+
+
+    // ============ SETTINGS ============ //
+    Route::resource('universities', UniversityController::class)->middleware('permission:branch-manager');
+    Route::resource('doctor_ranks', DoctorRankController::class)->middleware('permission:branch-manager');
+    Route::resource('academic-degrees', AcademicDegreeController::class)->middleware('permission:branch-manager');
+    Route::resource('countries', CountryController::class)->middleware('permission:branch-manager');
+    Route::resource('specialties', SpecialtyController::class)->middleware('permission:branch-manager');
+    Route::resource('file-types', FileTypeController::class)->middleware('permission:branch-manager');
+    Route::resource('medical-facility-types', MedicalFacilityTypeController::class)->middleware('permission:branch-manager');
+    // =========== SETTINGS ============= //
 });

@@ -14,11 +14,10 @@
                     @csrf
 
                     <div class="row">
-                        {{-- Name --}}
                         <div class="col-md-4 mb-3">
                             <label for="name" class="form-label">الاسم</label>
                             <input 
-                                type="text" 
+                                type="text"
                                 class="form-control @error('name') is-invalid @enderror" 
                                 id="name" 
                                 name="name" 
@@ -30,7 +29,6 @@
                             @enderror
                         </div>
 
-                        {{-- Email --}}
                         <div class="col-md-4 mb-3">
                             <label for="email" class="form-label">البريد الإلكتروني</label>
                             <input 
@@ -46,7 +44,6 @@
                             @enderror
                         </div>
 
-                        {{-- Password --}}
                         <div class="col-md-4 mb-3">
                             <label for="password" class="form-label">كلمة المرور</label>
                             <input 
@@ -61,7 +58,6 @@
                             @enderror
                         </div>
 
-                        {{-- Confirm Password --}}
                         <div class="col-md-4 mb-3">
                             <label for="password_confirmation" class="form-label">تأكيد كلمة المرور</label>
                             <input 
@@ -73,7 +69,6 @@
                             >
                         </div>
 
-                        {{-- Phone --}}
                         <div class="col-md-4 mb-3">
                             <label for="phone" class="form-label">الهاتف</label>
                             <input 
@@ -86,7 +81,6 @@
                             >
                         </div>
 
-                        {{-- Secondary Phone --}}
                         <div class="col-md-4 mb-3">
                             <label for="phone2" class="form-label">الهاتف الثاني</label>
                             <input 
@@ -99,7 +93,6 @@
                             >
                         </div>
 
-                        {{-- Passport Number --}}
                         <div class="col-md-4 mb-3">
                             <label for="passport_number" class="form-label">رقم الجواز</label>
                             <input 
@@ -112,7 +105,6 @@
                             >
                         </div>
 
-                        {{-- National ID Number --}}
                         <div class="col-md-4 mb-3">
                             <label for="ID_number" class="form-label">الرقم الوطني</label>
                             <input 
@@ -124,11 +116,10 @@
                             >
                         </div>
 
-                        {{-- Branches (Multiple) --}}
                         <div class="col-md-4 mb-3">
                             <label for="branches" class="form-label">اختر الفروع</label>
                             <select 
-                                class="select2 form-control" 
+                                class="form-control select2" 
                                 id="branches" 
                                 name="branches[]" 
                                 multiple
@@ -143,11 +134,10 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div>{{-- End Row --}}
+                    </div>
 
                     <hr>
 
-                    {{-- Roles & Permissions Table --}}
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
@@ -168,7 +158,6 @@
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
                                                     <td>
-                                                        {{-- Role-level checkbox --}}
                                                         <div class="form-check">
                                                             <input 
                                                                 class="form-check-input role-checkbox" 
@@ -177,7 +166,6 @@
                                                                 id="role-{{ $role->id }}" 
                                                                 value="{{ $role->name }}"
                                                                 data-role-id="{{ $role->id }}" 
-                                                                {{-- old('roles') handling --}}
                                                                 {{ (collect(old('roles'))->contains($role->name)) ? 'checked' : '' }}
                                                             >
                                                             <label class="form-check-label" for="role-{{ $role->id }}">
@@ -187,7 +175,6 @@
                                                     </td>
                                                     <td>
                                                         @if($role->permissions->count() > 0)
-                                                            {{-- Permissions container, hidden by default --}}
                                                             <div 
                                                                 id="permissions-{{ $role->id }}" 
                                                                 style="display: none; margin-top: 10px;"
@@ -195,14 +182,13 @@
                                                                 <ul class="mb-0" style="list-style: none; padding-left: 0;">
                                                                     @foreach($role->permissions as $permission)
                                                                         <li class="mb-2">
-                                                                            <div class="form-check">
+                                                                            <div class="form-check form-switch">
                                                                                 <input 
                                                                                     class="form-check-input" 
                                                                                     type="checkbox" 
                                                                                     name="permissions[]" 
                                                                                     id="perm-{{$role->id}}-{{ $permission->id }}" 
                                                                                     value="{{ $permission->name }}"
-                                                                                    {{-- old('permissions') handling --}}
                                                                                     {{ (collect(old('permissions'))->contains($permission->name)) ? 'checked' : '' }}
                                                                                 >
                                                                                 <label class="form-check-label" for="perm-{{$role->id}}-{{ $permission->id }}">
@@ -241,8 +227,14 @@
 @endsection
 
 @section('scripts')
+<!-- <script src="PATH/TO/selectize.min.js"></script> -->
 <script>
-    // On page load, toggle all role's permissions blocks according to whether the role is checked
+    document.addEventListener('DOMContentLoaded', function () {
+        $('select').selectize();
+    });
+</script>
+
+<script>
     document.addEventListener('DOMContentLoaded', function () {
         const roleCheckboxes = document.querySelectorAll('.role-checkbox');
         roleCheckboxes.forEach(checkbox => {
@@ -254,20 +246,13 @@
     });
 
     function togglePermissions(roleCheckbox) {
-        // get role ID from data attribute
         const roleId = roleCheckbox.dataset.roleId;
         const permBlock = document.getElementById('permissions-' + roleId);
-
-        if (!permBlock) return; // if there's no permission block for this role, do nothing
-
+        if (!permBlock) return;
         if (roleCheckbox.checked) {
-            // Show the permission block
             permBlock.style.display = 'block';
         } else {
-            // Hide the permission block
             permBlock.style.display = 'none';
-
-            // Optionally uncheck all permission checkboxes within this block
             const permInputs = permBlock.querySelectorAll('input[type="checkbox"]');
             permInputs.forEach(input => {
                 input.checked = false;
@@ -278,12 +263,10 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Input fields
         const phoneInput = document.getElementById('phone');
         const nationalIdInput = document.getElementById('ID_number');
         const emailInput = document.getElementById('email');
 
-        // Validation messages
         const phoneMessage = document.createElement('small');
         phoneMessage.style.color = 'red';
         phoneInput.parentNode.appendChild(phoneMessage);
@@ -296,9 +279,8 @@
         emailMessage.style.color = 'red';
         emailInput.parentNode.appendChild(emailMessage);
 
-        // Phone validation (Libyan phone numbers)
         phoneInput.addEventListener('input', function () {
-            const phoneRegex = /^(091|092|093|095)\d{7}$/; // Starts with 091, 092, 093, or 095 and 7 digits
+            const phoneRegex = /^(091|092|093|095)\d{7}$/;
             if (!phoneRegex.test(this.value)) {
                 phoneMessage.textContent = "رقم الهاتف يجب أن يبدأ بـ 091 أو 092 أو 093 أو 095 ويتكون من 10 أرقام.";
                 this.classList.add('is-invalid');
@@ -308,9 +290,8 @@
             }
         });
 
-        // National ID validation (12 digits starting with 1 or 2)
         nationalIdInput.addEventListener('input', function () {
-            const nationalIdRegex = /^(1|2)\d{11}$/; // Starts with 1 or 2 and followed by 11 digits
+            const nationalIdRegex = /^(1|2)\d{11}$/;
             if (!nationalIdRegex.test(this.value)) {
                 nationalIdMessage.textContent = "الرقم الوطني يجب أن يبدأ بـ 1 أو 2 ويتكون من 12 رقمًا.";
                 this.classList.add('is-invalid');
@@ -320,9 +301,8 @@
             }
         });
 
-        // Email validation (valid email format)
         emailInput.addEventListener('input', function () {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Standard email validation regex
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(this.value)) {
                 emailMessage.textContent = "يرجى إدخال بريد إلكتروني صحيح.";
                 this.classList.add('is-invalid');

@@ -314,10 +314,17 @@
                 <div class="card-header bg-primary text-light">بيانات العمل الحالي</div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-12">
+                       
+                        <div class="col-md-6">
                             <label for="">الرقم النقابي الأول</label>
-                            <input type="text" name="doctor_number" value="{{old('doctor_number', $doctor->doctor_number)}}" id="" class="form-control">
+                            <input type="text" name="doctor_number"   value="{{old('doctor_number', $doctor->doctor_number)}}"  id="" class="form-control">
                         </div>
+
+                        <div class="col-md-6">
+                            <label for=""> تاريخ الانتساب   </label>
+                            <input type="date" name="registered_at" value="{{date('Y-m-d', strtotime($doctor->registered_at))}}" id="" class="form-control">
+                        </div>
+
 
                     
 

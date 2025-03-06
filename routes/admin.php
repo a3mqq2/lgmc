@@ -49,7 +49,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
     Route::resource('users', UsersController::class)->middleware('permission:manage-staff');
     Route::resource('staffs', StaffController::class);
     Route::resource('medical-facility-types', MedicalFacilityTypeController::class)->middleware('permission:registration-settings');
-    Route::resource('medical-facilities.medical-facility-files', MedicalFacilityFileController::class)->shallow()->middleware('permission:manage-medical-facilities');
     Route::resource('universities', UniversityController::class)->middleware('permission:registration-settings'); 
     Route::resource('academic-degrees', AcademicDegreeController::class)->middleware('permission:registration-settings');
     Route::get('medical-facilities/import', [ MedicalFacilityController::class, 'import'])->middleware('permission:manage-medical-facilities')->name('medical-facilities.import');

@@ -4,21 +4,10 @@ namespace App\Http\Controllers\Common;
 
 use App\Enums\DoctorType;
 use App\Http\Controllers\Controller;
-
-use App\Models\Log; 
-use App\Models\Doctor;
-use App\Models\Invoice;
-use App\Models\Licence;
-use App\Models\LicenceLog;
-use PhpParser\Comment\Doc;
-use Illuminate\Http\Request;
-use App\Models\MedicalFacility;
-use App\Models\Pricing;
-use App\Models\Transaction;
-use App\Models\Vault;
+use App\Models\{Doctor, Invoice, Licence, LicenceLog, Log, MedicalFacility, Pricing, Transaction, Vault};
 use App\Services\InvoiceService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\{Auth, DB};
 
 class LicenceController extends Controller
 {
@@ -28,7 +17,7 @@ class LicenceController extends Controller
 
     public function __construct(InvoiceService $invoiceService)
     {
-            $this->invoiceService = $invoiceService;
+        $this->invoiceService = $invoiceService;
     }
 
     /**
@@ -37,29 +26,28 @@ class LicenceController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            "type" => "required|in:doctors,facilities",
-            'doctor_type' => "nullable",
+            'type' => 'required|in:doctors,facilities',
+            'doctor_type' => 'nullable',
+            'status' => 'nullable',
         ]);
+
         $query = Licence::query();
 
-        if ($request->has('type')) {
-            if ($request->type === 'doctors') {
-                $query->whereHasMorph('licensable', Doctor::class);
-            } else {
-                $query->whereHasMorph('licensable', MedicalFacility::class);
-            }
+        if ($request->type === 'doctors') {
+            $query->whereHasMorph('licensable', [Doctor::class]);
+        } else {
+            $query->whereHasMorph('licensable', [MedicalFacility::class]);
         }
 
-
-        if($request->status) {
+        if ($request->status) {
             $query->where('status', $request->status);
         }
 
-        if(get_area_name() != "admin") {
-            $query->where('branch_id', auth()->user()->branch_id);
+        if (get_area_name() !== 'admin') {
+            $query->where('branch_id', Auth::user()->branch_id);
         }
-        $licences = $query->with('licensable')->latest()->paginate(10);
-        return view('general.licences.index', compact('licences'));
+
+        return view('general.licences.index', ['licences' => $query->latest()->paginate(10)]);
     }
 
     /**
@@ -84,228 +72,60 @@ class LicenceController extends Controller
      */
     public function store(Request $request)
     {
-
-
-
-
-
-        $request->validate([
+        $validatedData = $request->validate([
             'licensable_type' => 'required|in:App\Models\Doctor,App\Models\MedicalFacility',
             'licensable_id' => 'required|integer',
             'issued_date' => 'required|date',
             'expiry_date' => 'required|date',
         ]);
-        
 
         try {
-            DB::beginTransaction();
-            if($request->licensable_type == "App\Models\Doctor") {
-                $licencable = Doctor::findOrFail($request->licensable_id);
-                $checkIfHasLicence = Licence::where('licensable_type', 'App\Models\Doctor')
-                    ->where('licensable_id', $licencable->id)->where('status','!=', 'expired')->first();
-                if($checkIfHasLicence) {
-                    return redirect()->back()->withErrors(['هذا الطبيب لديه اذن مزاولة مفعل بالفعل']);
-                } else {
-                    $licence = new Licence();
-                    $licence->licensable_type = 'App\Models\Doctor';
-                    $licence->licensable_id = $licencable->id;
-                    $licence->issued_date = $request->issued_date;
-                    $licence->expiry_date = $request->expiry_date;
-                    $licence->branch_id = $licencable->branch_id;
-                    $licence->doctor_type = $licencable->type;
-                    $licence->medical_facility_id = $request->medical_facility_id;
-                    $licence->created_by = auth()->id();
-                    $licence->status = "active";
-                    $licence->save();
+            DB::transaction(function () use ($validatedData) {
+                $licensable = app($validatedData['licensable_type'])::findOrFail($validatedData['licensable_id']);
+           
 
-                    if($licencable->type->value == DoctorType::Libyan->value)
-                    {
-                        if(!in_array($licencable->doctor_rank_id, [1,2]))
-                        {
+                $licence = Licence::create([
+                    'licensable_type' => $validatedData['licensable_type'],
+                    'licensable_id' => $validatedData['licensable_id'],
+                    'issued_date' => $validatedData['issued_date'],
+                    'expiry_date' => $validatedData['expiry_date'],
+                    'branch_id' => $licensable->branch_id,
+                    'status' => 'under_approve_admin',
+                    'created_by' => Auth::id(),
+                ]);
 
-                            $licence->status = "under_approve_admin";
-                        } else {
-                            $licence->status = "under_payment";
-                        }
+                $pricingMap = [
+                    DoctorType::Libyan->value => [1 => 7, 2 => 8, 3 => 9, 4 => 10, 5 => 11, 6 => 12],
+                    DoctorType::Palestinian->value => [1 => 59, 2 => 60, 3 => 61, 4 => 62, 5 => 63, 6 => 64],
+                    DoctorType::Visitor->value => [3 => 28, 4 => 29, 5 => 30],
+                    DoctorType::Foreign->value => [1 => 19, 2 => 20, 3 => 21, 4 => 22, 5 => 23, 6 => 24],
+                ];
 
+                $pricingId = $pricingMap[$licensable->type->value][$licensable->doctor_rank_id] ?? null;
 
-
-                        if($licencable->doctor_rank_id == 1) {
-                            $getPrice = Pricing::find(7);
-                        } else if($licencable->doctor_rank_id == 2) {
-                            $getPrice = Pricing::find(8);
-                        } else if($licencable->doctor_rank_id == 3) {
-                            $getPrice = Pricing::find(9);
-                        } else if($licencable->doctor_rank_id == 4) {
-                            $getPrice = Pricing::find(10);
-                        } else if($licencable->doctor_rank_id == 5) {
-                            $getPrice = Pricing::find(11);
-                        } else if($licencable->doctor_rank_id == 6) {
-                            $getPrice = Pricing::find(12);
-                        }
-
-                    } else if($licencable->type->value == DoctorType::Palestinian->value)
-                    {
-                        $licence->status = "under_approve_admin";
-
-                        if($licencable->doctor_rank_id == 1) {
-                            $getPrice = Pricing::find(59);
-                        } else if($licencable->doctor_rank_id == 2) {
-                            $getPrice = Pricing::find(60);
-                        } else if($licencable->doctor_rank_id == 3) {
-                            $getPrice = Pricing::find(61);
-                        } else if($licencable->doctor_rank_id == 4	) {
-                            $getPrice = Pricing::find(62);
-                        } else if($licencable->doctor_rank_id == 5) {
-                            $getPrice = Pricing::find(63);
-                        } else if($licencable->doctor_rank_id == 6	) {
-                            $getPrice = Pricing::find(64);
-                        }
-                    } else if($licencable->type->value == DoctorType::Visitor->value)
-                    {
-
-                        $licence->status = "under_approve_admin";
-
-                        if($licencable->doctor_rank_id == 3) {
-                            $getPrice = Pricing::find(28);
-                        } else if($licencable->doctor_rank_id == 4) {
-                            $getPrice = Pricing::find(29);
-                        } else if($licencable->doctor_rank_id == 5) {
-                            $getPrice = Pricing::find(30);
-                        }
-                    } else if($licencable->type->value == DoctorType::Foreign->value)
-                    {
-                        $licence->status = "under_approve_admin";
-                        
-                        if($licencable->doctor_rank_id == 1) {
-                            $getPrice = Pricing::find(19);
-                        } else if($licencable->doctor_rank_id == 2) {
-                            $getPrice = Pricing::find(20);
-                        } else if($licencable->doctor_rank_id == 3) {
-                            $getPrice = Pricing::find(21);
-                        } else if($licencable->doctor_rank_id == 4	) {
-                            $getPrice = Pricing::find(22);
-                        } else if($licencable->doctor_rank_id == 5) {
-                            $getPrice = Pricing::find(23);
-                        } else if($licencable->doctor_rank_id == 6	) {
-                            $getPrice = Pricing::find(24);
-                        }
-                    } else if($licencable->type->value == DoctorType::Palestinian->value)
-                    {
-                        $licence->status = "under_approve_admin";
-                        if($licencable->doctor_rank_id == 1) {
-                            $getPrice = Pricing::find(59);
-                        } else if($licencable->doctor_rank_id == 2) {
-                            $getPrice = Pricing::find(60);
-                        } else if($licencable->doctor_rank_id == 3) {
-                            $getPrice = Pricing::find(61);
-                        } else if($licencable->doctor_rank_id == 4	) {
-                            $getPrice = Pricing::find(62);
-                        } else if($licencable->doctor_rank_id == 5) {
-                            $getPrice = Pricing::find(63);
-                        } else if($licencable->doctor_rank_id == 6	) {
-                            $getPrice = Pricing::find(64);
-                        }
-                    }
-
-
-                    if($getPrice) {
-                        $invoice = new Invoice();
-                        $invoice->invoice_number = "LIC" . last_invoice_id();
-                        $invoice->amount = $getPrice->amount;
-                        $invoice->branch_id = $licencable->branch_id;
-                        $invoice->description = "تكلفة إنشاء اذن مزاولة للطبيب " . $licencable->name;
-                        $invoice->invoiceable_type = 'App\Models\Doctor';
-                        $invoice->invoiceable_id = $licencable->id;
-                        $invoice->licence_id = $licence->id;
-                        $invoice->pricing_id = $getPrice->id;
-                        $invoice->user_id = auth()->id();
-                        $invoice->status = "unpaid";
-                        $invoice->save();
-
-                        // $vault = auth()->user()->branch ? auth()->user()->branch->vault : \App\Models\Vault::first();
-                        // $this->invoiceService->markAsPaid($vault, $invoice, $invoice->description);
-                    }
-
-                    $licence->save();
+                if ($pricingId) {
+                    $pricing = Pricing::find($pricingId);
+                    Invoice::create([
+                        'invoice_number' => 'LIC' . last_invoice_id(),
+                        'amount' => $pricing->amount,
+                        'branch_id' => $licensable->branch_id,
+                        'description' => 'تكلفة إصدار إذن مزاولة للطبيب ' . $licensable->name,
+                        'invoiceable_type' => Doctor::class,
+                        'invoiceable_id' => $licensable->id,
+                        'licence_id' => $licence->id,
+                        'pricing_id' => $pricing->id,
+                        'user_id' => Auth::id(),
+                        'status' => 'unpaid',
+                    ]);
                 }
-
-            } else {
-                $licencable = MedicalFacility::findOrFail($request->licensable_id);
-                $checkIfHasLicence = Licence::where('licensable_type', 'App\Models\MedicalFacility')
-                    ->where('licensable_id', $licencable->id)
-                    ->first();
-
-                    if($checkIfHasLicence) {
-                        if($checkIfHasLicence->status != "expired")
-                        {
-                            return redirect()->back()->withErrors(['هذه المنشأة لديها اذن مزاولة مفعل بالفعل']);
-                        } else {
-                            $licence = new Licence();
-                            $licence->licensable_type = 'App\Models\MedicalFacility';
-                            $licence->licensable_id = $licencable->id;
-                            $licence->issued_date = $request->issued_date;
-                            $licence->expiry_date = $request->expiry_date;
-                            $licence->branch_id = $licencable->branch_id;
-                            $licence->status = "under_approve_admin";
-                            $licence->created_by = auth()->id();
-                            $licence->save();
-                            $getPrice = Pricing::find(77);
-                            if($getPrice) {
-                                $invoice = new Invoice();
-                                $invoice->invoice_number = "MED" . last_invoice_id();
-                                $invoice->amount = $getPrice->amount;
-                                $invoice->branch_id = $licencable->branch_id;
-                                $invoice->description = "رسوم تجديد اذن مزاولة للمنشأة ";
-                                $invoice->invoiceable_type = 'App\Models\MedicalFacility';
-                                $invoice->invoiceable_id = $licencable->id;
-                                $invoice->licence_id = $licence->id;
-                                $invoice->pricing_id = $getPrice->id;
-                                $invoice->user_id = auth()->id();
-                                $invoice->status = "unpaid";
-                                $invoice->save();
-                            }
-                        }
-                    } else {
-                        $licence = new Licence();
-                        $licence->licensable_type = 'App\Models\MedicalFacility';
-                        $licence->licensable_id = $licencable->id;
-                        $licence->issued_date = $request->issued_date;
-                        $licence->expiry_date = $request->expiry_date;
-                        $licence->branch_id = $licencable->branch_id;
-                        $licence->status = "under_approve_admin";
-                        $licence->created_by = auth()->id();
-                        $licence->save();
-
-                        $getPrice = Pricing::find(76);
-                        if($getPrice) {
-                            $invoice = new Invoice();
-                            $invoice->invoice_number = "MED" . last_invoice_id();
-                            $invoice->amount = $getPrice->amount;
-                            $invoice->branch_id = $licencable->branch_id;
-                            $invoice->description = "تكلفة إنشاء منشأة طبية";
-                            $invoice->invoiceable_type = 'App\Models\MedicalFacility';
-                            $invoice->invoiceable_id = $licencable->id;
-                            $invoice->licence_id = $licence->id;
-                            $invoice->pricing_id = $getPrice->id;
-                            $invoice->user_id = auth()->id();
-                            $invoice->status = "unpaid";
-                            $invoice->save();
-                        }
-                    }
-            }
-            
-            DB::commit();
-        } catch(\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->withErrors([$e->getMessage(), $e->getLine()]);
+            });
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors([$e->getMessage()]);
         }
 
-
-        $type = $invoice->invoiceable_type == "App\Models\Doctor" ? "doctors" : "facilities";
-        $doctor_type = $licence->doctor_type;
-        return redirect()->route(get_area_name().'.licences.index', ['type' => $type, 'doctor_type' => $doctor_type])
-            ->with('success', 'تم إضافة الاذن مزاولة بنجاح.');
+        return redirect()->route(get_area_name() . '.licences.index', [
+            'type' => $validatedData['licensable_type'] === Doctor::class ? 'doctors' : 'facilities',
+        ])->with('success', 'تم إضافة إذن مزاولة بنجاح.');
     }
 
     /**

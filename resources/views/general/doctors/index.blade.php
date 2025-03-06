@@ -43,7 +43,7 @@
                         </div>
                         <div class="col-md-3">
                             <label for="created_at">تاريخ الاضافة</label>
-                            <input type="date" class="form-control" id="created_at" name="created_at" value="{{ request()->input('created_at') }}">
+                            <input type="date" lang="ar" dir="rtl" class="form-control date-picker" id="created_at" name="created_at" value="{{ request()->input('created_at') }}">
                         </div>
                         <div class="col-md-3">
                             <label>&nbsp;</label>
@@ -97,9 +97,11 @@
                                 <td>
                                     {{-- rank &  --}}
                                     @if ($doctor->doctor_rank)
-                                    {{ $doctor->doctor_rank->name }} /
+                                    {{ $doctor->doctor_rank->name }} 
                                     @endif
-                                    {{$doctor->specialization}}
+                                    @if (strlen($doctor->specialization) > 0)
+                                            - {{ $doctor->specialization }}
+                                    @endif
                                 </td>
                                 <td>{{ $doctor->address }}</td>
                                 @if (request('type') == "libyan")

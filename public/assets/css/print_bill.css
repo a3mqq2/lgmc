@@ -1072,7 +1072,7 @@ table.print-table td.no-border {
   text-align: center;
   position: absolute;
   right: 50px;
-  bottom: 460px;
+  bottom: 480px;
 }
 
 .name-box
@@ -1080,7 +1080,7 @@ table.print-table td.no-border {
   text-align: center;
   width: 490px;
   position: absolute;
-  top: 610px;
+  top: 590px;
   right: 198px;
   background: linear-gradient(45deg, #ffcaca, #cc20281c);
   border: 2px dashed #6a6a6a;
@@ -1096,7 +1096,7 @@ table.print-table td.no-border {
   text-align: center;
   position: absolute;
   right: 50px;
-  bottom: 390px;
+  bottom: 430px;
 }
 
 .branch-box
@@ -1104,7 +1104,7 @@ table.print-table td.no-border {
   text-align: center;
   width: 210px;
   position: absolute;
-  top: 688px;
+  top: 654px;
   right: 198px;
   background: linear-gradient(45deg, #ffcaca, #cc20281c);
   border: 2px dashed #6a6a6a;
@@ -1120,7 +1120,7 @@ table.print-table td.no-border {
   text-align: center;
   position: absolute;
   right: 430px;
-  bottom: 393px;
+  bottom: 426px;
 }
 
 
@@ -1129,7 +1129,7 @@ table.print-table td.no-border {
   text-align: center;
   width: 140px;
   position: absolute;
-  top: 685px;
+  top: 652px;
   right: 548px;
   background: linear-gradient(45deg, #ffcaca, #cc20281c);
   border: 2px dashed #6a6a6a;
@@ -1145,7 +1145,7 @@ table.print-table td.no-border {
   text-align: center;
   position: absolute;
   right: 50px;
-  bottom: 330px;
+  bottom: 380px;
 }
 
 
@@ -1158,7 +1158,7 @@ table.print-table td.no-border {
   text-align: center;
   position: absolute;
   right: 50px;
-  bottom: 271px;
+  bottom: 321px;
 }
 
 
@@ -1168,7 +1168,7 @@ table.print-table td.no-border {
     text-align: center;
   width: 490px;
   position: absolute;
-  top: 808px;
+  top: 760px;
   right: 198px;
   background: linear-gradient(45deg, #ffcaca, #cc20281c);
   border: 2px dashed #6a6a6a;
@@ -1183,7 +1183,7 @@ table.print-table td.no-border {
   text-align: center;
   width: 490px;
   position: absolute;
-  top: 745px;
+  top: 704px;
   right: 198px;
   background: linear-gradient(45deg, #ffcaca, #cc20281c);
   border: 2px dashed #6a6a6a;
@@ -1202,7 +1202,7 @@ table.print-table td.no-border {
   border: 3px dashed;
   margin: auto;
   position: absolute;
-  top: 860px;
+  top: 817px;
   left: 100px;
 }
 

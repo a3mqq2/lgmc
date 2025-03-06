@@ -14,19 +14,10 @@ class SpecialtySeeder extends Seeder
     {
         $specialties = [
             // تخصصات رئيسية
-            ['name' => 'بدون', 'specialty_id' => null],
-            ['name' => 'الطب العام', 'specialty_id' => null],
-            ['name' => 'طب الأطفال', 'specialty_id' => null],
-            ['name' => 'طب النساء والتوليد', 'specialty_id' => null],
-            ['name' => 'الجراحة العامة', 'specialty_id' => null],
-            ['name' => 'طب الأسنان', 'specialty_id' => null],
-
-            // تخصصات فرعية
-            ['name' => 'جراحة المخ والأعصاب', 'specialty_id' => 4], // فرع للجراحة العامة
-            ['name' => 'أمراض القلب', 'specialty_id' => 1], // فرع للطب العام
-            ['name' => 'جراحة الأطفال', 'specialty_id' => 2], // فرع لطب الأطفال
-            ['name' => 'تقويم الأسنان', 'specialty_id' => 5], // فرع لطب الأسنان
-            ['name' => 'علاج العقم', 'specialty_id' => 3], // فرع لطب النساء والتوليد
+            ['name' => 'اطفال', 'specialty_id' => null],
+            ['name' => ' نساء والتوليد', 'specialty_id' => null],
+            ['name' => 'جراحة', 'specialty_id' => null],
+            ['name' => 'اسنان', 'specialty_id' => null],
         ];
 
         foreach ($specialties as $specialty) {

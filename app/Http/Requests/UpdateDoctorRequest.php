@@ -43,7 +43,7 @@ class UpdateDoctorRequest extends FormRequest
             'marital_status' => 'required|string|in:single,married',
             'gender' => 'required|string|in:male,female',
             'passport_number' => 'required|string|max:20',
-            'passport_expiration' => 'required|date|after:today',
+            'passport_expiration' => 'required|date',
             'password' => 'nullable|min:6|confirmed',
             'country_graduation_id' => 'nullable|numeric',
             'phone' => [
@@ -76,6 +76,7 @@ class UpdateDoctorRequest extends FormRequest
             'doctor_number' => 'nullable|string|max:255',
             'institution_id' => "nullable",
             'documents' => 'nullable',
+            'registered_at' => "nullable",
             'type' => 'required|in:libyan,palestinian,foreign,visitor',
 
             // قواعد التحقق المخصصة للتحقق من البلاك ليست

@@ -662,10 +662,10 @@
 
                                                    <div class=" text-primary mt-2  mb-2">بيانات العمل الحالي</div>
                                                    <div class="row">
-                                                      <div class="col-md-12">
+                                                      {{-- <div class="col-md-12">
                                                           <label for="">الرقم النقابي الأول</label>
                                                           <input type="text" name="doctor_number" value="{{old('doctor_number')}}"  id="" class="form-control">
-                                                      </div>
+                                                      </div> --}}
                                                       <div class="col-md-12">
                                                           <label for="">الصفة</label>
                                                           <select name="doctor_rank_id" id="" class="form-control select2">

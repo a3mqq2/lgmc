@@ -48,7 +48,7 @@ class StoreDoctorRequest extends FormRequest
             'marital_status' => 'required|string|in:single,married',
             'gender' => 'required|string|in:male,female',
             'passport_number' => 'required|string|max:20',
-            'passport_expiration' => 'required|date|after:today',
+            'passport_expiration' => 'required|date',
             'phone' => ['required', 'regex:/^09[1-9][0-9]{7}$/'],
             'address' => 'required|string|max:255',
             'hand_graduation_id' => 'required|numeric',
@@ -65,12 +65,12 @@ class StoreDoctorRequest extends FormRequest
             'notes' => 'nullable|string',
             'branch_id' => 'nullable|numeric',
             'qualification_university_id' => 'required|numeric',
-            'doctor_number' => 'required_if:type,==,libyan|max:255',
             'documents' => "nullable",
             'type' => "required|in:libyan,palestinian,foreign,visitor",
             'password' => 'nullable|min:6|confirmed',
             'country_graduation_id' => 'nullable|numeric',
             'institution_id' => 'nullable',
+            'registered_at' => "nullable",
             'g-recaptcha-response' => ($routeName === 'register-store' && !$isLocalEnv) ? 'required|captcha' : '',
 
             

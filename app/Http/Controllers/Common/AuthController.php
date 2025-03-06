@@ -113,7 +113,7 @@ class AuthController extends Controller
         $countries = Country::all();
         $academicDegrees = AcademicDegree::all();
         $universities = University::all();
-        $file_types = FileType::where('type', 'doctor')->where('doctor_type', request('type'))->get();
+        $file_types = FileType::where('type', 'doctor')->get();
         $doctor_ranks = DoctorRank::all();
         $specialties = Specialty::whereNull('specialty_id')->get();
         $branches = Branch::all();

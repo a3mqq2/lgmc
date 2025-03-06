@@ -47,6 +47,7 @@ class RolesAndPermissionsSeeder extends Seeder
         ];
 
         $branchOperationsPermissions = [
+            'branch-manager'             => "مدير الفرع - نقيب",
             'doctor-requests'            => 'طلبات الاطباء',
             'manage-medical-facilities'  => 'المرافق الطبيه',
             'manage-doctors'             => 'الاطباء',

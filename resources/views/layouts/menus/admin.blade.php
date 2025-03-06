@@ -557,7 +557,6 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
         </ul>
     </div>
 </li>
-
 @endif
 
 <li class="nav-item">

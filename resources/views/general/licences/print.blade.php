@@ -85,7 +85,13 @@
 
                 </div>
 
-                <div id="id">
+                <div id="id"
+                    @if ($licence->licensable->type->value == \App\Enums\DoctorType::Foreign->value)
+
+                    style="top:233px!important;left:-67px!important"
+                        
+                    @endif
+                >
                     <p>#{{$licence->id}}</p>
                 </div>
    

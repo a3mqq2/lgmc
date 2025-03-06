@@ -649,7 +649,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
     <script src="https://cdn.ckeditor.com/4.17.2/standard-all/translations/ar.js"></script>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css">
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+    
     <script src="{{asset('/assets/js/app.js?v=2')}}"></script>
     <script src="{{asset('/assets/js/custom.js')}}"></script>
 
@@ -683,7 +685,44 @@
         });
     });
     </script>
-    
+        
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+         document.querySelectorAll('input[type="date"], .date-picker').forEach(function(field) {
+             let picker = new Litepicker({
+                 element: field,
+                 format: "YYYY-MM-DD", // إجبار التنسيق على الظهور بشكل صحيح
+                 singleMode: true,
+                 autoApply: true,
+                 allowRepick: true,
+                 minDate: "1900-01-01",
+                 lang: "en", // فرض اللغة الإنجليزية على التقويم
+                 onSelect: function(date) {
+                     let selectedDate = date.format("YYYY-MM-DD"); // ضمان تنسيق التاريخ
+                     field.value = selectedDate;
+                     field.dispatchEvent(new Event('change', { bubbles: true }));
+                     console.log("Selected date:", selectedDate);
+                 }
+             });
+     
+             // إزالة placeholder لمنع عرض النصوص المعكوسة
+             field.removeAttribute("placeholder");
+     
+             // إجبار تنسيق التاريخ عند فقدان التركيز (Blur)
+             field.addEventListener("blur", function() {
+                 let dateValue = field.value.trim();
+                 if (dateValue) {
+                     let parsedDate = new Date(dateValue);
+                     let formattedDate = parsedDate.getFullYear() + '-' +
+                                         String(parsedDate.getMonth() + 1).padStart(2, '0') + '-' +
+                                         String(parsedDate.getDate()).padStart(2, '0');
+                     field.value = formattedDate;
+                 }
+             });
+         });
+     });
+     
+             </script>
 </body>
 
 
