@@ -136,12 +136,8 @@
                             <td>{{ $doctor->specialty1->name ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <th class="bg-light">التخصص الثاني</th>
+                            <th class="bg-light">التخصص الدقيق</th>
                             <td>{{ $doctor->specialty2->name ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">التخصص الثالث</th>
-                            <td>{{ $doctor->specialty3->name ?? 'N/A' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">تاريخ الإضافة</th>

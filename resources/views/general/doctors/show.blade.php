@@ -460,8 +460,7 @@
                                 <tr>
                                     <th class="bg-primary text-light">الفرع</th>
                                     <th class="bg-primary text-light">التخصص الأول</th>
-                                    <th class="bg-primary text-light">التخصص الثاني</th>
-                                    <th class="bg-primary text-light">التخصص الثالث</th>
+                                    <th class="bg-primary text-light">التخصص الدقيق</th>
                                     <th class="bg-primary text-light">تاريخ الإضافة</th>
                                 </tr>
                                 <tr>

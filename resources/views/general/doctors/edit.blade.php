@@ -17,12 +17,12 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="">الاسم بالكامل</label>
-                                    <input type="text" required name="name" value="{{old('name',$doctor->name)}}"  id="" class="form-control">
+                                    <input type="text" required name="name" value="{{old('name',$doctor->name)}}"   class="form-control">
                                     <input type="hidden" name="type" value="{{$doctor->type->value}}">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="">الاسم بالكامل باللغه الانجليزيه</label>
-                                    <input type="text" required name="name_en" value="{{old('name_en', $doctor->name_en)}}"  id="" class="form-control">
+                                    <input type="text" required name="name_en" value="{{old('name_en', $doctor->name_en)}}"   class="form-control">
                                 </div>
                                 @if ($doctor->type->value == "libyan")
                                 <div class="col-md-6 mt-2">
@@ -32,7 +32,7 @@
                                 @endif
                                 <div class="col-md-6 mt-2">
                                     <label for=""> اسم الام </label>
-                                    <input type="text" required name="mother_name" value="{{old('mother_name', $doctor->mother_name)}}" id="" class="form-control">
+                                    <input type="text" required name="mother_name" value="{{old('mother_name', $doctor->mother_name)}}"  class="form-control">
                                 </div>
                                 <div class="col-md-6 mt-2">
                                     <label for="">  الجنسية  </label>
@@ -68,7 +68,7 @@
                                 <!-- Month & Day -->
                                 <div class="col-md-2 mt-2">
                                     <label for="date_of_birth">الشهر </label>
-                                    <select name="month" required id="" class="form-control">
+                                    <select name="month" required  class="form-control">
                                         <option value=""> حدد </option>
                                         @foreach (range(1, 12) as $month)
                                             <option value="{{ $month }}" {{ old('month',  date('m', strtotime($doctor->date_of_birth)) ) == $month ? 'selected' : '' }}>
@@ -79,7 +79,7 @@
                                 </div>
                                 <div class="col-md-2 mt-2">
                                     <label for="day"> اليوم </label>
-                                    <select name="day" required id="" class="form-control">
+                                    <select name="day" required  class="form-control">
                                         <option value=""> حدد </option>
                                         @foreach (range(1, 31) as $day)
                                             <option value="{{ $day }}" {{ old('day',  date('d', strtotime($doctor->date_of_birth))) == $day ? 'selected' : '' }}>
@@ -91,12 +91,12 @@
                                 @else 
                                 <div class="col-md-6 mt-2">
                                     <label for=""> تاريخ الميلاد </label>
-                                    <input type="date" required name="date_of_birth" value="{{old('date_of_birth', date('Y-m-d',strtotime($doctor->date_of_birth)) )}}" id="" class="form-control">
+                                    <input type="date" required name="date_of_birth" value="{{old('date_of_birth', date('Y-m-d',strtotime($doctor->date_of_birth)) )}}"  class="form-control">
                                 </div>
                                 @endif
                                 <div class="col-md-6 mt-2">
                                     <label for="">  الحالة الاجتماعية  </label>
-                                    <select name="marital_status"  required id="" class="form-control">
+                                    <select name="marital_status"  required  class="form-control">
                                         <option value="single" {{old('marital_status', $doctor->marital_status->value) == "single" ? "selected" : ""}}>اعزب</option>
                                         <option value="married" {{old('marital_status', $doctor->marital_status->value) == "married" ? "selected" : ""}}>متزوج</option>
                                     </select>
@@ -118,11 +118,11 @@
                             
                                 <div class="col-md-6 mt-2">
                                     <label for=""> رقم جواز السفر   </label>
-                                    <input type="text"  name="passport_number" pattern="[A-Z0-9]+"  required value="{{old('passport_number', $doctor->passport_number)}}" id="" class="form-control">
+                                    <input type="text"  name="passport_number" pattern="[A-Z0-9]+"  required value="{{old('passport_number', $doctor->passport_number)}}"  class="form-control">
                                 </div>
                                 <div class="col-md-6 mt-2">
                                     <label for="">  تاريخ انتهاء صلاحية الجواز     </label>
-                                    <input type="date" required name="passport_expiration" value="{{old('passport_expiration', date('Y-m-d', strtotime($doctor->passport_expiration)))}}" id="" class="form-control">
+                                    <input type="date" required name="passport_expiration" value="{{old('passport_expiration', date('Y-m-d', strtotime($doctor->passport_expiration)))}}"  class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -138,23 +138,23 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="">رقم الهاتف</label>
-                                    <input type="phone" required name="phone" maxlength="10" value="{{old('phone', $doctor->phone)}}" id="" class="form-control">
+                                    <input type="phone" required name="phone" maxlength="10" value="{{old('phone', $doctor->phone)}}"  class="form-control">
                                 </div>
                                 <div class="col-md-6">
                                     <label for=""> رقم الواتساب </label>
-                                    <input type="phone" name="phone_2" value="{{old('phone_2', $doctor->phone_2)}}" id="" maxlength="10" class="form-control">
+                                    <input type="phone" name="phone_2" value="{{old('phone_2', $doctor->phone_2)}}"  maxlength="10" class="form-control">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="">الاقامة</label>
-                                    <input type="text" required name="address" value="{{old('address', $doctor->address)}}" id="" class="form-control">
+                                    <input type="text" required name="address" value="{{old('address', $doctor->address)}}"  class="form-control">
                                 </div>
                                 <div class="col-md-6">
                                     <label for=""> كلمة المرور (لا تغييرها الا اذا اردت ذلك) </label>
-                                    <input type="password"   name="password" value="{{old('password')}}" id="" class="form-control">
+                                    <input type="password"   name="password" value="{{old('password')}}"  class="form-control">
                                 </div>
                                 <div class="col-md-6">
                                     <label for=""> تأكيد كلمة المرور  </label>
-                                    <input type="password"  name="password_confirmation" value="{{old('password_confirmation')}}" id="" class="form-control">
+                                    <input type="password"  name="password_confirmation" value="{{old('password_confirmation')}}"  class="form-control">
                                 </div>
                                 {{-- email input --}}
                                 <div class="col-md-6">
@@ -174,7 +174,7 @@
                                 @if ($doctor->type->value == "visitor")
                                 <div class="col-md-4">
                                     <label for=""> دولة التخرج </label>
-                                    <select name="country_graduation_id" required  id="" class="form-control select2">
+                                    <select name="country_graduation_id" required   class="form-control select2">
                                         <option value="">حدد دولة التخرج </option>
                                         @foreach ($countries as $country)
                                             <option value="{{$country->id}}" {{old('country_graduation_id', $doctor->country_graduation_id) == $country->id ? "selected" : ""}}>{{$country->name}}</option>
@@ -184,7 +184,7 @@
                                 @endif
                                 <div class="col-md-4">
                                     <label for=""> جهة التخرج </label>
-                                    <select name="hand_graduation_id"  required id="" class="form-control select2">
+                                    <select name="hand_graduation_id"  required  class="form-control select2">
                                         <option value="">حدد جهة التخرج </option>
                                         @foreach ($universities as $university)
                                             <option value="{{$university->id}}" {{old('hand_graduation_id', $doctor->hand_graduation_id) == $university->id ? "selected" : ""}}>{{$university->name}}</option>
@@ -193,7 +193,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for=""> تاريخ انتهاء الامتياز   </label>
-                                    <input type="date" name="internership_complete" required value="{{old('internership_complete', date('Y-m-d', strtotime($doctor->internership_complete)))}}" id="" class="form-control">
+                                    <input type="date" name="internership_complete" required value="{{old('internership_complete', date('Y-m-d', strtotime($doctor->internership_complete)))}}"  class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -213,7 +213,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label for="">الدرجة العلمية</label>
-                            <select name="academic_degree_id" id="" class="form-control select2">
+                            <select name="academic_degree_id"  class="form-control select2">
                                 <option value="">حدد درجة علمية</option>
                                 @foreach ($academicDegrees as $academicDegree)
                                     <option value="{{$academicDegree->id}}" {{old('academic_degree_id', $doctor->academic_degree_id) == $academicDegree->id ? "selected" : ""}}>{{$academicDegree->name}}</option>
@@ -237,7 +237,7 @@
                         
                         <div class="col-md-12">
                             <label for=""> الجهة  </label>
-                            <select name="qualification_university_id" id="" class="form-control select2">
+                            <select name="qualification_university_id"  class="form-control select2">
                                 <option value="">حدد جهة  </option>
                                 @foreach ($universities as $university)
                                     <option value="{{$university->id}}" {{old('qualification_university_id', $doctor->qualification_university_id) == $university->id ? "selected" : ""}}>{{$university->name}}</option>
@@ -317,12 +317,12 @@
                        
                         <div class="col-md-6">
                             <label for="">الرقم النقابي الأول</label>
-                            <input type="text" name="doctor_number"   value="{{old('doctor_number', $doctor->doctor_number)}}"  id="" class="form-control">
+                            <input type="text" name="doctor_number"   value="{{old('doctor_number', $doctor->doctor_number)}}"   class="form-control">
                         </div>
 
                         <div class="col-md-6">
                             <label for=""> تاريخ الانتساب   </label>
-                            <input type="date" name="registered_at" value="{{date('Y-m-d', strtotime($doctor->registered_at))}}" id="" class="form-control">
+                            <input type="date" name="registered_at" value="{{date('Y-m-d', strtotime($doctor->registered_at))}}"  class="form-control">
                         </div>
 
 
@@ -330,7 +330,7 @@
 
                         <div class="col-md-12">
                             <label for="">الصفة</label>
-                            <select name="doctor_rank_id" id="" class="form-control select2">
+                            <select name="doctor_rank_id" id="doctor_rank_id" class="form-control select2">
                                 <option value="">حدد الصفة</option>
                                 @foreach ($doctor_ranks as $doctor_rank)
                                     <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id',$doctor->doctor_rank_id) == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
@@ -341,7 +341,7 @@
 
                         <div class="col-md-6">
                             <label for="">جهة العمل</label>
-                            <select name="institution_id" id="" class="form-control select2">
+                            <select name="institution_id"  class="form-control select2">
                                 <option value="">حدد جهة العمل</option>
                                 @foreach (\App\Models\Institution::where('branch_id', auth()->user()->branch_id)->get(); as $institution)
                                     <option value="{{$institution->id}}" {{old('institution_id',$doctor->institution_id) == $institution->id ? "selected" : ""}}>{{$institution->name}}</option>
@@ -356,7 +356,7 @@
                                 @if (get_area_name() == "admin")
                                 <div class="col-md-12 mt-1 mb-2">
                                     <label for="">حدد فرع</label>
-                                    <select name="branch_id" id="" class="form-control select2">
+                                    <select name="branch_id"  class="form-control select2">
                                         <option value="">حدد فرع</option>
                                         @foreach (App\Models\Branch::all() as $branch)
                                         <option {{old('branch_id', $doctor->branch_id) == $branch->id ? "selected" : ""}} value="{{$branch->id}}">{{$branch->name}}</option>
@@ -364,25 +364,19 @@
                                     </select>
                                 </div>
                                 @endif
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label for=""> تخصص اول</label>
-                                    <select name="specialty_1_id" id="" class="form-control">
+                                    <select name="specialty_1_id"  class="form-control">
                                         <option value="">حدد تخصص اول</option>
                                         @foreach ($specialties as $specialty)
                                             <option value="{{$specialty->id}}" {{old('specialty_1_id',$doctor->specialty_1_id) == $specialty->id ? "selected" : ""}}>{{$specialty->name}}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for=""> تخصص ثاني</label>
-                                    <select name="specialty_2_id" data-old="{{old('specialty_2_id',$doctor->specialty_2_id)}}" id="" class="form-control">
-                                        <option value="">حدد تخصص ثاني</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for=""> تخصص ثالث</label>
-                                    <select name="specialty_3_id" data-old="{{old('specialty_3_id',$doctor->specialty_3_id)}}" id="" class="form-control">
-                                        <option value="">حدد تخصص ثالث</option>
+                                <div class="col-md-6">
+                                    <label for=""> تخصص دقيق</label>
+                                    <select name="specialty_2_id" data-old="{{old('specialty_2_id',$doctor->specialty_2_id)}}"  class="form-control">
+                                        <option value="">حدد    دقيق</option>
                                     </select>
                                 </div>
                             </div>
@@ -409,7 +403,7 @@
                         </div>
                         <div class="col-md-12 mt-2">
                             <label for=""> سنوات الخبره  </label>
-                            <input name="experience" id="" value="{{old('experience', $doctor->experience)}}" type="number" class="form-control"></textarea>
+                            <input name="experience"  value="{{old('experience', $doctor->experience)}}" type="number" class="form-control"></textarea>
                         </div>
                     </div>
                 </div>
@@ -422,7 +416,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label for=""> بيانات اضافيه</label>
-                            <textarea name="notes" id="" cols="30" rows="4" class="form-control">{{old('notes', $doctor->notes)}}</textarea>
+                            <textarea name="notes"  cols="30" rows="4" class="form-control">{{old('notes', $doctor->notes)}}</textarea>
                         </div>
                     </div>
                 </div>
@@ -867,6 +861,32 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 </script>
+<script>
+    $(document).ready(function () {
+        $("#doctor_rank_id").change(function () {
+            var selectedRank = parseInt($(this).val());
+    
+            if (selectedRank === 1) {
+                // طبيب ممارس عام: إخفاء التخصصات
+                $("select[name='specialty_1_id']").parent().hide();
+                $("select[name='specialty_2_id']").parent().hide();
+            } else if ([2, 3, 4].includes(selectedRank)) {
+                // طبيب ممارس تخصصي - أخصائي أول - أخصائي ثاني: إظهار التخصص الأول فقط
+                $("select[name='specialty_1_id']").parent().show();
+                $("select[name='specialty_2_id']").parent().hide();
+            } else if ([5, 6].includes(selectedRank)) {
+                // استشاري أول - استشاري: إظهار التخصص الأول والتخصص الدقيق
+                $("select[name='specialty_1_id']").parent().show();
+                $("select[name='specialty_2_id']").parent().show();
+            }
+        });
+    
+        // تفعيل السكريبت عند تحميل الصفحة للتحقق من القيمة المحفوظة مسبقًا
+        $("#doctor_rank_id").trigger("change");
+    });
+
+    </script>
+    
 @endsection
 @section('styles')
     <style> 

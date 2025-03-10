@@ -396,7 +396,7 @@
                                         </select>
                                     </div>
                                     @endif
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <label for=""> تخصص اول</label>
                                         <select name="specialty_1_id"  id="" class="form-control">
                                             <option value="">حدد تخصص اول</option>
@@ -405,16 +405,10 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-4">
-                                        <label for=""> تخصص ثاني</label>
+                                    <div class="col-md-6">
+                                        <label for=""> تخصص دقيق</label>
                                         <select name="specialty_2_id"  data-old="{{old('specialty_2_id')}}" id="" class="form-control">
-                                            <option value="">حدد تخصص ثاني</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for=""> تخصص ثالث</label>
-                                        <select name="specialty_3_id" data-old="{{old('specialty_3_id')}}" id="" class="form-control">
-                                            <option value="">حدد تخصص ثالث</option>
+                                            <option value="">حدد تخصص دقيق</option>
                                         </select>
                                     </div>
                                     <div class="col-md-12 mt-2">
@@ -470,19 +464,29 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    $("#doctor_rank_id").change(function() {
-        if($(this).val() == 1) {
-            // hide specialities 
+$(document).ready(function () {
+    $("#doctor_rank_id").change(function () {
+        var selectedRank = parseInt($(this).val());
+
+        if (selectedRank === 1) {
+            // طبيب ممارس عام: إخفاء التخصصات
             $("select[name='specialty_1_id']").parent().hide();
             $("select[name='specialty_2_id']").parent().hide();
-            $("select[name='specialty_3_id']").parent().hide();
-        } else {
-            // show specialities
+        } else if ([2, 3, 4].includes(selectedRank)) {
+            // طبيب ممارس تخصصي - أخصائي أول - أخصائي ثاني: إظهار التخصص الأول فقط
+            $("select[name='specialty_1_id']").parent().show();
+            $("select[name='specialty_2_id']").parent().hide();
+        } else if ([5, 6].includes(selectedRank)) {
+            // استشاري أول - استشاري: إظهار التخصص الأول والتخصص الدقيق
             $("select[name='specialty_1_id']").parent().show();
             $("select[name='specialty_2_id']").parent().show();
-            $("select[name='specialty_3_id']").parent().show();
         }
     });
+
+    // تفعيل السكريبت عند تحميل الصفحة للتحقق من القيمة المحفوظة مسبقًا
+    $("#doctor_rank_id").trigger("change");
+});
+
 </script>
 <script>
 

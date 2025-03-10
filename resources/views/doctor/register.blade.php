@@ -668,7 +668,7 @@
                                                       </div> --}}
                                                       <div class="col-md-12">
                                                           <label for="">الصفة</label>
-                                                          <select name="doctor_rank_id" id="" class="form-control select2">
+                                                          <select name="doctor_rank_id" id="doctor_rank_id" class="form-control select2">
                                                               <option value="">حدد الصفة</option>
                                                               @foreach ($doctor_ranks as $doctor_rank)
                                                                   @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
@@ -692,27 +692,21 @@
                                                                       @endforeach
                                                                   </select>
                                                               </div>
-                                                              <div class="col-md-4">
-                                                                  <label for=""> تخصص اول</label>
-                                                                  <select name="specialty_1_id" id="" class="form-control">
-                                                                      <option value="">حدد تخصص اول</option>
-                                                                      @foreach ($specialties as $specialty)
-                                                                          <option value="{{$specialty->id}}" {{old('specialty_1_id') == $specialty->id ? "selected" : ""}}>{{$specialty->name}}</option>
-                                                                      @endforeach
-                                                                  </select>
-                                                              </div>
-                                                              <div class="col-md-4">
-                                                                  <label for=""> تخصص ثاني</label>
-                                                                  <select name="specialty_2_id" data-old="{{old('specialty_2_id')}}" id="" class="form-control">
-                                                                      <option value="">حدد تخصص ثاني</option>
-                                                                  </select>
-                                                              </div>
-                                                              <div class="col-md-4">
-                                                                  <label for=""> تخصص ثالث</label>
-                                                                  <select name="specialty_3_id" data-old="{{old('specialty_3_id')}}" id="" class="form-control">
-                                                                      <option value="">حدد تخصص ثالث</option>
-                                                                  </select>
-                                                              </div>
+                                                              <div class="col-md-6">
+                                                                <label for=""> تخصص اول</label>
+                                                                <select name="specialty_1_id"  class="form-control">
+                                                                    <option value="">حدد تخصص اول</option>
+                                                                    @foreach ($specialties as $specialty)
+                                                                        <option value="{{$specialty->id}}" {{old('specialty_1_id') == $specialty->id ? "selected" : ""}}>{{$specialty->name}}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label for=""> تخصص دقيق</label>
+                                                                <select name="specialty_2_id" data-old="{{old('specialty_2_id')}}"  class="form-control">
+                                                                    <option value="">حدد    دقيق</option>
+                                                                </select>
+                                                            </div>
                                                           </div>
                                                       </div>
                                                   </div>
@@ -873,63 +867,38 @@
             });
         </script>
     <script>
-        $(document).ready(function() {
-            // Set data-old attribute for Specialty 2 and Specialty 3 selects
-            $('select[name="specialty_2_id"]').attr('data-old', '{{ old("specialty_2_id") }}');
-            $('select[name="specialty_3_id"]').attr('data-old', '{{ old("specialty_3_id") }}');
-    
-            // Initialize Specialty 1 selectize
-            var selectizeSpecialty1 = $('select[name="specialty_1_id"]').selectize({
-                onChange: function(value) {
-                    if (!value.length) return;
-                    // Clear existing options
-                    var selectizeSpecialty2 = selectizeSpecialty2Instance[0].selectize;
-                    selectizeSpecialty2.clearOptions();
-                    // Fetch data for specialty 2 based on selected value of specialty 1
-                    $.ajax({
-                        url: '/api/get-sub-specialties/' + value,
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(response) {
-                            $.each(response, function(index, specialty) {
-                                selectizeSpecialty2.addOption({value: specialty.id, text: specialty.name});
-                            });
-                            // Restore old value for Specialty 2
-                            selectizeSpecialty2.setValue($('select[name="specialty_2_id"]').data('old'));
-                        }
-                    });
-                }
-            });
-    
-            // Trigger change event for Specialty 1 select to populate Specialty 2
-            $('select[name="specialty_1_id"]').trigger('change');
-    
-            // Initialize Specialty 2 selectize
-            var selectizeSpecialty2Instance = $('select[name="specialty_2_id"]').selectize({
-                onChange: function(value) {
-                    if (!value.length) return;
-                    // Clear existing options
-                    var selectizeSpecialty3 = selectizeSpecialty3Instance[0].selectize;
-                    selectizeSpecialty3.clearOptions();
-                    // Fetch data for specialty 3 based on selected value of specialty 2
-                    $.ajax({
-                        url: '/api/get-sub-specialties/' + value,
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(response) {
-                            $.each(response, function(index, specialty) {
-                                selectizeSpecialty3.addOption({value: specialty.id, text: specialty.name});
-                            });
-                            // Restore old value for Specialty 3
-                            selectizeSpecialty3.setValue($('select[name="specialty_3_id"]').data('old'));
-                        }
-                    });
-                }
-            });
-    
-            // Initialize Specialty 3 selectize
-            var selectizeSpecialty3Instance = $('select[name="specialty_3_id"]').selectize();
+ $(document).ready(function () {
+        $("#doctor_rank_id").change(function () {
+            var selectedRank = parseInt($(this).val());
+            
+            // حالة طبيب ممارس عام: إخفاء جميع التخصصات
+            if (selectedRank === 1) {
+                $("select[name='specialty_1_id']").parent().hide();
+                $("select[name='specialty_2_id']").parent().hide();
+                $("select[name='specialty_3_id']").parent().hide();
+            }
+            // حالة طبيب ممارس تخصصي - أخصائي أول - أخصائي ثاني: إظهار تخصص أول فقط
+            else if ([2, 3, 4].includes(selectedRank)) {
+                $("select[name='specialty_1_id']").parent().show();
+                $("select[name='specialty_2_id']").parent().hide();
+                $("select[name='specialty_3_id']").parent().hide();
+            }
+            // حالة استشاري أول - استشاري: إظهار تخصص أول وتخصص ثاني فقط
+            else if ([5, 6].includes(selectedRank)) {
+                $("select[name='specialty_1_id']").parent().show();
+                $("select[name='specialty_2_id']").parent().show();
+                $("select[name='specialty_3_id']").parent().hide();
+            } else {
+                // في حال عدم تحديد أي قيمة أو غيرها، يمكن إخفاء جميع الحقول
+                $("select[name='specialty_1_id']").parent().hide();
+                $("select[name='specialty_2_id']").parent().hide();
+                $("select[name='specialty_3_id']").parent().hide();
+            }
         });
+    
+        // تفعيل السكريبت عند تحميل الصفحة لضبط الحقول حسب القيمة القديمة
+        $("#doctor_rank_id").trigger("change");
+    });
     </script>
     
     <script>

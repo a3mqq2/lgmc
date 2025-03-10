@@ -168,7 +168,6 @@ class Doctor extends Authenticatable
         return implode(' - ', array_filter([
             $this->specialty1?->name,
             $this->specialty2?->name,
-            $this->specialty3?->name,
         ]));
         
     }
