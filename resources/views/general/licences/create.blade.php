@@ -45,9 +45,10 @@
 
                         @php
                             $expiryDate = request('doctor_type') === App\Enums\DoctorType::Visitor->value
-                                ? Carbon\Carbon::now()->addMonths(6)->toDateString()
-                                : Carbon\Carbon::now()->addYear()->toDateString();
+                                ? Carbon\Carbon::now()->addMonths(6)->subDay()->toDateString() // 6 أشهر - يوم
+                                : Carbon\Carbon::now()->addYear()->subDay()->toDateString(); // سنة - يوم
                         @endphp
+                        
                        
                         <div class="col-md-6">
                             <div class="mb-3">
