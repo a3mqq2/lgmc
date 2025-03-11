@@ -23,7 +23,7 @@ class SpecialtyController extends Controller
      */
     public function create()
     {
-        $specialties = Specialty::all();
+        $specialties = Specialty::where('specialty_id', null)->get();
         return view('admin.specialties.create', compact('specialties'));
     }
 
