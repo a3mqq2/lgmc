@@ -180,10 +180,11 @@
                 </div>
 
                 <div class="expired card">
-                    <h5 class="text-center font-weight-bold">
-                        <strong>ينتهي العمل بهذا الإذن ويعتبر ملغياََ بتاريخ {{ $licence->expiry_date }} </strong>
-                    </h5>
+                    <h6 class="text-center font-weight-bold">
+                        <strong>تم إصدار هذا الإذن بتاريخ {{ $licence->issued_date }}، وينتهي العمل به ويعتبر ملغياً بتاريخ {{ $licence->expiry_date }} </strong>
+                    </h6>
                 </div>
+                
 
 
 

@@ -467,7 +467,6 @@
                                     <td>{{ $doctor->branch?->name ?? 'N/A' }}</td>
                                     <td>{{ $doctor->specialty1->name ?? 'N/A' }}</td>
                                     <td>{{ $doctor->specialty2->name ?? 'N/A'}}
-                                    <td>{{ $doctor->specialty3->name ?? 'N/A' }}</td>
                                     <td>{{ $doctor->created_at->format('Y-m-d') }}</td>
 
                                 </tr>

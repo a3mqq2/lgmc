@@ -1206,6 +1206,11 @@ table.print-table td.no-border {
   left: 100px;
 }
 
+.expired h6 
+{
+  font-size: 13.5px !important;
+}
+
 
 .signuture
 {
