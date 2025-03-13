@@ -66,6 +66,7 @@ class Doctor extends Authenticatable
         'visiting_date',
         'registered_at',
         'institution_id',
+        'specialty_2',
     ];
 
 
@@ -136,9 +137,9 @@ class Doctor extends Authenticatable
         return $this->belongsTo(Branch::class);
     }
 
-    public function medicalFacilities()
+    public function institutions()
     {
-        return $this->belongsToMany(MedicalFacility::class);
+        return $this->belongsToMany(Institution::class);
     }
 
     public function files()
@@ -167,7 +168,7 @@ class Doctor extends Authenticatable
     {
         return implode(' - ', array_filter([
             $this->specialty1?->name,
-            $this->specialty2?->name,
+            $this->specialty_2,
         ]));
         
     }

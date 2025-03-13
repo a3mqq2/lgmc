@@ -405,12 +405,10 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label for=""> تخصص دقيق</label>
-                                        <select name="specialty_2_id"  data-old="{{old('specialty_2_id')}}" id="" class="form-control">
-                                            <option value="">حدد تخصص دقيق</option>
-                                        </select>
-                                    </div>
+                                    <div class="col-md-6" id="specialty_2_container">
+                                        <label for="specialty_2">تخصص دقيق</label>
+                                        <input type="text" name="specialty_2" id="specialty_2" value="{{ old('specialty_2') }}" class="form-control" autocomplete="off">
+                                    </div>                                    
                                     <div class="col-md-12 mt-2">
                                         <label for=""> سنوات الخبره  </label>
                                         <input name="experience" required id="" type="number" class="form-control" value="{{old('experience')}}" />
@@ -428,7 +426,7 @@
                                 <label for="">جهات العمل السابقة</label>
                                 <select name="ex_medical_facilities[]" multiple id="" class="select2 form-control">
                                     <option value="-">---</option>
-                                    @foreach ($medicalFacilities as $item)
+                                    @foreach ($institutions as $item)
                                         <option value="{{$item->id}}">{{$item->name}}</option>
                                     @endforeach
                                 </select>
@@ -920,6 +918,36 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 </script>
+<script>
+    $(document).ready(function(){
+        $("#doctor_rank_id").change(function(){
+            var selectedRank = parseInt($(this).val());
+            if ([5,6].includes(selectedRank)) {
+                $("select[name='specialty_1_id']").parent().show();
+                $("#specialty_2_container").show();
+            } else {
+                $("select[name='specialty_1_id']").parent().show();
+                $("#specialty_2_container").hide();
+            }
+        });
+        $("#doctor_rank_id").trigger("change");
+    });
+    </script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+var availableSpecialties = @json($specialties2); 
+// If needed, transform objects -> strings:
+// availableSpecialties = availableSpecialties.map(item => item.specialty_2).filter(Boolean);
+
+$("#specialty_2").autocomplete({
+    source: availableSpecialties
+    // minLength: 0 // (optional if you want to see results on empty input)
+});
+</script>
+
+
 @endsection
 @section('styles')
     <style> 

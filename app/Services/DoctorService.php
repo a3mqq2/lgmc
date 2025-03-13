@@ -19,6 +19,7 @@ use App\Mail\FinalApproval;
 use App\Mail\FirstApproval;
 use App\Mail\RejectionEmail;
 use App\Models\AcademicDegree;
+use App\Models\Institution;
 use App\Models\MedicalFacility;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -129,17 +130,23 @@ class DoctorService
 
         $query = FileType::query()->where('type', 'doctor');
         $specialties = Specialty::where('specialty_id', null)->get();
-
+        $specialties2 = DB::table('doctors')
+        ->select('specialty_2')
+        ->whereNotNull('specialty_2')
+        ->groupBy('specialty_2')
+        ->pluck('specialty_2')
+        ->toArray();
         return [
             'branches' => Branch::all(),
             'doctor_ranks' => DoctorRank::all(),
-            'medical_facilities' => MedicalFacility::all(),
+            'institutions' => Institution::all(),
             'countries' => Country::all(),
             'universities' => University::all(),
             'academicDegrees' => AcademicDegree::all(),
             'medicalFacilities' => MedicalFacility::all(),
             'specialties' => $specialties,
             'file_types' => $query->get(),
+            'specialties2' => $specialties2,
         ];
     }
 
@@ -219,7 +226,7 @@ class DoctorService
             $doctor = Doctor::create($data);
 
             // ربط المرافق الطبية
-            $doctor->medicalFacilities()->attach($medicalFacilities ?? []);
+            $doctor->institutions()->attach($medicalFacilities ?? []);
             // تحديث رمز الطبيب بناءً على الفرع
             $doctor->membership_status = 'inactive';
             $doctor->membership_expiration_date = null;
@@ -466,7 +473,7 @@ class DoctorService
             $doctor->update($data);
 
             // Sync the medical facilities
-            $doctor->medicalFacilities()->sync($data['medical_facilities'] ?? []);
+            $doctor->institutions()->sync($data['ex_medical_facilities'] ?? []);
 
 
 

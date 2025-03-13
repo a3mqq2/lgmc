@@ -11,33 +11,29 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Facades\Log;
+
 class DoctorsSheetImport implements ToModel, WithHeadingRow
 {
     /**
      * Map Arabic doctor ranks from Excel to their corresponding IDs.
      */
     protected $doctorRankMap = [
-        'طبيب' => 1,        // Maps to 'طبيب ممارس'
+        'طبيب' => 2,        // Maps to 'طبيب ممارس'
         'اخصائي' => 3,      // Maps to 'أخصائي ثاني'
-        'استشاري' => 5,     // Maps to 'استشاري'
+        'استشاري' => 6,     // Maps to 'استشاري'
     ];
 
     public function model(array $row)
     {
-
-
         if (empty($row['alasm'])) {
             return null; // Skip if name is missing
         }
 
-
-
         // Handle specialty
-        if(!empty($row['altkhss']) && $row['altkhss'] != "ممارس عام" )
-        {
-            $specialty =  Specialty::firstOrCreate(['name' => $row['altkhss']]);
+        if (!empty($row['altkhss']) && $row['altkhss'] != "ممارس عام") {
+            $specialty = Specialty::firstOrCreate(['name' => $row['altkhss']]);
         } else {
-                $specialty = null;
+            $specialty = null;
         }
 
         // Handle institution
@@ -65,30 +61,31 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             'code' => $row['aadoy'],
             'membership_status' => "active",
             'type' => "libyan",
-            'notes' => $row['mlahthat'],
             'country_id' => 1,
         ]);
 
         // Save the doctor to get an ID
         $doctor->save();
 
-        // Handle licences using expiry dates and calculating issue dates
+        // Handle licences using the issue date provided in the row
+        // and calculating the expiry date as one year minus one day after the issue date.
         $years = ['tgdyd_2023', 'tgdyd_2024', 'tgdyd_2025', 'tgdyd_2026'];
         foreach ($years as $year) {
             if (!empty($row[$year])) {
-                $expiryDate = $this->parseDate($row[$year]);
-                $issuedDate = $expiryDate ? $expiryDate->copy()->subYear() : null; // طرح سنة بدون التأثير على expiryDate
-        
+                // Parse issue date from the row value
+                $issueDate = $this->parseDate($row[$year]);
+                // Calculate expiry date: one year added then subtract one day
+                $expiryDate = $issueDate ? $issueDate->copy()->addYear()->subDay() : null;
         
                 // Skip if date parsing fails
-                if (!$issuedDate || !$expiryDate) {
+                if (!$issueDate || !$expiryDate) {
                     continue;
                 }
         
                 Licence::create([
                     'licensable_id' => $doctor->id,
                     'licensable_type' => Doctor::class,
-                    'issued_date' => $issuedDate->format('Y-m-d'),
+                    'issued_date' => $issueDate->format('Y-m-d'),
                     'expiry_date' => $expiryDate->format('Y-m-d'),
                     'status' => $expiryDate->isPast() ? 'expired' : 'active',
                     'doctor_id' => $doctor->id,

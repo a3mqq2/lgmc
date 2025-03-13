@@ -51,7 +51,7 @@
             </div>
         </div>
         <div class="col-md-12">
-            <a href="{{route(get_area_name().".medical-facilities.medical-facility-files.create", $medicalFacility->id)}}" class="btn btn-success mb-3"><i class="fa fa-plus"></i> اضف مستند جديد </a>
+
             <div class="card">
                 <div class="card-header bg-primary text-light">المستندات</div>
                 <div class="card-body">

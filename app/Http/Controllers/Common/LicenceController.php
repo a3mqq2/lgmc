@@ -326,7 +326,21 @@ class LicenceController extends Controller
 
         ]);
 
-        return view('general.licences.print', compact('licence'));
+
+        if($licence->licensable_type == "App\Models\Doctor") {
+
+            if($licence->licensable->type == DoctorType::Libyan) {
+                return view('general.licences.print', compact('licence'));
+            } else {
+                return view('general.licences.print-foreign', compact('licence'));
+            }
+
+        } else if($licence->licensable_type == "App\Models\MedicalFacility") {
+            return view('general.licences.print-medical', compact('licence'));
+        }
+
+
+
     }
 
     public function payment(Request $request, Licence $licence) {

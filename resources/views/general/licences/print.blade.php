@@ -153,7 +153,12 @@
 
                 <div class="work-box card  p-3">
                     <h4 class="font-weight-bold">
-                        <strong>{{$licence->licensable->doctor_rank->name}} \ {{$licence->licensable->specialization}}  </strong>
+                        <strong>{{$licence->licensable->doctor_rank->name}}
+                            @if ($licence->licensable->specialty_1_id)
+                                -   {{$licence->licensable->specialization}}  
+                            @endif
+                        
+                        </strong>
                     </h4>
                 </div>
 
@@ -179,9 +184,16 @@
 
                 </div>
 
-                <div class="expired card">
-                    <h6 class="text-center font-weight-bold">
-                        <strong>تم إصدار هذا الإذن بتاريخ {{ $licence->issued_date }}، وينتهي العمل به ويعتبر ملغياً بتاريخ {{ $licence->expiry_date }} </strong>
+                <div class="expired card" dir="rtl">
+                    <h6 class="text-center font-weight-bold d-inline-block">
+                        <strong class="d-inline-block">تم إصدار هذا الإذن بتاريخ  </strong>
+                        <div class="issued d-inline-block">
+                            {{$licence->issued_date}}
+                        </div>
+                        <strong class="d-inline-block"> ويعتبر ملغياََ بتاريخ  </strong>
+                        <div class="issued d-inline-block">
+                            {{$licence->expiry_date}}
+                        </div>
                     </h6>
                 </div>
                 

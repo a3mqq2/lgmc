@@ -15,6 +15,9 @@
                               <label for="file">اختر ملف الاستيراد</label>
                               <input type="file" name="file" id="file" class="form-control-file">
                            </div>
+
+
+                           <input type="hidden" name="doctor_type" value="{{request('doctor_type')}}">
                      </div>
                      <div class="card-footer">
                            <button type="submit" class="btn btn-primary">استيراد</button>

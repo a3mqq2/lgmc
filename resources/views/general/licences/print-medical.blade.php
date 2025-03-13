@@ -268,18 +268,25 @@
          padding: 5px !important;
          font-size: 2px;">
             <h6 class="font-weight-bold">
-               <strong>{{$licence->licensable->manager->id}}</strong>
+               <strong>{{$licence->licensable->manager?->id}}</strong>
             </h6>
       </div>
 
 
 
-      <div class="expired card" style="top: 890px;">
-         <h5 class="text-center font-weight-bold">
-             <strong>ينتهي العمل بهذا الإذن ويعتبر ملغياََ بتاريخ {{ $licence->expiry_date }} </strong>
-         </h5>
-     </div>
-
+     
+      <div class="expired card" dir="rtl" style="top:880px!important;">
+        <h6 class="text-center font-weight-bold d-inline-block">
+            <strong class="d-inline-block">تم إصدار هذا الإذن بتاريخ  </strong>
+            <div class="issued d-inline-block">
+                {{$licence->issued_date}}
+            </div>
+            <strong class="d-inline-block"> ويعتبر ملغياََ بتاريخ  </strong>
+            <div class="issued d-inline-block">
+                {{$licence->expiry_date}}
+            </div>
+        </h6>
+    </div>
 
      <div class="signuture" style="bottom: 120px;">
       <h5><strong>نقابة أطباء {{$licence->licensable->branch->name}} </strong></h5>

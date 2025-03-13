@@ -192,7 +192,7 @@ class AuthController extends Controller
                 // ربط المرافق الطبية
 
 
-                $doctor->medicalFacilities()->attach($medicalFacilities ?? []);
+                $doctor->institutions()->attach($medicalFacilities ?? []);
                 $doctor->membership_status = 'pending';
                 $doctor->membership_expiration_date = null;
                 $doctor->save();

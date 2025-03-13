@@ -156,7 +156,7 @@
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
-                            <th class="bg-light">المنشأت السابقة</th>
+                            <th class="bg-light">الجهات السابقة</th>
                             <td>{{ $doctor->ex_medical_facilities }}</td>
                         </tr>
                         <tr>

@@ -478,14 +478,14 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <th class="bg-primary text-light">المنشأت السابقة</th>
+                                    <th class="bg-primary text-light">الجهات السابقة</th>
                                     <th class="bg-primary text-light">الخبرة</th>
                                     <th class="bg-primary text-light">ملاحظات</th>
 
                                 </tr>
                                 <tr>
                                     <td>
-                                        @foreach ($doctor->medicalFacilities as $medicalFacility)
+                                        @foreach ($doctor->institutions as $medicalFacility)
                                             <span class="badge bg-primary badge-primary text-light">{{ $medicalFacility->name }}</span>
                                         @endforeach
                                     </td>

@@ -373,12 +373,10 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for=""> تخصص دقيق</label>
-                                    <select name="specialty_2_id" data-old="{{old('specialty_2_id',$doctor->specialty_2_id)}}"  class="form-control">
-                                        <option value="">حدد    دقيق</option>
-                                    </select>
-                                </div>
+                                <div class="col-md-6" id="specialty_2_container">
+                                    <label for="specialty_2">تخصص دقيق</label>
+                                    <input type="text" name="specialty_2" id="specialty_2" value="{{ old('specialty_2', $doctor->specialty_2) }}" class="form-control" autocomplete="off">
+                                </div>  
                             </div>
                         </div>
                     </div>
@@ -392,10 +390,10 @@
                             <label for="ex_medical_facilities">جهات العمل السابقة</label>
                             <select name="ex_medical_facilities[]" multiple id="ex_medical_facilities" class="select2 form-control">
                                 <option value="-">---</option>
-                                @foreach ($medicalFacilities as $item)
+                                @foreach ($institutions as $item)
                                     <option 
                                         value="{{ $item->id }}" 
-                                        {{ in_array($item->id, old('ex_medical_facilities', $doctor->medicalFacilities->pluck('id')->toArray())) ? 'selected' : '' }}>
+                                        {{ in_array($item->id, old('ex_medical_facilities', $doctor->institutions->pluck('id')->toArray())) ? 'selected' : '' }}>
                                         {{ $item->name }}
                                     </option>
                                 @endforeach
@@ -886,6 +884,35 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     </script>
+    <script>
+        $(document).ready(function(){
+            $("#doctor_rank_id").change(function(){
+                var selectedRank = parseInt($(this).val());
+                if ([5,6].includes(selectedRank)) {
+                    $("select[name='specialty_1_id']").parent().show();
+                    $("#specialty_2_container").show();
+                } else {
+                    $("select[name='specialty_1_id']").parent().show();
+                    $("#specialty_2_container").hide();
+                }
+            });
+            $("#doctor_rank_id").trigger("change");
+        });
+        </script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+    
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+    var availableSpecialties = @json($specialties2); 
+    // If needed, transform objects -> strings:
+    // availableSpecialties = availableSpecialties.map(item => item.specialty_2).filter(Boolean);
+    
+    $("#specialty_2").autocomplete({
+        source: availableSpecialties
+        // minLength: 0 // (optional if you want to see results on empty input)
+    });
+    </script>
+    
     
 @endsection
 @section('styles')

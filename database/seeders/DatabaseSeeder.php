@@ -43,10 +43,10 @@ class DatabaseSeeder extends Seeder
         DB::table('doctor_ranks')->insert([
             ['name' => 'طبيب ممارس'], // 1       
             ['name' => 'طبيب ممارس تخصصي'],  // 2      
-            ['name' => 'أخصائي ثاني'],       // 3
-            ['name' => 'أخصائي أول'],       // 4
-            ['name' => 'استشاري'],        // 5
-            ['name' => 'استشاري تخصص دقيق'],  // 6     
+            ['name' => 'أخصائي أول'],       // 3
+            ['name' => 'أخصائي ثاني'],       // 4
+            ['name' => 'استشاري اول'],        // 5
+            ['name' => 'استشاري'],  // 6     
         ]);
 
         $this->call(PricingSeeder::class);

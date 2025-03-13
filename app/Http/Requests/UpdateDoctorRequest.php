@@ -66,7 +66,7 @@ class UpdateDoctorRequest extends FormRequest
             'doctor_rank_id' => 'required|numeric',
             'medical_facilities' => 'nullable|array',
             'specialty_1_id' => 'required|numeric',
-            'specialty_2_id' => 'nullable|numeric',
+            'specialty_2' => 'nullable',
             'specialty_3_id' => 'nullable|numeric',
             'ex_medical_facilities' => 'nullable|array',
             'experience' => 'required|numeric|min:0',

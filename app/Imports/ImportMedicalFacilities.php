@@ -15,6 +15,7 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
 {
     public function model(array $row)
     {
+
         // 1. Find or create the Medical Facility Type
         $medicalFacilityType = !empty($row['nshat'])
             ? MedicalFacilityType::firstOrCreate(['name' => $row['nshat'], 'en_name' => $row['nshat']])
@@ -28,18 +29,17 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
         // 3. Create the Medical Facility
         $MedicalFacility = MedicalFacility::create([
             'name' => $row['asm_alnshat'],
-            'serial_number' => $row['rkm'],
+            'serial_number' => $row['r_alaadoy'],
             'commerical_number' => $row['sgl_tgaryrkyd'],
             'medical_facility_type_id' => $medicalFacilityType?->id,
             'manager_id' => $doctor?->id,
             'address' => 'البيضاء',
             'branch_id' => 5,
-            'activity_start_date' => $this->parseDate($row['t_altrkhys']),
             'phone_number' => $doctor->phone ?? '0921234567',
             'user_id' => auth()->id(),
         ]);
 
-      // 4. Create/Update Licences for each relevant year
+        // 4. Create/Update Licences for each relevant year
         $yearsMap = [
             'tgdyd_2022',
             'tgdyd_2023',
@@ -49,19 +49,20 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
 
         foreach ($yearsMap as $yearKey) {
             if (!empty($row[$yearKey])) {
-                $expiryDate = $this->parseDate($row[$yearKey]);
-                $issuedDate = $expiryDate ? $expiryDate->copy()->subYear() : null; // طرح سنة بدون التأثير على expiryDate
-
+                // Parse issue date from the row value
+                $issueDate = $this->parseDate($row[$yearKey]);
+                // Calculate expiry date: one year added then subtract one day
+                $expiryDate = $issueDate ? $issueDate->copy()->addYear()->subDay() : null;
 
                 // Skip if date parsing fails
-                if (!$issuedDate || !$expiryDate) {
+                if (!$issueDate || !$expiryDate) {
                     continue;
                 }
 
                 Licence::create([
                     'licensable_id' => $MedicalFacility->id,
                     'licensable_type' => MedicalFacility::class,
-                    'issued_date' => $issuedDate->format('Y-m-d'),
+                    'issued_date' => $issueDate->format('Y-m-d'),
                     'expiry_date' => $expiryDate->format('Y-m-d'),
                     'status' => $expiryDate->isPast() ? 'expired' : 'active',
                     'branch_id' => 5,
@@ -76,20 +77,20 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
     /**
      * Create or update license record with proper status (active/expired/inactive).
      */
-    private function createOrUpdateLicence(MedicalFacility $facility, $expiryValue, $yearKey)
+    private function createOrUpdateLicence(MedicalFacility $facility, $issueValue, $yearKey)
     {
-        // 1. Parse the expiry date
-        $expiryDate = $this->parseDate($expiryValue);
-        // 2. Calculate issued date (-1 year)
-        $issuedDate = $expiryDate ? Carbon::parse($expiryDate)->subYear()->format('Y-m-d') : null;
+        // 1. Parse the issue date
+        $issueDate = $this->parseDate($issueValue);
+        // 2. Calculate expiry date: add one year and subtract one day
+        $expiryDate = $issueDate ? $issueDate->copy()->addYear()->subDay() : null;
 
-        if (!$issuedDate && $expiryValue === 'ايقاف النشاط') {
+        if (!$issueDate && $issueValue === 'ايقاف النشاط') {
             $facility->membership_status = 'inactive';
             $facility->save();
             return;
         }
 
-        if (!$issuedDate) {
+        if (!$issueDate) {
             $facility->membership_status = 'inactive';
             $facility->save();
             return;
@@ -98,9 +99,9 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
         Licence::create([
             'licensable_id' => $facility->id,
             'licensable_type' => MedicalFacility::class,
-            'issued_date' => $issuedDate,
-            'expiry_date' => $expiryDate,
-            'status' => Carbon::parse($expiryDate)->isFuture() ? 'active' : 'expired',
+            'issued_date' => $issueDate->format('Y-m-d'),
+            'expiry_date' => $expiryDate->format('Y-m-d'),
+            'status' => $expiryDate->isFuture() ? 'active' : 'expired',
             'branch_id' => 5,
             'created_by' => auth()->id(),
         ]);
@@ -129,7 +130,6 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
                 : Carbon::parse(str_replace(['/', '.'], '-', $cleanedDate));
 
             return $carbonDate;
-
         } catch (\Exception $e) {
             \Log::warning('Date parsing failed', [
                 'original_date' => $date,

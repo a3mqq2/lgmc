@@ -137,6 +137,9 @@ class DoctorController extends Controller
             'file' => 'required|mimes:xlsx,xls',
         ]);
         // import excel
+        if(request('doctor_type') == "palestinian") {
+            Excel::import(new DoctorsImport, $request->file('file'));
+        }
         Excel::import(new DoctorsSheetImport, $request->file('file'));
         return redirect()->route(get_area_name().'.doctors.index')->with('success', 'تم إضافة الأطباء بنجاح');
     }
