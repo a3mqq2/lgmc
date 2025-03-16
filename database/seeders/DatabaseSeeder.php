@@ -49,6 +49,8 @@ class DatabaseSeeder extends Seeder
             ['name' => 'استشاري'],  // 6     
         ]);
 
+
+
         $this->call(PricingSeeder::class);
         $this->call(CountrySeeder::class);
         $this->call(AcademicDegreeSeeder::class);

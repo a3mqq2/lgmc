@@ -39,38 +39,30 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
             'user_id' => auth()->id(),
         ]);
 
-        // 4. Create/Update Licences for each relevant year
-        $yearsMap = [
-            'tgdyd_2022',
-            'tgdyd_2023',
-            'tgdyd_2024',
-            'tgdyd_2025'
-        ];
 
-        foreach ($yearsMap as $yearKey) {
-            if (!empty($row[$yearKey])) {
-                // Parse issue date from the row value
-                $issueDate = $this->parseDate($row[$yearKey]);
-                // Calculate expiry date: one year added then subtract one day
-                $expiryDate = $issueDate ? $issueDate->copy()->addYear()->subDay() : null;
 
-                // Skip if date parsing fails
-                if (!$issueDate || !$expiryDate) {
-                    continue;
-                }
+        $yearKey = "tgdyd_2026";
 
-                Licence::create([
-                    'licensable_id' => $MedicalFacility->id,
-                    'licensable_type' => MedicalFacility::class,
-                    'issued_date' => $issueDate->format('Y-m-d'),
-                    'expiry_date' => $expiryDate->format('Y-m-d'),
-                    'status' => $expiryDate->isPast() ? 'expired' : 'active',
-                    'branch_id' => 5,
-                    'created_by' => auth()->id(),
-                ]);
+        if (!empty($row[$yearKey])) {
+            $expiryDate = $this->parseDate($row["tgdyd_2026"]);
+
+            if ($expiryDate->format('m-d') === '12-31') {
+                $issueDate = $expiryDate->copy()->startOfYear();
+            } else {
+                $issueDate = $expiryDate->copy()->addDay()->subYear();
             }
-        }
 
+          
+            Licence::create([
+                'licensable_id' => $MedicalFacility->id,
+                'licensable_type' => MedicalFacility::class,
+                'issued_date' => $issueDate->format('Y-m-d'),
+                'expiry_date' => $expiryDate->format('Y-m-d'),
+                'status' => $expiryDate->isPast() ? 'expired' : 'active',
+                'branch_id' => 5,
+                'created_by' => auth()->id(),
+            ]);
+        }
         return $MedicalFacility;
     }
 
