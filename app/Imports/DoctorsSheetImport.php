@@ -4,13 +4,16 @@ namespace App\Imports;
 
 use Carbon\Carbon;
 use App\Models\Doctor;
+use App\Models\Invoice;
 use App\Models\Licence;
+use App\Models\Pricing;
+use App\Enums\DoctorType;
 use App\Models\Specialty;
 use App\Models\Institution;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Illuminate\Support\Facades\Log;
 
 class DoctorsSheetImport implements ToModel, WithHeadingRow
 {
@@ -36,6 +39,13 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             $institution = Institution::firstOrCreate(['name' => $row['gh_alaaml'], 'branch_id' => 5]);
         }
 
+
+        // skip the row if doctor already exists
+        if (Doctor::where('name', $row['alasm'])->exists()) {
+            return null;
+        }
+
+
         $doctor = new Doctor([
             'doctor_number' => $row['aadoy'],
             'name' => $row['alasm'],
@@ -53,7 +63,6 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             'registered_at' => $this->parseDate($row['alantsab']),
             'branch_id' => 5,
             'code' => $row['aadoy'],
-            'membership_status' => "active",
             'type' => "libyan",
             'country_id' => 1,
         ]);
@@ -80,6 +89,124 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
                 'created_by' => auth()->id(),
                 'doctor_type' => "libyan",
             ]);
+
+
+            $doctor->update([
+                "membership_status" => $expiryDate->isPast() ? 'inactive' : 'active',
+                "membership_expiration_date" => $expiryDate->format('Y-m-d'),
+            ]);
+
+            // create invoice for membership
+
+           if($expiryDate->isPast()){
+                if($doctor->type ==  DoctorType::Libyan)
+                {
+                    if($doctor->doctor_rank_id == 1)
+                    {
+                        $price = Pricing::find(1);
+                    } else if($doctor->doctor_rank_id == 2) 
+                    {
+                        $price = Pricing::find(2);
+                    } else if($doctor->doctor_rank_id == 3)
+                    {
+                        $price = Pricing::find(3);
+                    } else if($doctor->doctor_rank_id == 4)
+                    {
+                        $price = Pricing::find(4);
+                    } else if($doctor->doctor_rank_id == 5)
+                    {
+                        $price = Pricing::find(5);  
+                    }else if($doctor->doctor_rank_id == 6)
+                    {
+                        $price = Pricing::find(6);  
+                    }
+        
+                } else if($doctor->type == DoctorType::Foreign)
+                {
+                    if($doctor->doctor_rank_id == 1)
+                    {
+                        $price = Pricing::find(13);
+                    } else if($doctor->doctor_rank_id == 2) 
+                    {
+                        $price = Pricing::find(14);
+                    } else if($doctor->doctor_rank_id == 3)
+                    {
+                        $price = Pricing::find(15);
+                    } else if($doctor->doctor_rank_id == 4)
+                    {
+                        $price = Pricing::find(16);
+                    } else if($doctor->doctor_rank_id == 5)
+                    {
+                        $price = Pricing::find(17);  
+                    }else if($doctor->doctor_rank_id == 6)
+                    {
+                        $price = Pricing::find(18);  
+                    }
+                } else if($doctor->type == DoctorType::Visitor) {
+                    if($doctor->doctor_rank_id == 3 || $doctor->doctor_rank_id == 4)
+                    {
+                        $price = Pricing::find(25);
+                    }
+        
+        
+                    if($doctor->doctor_rank_id == 5)
+                    {
+                        $price = Pricing::find(26);
+                    }
+        
+        
+                    if($doctor->doctor_rank_id == 6)
+                    {
+                        $price = Pricing::find(27);
+                    }
+        
+        
+                    if(!$price)
+                    {
+                        return redirect()->back()->withInput()->withErrors(['لا يمكن اضافة طبيب زائر بدون تحديد الرتبة الصحيحة']);
+                    }
+        
+                    
+                } else if($doctor->type == DoctorType::Palestinian) {
+        
+                    if($doctor->doctor_rank_id == 1)
+                    {
+                        $price = Pricing::find(53);
+                    } else if($doctor->doctor_rank_id == 2) 
+                    {
+                        $price = Pricing::find(54);
+                    } else if($doctor->doctor_rank_id == 3)
+                    {
+                        $price = Pricing::find(55);
+                    } else if($doctor->doctor_rank_id == 4)
+                    {
+                        $price = Pricing::find(56);
+                    } else if($doctor->doctor_rank_id == 5)
+                    {
+                        $price = Pricing::find(57);  
+                    }else if($doctor->doctor_rank_id == 6)
+                    {
+                        $price = Pricing::find(58);  
+                    }
+        
+            }
+                
+                $data = [
+                    'invoice_number' => "RGS-" . Invoice::count() + 1,
+                    'invoiceable_id' => $doctor->id,
+                    'invoiceable_type' => 'App\Models\Doctor',
+                    'description' => "رسوم العضوية الخاصة بالطبيب",
+                    'user_id' => auth()->id(),
+                    'amount' => $price->amount,
+                    'pricing_id' => $price->id,
+                    'status' => 'unpaid',
+                    'branch_id' => auth()->user()->branch_id,
+                ];
+        
+        
+                $invoice = Invoice::create($data);
+           }
+
         }
 
         return $doctor;
