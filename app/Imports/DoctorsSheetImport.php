@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 class DoctorsSheetImport implements ToModel, WithHeadingRow
 {
     protected $doctorRankMap = [
-        'طبيب' => 2,
+        'طبيب' => 1,
         'اخصائي' => 3,
         'استشاري' => 6,
     ];
