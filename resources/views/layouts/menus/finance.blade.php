@@ -20,6 +20,12 @@
 @endif
 
 
+
+
+
+
+
+
 {{-- <li class="nav-item">
     <a class="nav-link menu-link" href="#tickets" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-ticket"></i><span data-key="t-layouts">     التذاكر    </span>
@@ -48,6 +54,7 @@
     <div class="collapse menu-dropdown" id="invoices">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
+                <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'Doctor', 'type' => 'membership'] ) }}" class="nav-link" data-key="t-horizontal">    فواتير تجديد العضويه  </a>
                 <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'Doctor'] ) }}" class="nav-link" data-key="t-horizontal">    فواتير الآطباء  </a>
                 <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'MedicalFaclitiy']) }}" class="nav-link" data-key="t-horizontal">    فواتير المنشآت الطبية  </a>
             </li>

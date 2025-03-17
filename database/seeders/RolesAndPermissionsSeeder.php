@@ -116,6 +116,17 @@ class RolesAndPermissionsSeeder extends Seeder
             $firstUser->syncRoles($allRoles);
         }
 
+
+        $secondUser = User::find(2);
+        if ($secondUser) {
+            $secondUser->branch_id = 5;
+            $secondUser->syncRoles([$branchOperationsRole]);
+            // get all permissions for role 2
+            $permissions = $branchOperationsRole->permissions;
+            $secondUser->syncPermissions($permissions);
+            $secondUser->branches()->attach([5]);
+            $secondUser->save();
+        }
         
     }
 }

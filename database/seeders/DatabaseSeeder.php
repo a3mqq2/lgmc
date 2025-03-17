@@ -26,17 +26,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-        $user = \App\Models\User::factory()->create([
+        $walaa = \App\Models\User::factory()->create([
             'name' => 'ولاء',
             'email' => 'walaa@lgmc.ly',
             'password' => '123123123',
         ]);
 
-        $user = \App\Models\User::factory()->create([
-            'name' => 'نعمة',
-            'email' => 'naema@lgmc.ly',
-            'password' => '123123123',
-        ]);
 
 
         

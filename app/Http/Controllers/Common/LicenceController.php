@@ -30,25 +30,47 @@ class LicenceController extends Controller
             'doctor_type' => 'nullable',
             'status' => 'nullable',
         ]);
-
+    
         $query = Licence::query();
-
+    
         if ($request->type === 'doctors') {
             $query->whereHasMorph('licensable', [Doctor::class]);
         } else {
             $query->whereHasMorph('licensable', [MedicalFacility::class]);
         }
-
+    
         if ($request->status) {
             $query->where('status', $request->status);
         }
-
+        
+        if ($request->doctor_type && $request->type === 'doctors') {
+            $query->where('doctor_type', $request->doctor_type);
+        }
+        
+        if ($request->search) {
+            $model = $request->type === 'doctors' ? Doctor::class : MedicalFacility::class;
+            $query->whereHasMorph('licensable', [$model], function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            });
+        }
+        
+        if ($request->issued_date) {
+            $query->whereDate('issued_date', $request->issued_date);
+        }
+        
+        if ($request->expiry_date) {
+            $query->whereDate('expiry_date', $request->expiry_date);
+        }
+    
         if (get_area_name() !== 'admin') {
             $query->where('branch_id', Auth::user()->branch_id);
         }
-
-        return view('general.licences.index', ['licences' => $query->latest()->paginate(10)]);
+    
+        return view('general.licences.index', [
+            'licences' => $query->latest()->paginate(10)
+        ]);
     }
+    
 
     /**
      * Show the form for creating a new resource.
@@ -90,7 +112,7 @@ class LicenceController extends Controller
                     'issued_date' => $validatedData['issued_date'],
                     'expiry_date' => $validatedData['expiry_date'],
                     'branch_id' => $licensable->branch_id,
-                    'status' => 'under_approve_admin',
+                    'status' => 'under_payment',
                     'created_by' => Auth::id(),
                 ]);
 
@@ -155,7 +177,7 @@ class LicenceController extends Controller
      */
     public function edit(Licence $licence)
     {
-        if($licence->status != "under_approve_branch" && $licence->status != "under_approve_admin") {
+        if($licence->status != "under_payment") {
             return redirect()->back()->withErrors(['لا يمكنك تعديل هذا الاذن ليس في حاله صحيحه']);
         }
 

@@ -40,6 +40,8 @@ class InvoiceService
         {
 
             
+
+
             if($invoice->pricing->type == PricingType::Membership)
             {
                 $this->runMembership($invoice);
@@ -152,5 +154,6 @@ class InvoiceService
         $membership->membership_status = MembershipStatus::Active;
         $membership->membership_expiration_date = now()->addYear();
         $membership->save();
+
     }
 }

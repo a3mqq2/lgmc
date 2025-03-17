@@ -7,7 +7,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <a href="{{ route(get_area_name().'.invoices.create') }}" class="btn btn-success btn-sm mb-3">إضافة فاتورة جديدة <i class="fa fa-plus mb-2"></i></a>
+            <a href="{{ route(get_area_name().'.invoices.create', ['type' => request()->type]) }}" class="btn btn-success btn-sm mb-3">إضافة فاتورة جديدة <i class="fa fa-plus mb-2"></i></a>
         </div>
     </div>
 

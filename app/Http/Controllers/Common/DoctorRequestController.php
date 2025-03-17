@@ -333,7 +333,7 @@ class DoctorRequestController extends Controller
             'amount' => $doctorRequest->pricing->amount,
             'pricing_id' => $doctorRequest->pricing_id,
             'status' => 'unpaid',
-            'branch_id' => auth()->user()->branch_id,
+            'branch_id' => $doctorRequest->doctor->branch_id,
         ];
 
 

@@ -78,7 +78,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
                 $issueDate = $expiryDate->copy()->addDay()->subYear();
             }
 
-            Licence::create([
+            $licence = Licence::create([
                 'licensable_id' => $doctor->id,
                 'licensable_type' => Doctor::class,
                 'issued_date' => $issueDate->format('Y-m-d'),
@@ -92,120 +92,9 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
 
 
             $doctor->update([
-                "membership_status" => $expiryDate->isPast() ? 'inactive' : 'active',
-                "membership_expiration_date" => $expiryDate->format('Y-m-d'),
+                'membership_status' => $expiryDate->isPast() ? 'inactive' : 'active',
+                'membership_expiration_date' => $expiryDate->format('Y-m-d'),
             ]);
-
-            // create invoice for membership
-
-           if($expiryDate->isPast()){
-                if($doctor->type ==  DoctorType::Libyan)
-                {
-                    if($doctor->doctor_rank_id == 1)
-                    {
-                        $price = Pricing::find(1);
-                    } else if($doctor->doctor_rank_id == 2) 
-                    {
-                        $price = Pricing::find(2);
-                    } else if($doctor->doctor_rank_id == 3)
-                    {
-                        $price = Pricing::find(3);
-                    } else if($doctor->doctor_rank_id == 4)
-                    {
-                        $price = Pricing::find(4);
-                    } else if($doctor->doctor_rank_id == 5)
-                    {
-                        $price = Pricing::find(5);  
-                    }else if($doctor->doctor_rank_id == 6)
-                    {
-                        $price = Pricing::find(6);  
-                    }
-        
-                } else if($doctor->type == DoctorType::Foreign)
-                {
-                    if($doctor->doctor_rank_id == 1)
-                    {
-                        $price = Pricing::find(13);
-                    } else if($doctor->doctor_rank_id == 2) 
-                    {
-                        $price = Pricing::find(14);
-                    } else if($doctor->doctor_rank_id == 3)
-                    {
-                        $price = Pricing::find(15);
-                    } else if($doctor->doctor_rank_id == 4)
-                    {
-                        $price = Pricing::find(16);
-                    } else if($doctor->doctor_rank_id == 5)
-                    {
-                        $price = Pricing::find(17);  
-                    }else if($doctor->doctor_rank_id == 6)
-                    {
-                        $price = Pricing::find(18);  
-                    }
-                } else if($doctor->type == DoctorType::Visitor) {
-                    if($doctor->doctor_rank_id == 3 || $doctor->doctor_rank_id == 4)
-                    {
-                        $price = Pricing::find(25);
-                    }
-        
-        
-                    if($doctor->doctor_rank_id == 5)
-                    {
-                        $price = Pricing::find(26);
-                    }
-        
-        
-                    if($doctor->doctor_rank_id == 6)
-                    {
-                        $price = Pricing::find(27);
-                    }
-        
-        
-                    if(!$price)
-                    {
-                        return redirect()->back()->withInput()->withErrors(['لا يمكن اضافة طبيب زائر بدون تحديد الرتبة الصحيحة']);
-                    }
-        
-                    
-                } else if($doctor->type == DoctorType::Palestinian) {
-        
-                    if($doctor->doctor_rank_id == 1)
-                    {
-                        $price = Pricing::find(53);
-                    } else if($doctor->doctor_rank_id == 2) 
-                    {
-                        $price = Pricing::find(54);
-                    } else if($doctor->doctor_rank_id == 3)
-                    {
-                        $price = Pricing::find(55);
-                    } else if($doctor->doctor_rank_id == 4)
-                    {
-                        $price = Pricing::find(56);
-                    } else if($doctor->doctor_rank_id == 5)
-                    {
-                        $price = Pricing::find(57);  
-                    }else if($doctor->doctor_rank_id == 6)
-                    {
-                        $price = Pricing::find(58);  
-                    }
-        
-            }
-                
-                $data = [
-                    'invoice_number' => "RGS-" . Invoice::count() + 1,
-                    'invoiceable_id' => $doctor->id,
-                    'invoiceable_type' => 'App\Models\Doctor',
-                    'description' => "رسوم العضوية الخاصة بالطبيب",
-                    'user_id' => auth()->id(),
-                    'amount' => $price->amount,
-                    'pricing_id' => $price->id,
-                    'status' => 'unpaid',
-                    'branch_id' => auth()->user()->branch_id,
-                ];
-        
-        
-                $invoice = Invoice::create($data);
-           }
 
         }
 

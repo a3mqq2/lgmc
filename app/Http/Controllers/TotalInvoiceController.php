@@ -51,7 +51,7 @@ class TotalInvoiceController extends Controller
         $totalInvoice = TotalInvoice::create([
             'invoice_number' => $totalInvoiceNumber,
             'doctor_id' => $invoices->first()->invoiceable_id,
-            'branch_id' => auth()->user()->branch_id,
+            'branch_id' => $invoices->first()->branch_id,
             'total_amount' => $request->total_amount,
             'notes' => $request->notes,
             'user_id' => auth()->id(),
