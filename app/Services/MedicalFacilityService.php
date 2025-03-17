@@ -24,7 +24,7 @@ class MedicalFacilityService
         return Auth::user()->branch->vault;
     }
 
-    public function create(array $data): MedicalFacility
+    public function create(array $data)
     {
         $data['user_id'] = Auth::id();
 
