@@ -30,7 +30,7 @@ class UpdateMedicalFacilityRequest extends FormRequest
             'activity_start_date' => 'required|date',
             'activity_type' => 'required|in:commercial_record,negative_certificate',
             'manager_id' => 'nullable|exists:doctors,id',
-            'documents.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', // الحد الأقصى 2 ميجابايت
+            'documents' => "nullable",
         ];
     }
 

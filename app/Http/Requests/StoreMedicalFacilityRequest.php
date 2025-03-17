@@ -30,7 +30,7 @@ class StoreMedicalFacilityRequest extends FormRequest
             'phone_number'           => 'required|string|digits:10',
             'activity_start_date'                   => 'required|date',
             'activity_type'          => 'required|in:commercial_record,negative_certificate',
-            'documents'              => 'required',
+            'documents'              => 'nullable',
             'branch_id'              => 'required|exists:branches,id',
             'manager_id'             => 'nullable',
         ];
