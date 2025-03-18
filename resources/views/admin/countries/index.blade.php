@@ -6,7 +6,7 @@
 <div class="">
     <div class="row">
         <div class="col-md-12">
-            <a href="{{route("admin.countries.create")}}" class="btn btn-success mb-3 text-light"><i class="fa fa-plus"></i> اضافه دولة</a>
+            <a href="{{route(get_area_name().".countries.create")}}" class="btn btn-success mb-3 text-light"><i class="fa fa-plus"></i> اضافه دولة</a>
         </div>
         <div class="col-md-12">
             <div class="card">

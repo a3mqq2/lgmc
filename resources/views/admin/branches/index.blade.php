@@ -86,7 +86,7 @@
         modal.find('#branch-name').text(branchName);
         
         // Update form action URL with the branch ID
-        var action = '{{ route("admin.branches.destroy", ":id") }}';
+        var action = '{{ route(get_area_name().".branches.destroy", ":id") }}';
         action = action.replace(':id', branchId);
         modal.find('#delete-form').attr('action', action);
     });
