@@ -60,4 +60,10 @@ class MedicalFacility extends Model
     {
         return $this->belongsTo(Doctor::class, 'manager_id');
     }
+
+    public function licenses()
+    {
+        return $this->hasMany(Licence::class, 'licensable_id')->where('licensable_type', 'App\Models\MedicalFacility')->orderBy('created_at', 'desc');
+    }
+
 }
