@@ -158,7 +158,7 @@ class MedicalFacilityService
         DB::transaction(function() use ($medicalFacility) {
             // Delete all associated licenses first using the correct method name
             $medicalFacility->licenses()->delete();
-    
+            $medicalFacility->licenses_manager()->delete();
             // Log the deletion
             $name = $medicalFacility->name;
             Log::create([
