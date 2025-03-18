@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\Pricing;
 use App\Models\FileType;
 use App\Models\MedicalFacility;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class MedicalFacilityService
@@ -152,23 +153,27 @@ class MedicalFacilityService
         }
     }
 
-    public function delete(MedicalFacility $medicalFacility): void
+    public function delete(MedicalFacility $medicalFacility)
     {
-        $name = $medicalFacility->name;
-
-        Log::create([
-            'user_id' => Auth::id(),
-            'details' => 'تم حذف منشأة طبية: ' . $name,
-            'loggable_id' => $medicalFacility->id,
-            'loggable_type' => MedicalFacility::class,
-            'action' => 'delete_medical_facility',
-        ]);
-
-        $medicalFacility->delete();
-
-        // redirect()->route('admin.medical-facilities.index')->with('success', 'تم حذف المنشأة الطبية بنجاح');
+        DB::transaction(function() use ($medicalFacility) {
+            // Delete all associated licences first
+            $medicalFacility->licences()->delete();
+    
+            // Log the deletion
+            $name = $medicalFacility->name;
+            Log::create([
+                'user_id'      => Auth::id(),
+                'details'      => 'تم حذف منشأة طبية: ' . $name,
+                'loggable_id'  => $medicalFacility->id,
+                'loggable_type'=> MedicalFacility::class,
+                'action'       => 'delete_medical_facility',
+            ]);
+    
+            // Now delete the medical facility
+            $medicalFacility->delete();
+        });
     }
-
+    
     public function getAll(array $filters = [], int $perPage = 10)
     {
         $query = MedicalFacility::query();
