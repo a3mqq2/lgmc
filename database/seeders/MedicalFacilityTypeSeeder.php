@@ -52,10 +52,6 @@ class MedicalFacilityTypeSeeder extends Seeder
                 'en_name' => 'Medical Laboratory',
             ],
             [
-                'name' => 'دار رعاية المسنين',
-                'en_name' => 'Nursing Home',
-            ],
-            [
                 'name' => 'مركز الصحة النفسية',
                 'en_name' => 'Mental Health Center',
             ],
@@ -70,10 +66,6 @@ class MedicalFacilityTypeSeeder extends Seeder
             [
                 'name' => 'مركز الصحة المجتمعية',
                 'en_name' => 'Community Health Center',
-            ],
-            [
-                'name' => 'مركز بيطري',
-                'en_name' => 'Veterinary Center',
             ],
         ];
 

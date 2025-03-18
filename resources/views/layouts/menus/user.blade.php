@@ -504,7 +504,7 @@
             </li>
 
             {{-- Academic Degrees --}}
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link menu-link" href="#academic-degrees" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-graduation-cap"></i>
                     <span data-key="t-layouts">الدرجات العلمية</span>
@@ -521,7 +521,7 @@
                         </li>
                     </ul>
                 </div>
-            </li>
+            </li> --}}
 
             {{-- Universities --}}
             <li class="nav-item">
@@ -584,7 +584,7 @@
             </li>
 
             {{-- File Types --}}
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link menu-link" href="#fileTypes" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-file"></i>
                     <span data-key="t-layouts">المستندات المطلوبة</span>
@@ -601,10 +601,10 @@
                         </li>
                     </ul>
                 </div>
-            </li>
+            </li> --}}
 
             {{-- Medical Facility Types --}}
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link menu-link" href="#medical-facility-types" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-hospital"></i>
                     <span data-key="t-layouts">أنواع المرافق الطبية</span>
@@ -621,7 +621,7 @@
                         </li>
                     </ul>
                 </div>
-            </li>
+            </li> --}}
         </ul>
     </div>
 </li>
