@@ -166,7 +166,7 @@ class MedicalFacilityService
 
         $medicalFacility->delete();
 
-        redirect()->route('admin.medical-facilities.index')->with('success', 'تم حذف المنشأة الطبية بنجاح');
+        // redirect()->route('admin.medical-facilities.index')->with('success', 'تم حذف المنشأة الطبية بنجاح');
     }
 
     public function getAll(array $filters = [], int $perPage = 10)
