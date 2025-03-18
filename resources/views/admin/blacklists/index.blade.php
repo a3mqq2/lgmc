@@ -7,7 +7,7 @@
     <h4 class="mb-4">البلاك ليست</h4>
     <div class="row mt-2">
       <div class="col-md-12 mb-2">
-         <a href="{{route('admin.blacklists.create')}}" class="btn btn-success text-light">اضف جديد</a>
+         <a href="{{route(get_area_name().'.blacklists.create')}}" class="btn btn-success text-light">اضف جديد</a>
       </div>
     </div>
     <div class="card mb-4">

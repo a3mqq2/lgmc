@@ -59,7 +59,7 @@
                                             <div class="row">
                                                 @if (auth()->user()->hasRole('general_admin'))
                                                 <div class="col-md-12  p-2" style="border-bottom:1px solid #ddd;">
-                                                    <a href="{{route('admin.home')}}">
+                                                    <a href="{{route(get_area_name().'.home')}}">
                                                      <div class=" d-flex align-items-center">
                                                          <div class="image mr-3">
                                                              <img src="{{ asset('/assets/images/sections/admin.svg') }}" width="60" class="mr-3" alt="">

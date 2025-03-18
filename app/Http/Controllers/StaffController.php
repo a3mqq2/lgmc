@@ -101,6 +101,6 @@ class StaffController extends Controller
 
 
 
-        return redirect()->route('admin.users.index')->with('success', 'تم تحديث الموظف بنجاح');
+        return redirect()->route(get_area_name().'.users.index')->with('success', 'تم تحديث الموظف بنجاح');
     }
 }

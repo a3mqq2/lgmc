@@ -151,7 +151,7 @@ class BlacklistController extends Controller
         $blacklist->update($validated);
 
         Log::create(['user_id' => auth()->user()->id, 'details' => "تم تعديل بيانات شخص في البلاك ليست: " . $blacklist->name]);
-        return redirect()->route('admin.blacklists.index')->with('success', ['تم تحديث بيانات الشخص في البلاك ليست بنجاح.']);
+        return redirect()->route(get_area_name().'.blacklists.index')->with('success', ['تم تحديث بيانات الشخص في البلاك ليست بنجاح.']);
     }
 
     /**
@@ -161,6 +161,6 @@ class BlacklistController extends Controller
     {
         $blacklist->delete();
         Log::create(['user_id' => auth()->user()->id, 'details' => "تم إزالة شخص من البلاك ليست: " . $blacklist->name]);
-        return redirect()->route('admin.blacklists.index')->with('success', ['تمت إزالة الشخص من البلاك ليست بنجاح.']);
+        return redirect()->route(get_area_name().'.blacklists.index')->with('success', ['تمت إزالة الشخص من البلاك ليست بنجاح.']);
     }
 }

@@ -30,7 +30,7 @@
 @endif
 
 
-<div class="row">
+{{-- <div class="row">
     <div class="col-xl-4 col-md-6">
         <a href="{{route(get_area_name().'.tickets.index', ['my' => '1'])}}">
             <div class="card bg-gradient-primary card-height-100">
@@ -99,7 +99,7 @@
         </a>
     </div>
 
-</div>
+</div> --}}
 
 
 @if (auth()->user()->permissions->where('name','financial-administration')->count() && !auth()->user()->branch_id)

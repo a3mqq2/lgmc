@@ -19,7 +19,7 @@ beforeEach(function () {
 
 it('can view the medical facilities index page', function () {
     actingAs($this->user);
-    $response = get(route('admin.medical-facilities.index'));
+    $response = get(route(get_area_name().'.medical-facilities.index'));
     $response->assertStatus(200);
     $response->assertViewIs('general.medical-facilities.index');
 });
@@ -37,8 +37,8 @@ it('can create a medical facility via the controller', function () {
         'activity_type' => 'commercial_record'
     ];
 
-    $response = post(route('admin.medical-facilities.store'), $data);
-    $response->assertRedirect(route('admin.medical-facilities.index'));
+    $response = post(route(get_area_name().'.medical-facilities.store'), $data);
+    $response->assertRedirect(route(get_area_name().'.medical-facilities.index'));
     $response->assertSessionHas('success', 'تم إنشاء منشأة طبية جديدة بنجاح.');
 
     expect(\App\Models\MedicalFacility::where('name', 'Controller Test Facility')->exists())->toBeTrue();
@@ -58,8 +58,8 @@ it('can update a medical facility via the controller', function () {
         'activity_start_date' => '2024-02-01',
     ];
 
-    $response = put(route('admin.medical-facilities.update', $facility->id), $data);
-    $response->assertRedirect(route('admin.medical-facilities.index'));
+    $response = put(route(get_area_name().'.medical-facilities.update', $facility->id), $data);
+    $response->assertRedirect(route(get_area_name().'.medical-facilities.index'));
     $response->assertSessionHas('success', 'تم تحديث بيانات منشأة طبية بنجاح.');
     expect($facility->fresh()->name)->toBe('After Update');
 });

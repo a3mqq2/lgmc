@@ -32,7 +32,7 @@
                                     <td>{{ $branch->city }}</td>
                                     <td>{{ $branch->created_at->format('Y-m-d') }}</td>
                                     <td>
-                                        <a href="{{route('admin.branches.edit', $branch)}}" class="btn btn-info btn-sm"><i class="fa fa-edit"></i></a>
+                                        <a href="{{route(get_area_name().'.branches.edit', $branch)}}" class="btn btn-info btn-sm"><i class="fa fa-edit"></i></a>
                                         <!-- Delete Button -->
                                         <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="{{ $branch->id }}" data-name="{{ $branch->name }}">حذف</button>
                                     </td>
@@ -61,7 +61,7 @@
                 <p>هل أنت متأكد أنك تريد حذف هذا الفرع؟</p>
             </div>
             <div class="modal-footer">
-                <form action="{{ route('admin.branches.destroy', 'branch_id') }}" method="POST" id="delete-form">
+                <form action="{{ route(get_area_name().'.branches.destroy', 'branch_id') }}" method="POST" id="delete-form">
                     @csrf
                     @method('DELETE')
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>

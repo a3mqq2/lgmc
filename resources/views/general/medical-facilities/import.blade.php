@@ -5,7 +5,7 @@
       <div class="row">
          <div class="col-md-12">
                <div class="card">
-                  <form action="{{ route('admin.medical-facilities.import-store') }}" method="post" enctype="multipart/form-data">
+                  <form action="{{ route(get_area_name().'.medical-facilities.import-store') }}" method="post" enctype="multipart/form-data">
                      @csrf
                      <div class="card-header">
                            <h3 class="card-title text-center">استيراد بيانات الشركات الطبية</h3>

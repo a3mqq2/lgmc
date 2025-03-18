@@ -43,7 +43,7 @@ class PricingController extends Controller
         ]);
 
         Pricing::create($request->all());
-        return redirect()->route('admin.pricings.index');
+        return redirect()->route(get_area_name().'.pricings.index');
     }
 
 
@@ -60,13 +60,13 @@ class PricingController extends Controller
         ]);
 
         $pricing->update($request->all());
-        return redirect()->route('admin.pricings.index')->with('success', 'تم تحديث السعر بنجاح');
+        return redirect()->route(get_area_name().'.pricings.index')->with('success', 'تم تحديث السعر بنجاح');
     }
 
     public function destroy(Pricing $pricing)
     {
         $pricing->delete();
-        return redirect()->route('admin.pricings.index');
+        return redirect()->route(get_area_name().'.pricings.index');
     }
 
 }
