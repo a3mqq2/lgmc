@@ -156,17 +156,17 @@ class MedicalFacilityService
     public function delete(MedicalFacility $medicalFacility)
     {
         DB::transaction(function() use ($medicalFacility) {
-            // Delete all associated licences first
-            $medicalFacility->licences()->delete();
+            // Delete all associated licenses first using the correct method name
+            $medicalFacility->licenses()->delete();
     
             // Log the deletion
             $name = $medicalFacility->name;
             Log::create([
-                'user_id'      => Auth::id(),
-                'details'      => 'تم حذف منشأة طبية: ' . $name,
-                'loggable_id'  => $medicalFacility->id,
-                'loggable_type'=> MedicalFacility::class,
-                'action'       => 'delete_medical_facility',
+                'user_id'       => Auth::id(),
+                'details'       => 'تم حذف منشأة طبية: ' . $name,
+                'loggable_id'   => $medicalFacility->id,
+                'loggable_type' => MedicalFacility::class,
+                'action'        => 'delete_medical_facility',
             ]);
     
             // Now delete the medical facility
