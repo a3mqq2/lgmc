@@ -49,7 +49,7 @@ body {
 {
   position: absolute;
   right: 50px;
-  top: 565px;
+  top: 525px;
 }
 
 .branch-sett h6 
@@ -1310,10 +1310,10 @@ table.print-table td.no-border {
 .name-box-visitor
 {
   text-align: center;
-  width: 210px;
+  width: 556px !important;
   position: absolute;
-  top: 617px;
-  right: 198px;
+  top: 553px;
+  right: 128px;
   background: linear-gradient(45deg, #ffcaca, #cc20281c);
   border: 2px dashed #6a6a6a;
   padding: 5px !important;

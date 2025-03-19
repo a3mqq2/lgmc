@@ -117,7 +117,7 @@
                 </div>
    
             
-                <div class="permit">
+                <div class="permit" style="bottom:525px!important;">
                   <h6 class="font-weight-bold">
                       <strong>
                           يـــــؤذن 
@@ -126,7 +126,7 @@
               </div>
 
 
-              <div class="name-box-visitor card  p-3" style="width: 510px!important;">
+              <div class="name-box-visitor card  p-3" style="width: 556px!important;">
                <h3 class="font-weight-bold">
                    <strong>{{$licence->licensable->name}}</strong>
                </h3>
@@ -140,7 +140,7 @@
            text-align: center;
            position: absolute;
            right: 43px;
-           bottom: 380px;">
+           bottom: 470px;">
             <h6 class="font-weight-bold">
                 <strong>
                   ذات المسؤولية المحدودة والمسجلة بنقابة أطباء {{ $licence->licensable->branch->name }} تحت رقم
@@ -149,10 +149,10 @@
             </div>
 
 
-            <div class="country-name-box card  p-3" style="text-align: center;
-            width: 90px;
+            <div class="country-name-box card  p-3" style="    text-align: center;
+            width: 66px;
             position: absolute;
-            top: 697px;
+            top: 614px;
             right: 617px;
             background: linear-gradient(45deg, #ffcaca, #cc20281c);
             border: 2px dashed #6a6a6a;
@@ -170,7 +170,7 @@
          text-align: center;
          position: absolute;
          right: 43px;
-         bottom: 320px;">
+         bottom: 430px;">
           <h6 class="font-weight-bold">
               <strong>
                ووفقا لسجلها التجاري رقم 
@@ -183,7 +183,7 @@
           <div class="branch-box card  p-3" style="text-align: center;
           width: 210px;
           position: absolute;
-          top: 761px;
+          top: 651px;
           right: 258px;
           background: linear-gradient(45deg, #ffcaca, #cc20281c);
           border: 2px dashed #6a6a6a;
@@ -200,10 +200,10 @@
         text-align: center;
         position: absolute;
         right: 493px;
-        bottom: 320px;">
+        bottom: 429px;">
          <h6 class="font-weight-bold">
              <strong>
-               بمزاولــــــة نشـــاط طــــــبــي 
+               بمزاولــــــة   نشاط {{ $licence->licensable->type->name  }}
              </strong>
          </h6>
          </div>
@@ -215,7 +215,7 @@
          text-align: center;
          position: absolute;
          right: 43px;
-         bottom: 250px;">
+         bottom: 380px;">
           <h6 class="font-weight-bold">
               <strong>
                ووفقا لإذن مزاولة مهنة للطبيب
@@ -226,9 +226,9 @@
 
 
           <div class="branch-box card  p-3" style="text-align: center;
-          width: 290px;
+          width: 270px;
           position: absolute;
-          top: 831px;
+          top: 700px;
           right: 308px;
           background: linear-gradient(45deg, #ffcaca, #cc20281c);
           border: 2px dashed #6a6a6a;
@@ -245,8 +245,8 @@
         font-weight: bold !important;
         text-align: center;
         position: absolute;
-        right: 623px;
-        bottom: 244px;
+        right: 593px;
+        bottom: 374px;
         width: 50px;
         text-align: right;">
          <h6 class="font-weight-bold">
@@ -261,8 +261,8 @@
          <div class="country-name-box card  p-3" style="text-align: center;
          width: 70px;
          position: absolute;
-         top: 827px;
-         right: 677px;
+         top: 697px;
+         right: 647px;
          background: linear-gradient(45deg, #ffcaca, #cc20281c);
          border: 2px dashed #6a6a6a;
          padding: 5px !important;
@@ -275,7 +275,7 @@
 
 
      
-      <div class="expired card" dir="rtl" style="top:880px!important;">
+      <div class="expired card" dir="rtl" style="top:770px!important;">
         <h6 class="text-center font-weight-bold d-inline-block">
             <strong class="d-inline-block">تم إصدار هذا الإذن بتاريخ  </strong>
             <div class="issued d-inline-block">
@@ -288,7 +288,7 @@
         </h6>
     </div>
 
-     <div class="signuture" style="bottom: 120px;">
+     <div class="signuture" style="bottom: 230px;">
       <h5><strong>نقابة أطباء {{$licence->licensable->branch->name}} </strong></h5>
   </div>
 
