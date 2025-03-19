@@ -8,6 +8,7 @@ use App\Models\{Doctor, Invoice, Licence, LicenceLog, Log, MedicalFacility, Pric
 use App\Services\InvoiceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth, DB};
+use PhpOffice\PhpSpreadsheet\Calculation\Financial\Securities\Price;
 
 class LicenceController extends Controller
 {
@@ -114,6 +115,7 @@ class LicenceController extends Controller
                     'branch_id' => $licensable->branch_id,
                     'status' => 'under_payment',
                     'created_by' => Auth::id(),
+                    'doctor_type' => $validatedData['licensable_type'] === Doctor::class ? $licensable->type : null,
                 ]);
 
                 $pricingMap = [
@@ -139,6 +141,43 @@ class LicenceController extends Controller
                         'user_id' => Auth::id(),
                         'status' => 'unpaid',
                     ]);
+                }
+
+
+                // if type is medical facility 
+                if($validatedData['licensable_type'] == "App\Models\MedicalFacility") {
+                    // if licence for medical facility first time 
+                    if($licensable->licenses->count() == 1) {
+                        $pricing = Pricing::find(76);
+                        Invoice::create([
+                            'invoice_number' => 'LIC' . last_invoice_id(),
+                            'amount' => $pricing->amount,
+                            'branch_id' => $licensable->branch_id,
+                            'description' => 'تكلفة إصدار إذن مزاولة للمنشأة الطبية ' . $licensable->name . "  لاول مره ",
+                            'invoiceable_type' => MedicalFacility::class,
+                            'invoiceable_id' => $licensable->id,
+                            'licence_id' => $licence->id,
+                            'pricing_id' => $pricing->id,
+                            'user_id' => Auth::id(),
+                            'status' => 'unpaid',
+                        ]);
+                    } else {
+                        $pricing = Pricing::find(75);
+                        Invoice::create([
+                            'invoice_number' => 'LIC' . last_invoice_id(),
+                            'amount' => $pricing->amount,
+                            'branch_id' => $licensable->branch_id,
+                            'description' => 'تكلفة إصدار إذن مزاولة للمنشأة الطبية ' . $licensable->name,
+                            'invoiceable_type' => MedicalFacility::class,
+                            'invoiceable_id' => $licensable->id,
+                            'licence_id' => $licence->id,
+                            'pricing_id' => $pricing->id,
+                            'user_id' => Auth::id(),
+                            'status' => 'unpaid',
+                        ]);
+                    }
+                
+
                 }
             });
         } catch (\Exception $e) {
@@ -269,7 +308,7 @@ class LicenceController extends Controller
      */
     public function destroy(Licence $licence)
     {
-        if($licence->status != "under_approve_branch") {
+        if($licence->status != "under_payment") {
             return redirect()->back()->withErrors(['لا يمكنك حذف هذا الاذن ليس في حاله صحيحه']);
         }
 

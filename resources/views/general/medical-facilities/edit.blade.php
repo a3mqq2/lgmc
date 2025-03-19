@@ -61,7 +61,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="address" class="form-label">الإقامة</label>
+                                    <label for="address" class="form-label">الموقع</label>
                                     <input type="text" name="address" value="{{$medicalFacility->address}}" class="form-control"  id="">
                                 </div>
                             </div>

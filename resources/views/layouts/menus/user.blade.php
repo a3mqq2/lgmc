@@ -462,18 +462,6 @@
 </li>
 
 
-@if(auth()->user()->permissions->where('name', 'branch-reports')->count())
-<li class="nav-item">
-    <a class="nav-link menu-link" href="{{route('user.reports.index')}}">
-        <i class="fa fa-file"></i> <span> التقارير  </span>
-    </a>
-</li>
-@endif
-
-
-
-
-
 @if(auth()->user()->permissions()->where('name','branch-manager')->count())
 <li class="nav-item">
     <a class="nav-link menu-link" href="#settings" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
@@ -484,7 +472,7 @@
         <ul class="nav nav-sm flex-column">
 
             {{-- Doctor Ranks --}}
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link menu-link" href="#doctor_ranks" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-briefcase"></i>
                     <span data-key="t-layouts">الصفات</span>
@@ -501,7 +489,7 @@
                         </li>
                     </ul>
                 </div>
-            </li>
+            </li> --}}
 
             {{-- Academic Degrees --}}
             {{-- <li class="nav-item">
@@ -626,6 +614,19 @@
     </div>
 </li>
 @endif
+
+
+
+@if(auth()->user()->permissions->where('name', 'branch-reports')->count())
+<li class="nav-item">
+    <a class="nav-link menu-link" href="{{route('user.reports.index')}}">
+        <i class="fa fa-file"></i> <span> التقارير  </span>
+    </a>
+</li>
+@endif
+
+
+
 
 
 

@@ -27,7 +27,7 @@
                             <td>{{ $medicalFacility->medicalFacilityType->name }}</td>
                         </tr>
                         <tr>
-                            <th class="bg-light">الإقامة</th>
+                            <th class="bg-light">الموقع</th>
                             <td>{{ $medicalFacility->address }}</td>
                         </tr>
                         <tr>

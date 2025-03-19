@@ -462,31 +462,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-$(document).ready(function () {
-    $("#doctor_rank_id").change(function () {
-        var selectedRank = parseInt($(this).val());
-
-        if (selectedRank === 1) {
-            // طبيب ممارس عام: إخفاء التخصصات
-            $("select[name='specialty_1_id']").parent().hide();
-            $("select[name='specialty_2_id']").parent().hide();
-        } else if ([2, 3, 4].includes(selectedRank)) {
-            // طبيب ممارس تخصصي - أخصائي أول - أخصائي ثاني: إظهار التخصص الأول فقط
-            $("select[name='specialty_1_id']").parent().show();
-            $("select[name='specialty_2_id']").parent().hide();
-        } else if ([5, 6].includes(selectedRank)) {
-            // استشاري أول - استشاري: إظهار التخصص الأول والتخصص الدقيق
-            $("select[name='specialty_1_id']").parent().show();
-            $("select[name='specialty_2_id']").parent().show();
-        }
-    });
-
-    // تفعيل السكريبت عند تحميل الصفحة للتحقق من القيمة المحفوظة مسبقًا
-    $("#doctor_rank_id").trigger("change");
-});
-
-</script>
-<script>
 
 
 
@@ -921,13 +896,21 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
     $(document).ready(function(){
         $("#doctor_rank_id").change(function(){
-            var selectedRank = parseInt($(this).val());
-            if ([5,6].includes(selectedRank)) {
+            var selectedRank = $(this).val();
+            if ([5,6,"5","6"].includes(selectedRank)) {
                 $("select[name='specialty_1_id']").parent().show();
                 $("#specialty_2_container").show();
             } else {
-                $("select[name='specialty_1_id']").parent().show();
-                $("#specialty_2_container").hide();
+
+                if(selectedRank == 1 || selectedRank == '') {
+                    $("select[name='specialty_1_id']").parent().hide();
+                    $("#specialty_2_container").hide();
+                } else {
+                    $("select[name='specialty_1_id']").parent().show();
+                    $("#specialty_2_container").hide();
+                }
+
+               
             }
         });
         $("#doctor_rank_id").trigger("change");

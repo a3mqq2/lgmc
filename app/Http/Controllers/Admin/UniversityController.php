@@ -14,7 +14,7 @@ class UniversityController extends Controller
      */
     public function index()
     {
-        $universities = University::paginate(10);
+        $universities = University::all();
         return view('admin.universities.index', compact('universities'));
     }
 
