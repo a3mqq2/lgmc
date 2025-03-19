@@ -1078,7 +1078,8 @@ table.print-table td.no-border {
   text-align: center;
   position: absolute;
   right: 50px;
-  bottom: 480px;
+  bottom: 496px
+  ;
 }
 
 .name-box
@@ -1095,6 +1096,12 @@ table.print-table td.no-border {
 }
 
 
+.name-box h3 
+{
+  font-size: 19px !important;
+}
+
+
 .that-registered
 {
   font-size: 25px;
@@ -1102,7 +1109,7 @@ table.print-table td.no-border {
   text-align: center;
   position: absolute;
   right: 50px;
-  bottom: 430px;
+  bottom: 443px;
 }
 
 .branch-box
@@ -1110,7 +1117,7 @@ table.print-table td.no-border {
   text-align: center;
   width: 210px;
   position: absolute;
-  top: 654px;
+  top: 641px;
   right: 198px;
   background: linear-gradient(45deg, #ffcaca, #cc20281c);
   border: 2px dashed #6a6a6a;
@@ -1119,6 +1126,12 @@ table.print-table td.no-border {
 }
 
 
+.branch-box h6
+{
+  font-size: 17px;
+  margin: 0;
+}
+
 .under-number
 {
   font-size: 25px;
@@ -1126,7 +1139,7 @@ table.print-table td.no-border {
   text-align: center;
   position: absolute;
   right: 430px;
-  bottom: 426px;
+  bottom: 444px;
 }
 
 
@@ -1135,7 +1148,7 @@ table.print-table td.no-border {
   text-align: center;
   width: 140px;
   position: absolute;
-  top: 652px;
+  top: 639px;
   right: 548px;
   background: linear-gradient(45deg, #ffcaca, #cc20281c);
   border: 2px dashed #6a6a6a;
@@ -1144,6 +1157,12 @@ table.print-table td.no-border {
 }
 
 
+
+.number-box h6 
+{
+  margin: 0 !important;
+}
+
 .work-for
 {
   font-size: 25px;
@@ -1151,7 +1170,7 @@ table.print-table td.no-border {
   text-align: center;
   position: absolute;
   right: 50px;
-  bottom: 380px;
+  bottom: 398px;
 }
 
 
@@ -1164,7 +1183,7 @@ table.print-table td.no-border {
   text-align: center;
   position: absolute;
   right: 50px;
-  bottom: 321px;
+  bottom: 353px;
 }
 
 
@@ -1174,7 +1193,7 @@ table.print-table td.no-border {
     text-align: center;
   width: 490px;
   position: absolute;
-  top: 760px;
+  top: 730px;
   right: 198px;
   background: linear-gradient(45deg, #ffcaca, #cc20281c);
   border: 2px dashed #6a6a6a;
@@ -1184,12 +1203,17 @@ table.print-table td.no-border {
 
 
 
+.medical-facility-box h4 
+{
+  font-size: 16px !important;
+}
+
 .work-box
 {
   text-align: center;
   width: 490px;
   position: absolute;
-  top: 704px;
+  top: 684px;
   right: 198px;
   background: linear-gradient(45deg, #ffcaca, #cc20281c);
   border: 2px dashed #6a6a6a;
@@ -1197,22 +1221,29 @@ table.print-table td.no-border {
   font-size: 50px;
 }
 
+.work-box h4 
+{
+  font-size: 15px !important;
+}
 
 .expired
 {
   width: 644px;
-  padding: 10px;
+  padding: 6px;
   background: #ffffff;
   text-align: center;
   color: #cc0000;
   border: 3px dashed;
   margin: auto;
   position: absolute;
-  top: 817px;
+  top: 777px;
   left: 100px;
 }
 
-
+.expired h6 
+{
+  margin: 0;
+}
 .issued
 {
   background: #cc0000;
@@ -1232,27 +1263,34 @@ table.print-table td.no-border {
 .signuture
 {
   position: absolute;
-  bottom: 140px;
+  bottom: 224px;
   left: 100px;
 }
 
+
+.signuture h5 
+{
+  font-size: 15.5px !important;
+}
 .valid
 {
   position: absolute;
-  bottom: 158px;
-  right: 50px;
-  width: 90px;
+  top: 128px;
+  left: 190px;
+  width: 80px;
   font-weight: bold;
-  font-size: 13px;
+  font-size: 12px;
+  rotate: 90deg;
+  text-align: left !important;
 }
 
 
 .qr-code
 {
-  width: 70px;
+  width: 59px;
   position: absolute;
-  right: 156px;
-  bottom: 148px;
+  left: 215px;
+  top: 40px;
 }
 
 
@@ -1311,4 +1349,10 @@ table.print-table td.no-border {
   border: 2px dashed #6a6a6a;
   padding: 5px !important;
   font-size: 2px;
+}
+
+
+.permit h6 
+{
+  font-size: 13.5px !important;
 }

@@ -135,7 +135,7 @@
 
                 <div class="number-box card  p-3">
                     <h6 class="font-weight-bold">
-                        <strong>{{$licence->licensable->id}}</strong>
+                        <strong>{{$licence->licensable->code}}</strong>
                     </h6>
                 </div>
 
@@ -214,7 +214,7 @@
                         $link = env('APP_URL') . "checker?licence=" . $licence->id;
                     $qrCode = DNS2D::getBarcodePNG($link, 'QRCODE', 5, 5);
                     @endphp
-                    <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 50px; height: 50px;" />
+                    <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 40px; height: 40px;" />
                     </div>
                 </div>
 
