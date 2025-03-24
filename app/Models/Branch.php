@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Branch extends Model
 {
     use HasFactory;
+    protected $guarded = [];
 
     // Many-to-many relationship with Users
     public function users()
