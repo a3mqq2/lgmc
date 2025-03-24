@@ -63,7 +63,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             //     : null,
             "date_of_birth" => $this->parseDate($row['tarykh_almylad']),
             'registered_at' => $this->parseDate($row['tarykh_alantsab']),
-            'branch_id' => 1,
+            'branch_id' => 9,
             'code' => Doctor::count() + 1,
             'type' => "libyan",
             'country_id' => 1,
