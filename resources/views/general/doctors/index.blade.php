@@ -99,9 +99,7 @@
                                     @if ($doctor->doctor_rank)
                                     {{ $doctor->doctor_rank->name }} 
                                     @endif
-                                    @if (strlen($doctor->specialization) > 0)
-                                            - {{ $doctor->specialization }}
-                                    @endif
+                                   {{ $doctor->specialization  }}
                                 </td>
                                 <td>{{ $doctor->address }}</td>
                                 @if (request('type') == "libyan")

@@ -25,12 +25,12 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
-        if (empty($row['alasm'])) {
+        if (empty($row['asm_altbyb_kaml'])) {
             return null;
         }
 
         $specialty = null;
-        if (!empty($row['altkhss']) && $row['altkhss'] != "ممارس عام") {
+        if (!empty($row['altkhss']) && $row['altkhss'] != "طبيب ممارس") {
             $specialty = Specialty::firstOrCreate(['name' => $row['altkhss']]);
         }
 
@@ -41,28 +41,30 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
 
 
         // skip the row if doctor already exists
-        if (Doctor::where('name', $row['alasm'])->exists()) {
+        if (Doctor::where('name', $row['asm_altbyb_kaml'])->exists()) {
             return null;
         }
 
 
+
         $doctor = new Doctor([
-            'doctor_number' => $row['aadoy'],
-            'name' => $row['alasm'],
-            'phone' => 0 . $row['rkm_alhatf'],
-            'address' => $row['alakam'],
-            'doctor_rank_id' => $this->doctorRankMap[$row['alsf']] ?? null,
+            'doctor_number' => $row['rkm_alaadoyh'],
+            'name' => $row['asm_altbyb_kaml'],
+            // 'phone' => 0 . $row['rkm_alhatf'],
+            // 'address' => $row['alakam'],
+            'doctor_rank_id' => $this->doctorRankMap[$row['alsfrtb_altbyb']] ?? null,
             'specialty_1_id' => $specialty?->id,
             'institution_id' => $institution?->id,
-            'certificate_of_excellence_date' => !empty($row['almohl']) && is_numeric(preg_replace('/\D/', '', $row['almohl'])) 
-                ? preg_replace('/\D/', '', $row['almohl']) . '-01-01' 
-                : null,
-            'date_of_birth' => !empty($row['almylad']) && is_numeric(preg_replace('/\D/', '', $row['almylad'])) 
-                ? preg_replace('/\D/', '', $row['almylad']) . '-01-01' 
-                : null,
-            'registered_at' => $this->parseDate($row['alantsab']),
-            'branch_id' => 5,
-            'code' => $row['aadoy'],
+            // 'certificate_of_excellence_date' => !empty($row['almohl']) && is_numeric(preg_replace('/\D/', '', $row['almohl'])) 
+            //     ? preg_replace('/\D/', '', $row['almohl']) . '-01-01' 
+            //     : null,
+            // 'date_of_birth' => !empty($row['tarykh_almylad']) && is_numeric(preg_replace('/\D/', '', $row['tarykh_almylad'])) 
+            //     ? preg_replace('/\D/', '', $row['tarykh_almylad']) . '-01-01' 
+            //     : null,
+            "date_of_birth" => $this->parseDate($row['tarykh_almylad']),
+            'registered_at' => $this->parseDate($row['tarykh_alantsab']),
+            'branch_id' => 1,
+            'code' => Doctor::count() + 1,
             'type' => "libyan",
             'country_id' => 1,
         ]);
