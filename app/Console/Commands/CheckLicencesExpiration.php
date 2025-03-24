@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Licence;
 use Carbon\Carbon;
+use App\Models\Licence;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class CheckLicencesExpiration extends Command
 {
@@ -27,18 +28,12 @@ class CheckLicencesExpiration extends Command
      */
     public function handle()
     {
-        // Retrieve licences that are active and have expired
-        $expiredLicences = Licence::where('status', 'active')
-                                  ->where('expiry_date', '<=', Carbon::today())
-                                  ->get();
-
-        // Update the status of the expired licences
-        foreach ($expiredLicences as $licence) {
-            $licence->status = 'expired';
-            $licence->save();
-        }
-
-        // Output the number of licences updated
-        $this->info(count($expiredLicences) . ' licences have been updated to expired status.');
+        $expiredCount = Licence::where('status', 'active')
+                               ->where('expiry_date', '<=', Carbon::today())
+                               ->update(['status' => 'expired']);
+    
+        Log::info("{$expiredCount} licences expired on " . now()->toDateString());
+    
+        $this->info($expiredCount . ' licences have been updated to expired status.');
     }
 }
