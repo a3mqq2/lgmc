@@ -216,7 +216,7 @@ class LicenceController extends Controller
      */
     public function edit(Licence $licence)
     {
-        if($licence->status != "under_payment") {
+        if($licence->status != "under_payment" || $licence->status != "active") {
             return redirect()->back()->withErrors(['لا يمكنك تعديل هذا الاذن ليس في حاله صحيحه']);
         }
 
@@ -308,7 +308,7 @@ class LicenceController extends Controller
      */
     public function destroy(Licence $licence)
     {
-        if($licence->status != "under_payment") {
+        if($licence->status != "under_payment" || $licence->status != "active") {
             return redirect()->back()->withErrors(['لا يمكنك حذف هذا الاذن ليس في حاله صحيحه']);
         }
 
