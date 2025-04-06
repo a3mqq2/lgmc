@@ -314,32 +314,62 @@ class LicenceController extends Controller
             return redirect()->back()->withErrors(['لا يمكنك حذف هذا الاذن ليس في حاله صحيحه']);
         }
     
-        $type = null;
-        if ($licence->licensable_type == "App\Models\Doctor") {
-            $type = 'doctors';
-        } else {
-            $type = 'facilities';
-        }
+        $type = ($licence->licensable_type == "App\Models\Doctor") ? 'doctors' : 'facilities';
     
         // البحث عن الفاتورة المتعلقة بالاذن
         $invoice = \App\Models\Invoice::where('licence_id', $licence->id)->first();
         if ($invoice) {
+            // الحصول على الخزنة الخاصة بفرع المستخدم
+            $vault = auth()->user()->branch->vault;
+    
             // إذا كانت الفاتورة مدفوعة يتم استرداد قيمتها
             if ($invoice->status->value == "paid") {
-                $vault = auth()->user()->branch->vault;
-                $vault->balance -= $invoice->amount;
-                $vault->save();
+                if ($invoice->total_invoice_id) {
+                    // الفاتورة جزء من فاتورة كلية
+                    $totalInvoice = \App\Models\TotalInvoice::find($invoice->total_invoice_id);
+                    if ($totalInvoice) {
+                        $refundDesc = "استرداد مبلغ فاتورة الاذن {$licence->id} من فاتورة كلية رقم {$totalInvoice->invoice_number}";
+                        
+                        // خصم المبلغ من الخزنة لاسترداد قيمة الفاتورة
+                        $vault->balance -= $invoice->amount;
+                        $vault->save();
     
-                \App\Models\Transaction::create([
-                    'user_id'            => Auth::id(),
-                    'desc'               => "استرداد مبلغ فاتورة الاذن {$licence->id} بعد الحذف",
-                    'amount'             => $invoice->amount,
-                    'branch_id'          => Auth::user()->branch_id,
-                    'transaction_type_id'=> 1, // يرجى استبداله بمعرف نوع العملية المناسب
-                    'type'               => 'withdrawal',
-                    'vault_id'           => $vault->id,
-                    'balance'            => $vault->balance,
-                ]);
+                        \App\Models\Transaction::create([
+                            'user_id'             => Auth::id(),
+                            'desc'                => $refundDesc,
+                            'amount'              => $invoice->amount,
+                            'branch_id'           => Auth::user()->branch_id,
+                            'transaction_type_id' => 1, // يرجى استبداله بمعرف نوع العملية المناسب
+                            'type'                => 'withdrawal',
+                            'vault_id'            => $vault->id,
+                            'balance'             => $vault->balance,
+                        ]);
+    
+                        // تحديث المبلغ الكلي في الفاتورة الكلية بطرح مبلغ الفاتورة المفردة
+                        $totalInvoice->total_amount -= $invoice->amount;
+                        if ($totalInvoice->total_amount <= 0) {
+                            $totalInvoice->delete();
+                        } else {
+                            $totalInvoice->save();
+                        }
+                    }
+                } else {
+                    // حالة الفاتورة الفردية (غير جزء من فاتورة كلية)
+                    $refundDesc = "استرداد مبلغ فاتورة الاذن {$licence->id} بعد الحذف";
+                    $vault->balance -= $invoice->amount;
+                    $vault->save();
+    
+                    \App\Models\Transaction::create([
+                        'user_id'             => Auth::id(),
+                        'desc'                => $refundDesc,
+                        'amount'              => $invoice->amount,
+                        'branch_id'           => Auth::user()->branch_id,
+                        'transaction_type_id' => 1, // يرجى استبداله بمعرف نوع العملية المناسب
+                        'type'                => 'withdrawal',
+                        'vault_id'            => $vault->id,
+                        'balance'             => $vault->balance,
+                    ]);
+                }
             }
             // حذف الفاتورة بغض النظر من حالتها
             $invoice->delete();
@@ -350,17 +380,18 @@ class LicenceController extends Controller
         $licence->delete();
     
         Log::create([
-            'user_id'      => Auth::id(),
-            'branch_id'    => Auth::user()->branch_id,
-            'details'      => "تم حذف الاذن مزاولة: معرف الاذن مزاولة {$licence->id}",
-            'loggable_id'  => $licence->licensable_id,
-            'loggable_type'=> Doctor::class,
-            'action'       => "delete_licence",
+            'user_id'       => Auth::id(),
+            'branch_id'     => Auth::user()->branch_id,
+            'details'       => "تم حذف الاذن مزاولة: معرف الاذن مزاولة {$licence->id}",
+            'loggable_id'   => $licence->licensable_id,
+            'loggable_type' => \App\Models\Doctor::class,
+            'action'        => "delete_licence",
         ]);
     
         return redirect()->route(get_area_name().'.licences.index', ['type' => $type, 'status' => $licence->status])
             ->with('success', 'تم حذف الاذن مزاولة بنجاح.');
     }
+    
     
 
     public function approve(Request $request, Licence $licence) {
