@@ -297,7 +297,10 @@ class LicenceController extends Controller
             "action" => "edit_licence",
         ]);
 
-        return redirect()->route(get_area_name().'.licences.index', ['type' => $licence->type, 'status' => $licence->status])
+
+        $type = $request->licensable_type == "App\Models\Doctor" ? 'doctors' : 'facilities';
+
+        return redirect()->route(get_area_name().'.licences.index', ['type' => $type, 'status' => $licence->status])
             ->with('success', 'تم تعديل الاذن مزاولة بنجاح.');
     }
 
