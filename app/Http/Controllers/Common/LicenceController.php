@@ -100,6 +100,7 @@ class LicenceController extends Controller
             'licensable_id' => 'required|integer',
             'issued_date' => 'required|date',
             'expiry_date' => 'required|date',
+            'medical_facility_id' => 'nullable|integer',
         ]);
 
         try {
