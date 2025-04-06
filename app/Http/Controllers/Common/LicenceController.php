@@ -309,10 +309,6 @@ class LicenceController extends Controller
      */
     public function destroy(Licence $licence)
     {
-        // تأكد من أن حالة الاذن صالحة للحذف
-        if ($licence->status != "under_payment" && $licence->status != "active") {
-            return redirect()->back()->withErrors(['لا يمكنك حذف هذا الاذن ليس في حاله صحيحه']);
-        }
     
         $type = ($licence->licensable_type == "App\Models\Doctor") ? 'doctors' : 'facilities';
     
