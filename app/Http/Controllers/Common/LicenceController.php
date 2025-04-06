@@ -216,10 +216,7 @@ class LicenceController extends Controller
      */
     public function edit(Licence $licence)
     {
-        if($licence->status != "under_payment") {
-            return redirect()->back()->withErrors(['لا يمكنك تعديل هذا الاذن ليس في حاله صحيحه']);
-        }
-
+     
         if(get_area_name() == "user") {
             $doctors = Doctor::where('branch_id', auth()->user()->branch_id)->latest()->get();
             $medicalFacilities = MedicalFacility::where('branch_id', auth()->user()->branch_id)->latest()->get();
