@@ -216,7 +216,7 @@ class LicenceController extends Controller
      */
     public function edit(Licence $licence)
     {
-        if($licence->status != "under_payment" || $licence->status != "active") {
+        if($licence->status != "under_payment") {
             return redirect()->back()->withErrors(['لا يمكنك تعديل هذا الاذن ليس في حاله صحيحه']);
         }
 
@@ -247,10 +247,7 @@ class LicenceController extends Controller
      */
     public function update(Request $request, Licence $licence)
     {
-        if($licence->status != "under_approve_branch" && $licence->status != "under_approve_admin") {
-            return redirect()->back()->withErrors(['لا يمكنك تعديل هذا الاذن ليس في حاله صحيحه']);
-        }
-
+  
 
         $validatedData = $request->validate([
             'licensable_type' => 'required|in:App\Models\Doctor,App\Models\MedicalFacility',
