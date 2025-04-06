@@ -21,7 +21,7 @@
                             <div class="mb-3">
                                 <label for="licensable_id" class="form-label">اختر المرخص</label>
                                 <select id="licensable_id" name="licensable_id" class="form-control select2-search">
-                                    <option value="">اختر المرخص</option>
+                                    <!-- Option will be added dynamically via jQuery -->
                                 </select>
                             </div>
 
@@ -35,7 +35,7 @@
                                     @endif
                                 </label>
                                 <select name="medical_facility_id" id="medical_facility_id" class="form-control select2-search">
-                                    <option value="">اختر مكان العمل</option>
+                                    <!-- Option will be added dynamically via jQuery -->
                                 </select>
                             </div>
                             @endif
@@ -77,6 +77,7 @@
     <script>
 $(window).on('load', function() {
     console.log('Page Loaded');
+    
     function setupSelect2(selector, url, placeholderText) {
         $(selector).select2({
             placeholder: placeholderText,
@@ -105,12 +106,31 @@ $(window).on('load', function() {
 
     let branch_id  = '{{ auth()->user()->branch_id }}';
     let licensable_type = '{{ $licence->licensable_type }}';
+
     if(licensable_type == "App\Models\MedicalFacility") {
         setupSelect2('#licensable_id', '/search-facilities?branch_id=' + branch_id, 'ابحث عن المرخص...');
     } else {
         setupSelect2('#licensable_id', '/search-licensables?branch_id=' + branch_id, 'ابحث عن المرخص...');
         setupSelect2('#medical_facility_id', '/search-facilities?branch_id=' + branch_id, 'ابحث عن مكان العمل...');
     }
+
+    // Preselect the licensable (doctor or facility) after AJAX call
+    var licensableSelectedId = '{{ $licence->licensable_id }}';
+    var licensableSelectedText = '{{ $licence->licensable->name ?? "" }}';
+    if(licensableSelectedId) {
+        var newOption = new Option(licensableSelectedText, licensableSelectedId, true, true);
+        $('#licensable_id').append(newOption).trigger('change');
+    }
+
+    // Preselect the medical facility if the licence is for a Doctor
+    @if($licence->licensable_type == "App\Models\Doctor")
+    var facilitySelectedId = '{{ $licence->medical_facility_id }}';
+    var facilitySelectedText = '{{ $licence->medicalFacility->name ?? "" }}';
+    if(facilitySelectedId) {
+        var newOption = new Option(facilitySelectedText, facilitySelectedId, true, true);
+        $('#medical_facility_id').append(newOption).trigger('change');
+    }
+    @endif
 });
     </script>
 @endsection
