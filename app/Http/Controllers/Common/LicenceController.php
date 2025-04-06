@@ -248,7 +248,6 @@ class LicenceController extends Controller
     public function update(Request $request, Licence $licence)
     {
   
-        dd($request->all());
 
         $validatedData = $request->validate([
             'licensable_type' => 'required|in:App\Models\Doctor,App\Models\MedicalFacility',
