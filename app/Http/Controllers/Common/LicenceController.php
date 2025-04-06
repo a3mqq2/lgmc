@@ -116,6 +116,8 @@ class LicenceController extends Controller
                     'status' => 'under_payment',
                     'created_by' => Auth::id(),
                     'doctor_type' => $validatedData['licensable_type'] === Doctor::class ? $licensable->type : null,
+                    // medical_facility_id for doctors 
+                    'medical_facility_id' => $validatedData['licensable_type'] === Doctor::class ? $validatedData['medical_facility_id'] : null,
                 ]);
 
                 $pricingMap = [
@@ -251,6 +253,7 @@ class LicenceController extends Controller
             'licensable_id' => 'required|integer',
             'issued_date' => 'required|date',
             'expiry_date' => 'required|date',
+            'medical_facility_id' => 'nullable|integer',
         ]);
 
         $licencable = null;
