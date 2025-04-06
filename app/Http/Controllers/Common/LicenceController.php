@@ -309,33 +309,59 @@ class LicenceController extends Controller
      */
     public function destroy(Licence $licence)
     {
-        if($licence->status != "under_payment" || $licence->status != "active") {
+        // تأكد من أن حالة الاذن صالحة للحذف
+        if ($licence->status != "under_payment" && $licence->status != "active") {
             return redirect()->back()->withErrors(['لا يمكنك حذف هذا الاذن ليس في حاله صحيحه']);
         }
-
+    
         $type = null;
-        if($licence->licensable_type == "App\Models\Doctor") {
+        if ($licence->licensable_type == "App\Models\Doctor") {
             $type = 'doctors';
         } else {
             $type = 'facilities';
         }
-
-
+    
+        // البحث عن الفاتورة المتعلقة بالاذن
+        $invoice = \App\Models\Invoice::where('licence_id', $licence->id)->first();
+        if ($invoice) {
+            // إذا كانت الفاتورة مدفوعة يتم استرداد قيمتها
+            if ($invoice->status->value == "paid") {
+                $vault = auth()->user()->branch->vault;
+                $vault->balance -= $invoice->amount;
+                $vault->save();
+    
+                \App\Models\Transaction::create([
+                    'user_id'            => Auth::id(),
+                    'desc'               => "استرداد مبلغ فاتورة الاذن {$licence->id} بعد الحذف",
+                    'amount'             => $invoice->amount,
+                    'branch_id'          => Auth::user()->branch_id,
+                    'transaction_type_id'=> 1, // يرجى استبداله بمعرف نوع العملية المناسب
+                    'type'               => 'withdrawal',
+                    'vault_id'           => $vault->id,
+                    'balance'            => $vault->balance,
+                ]);
+            }
+            // حذف الفاتورة بغض النظر من حالتها
+            $invoice->delete();
+        }
+    
+        // حذف سجلات الاذن ثم الاذن نفسه
         $licence->logs()->delete();
         $licence->delete();
-
+    
         Log::create([
-            'user_id' => Auth::id(),
-            'branch_id' => Auth::user()->branch_id,
-            'details' => "تم حذف الاذن مزاولة: معرف الاذن مزاولة {$licence->id}",
-            'loggable_id' => $licence->licensable_id,
-            'loggable_type' => Doctor::class,
-            "action" => "delete_licence",
+            'user_id'      => Auth::id(),
+            'branch_id'    => Auth::user()->branch_id,
+            'details'      => "تم حذف الاذن مزاولة: معرف الاذن مزاولة {$licence->id}",
+            'loggable_id'  => $licence->licensable_id,
+            'loggable_type'=> Doctor::class,
+            'action'       => "delete_licence",
         ]);
-
+    
         return redirect()->route(get_area_name().'.licences.index', ['type' => $type, 'status' => $licence->status])
             ->with('success', 'تم حذف الاذن مزاولة بنجاح.');
     }
+    
 
     public function approve(Request $request, Licence $licence) {
         $request->validate([
