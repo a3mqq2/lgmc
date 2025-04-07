@@ -133,7 +133,7 @@ class LicenceController extends Controller
                 if ($pricingId) {
                     $pricing = Pricing::find($pricingId);
                     Invoice::create([
-                        'invoice_number' => 'LIC' . last_invoice_id(),
+                        'invoice_number' => 'LIC' . last_invoice_id() . '_' . $licensable->id,
                         'amount' => $pricing->amount,
                         'branch_id' => $licensable->branch_id,
                         'description' => 'تكلفة إصدار إذن مزاولة للطبيب ' . $licensable->name,
@@ -153,7 +153,7 @@ class LicenceController extends Controller
                     if($licensable->licenses->count() == 1) {
                         $pricing = Pricing::find(76);
                         Invoice::create([
-                            'invoice_number' => 'LIC' . last_invoice_id(),
+                            'invoice_number' => 'LIC' . last_invoice_id() . '_' . $licensable->id,
                             'amount' => $pricing->amount,
                             'branch_id' => $licensable->branch_id,
                             'description' => 'تكلفة إصدار إذن مزاولة للمنشأة الطبية ' . $licensable->name . "  لاول مره ",
@@ -167,7 +167,7 @@ class LicenceController extends Controller
                     } else {
                         $pricing = Pricing::find(75);
                         Invoice::create([
-                            'invoice_number' => 'LIC' . last_invoice_id(),
+                            'invoice_number' => 'LIC' . last_invoice_id() . '_' . $licensable->id,
                             'amount' => $pricing->amount,
                             'branch_id' => $licensable->branch_id,
                             'description' => 'تكلفة إصدار إذن مزاولة للمنشأة الطبية ' . $licensable->name,
