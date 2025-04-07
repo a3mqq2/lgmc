@@ -77,8 +77,8 @@
             <div class="libyan">
 
 
-                <div class="branch-sett">
-                    <h6 class="font-weight-bold"><strong>وبالإطلاع علـى سجل العضوية لنقابة أطباء {{ $licence->licensable->branch->name }}</strong></h6>
+                <div class="branch-sett" style="top: 565px !important;">
+                    <h6 class="font-weight-bold" style="font-size: 11px !important;"><strong>وبالإطلاع علـى سجل العضوية لنقابة أطباء {{ $licence->licensable->branch->name }}</strong></h6>
                 </div>
 
                 <div class="doctor-name">
