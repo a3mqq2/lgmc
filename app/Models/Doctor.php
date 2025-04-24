@@ -6,16 +6,18 @@ use App\Enums\DoctorType;
 use App\Enums\GenderEnum;
 use App\Enums\MaritalStatus;
 use App\Enums\MembershipStatus;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class Doctor extends Authenticatable
 {
     use HasFactory,Notifiable;
 
     protected $fillable = [
+        'index',
         'name',
         'code',
         'name_en',
@@ -204,5 +206,57 @@ class Doctor extends Authenticatable
     public function institution()
     {
         return $this->belongsTo(Institution::class);
+    }
+
+    public function scopeByBranch($query, int $branchId)
+    {
+        return $query->where('branch_id', $branchId)->orderBy('index');
+    }
+
+    /*---------------------------
+    | Code generation
+    ---------------------------*/
+    protected static function booted(): void
+    {
+        static::creating(function (Doctor $doctor) {
+            $doctor->setSequentialIndex();
+            $doctor->makeCode();
+        });
+    }
+
+    public function setSequentialIndex(): void
+    {
+        $this->index = self::where('branch_id', $this->branch_id)->max('index') + 1;
+    }
+
+    public function makeCode(): void
+    {
+        $this->loadMissing('branch');
+        $this->code = $this->branch->code . '-DR-' . str_pad($this->index, 3, '0', STR_PAD_LEFT);
+    }
+
+    public function regenerateCode(): void
+    {
+        $this->setSequentialIndex();
+        $this->makeCode();
+        $this->saveQuietly();
+    }
+
+    public static function regenerateAllCodes(): void
+    {
+        DB::transaction(function () {
+            Branch::with(['doctors' => fn ($q) => $q->orderBy('id')])
+                ->chunkById(100, function ($branches) {
+                    foreach ($branches as $branch) {
+                        $i = 1;
+                        foreach ($branch->doctors as $doctor) {
+                            $doctor->index = $i;
+                            $doctor->code  = $branch->code . '-DR-' . str_pad($i, 3, '0', STR_PAD_LEFT);
+                            $doctor->saveQuietly();
+                            $i++;
+                        }
+                    }
+                });
+        });
     }
 }

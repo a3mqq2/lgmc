@@ -34,7 +34,7 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
             'medical_facility_type_id' => $medicalFacilityType?->id,
             'manager_id' => $doctor?->id,
             'address' => 'البيضاء',
-            'branch_id' => 5,
+            'branch_id' => 3,
             'phone_number' => $doctor->phone ?? '0921234567',
             'user_id' => auth()->id(),
         ]);
@@ -59,7 +59,7 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
                 'issued_date' => $issueDate->format('Y-m-d'),
                 'expiry_date' => $expiryDate->format('Y-m-d'),
                 'status' => $expiryDate->isPast() ? 'expired' : 'active',
-                'branch_id' => 5,
+                'branch_id' => 3,
                 'created_by' => auth()->id(),
             ]);
         }
@@ -94,7 +94,7 @@ class ImportMedicalFacilities implements ToModel, WithHeadingRow
             'issued_date' => $issueDate->format('Y-m-d'),
             'expiry_date' => $expiryDate->format('Y-m-d'),
             'status' => $expiryDate->isFuture() ? 'active' : 'expired',
-            'branch_id' => 5,
+            'branch_id' => 3,
             'created_by' => auth()->id(),
         ]);
     }

@@ -232,7 +232,6 @@ class DoctorService
             $doctor->membership_expiration_date = null;
             $doctor->save();
 
-            $this->generateCode($doctor);
 
             // جلب أنواع الملفات للأطباء
             $file_types = FileType::where('type', 'doctor')
@@ -544,30 +543,47 @@ class DoctorService
     public function delete(Doctor $doctor): void
     {
         DB::beginTransaction();
-
+    
         try {
-            // Delete the doctor's associated files (if any)
+            // حذف الملفات المرتبطة بالطبيب
             $this->deleteFiles($doctor);
-
-            // Delete the doctor
+    
+            $branchId = $doctor->branch_id;
+    
+            // حذف الطبيب نفسه
             $doctor->delete();
-
-            // Log the deletion
+    
+            // تسجيل العملية
             Log::create([
-                'user_id' => auth()->user()->id,
+                'user_id' => auth()->id(),
                 'details' => 'تم حذف الطبيب: ' . $doctor->name,
                 'loggable_id' => $doctor->id,
                 'loggable_type' => Doctor::class,
                 'action' => 'delete_doctor',
             ]);
-
-
+    
+            // إعادة ترتيب أكواد جميع الأطباء في نفس الفرع
+            $doctors = Doctor::where('branch_id', $branchId)->orderBy('id')->get();
+            $index = 0;
+    
+            foreach ($doctors as $doc) {
+                $code = str_pad($index++, 3, '0', STR_PAD_LEFT);
+                $doc->code = $code;
+    
+                if (!$doc->registered_at) {
+                    $doc->registered_at = now();
+                }
+    
+                $doc->save();
+            }
+    
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            throw $e;  // Re-throw the exception after rolling back
+            throw $e;
         }
     }
+    
 
     /**
      * Handle file deletion for a doctor.
@@ -780,16 +796,5 @@ class DoctorService
                 $invoice = Invoice::create($data);
             } 
         }
-
-
-        public function generateCode($doctor)
-        {
-            $lastCode = Doctor::latest()->skip(1)->first() ? Doctor::latest()->skip(1)->first()->code : 0;  
-            $doctor->code =  $lastCode + 1;
-            if(!$doctor->registered_at)
-            {
-                $doctor->registered_at = now();
-            }
-            $doctor->save();
-        }
+        
 }

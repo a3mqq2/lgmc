@@ -193,10 +193,10 @@
 
 
 
-                    <a href="{{ route(get_area_name().'.doctors.print-id', $doctor) }}" class="btn btn-primary text-light">
+                    {{-- <a href="{{ route(get_area_name().'.doctors.print-id', $doctor) }}" class="btn btn-primary text-light">
                         <i class="fa fa-id-card"></i> طباعة بطاقة الهوية
                     </a>
-        
+         --}}
                     <!-- Toggle Ban/Unban Button (Modal Trigger) -->
                     <button type="button" class="btn {{ $doctor->membership_status->value === 'banned' ? 'btn-success' : 'btn-danger' }}" data-bs-toggle="modal" data-bs-target="#toggleBanDoctorModal">
                         <i class="fa {{ $doctor->membership_status->value === 'banned' ? 'fa-lock-open' : 'fa-lock' }}"></i>
@@ -387,7 +387,7 @@
                                 </tr>
                                 <tr>
                                     <td  class="{{$doctor->type->badgeClass()}}" >{{ $doctor->type->label() }}</td>
-                                    <td>{{ $doctor->ecode }}</td>
+                                    <td>{{ $doctor->code }}</td>
                                     <td>{{ $doctor->doctor_number }}</td>
                                     <td>{{ $doctor->name }}</td>
                                     <td>{{ $doctor->name_en }}</td>

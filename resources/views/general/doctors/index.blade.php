@@ -90,7 +90,7 @@
                                 @endif
                             >
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $doctor->ecode }}</td>
+                                <td>{{ $doctor->code }}</td>
                                 <td>{{ $doctor->doctor_number }}</td>
                                 <td>{{ $doctor->name }}</td>
                                 <td>{{ $doctor->phone }}</td>

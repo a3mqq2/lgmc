@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use App\Enums\DoctorType;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Licence extends Model
 {
@@ -30,18 +31,7 @@ class Licence extends Model
 
 
 
-    public function branch()
-    {
-        return $this->belongsTo(Branch::class);
-    }
 
-    /**
-     * Get the owning licensable model.
-     */
-    public function licensable()
-    {
-        return $this->morphTo();
-    }
 
     /**
      * Get the doctor associated with the licence.
@@ -92,5 +82,48 @@ class Licence extends Model
     public function MedicalFacility()
     {
         return $this->belongsTo(MedicalFacility::class, 'medical_facility_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function licensable()
+    {
+        return $this->morphTo();
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Licence $licence) {
+            $licence->assignSequence();
+        });
+    }
+
+    public function assignSequence(): void
+    {
+        $year   = now()->year;
+        $type   = $this->licensable_type;
+        $prefix = $type === Doctor::class ? 'LIC' : 'PERM';
+
+        $nextIndex = self::where('branch_id', $this->branch_id)
+            ->whereYear('created_at', $year)
+            ->where('licensable_type', $type)
+            ->max('index') + 1;
+
+        $this->index = $nextIndex;
+        $this->code  = $this->branch->code
+                      . '-' . $prefix . '-'
+                      . $year . '-'
+                      . str_pad($nextIndex, 3, '0', STR_PAD_LEFT);
+    }
+
+    public function regenerateCode(): void
+    {
+        DB::transaction(function () {
+            $this->assignSequence();
+            $this->saveQuietly();
+        });
     }
 }

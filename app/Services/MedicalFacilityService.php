@@ -190,6 +190,12 @@ class MedicalFacilityService
             $query->where('medical_facility_type_id', $filters['medical_facility_type_id']);
         }
 
+
+        if(get_area_name() == "user")
+        {
+            $query->where('branch_id', auth()->user()->branch_id);
+        }
+
         return $query->paginate($perPage);
     }
 

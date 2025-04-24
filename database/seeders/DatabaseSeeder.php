@@ -47,7 +47,7 @@ class DatabaseSeeder extends Seeder
 
 
         $this->call(PricingSeeder::class);
-        $this->call(CountrySeeder::class);
+        // $this->call(CountrySeeder::class);
         $this->call(AcademicDegreeSeeder::class);
         $this->call(BranchSeeder::class);
         $this->call(SpecialtySeeder::class);

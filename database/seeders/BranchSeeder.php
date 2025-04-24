@@ -16,12 +16,10 @@ class BranchSeeder extends Seeder
         $branches = [
             ['name' => 'طرابلس', 'code' => 'TIP', 'phone' => '0912345678', 'city' => 'طرابلس'],
             ['name' => 'بنغازي', 'code' => 'BEN', 'phone' => '0923456789', 'city' => 'بنغازي'],
-            ['name' => 'سبها', 'code' => 'SEB', 'phone' => '0934567890', 'city' => 'سبها'],
-            ['name' => 'طبرق', 'code' => 'TOB', 'phone' => '0945678901', 'city' => 'طبرق'],
-            ['name' => 'الجبل الآخضر', 'code' => 'BYD', 'phone' => '0956789012', 'city' => 'البيضاء'],
+            ['name' => 'الجبل الآخضر', 'code' => 'AJK', 'phone' => '0956789012', 'city' => 'البيضاء'],
             ['name' => 'درنة', 'code' => 'DER', 'phone' => '0967890123', 'city' => 'درنة'],
             ['name' => 'مصراتة', 'code' => 'MIS', 'phone' => '0978901234', 'city' => 'مصراتة'],
-            ['name' => 'غريان', 'code' => 'GHR', 'phone' => '0989012345', 'city' => 'غريان'],
+            ['name' => 'صرمان', 'code' => 'SRM', 'phone' => '0989012345', 'city' => 'صرمان'],
         ];
 
         $user = User::first();

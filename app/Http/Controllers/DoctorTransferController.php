@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Log;
 use App\Models\Branch;
 use App\Models\Doctor;
-use App\Models\Log;
-use App\Models\DoctorTransfer;
 use Illuminate\Http\Request;
+use App\Models\DoctorTransfer;
+use Illuminate\Support\Facades\DB;
 
 class DoctorTransferController extends Controller
 {
@@ -134,27 +135,34 @@ class DoctorTransferController extends Controller
     public function approve(DoctorTransfer $doctorTransfer)
     {
         if ($doctorTransfer->status !== 'pending') {
-            return redirect()->route('user.doctor-transfers.index')->with('error', 'هذا الطلب تم اتخاذ إجراء عليه مسبقًا.');
+            return redirect()
+                ->route('user.doctor-transfers.index')
+                ->with('error', 'هذا الطلب تم اتخاذ إجراء عليه مسبقًا.');
         }
-
-        $doctor = $doctorTransfer->doctor;
-        $doctor->update(['branch_id' => $doctorTransfer->to_branch_id]);
-
-        $doctorTransfer->update([
-            'status' => 'approved',
-            'approved_by' => auth()->id(),
-            'approved_at' => now(),
-        ]);
-
-        Log::create([
-            'user_id' => auth()->id(),
-            'details' => "تمت الموافقة على طلب نقل الطبيب: {$doctor->name} إلى الفرع {$doctorTransfer->toBranch->name}",
-            'loggable_id' => $doctorTransfer->doctor->id,
-            'loggable_type' => Doctor::class,
-            "action" => "approve_doctor_transfer",
-        ]);
-
-        return redirect()->route('user.doctor-transfers.index')->with('success', 'تمت الموافقة على طلب النقل.');
+    
+        DB::transaction(function () use ($doctorTransfer) {
+            $doctor = $doctorTransfer->doctor;
+            $doctor->branch_id = $doctorTransfer->to_branch_id;
+            $doctor->regenerateCode(); // يعيد تعيين index و code ويحفظ
+    
+            $doctorTransfer->update([
+                'status'      => 'approved',
+                'approved_by' => auth()->id(),
+                'approved_at' => now(),
+            ]);
+    
+            Log::create([
+                'user_id'       => auth()->id(),
+                'details'       => "تمت الموافقة على طلب نقل الطبيب: {$doctor->name} إلى الفرع {$doctorTransfer->toBranch->name}",
+                'loggable_id'   => $doctor->id,
+                'loggable_type' => Doctor::class,
+                'action'        => 'approve_doctor_transfer',
+            ]);
+        });
+    
+        return redirect()
+            ->route('user.doctor-transfers.index')
+            ->with('success', 'تمت الموافقة على طلب النقل.');
     }
 
     /**

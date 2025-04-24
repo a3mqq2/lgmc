@@ -55,6 +55,7 @@
                         <thead>
                             <tr>
                                 <th class="bg-light">#</th>
+                                <th class="bg-light">رقم الاذن</th>
                                 <th class="bg-light">المرخص له</th>
                                 <th class="bg-light">الفرع</th>
                                 <th class="bg-light">تاريخ الإصدار</th>
@@ -67,6 +68,7 @@
                             @foreach ($licences as $licence)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
+                                <td>{{$licence->code}}</td>
                                 <td>{{ $licence->licensable->name }}</td>
                                 <td>{{ $licence->branch->name ?? '---' }}</td>
                                 <td>{{ $licence->issued_date }}</td>

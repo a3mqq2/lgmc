@@ -25,7 +25,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
-        if (empty($row['asm_altbyb_kaml'])) {
+        if (empty($row['alasm'])) {
             return null;
         }
 
@@ -36,40 +36,38 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
 
         $institution = null;
         if (!empty($row['gh_alaaml'])) {
-            $institution = Institution::firstOrCreate(['name' => $row['gh_alaaml'], 'branch_id' => 5]);
+            $institution = Institution::firstOrCreate(['name' => $row['gh_alaaml'], 'branch_id' => 3]);
         }
 
 
         // skip the row if doctor already exists
-        if (Doctor::where('name', $row['asm_altbyb_kaml'])->exists()) {
+        if (Doctor::where('name', $row['alasm'])->exists()) {
             return null;
         }
 
 
 
         $doctor = new Doctor([
-            'doctor_number' => $row['rkm_alaadoyh'],
-            'name' => $row['asm_altbyb_kaml'],
-            // 'phone' => 0 . $row['rkm_alhatf'],
-            // 'address' => $row['alakam'],
-            'doctor_rank_id' => $this->doctorRankMap[$row['alsfrtb_altbyb']] ?? null,
+            'doctor_number' => $row['aadoy'],
+            'name' => $row['alasm'],
+            'phone' => 0 . $row['rkm_alhatf'],
+            'address' => $row['alakam'],
+            'doctor_rank_id' => $this->doctorRankMap[$row['alsf']] ?? null,
             'specialty_1_id' => $specialty?->id,
             'institution_id' => $institution?->id,
-            // 'certificate_of_excellence_date' => !empty($row['almohl']) && is_numeric(preg_replace('/\D/', '', $row['almohl'])) 
-            //     ? preg_replace('/\D/', '', $row['almohl']) . '-01-01' 
-            //     : null,
-            // 'date_of_birth' => !empty($row['tarykh_almylad']) && is_numeric(preg_replace('/\D/', '', $row['tarykh_almylad'])) 
-            //     ? preg_replace('/\D/', '', $row['tarykh_almylad']) . '-01-01' 
-            //     : null,
-            "date_of_birth" => $this->parseDate($row['tarykh_almylad']),
-            'registered_at' => $this->parseDate($row['tarykh_alantsab']),
-            'branch_id' => 9,
+            'certificate_of_excellence_date' => !empty($row['almohl']) && is_numeric(preg_replace('/\D/', '', $row['almohl'])) 
+                ? preg_replace('/\D/', '', $row['almohl']) . '-01-01' 
+                : null,
+            "date_of_birth" => $this->parseDate($row['almylad']),
+            'registered_at' => $this->parseDate($row['alantsab']),
+            'branch_id' => 3,
             'code' => Doctor::count() + 1,
             'type' => "libyan",
             'country_id' => 1,
         ]);
 
         $doctor->save();
+
 
         if (!empty($row["tgdyd_2026"])) {
             $expiryDate = $this->parseDate($row["tgdyd_2026"]);
@@ -87,7 +85,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
                 'expiry_date' => $expiryDate->format('Y-m-d'),
                 'status' => $expiryDate->isPast() ? 'expired' : 'active',
                 'doctor_id' => $doctor->id,
-                'branch_id' => 5,
+                'branch_id' => 3,
                 'created_by' => auth()->id(),
                 'doctor_type' => "libyan",
             ]);

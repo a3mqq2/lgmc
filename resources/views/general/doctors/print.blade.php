@@ -11,7 +11,7 @@
                     <tbody>
                         <tr>
                             <th class="bg-light">كود الطبيب</th>
-                            <td>{{ $doctor->ecode }}</td>
+                            <td>{{ $doctor->code }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">الاسم</th>
