@@ -112,8 +112,15 @@
 
                 </div>
 
-                <div id="id-foreign" style="left:120px!important;">
-                    <p>#{{$licence->id}}</p>
+                <div id="id-foreign" style="left: 41px !important;width: 300px;
+                position: absolute;
+                top: 250px;
+                left: -60px;">
+                    <p style="    text-align: center;
+                    font-size: 25px;
+                    color: #e30613;
+                    font-weight: bold;
+                    font-family: sans-serif;">#{{$licence->code}}</p>
                 </div>
    
             
@@ -150,16 +157,16 @@
 
 
             <div class="country-name-box card  p-3" style="    text-align: center;
-            width: 66px;
+            width: 120px;
             position: absolute;
             top: 614px;
-            right: 617px;
+            right: 567px;
             background: linear-gradient(45deg, #ffcaca, #cc20281c);
             border: 2px dashed #6a6a6a;
             padding: 5px !important;
             font-size: 2px;">
                <h6 class="font-weight-bold">
-                  <strong>{{$licence->licensable->id}}</strong>
+                  <strong>{{$licence->licensable->code}}</strong>
                </h6>
          </div>
 

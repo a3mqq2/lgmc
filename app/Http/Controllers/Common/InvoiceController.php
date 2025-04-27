@@ -120,7 +120,7 @@ class InvoiceController extends Controller
             'description' => 'nullable|string|max:255',
             'amount'      => 'nullable|numeric|min:0',
             'invoiceable_type' => 'nullable|string|in:App\\Models\\Doctor,App\\Models\\MedicalFacility',
-            'invoiceable_id'   => 'nullable|numeric',
+            'invoiceable_id'   => 'nullable|string',
             'transaction_type_id' => 'nullable|numeric',
         ]);
 

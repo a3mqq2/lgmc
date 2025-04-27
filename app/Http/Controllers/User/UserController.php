@@ -37,22 +37,17 @@ class UserController extends Controller
         if(request('phone'))
         {
             $doctor = Doctor::where('phone', 'like', '%' . request('phone') . '%')
-            ->orWhere('phone_2', 'like', '%' . request('phone') . "%")->first();
+            ->orWhere('phone_2', 'like', '%' . request('phone') . "%")
+            ->where('branch_id',auth()->user()->branch_id)->first();
         }
 
         if(request('code'))
         {
-            $doctor = Doctor::where('code', 'like', '%' . request('code') . '%')->first();
+            $doctor = Doctor::where('code', 'like', '%' . request('code') . '%')->where('branch_id',auth()->user()->branch_id)->first();
         }
 
         if($doctor)
         {
-
-            if($doctor->branch_id != auth()->user()->branch_id)
-            {
-                return back()->withErrors(['هذا الطبيب ليس من فرعك']);
-            }
-
             return redirect()->route(get_area_name().'.doctors.show', $doctor);
         } else {
             return back()->withErrors(['لم يتم العثور على هذا الطبيب']);

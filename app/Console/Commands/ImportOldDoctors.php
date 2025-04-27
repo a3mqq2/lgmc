@@ -92,9 +92,6 @@ class ImportOldDoctors extends Command
                 ]);
 
                 // توليد الكود
-                $doctorCount = Doctor::where('branch_id', $doctor->branch_id)->count();
-                $nextNumber = str_pad($doctorCount, 3, '0', STR_PAD_LEFT);
-                $doctor->code = $nextNumber;
                 $doctor->save();
 
                 $this->info("✅ Imported: {$old->name}");

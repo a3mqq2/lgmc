@@ -92,7 +92,7 @@
                         
                     @endif
                 >
-                    <p>#{{$licence->id}}</p>
+                    <p>#{{$licence->code}}</p>
                 </div>
    
                 <div class="permit">

@@ -4,7 +4,7 @@
 
 
 <div class="row">
-    <div class="col-xl-4 col-md-6">
+    {{-- <div class="col-xl-4 col-md-6">
         <a href="{{route(get_area_name().'.tickets.index', ['my' => '1'])}}">
             <div class="card bg-gradient-primary card-height-100">
                 <div class="card-body">
@@ -70,7 +70,7 @@
                 </div><!-- end card body -->
             </div>
         </a>
-    </div>
+    </div> --}}
 
 </div>
 

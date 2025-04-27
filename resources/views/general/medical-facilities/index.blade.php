@@ -48,7 +48,7 @@
                             <tbody>
                                 @foreach ($medicalFacilities as $facility)
                                     <tr>
-                                        <td>{{ $facility->id }}</td>
+                                        <td>{{ $facility->code }}</td>
                                         <td>{{ $facility->name }}</td>
                                         <td>{{ $facility->ownership == "private" ? "خاص" : "عام" }}</td>
                                         <td>{{$facility->commerical_number}}</td>

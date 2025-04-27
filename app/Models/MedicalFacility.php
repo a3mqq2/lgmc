@@ -71,4 +71,54 @@ class MedicalFacility extends Model
     {
         return $this->hasMany(Licence::class,'medical_facility_id');
     }
+
+
+
+        /*---------------------------
+        | Code generation
+        ---------------------------*/
+        protected static function booted(): void
+        {
+            static::creating(function (MedicalFacility $facility) {
+                $facility->setSequentialIndex();
+                $facility->makeCode();
+            });
+        }
+
+        public function setSequentialIndex(): void
+        {
+            $this->index = self::where('branch_id', $this->branch_id)->max('index') + 1;
+        }
+
+        public function makeCode(): void
+        {
+            $this->loadMissing('branch');
+            $this->code = $this->branch->code . '-MF-' . str_pad($this->index, 3, '0', STR_PAD_LEFT);
+        }
+
+        public function regenerateCode(): void
+        {
+            $this->setSequentialIndex();
+            $this->makeCode();
+            $this->saveQuietly();
+        }
+
+        public static function regenerateAllCodes(): void
+        {
+            \DB::transaction(function () {
+                Branch::with(['medicalFacilities' => fn($q) => $q->orderBy('id')])
+                    ->chunkById(100, function ($branches) {
+                        foreach ($branches as $branch) {
+                            $i = 1;
+                            foreach ($branch->medicalFacilities as $facility) {
+                                $facility->index = $i;
+                                $facility->code = $branch->code . '-MF-' . str_pad($i, 3, '0', STR_PAD_LEFT);
+                                $facility->saveQuietly();
+                                $i++;
+                            }
+                        }
+                    });
+            });
+        }
+
 }

@@ -294,10 +294,10 @@ table.print-table td.no-border {
 }
 
 #id {
-  width: 300px;
+  width: 340px;
   position: absolute;
-  top: 193px;
-  left: 114px;
+  top: 207px;
+  left: 26px;
 }
 
 
@@ -326,6 +326,8 @@ table.print-table td.no-border {
   color: #e30613;
   font-weight: bold;
   font-family: sans-serif;
+  font-size: 26px;
+  margin: 0;
 }
 
 

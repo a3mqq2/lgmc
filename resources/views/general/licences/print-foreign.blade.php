@@ -78,7 +78,7 @@
 
 
                 <div class="branch-sett">
-                    <h6 class="font-weight-bold"><strong>وبالإطلاع علـى سجل العضوية لنقابة أطباء {{ $licence->licensable->branch->name }}</strong></h6>
+                    <h6 class="font-weight-bold" style="margin-top:28px;"><strong>وبالإطلاع علـى سجل العضوية لنقابة أطباء {{ $licence->licensable->branch->name }}</strong></h6>
                 </div>
 
           
@@ -90,7 +90,7 @@
                 </div>
 
                 <div id="id-foreign">
-                    <p>#{{$licence->id}}</p>
+                    <p>#{{$licence->code}}</p>
                 </div>
    
                 <div class="permit">
@@ -100,14 +100,28 @@
                         </strong>
                     </h6>
                 </div>
-                <div class="name-box-visitor card  p-3">
-                    <h3 class="font-weight-bold">
+                <div class="name-box-visitor card  p-3" style=" text-align: center;
+                width: 246px !important;
+                position: absolute;
+                top: 592px;
+                right: 158px;
+                background: linear-gradient(45deg, #ffcaca, #cc20281c);
+                border: 2px dashed #6a6a6a;
+                padding: 5px !important;
+                font-size: 2px;">
+                    <h3 class="font-weight-bold" style="font-size: 14px !important;
+                    margin: 0;">
                         <strong>{{$licence->licensable->name}}</strong>
                     </h3>
                 </div>
 
 
-                <div class="his-national">
+                <div class="his-national" style="font-size: 25px;
+                font-weight: bold !important;
+                text-align: center;
+                position: absolute;
+                right: 430px;
+                bottom: 497px;">
                   <h6 class="font-weight-bold">
                       <strong>
                         من الدولــــة
@@ -116,7 +130,15 @@
               </div>
 
 
-              <div class="country-name-box card  p-3">
+              <div class="country-name-box card  p-3" style="text-align: center;
+              width: 140px;
+              position: absolute;
+              top: 583px;
+              right: 547px;
+              background: linear-gradient(45deg, #ffcaca, #cc20281c);
+              border: 2px dashed #6a6a6a;
+              padding: 5px !important;
+              font-size: 2px;">
                   <h6 class="font-weight-bold">
                      <strong>{{$licence->licensable->country->name}}</strong>
                   </h6>
@@ -151,7 +173,7 @@
 
                 <div class="number-box card  p-3">
                     <h6 class="font-weight-bold">
-                        <strong>{{$licence->licensable->id}}</strong>
+                        <strong>{{$licence->licensable->code}}</strong>
                     </h6>
                 </div>
 
