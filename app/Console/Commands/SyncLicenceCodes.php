@@ -6,12 +6,11 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Models\Branch;
-use App\Models\Licence;
 
 class SyncLicenceCodes extends Command
 {
     protected $signature   = 'fix:licence-codes';
-    protected $description = 'Re-index licences per branch-year and rebuild their codes';
+    protected $description = 'Re-index licences per branch-issued-year and rebuild their codes';
 
     public function handle(): int
     {
@@ -19,14 +18,15 @@ class SyncLicenceCodes extends Command
             Branch::with('licences')->chunkById(100, function ($branches) {
                 foreach ($branches as $branch) {
                     $branch->licences
-                        ->sortBy('created_at')
-                        ->groupBy(fn ($l) => $l->created_at->year)
+                        ->sortBy('issued_date')
+                        ->groupBy(fn ($l) => optional($l->issued_date)->format('Y') ?? now()->year)
                         ->each(function ($group, $year) use ($branch) {
                             $i = 1;
                             foreach ($group as $licence) {
+                                $prefix = $licence->licensable_type === \App\Models\Doctor::class ? 'LIC' : 'PERM';
                                 $licence->index = $i;
                                 $licence->code  = $branch->code
-                                                  . '-LIC-'
+                                                  . '-' . $prefix . '-'
                                                   . $year
                                                   . '-'
                                                   . str_pad($i, 3, '0', STR_PAD_LEFT);

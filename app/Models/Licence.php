@@ -103,21 +103,22 @@ class Licence extends Model
 
     public function assignSequence(): void
     {
-        $year   = now()->year;
-        $type   = $this->licensable_type;
+        $year = optional($this->issued_date)->format('Y') ?? now()->year;
+        $type = $this->licensable_type;
         $prefix = $type === Doctor::class ? 'LIC' : 'PERM';
-
+    
         $nextIndex = self::where('branch_id', $this->branch_id)
-            ->whereYear('created_at', $year)
+            ->whereYear('issued_date', $year)
             ->where('licensable_type', $type)
             ->max('index') + 1;
-
+    
         $this->index = $nextIndex;
         $this->code  = $this->branch->code
                       . '-' . $prefix . '-'
                       . $year . '-'
                       . str_pad($nextIndex, 3, '0', STR_PAD_LEFT);
     }
+    
 
     public function regenerateCode(): void
     {
