@@ -1,5 +1,4 @@
 <?php
-// app/Console/Commands/SyncLicenceCodes.php
 
 namespace App\Console\Commands;
 
@@ -10,13 +9,21 @@ use App\Models\Branch;
 class SyncLicenceCodes extends Command
 {
     protected $signature   = 'fix:licence-codes';
-    protected $description = 'Re-index licences per branch-issued-year and rebuild their codes';
+    protected $description = 'Re-index licences per branch-issued-year and rebuild their codes safely';
 
     public function handle(): int
     {
         DB::transaction(function () {
             Branch::with('licences')->chunkById(100, function ($branches) {
                 foreach ($branches as $branch) {
+
+                    // أولاً: اجعل كل الأكواد NULL لتفادي التكرار
+                    foreach ($branch->licences as $licence) {
+                        $licence->code = null;
+                        $licence->saveQuietly();
+                    }
+
+                    // ثانياً: رتب الأكواد من جديد
                     $branch->licences
                         ->sortBy('issued_date')
                         ->groupBy(fn ($l) => optional($l->issued_date)->format('Y') ?? now()->year)
