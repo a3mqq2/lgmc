@@ -82,6 +82,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             $key = "{$branchId}_{$type}_{$year}";
         
             if (!isset($this->licenceIndexes[$key])) {
+                // هنا تجيب اخر اندكس من الداتابيز مرة وحدة فقط
                 $maxIndex = Licence::where('branch_id', $branchId)
                     ->whereYear('issued_date', $year)
                     ->where('licensable_type', $type)
@@ -94,7 +95,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             $index = $this->licenceIndexes[$key];
             $prefix = 'LIC';
             $code = $branchCode . '-' . $prefix . '-' . $year . '-' . str_pad($index, 3, '0', STR_PAD_LEFT);
-        
+
             Licence::create([
                 'licensable_id' => $doctor->id,
                 'licensable_type' => Doctor::class,

@@ -94,14 +94,14 @@ class Licence extends Model
         return $this->morphTo();
     }
 
-    protected static function booted(): void
-    {
-        static::creating(function (Licence $licence) {
-            if (!$licence->code) { // فقط لو الكود مش موجود
-                $licence->assignSequence();
-            }
-        });
-    }
+    // protected static function booted(): void
+    // {
+    //     static::creating(function (Licence $licence) {
+    //         if (!$licence->code) { // فقط لو الكود مش موجود
+    //             $licence->assignSequence();
+    //         }
+    //     });
+    // }
     
 
     public function assignSequence(): void
