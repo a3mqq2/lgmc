@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Models\Branch;
 use App\Models\Licence;
+use Carbon\Carbon;
 
 class SyncLicenceCodes extends Command
 {
@@ -17,16 +18,14 @@ class SyncLicenceCodes extends Command
         DB::transaction(function () {
             Branch::chunkById(100, function ($branches) {
                 foreach ($branches as $branch) {
-                    // اسحب كل التراخيص لهذا الفرع
                     $licences = Licence::where('branch_id', $branch->id)
                         ->orderBy('issued_date')
                         ->get()
                         ->groupBy(function ($licence) {
-                            // تصحيح تحديد السنة
-                            if ($licence->issued_date) {
-                                return $licence->issued_date->format('Y');
-                            } elseif ($licence->expiry_date) {
-                                return $licence->expiry_date->copy()->addDay()->subYear()->format('Y');
+                            if (!empty($licence->issued_date)) {
+                                return Carbon::parse($licence->issued_date)->format('Y');
+                            } elseif (!empty($licence->expiry_date)) {
+                                return Carbon::parse($licence->expiry_date)->addDay()->subYear()->format('Y');
                             } else {
                                 return now()->year;
                             }
