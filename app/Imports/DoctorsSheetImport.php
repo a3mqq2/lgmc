@@ -36,7 +36,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
 
         $institution = null;
         if (!empty($row['gh_alaaml'])) {
-            $institution = Institution::firstOrCreate(['name' => $row['gh_alaaml'], 'branch_id' => 3]);
+            $institution = Institution::firstOrCreate(['name' => $row['gh_alaaml'], 'branch_id' => 6]);
         }
 
         if (Doctor::where('name', $row['alasm'])->exists()) {
@@ -56,7 +56,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
                 : null,
             "date_of_birth" => $this->parseDate($row['almylad']),
             'registered_at' => $this->parseDate($row['alantsab']),
-            'branch_id' => 3,
+            'branch_id' => 6,
             'type' => "libyan",
             'country_id' => 1,
         ]);
@@ -76,7 +76,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
         
             $year = $issueDate->format('Y');
             $branchCode = 'AJK';  
-            $branchId = 3;
+            $branchId = 6;
             $type = Doctor::class;
         
             $key = "{$branchId}_{$type}_{$year}";
