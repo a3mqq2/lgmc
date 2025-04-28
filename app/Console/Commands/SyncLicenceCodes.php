@@ -17,12 +17,19 @@ class SyncLicenceCodes extends Command
         DB::transaction(function () {
             Branch::chunkById(100, function ($branches) {
                 foreach ($branches as $branch) {
-                    // نسحب الترخيصات حسب الفرع الحقيقي مع issued_date موجود
+                    // اسحب كل التراخيص لهذا الفرع
                     $licences = Licence::where('branch_id', $branch->id)
                         ->orderBy('issued_date')
                         ->get()
                         ->groupBy(function ($licence) {
-                            return optional($licence->issued_date)->format('Y') ?? now()->year;
+                            // تصحيح تحديد السنة
+                            if ($licence->issued_date) {
+                                return $licence->issued_date->format('Y');
+                            } elseif ($licence->expiry_date) {
+                                return $licence->expiry_date->copy()->addDay()->subYear()->format('Y');
+                            } else {
+                                return now()->year;
+                            }
                         });
 
                     foreach ($licences as $year => $yearLicences) {
@@ -43,7 +50,7 @@ class SyncLicenceCodes extends Command
             });
         });
 
-        $this->info('Licence indices and codes synced correctly per year.');
+        $this->info('Licence indices and codes synced correctly per real year.');
         return self::SUCCESS;
     }
 }
