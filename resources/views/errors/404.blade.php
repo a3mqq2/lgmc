@@ -47,7 +47,7 @@
                                 <p class="text-muted mb-4 animate__animated animate__fadeInUp animate__delay-1s">الصفحة التي تبحث عنها غير متوفرة!</p>
                                 
                                 <!-- Animated Button -->
-                                <a href="{{ route(get_area_name().'.home') }}" class="btn btn-primary animate__animated animate__bounceIn">
+                                <a href="/" class="btn btn-primary animate__animated animate__bounceIn">
                                     <i class="mdi mdi-home me-1"></i>العودة إلى الصفحة الرئيسية
                                 </a>
                             </div>
