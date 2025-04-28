@@ -17,9 +17,9 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
     protected $licenceIndexes = [];
 
     protected $doctorRankMap = [
-        'طبيب' => 1,
+        'طبيب عام' => 1,
         'اخصائي' => 3,
-        'طبيب ممارس' => 1,
+        'طبيب ممارس' => 2,
         'استشاري' => 6,
     ];
 
@@ -30,13 +30,13 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
         }
 
         $specialty = null;
-        if (!empty($row['altkhss']) && $row['altkhss'] != "طبيب ممارس") {
+        if (!empty($row['altkhss']) && $row['altkhss'] != "طبيب عام") {
             $specialty = Specialty::firstOrCreate(['name' => $row['altkhss']]);
         }
 
         $institution = null;
         if (!empty($row['gh_alaaml'])) {
-            $institution = Institution::firstOrCreate(['name' => $row['gh_alaaml'], 'branch_id' => 6]);
+            $institution = Institution::firstOrCreate(['name' => $row['gh_alaaml'], 'branch_id' => 3]);
         }
 
         if (Doctor::where('name', $row['alasm'])->exists()) {
@@ -56,7 +56,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
                 : null,
             "date_of_birth" => $this->parseDate($row['almylad']),
             'registered_at' => $this->parseDate($row['alantsab']),
-            'branch_id' => 6,
+            'branch_id' => 3,
             'type' => "libyan",
             'country_id' => 1,
         ]);

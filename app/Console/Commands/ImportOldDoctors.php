@@ -66,7 +66,7 @@ class ImportOldDoctors extends Command
 
                 // خريطة تحويل role (نوع العضوية) إلى doctor_rank_id
                 $roleToRank = [
-                    1 => 1, // طبيب ممارس
+                    1 => 2, // طبيب ممارس
                     2 => 3, // أخصائي
                     3 => 6, // استشاري
                     4 => 1, // ممارس عام
