@@ -495,11 +495,10 @@
 
                 // Update Inputs
                 birthYearInput.value = year;
-                dateOfBirthInput.value = `${year}`; // Only the year for Flatpickr
+                dateOfBirthInput.value = `${year}`; 
                 genderSelect.value = gender;
                 genderInput.value = gender;
             } else {
-                // Clear inputs if the national number is not valid
                 birthYearInput.value = '';
                 dateOfBirthInput.value = '';
                 genderSelect.value = '';
@@ -511,13 +510,11 @@
 </script>
     <script>
         $(document).ready(function() {
-            // Function to show/hide tbody based on selected country
             function toggleTbody() {
                 const selectedCountryId = $('#country_id').val();
                 const libyanDoctorsTbody = $('#libyan_doctors');
                 const foreignDoctorsTbody = $('#foreign_doctors');
                 
-                // Show Libyan doctors if selected country is Libya, otherwise show foreign doctors
                 if (selectedCountryId === '1') {
                     libyanDoctorsTbody.show();
                     foreignDoctorsTbody.hide();
@@ -527,14 +524,10 @@
                 }
             }
     
-            // Call toggleTbody when the page loads
             toggleTbody();
     
-            // Listen for changes in the selected country
             $('#country_id').change(function() {
-                // Update the hidden input field with the selected country ID
                 $('#selected_country_id').val($(this).val());
-                // Call toggleTbody to show/hide tbody based on the selected country
                 toggleTbody();
             });
         });
@@ -544,18 +537,14 @@
 
         $(".selectize").selectize();
         
-        // Set data-old attribute for Specialty 2 and Specialty 3 selects
         $('select[name="specialty_2_id"]').attr('data-old', '{{ old("specialty_2_id") }}');
         $('select[name="specialty_3_id"]').attr('data-old', '{{ old("specialty_3_id") }}');
 
-        // Initialize Specialty 1 selectize
         var selectizeSpecialty1 = $('select[name="specialty_1_id"]').selectize({
             onChange: function(value) {
                 if (!value.length) return;
-                // Clear existing options
                 var selectizeSpecialty2 = selectizeSpecialty2Instance[0].selectize;
                 selectizeSpecialty2.clearOptions();
-                // Fetch data for specialty 2 based on selected value of specialty 1
                 $.ajax({
                     url: '/api/get-sub-specialties/' + value,
                     type: 'GET',
@@ -564,24 +553,19 @@
                         $.each(response, function(index, specialty) {
                             selectizeSpecialty2.addOption({value: specialty.id, text: specialty.name});
                         });
-                        // Restore old value for Specialty 2
                         selectizeSpecialty2.setValue($('select[name="specialty_2_id"]').data('old'));
                     }
                 });
             }
         });
 
-        // Trigger change event for Specialty 1 select to populate Specialty 2
         $('select[name="specialty_1_id"]').trigger('change');
 
-        // Initialize Specialty 2 selectize
         var selectizeSpecialty2Instance = $('select[name="specialty_2_id"]').selectize({
             onChange: function(value) {
                 if (!value.length) return;
-                // Clear existing options
                 var selectizeSpecialty3 = selectizeSpecialty3Instance[0].selectize;
                 selectizeSpecialty3.clearOptions();
-                // Fetch data for specialty 3 based on selected value of specialty 2
                 $.ajax({
                     url: '/api/get-sub-specialties/' + value,
                     type: 'GET',
@@ -590,14 +574,12 @@
                         $.each(response, function(index, specialty) {
                             selectizeSpecialty3.addOption({value: specialty.id, text: specialty.name});
                         });
-                        // Restore old value for Specialty 3
                         selectizeSpecialty3.setValue($('select[name="specialty_3_id"]').data('old'));
                     }
                 });
             }
         });
 
-        // Initialize Specialty 3 selectize
         var selectizeSpecialty3Instance = $('select[name="specialty_3_id"]').selectize();
     });
 </script>
@@ -615,7 +597,6 @@ $(document).ready(function () {
                      .removeClass('text-muted')
                      .addClass('text-success');
 
-        // تأكد من عدم عرض النص المكرر
         if (statusElement.hasClass('text-success')) {
             $(this).siblings('.file-name-display').remove();
         }
@@ -625,7 +606,6 @@ $(document).ready(function () {
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // التحقق من الاسم
         document.querySelector('input[name="name"]').addEventListener('input', function() {
             if (this.value.trim() === '') {
                 showError(this, 'حقل الاسم مطلوب.');
@@ -636,7 +616,6 @@ $(document).ready(function () {
             }
         });
 
-        // التحقق من الاسم بالإنجليزية
         document.querySelector('input[name="name_en"]').addEventListener('input', function() {
             if (this.value.trim() === '') {
                 showError(this, 'حقل الاسم باللغة الإنجليزية مطلوب.');
@@ -647,7 +626,6 @@ $(document).ready(function () {
             }
         });
 
-        // التحقق من الرقم الوطني في حال كان الطبيب ليبي
         const nationalNumberInput = document.querySelector('input[name="national_number"]');
         if (nationalNumberInput) {
             nationalNumberInput.addEventListener('input', function() {
@@ -664,7 +642,6 @@ $(document).ready(function () {
             });
         }
 
-        // التحقق من جميع الحقول التي تحتوي على تواريخ
         const dateInputs = [
             'date_of_birth',
             'passport_expiration',
@@ -679,7 +656,6 @@ $(document).ready(function () {
                 inputElement.addEventListener('input', function() {
                     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
                     if (!datePattern.test(this.value)) {
-                        // showError(this, 'التاريخ يجب أن يكون بالصيغة الصحيحة (سنة-شهر-يوم).');
                     } else {
                         removeError(this);
                     }
@@ -687,7 +663,6 @@ $(document).ready(function () {
             }
         });
 
-        // التحقق من كلمة المرور
         document.querySelector('input[name="password"]').addEventListener('input', function() {
             if (this.value.length < 6) {
                 showError(this, 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.');
@@ -696,7 +671,6 @@ $(document).ready(function () {
             }
         });
 
-        // التحقق من تأكيد كلمة المرور
         document.querySelector('input[name="password_confirmation"]').addEventListener('input', function() {
             const password = document.querySelector('input[name="password"]').value;
             if (this.value !== password) {
@@ -706,7 +680,6 @@ $(document).ready(function () {
             }
         });
 
-        // دالة لإظهار الخطأ
         function showError(element, message) {
             removeError(element);
             const errorDiv = document.createElement('div');
@@ -716,7 +689,6 @@ $(document).ready(function () {
             element.parentNode.appendChild(errorDiv);
         }
 
-        // دالة لإزالة الخطأ
         function removeError(element) {
             element.classList.remove('is-invalid');
             const errorDiv = element.parentNode.querySelector('.text-danger');
@@ -729,7 +701,6 @@ $(document).ready(function () {
 
     <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Input elements
     const nationalNumberInput = document.getElementById('national_number');
     const birthYearInput = document.getElementById('birth_year');
     const genderSelect = document.getElementById('gender');
@@ -737,28 +708,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const nameEnInput = document.querySelector('input[name="name_en"]');
     const emailInput = document.querySelector('input[name="email"]');
 
-    // Event listener for national number input
     nationalNumberInput.addEventListener('input', function () {
         const nationalNumber = this.value;
-
-        // Validate the length of the national number
         if (nationalNumber.length === 12) {
-            // Extract Gender
-            const genderDigit = parseInt(nationalNumber.charAt(0)); // First digit determines gender
+            const genderDigit = parseInt(nationalNumber.charAt(0)); 
             const gender = genderDigit === 1 ? 'male' : 'female';
             genderSelect.value = gender;
             genderInput.value = gender;
 
-            // Extract Birth Year, Month, and Day
-            const year = nationalNumber.substring(1, 5); // 2nd to 5th digits are the year
-            const month = parseInt(nationalNumber.substring(5, 7)); // 6th and 7th digits are the month
-            const day = parseInt(nationalNumber.substring(7, 9)); // 8th and 9th digits are the day
+            const year = nationalNumber.substring(1, 5); 
+            const month = parseInt(nationalNumber.substring(5, 7)); 
+            const day = parseInt(nationalNumber.substring(7, 9)); 
 
-            // Update inputs
             birthYearInput.value = year;
 
         } else {
-            // Clear inputs if the national number is invalid
             birthYearInput.value = '';
             genderSelect.value = '';
             genderInput.value = '';
@@ -808,46 +772,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Input elements
         const nationalNumberInput = document.getElementById('national_number');
         const birthYearInput = document.getElementById('birth_year');
-        const dateOfBirthInput = document.querySelector('input[name="date_of_birth"]'); // For non-Libyan
+        const dateOfBirthInput = document.querySelector('input[name="date_of_birth"]'); 
         const nameEnInput = document.querySelector('input[name="name_en"]');
         const emailInput = document.querySelector('input[name="email"]');
 
-        // Check if request type is Libyan or not
         const isLibyan = "{{ request('type') }}" === "libyan";
 
-        // Event listener for Libyan national number input
         if (isLibyan && nationalNumberInput) {
             nationalNumberInput.addEventListener('input', function () {
                 const nationalNumber = this.value;
 
                 if (nationalNumber.length === 12) {
-                    // Extract Gender (optional if needed)
                     const genderDigit = parseInt(nationalNumber.charAt(0));
                     const gender = genderDigit === 1 ? 'male' : 'female';
 
-                    // Extract Birth Year, Month, Day
                     const year = nationalNumber.substring(1, 5);
                     const month = parseInt(nationalNumber.substring(5, 7));
                     const day = parseInt(nationalNumber.substring(7, 9));
 
-                    // Update fields
                     if (birthYearInput) birthYearInput.value = year;
 
                 } else {
-                    // Clear fields if the national number is invalid
                     if (birthYearInput) birthYearInput.value = '';
                     emailInput.value = '';
                 }
             });
         }
 
-        // Event listener for date of birth (non-Libyan)
         if (!isLibyan && dateOfBirthInput) {
             dateOfBirthInput.addEventListener('input', function () {
-                const dob = this.value; // Format: YYYY-MM-DD
+                const dob = this.value; 
                 if (dob) {
                     const [year, month, day] = dob.split('-');
                 } else {
@@ -856,13 +812,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Event listener for English name input
         nameEnInput?.addEventListener('input', function () {
             if (isLibyan) {
-                // Libyan: Regenerate email using year, month, day
                 const year = birthYearInput?.value || '';
             } else {
-                // Non-Libyan: Regenerate email using date_of_birth input
                 const dob = dateOfBirthInput?.value || '';
                 if (dob) {
                     const [year, month, day] = dob.split('-');
@@ -875,15 +828,12 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Find all input, select, and textarea fields with the "required" attribute
         const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
 
         requiredFields.forEach(function (field) {
-            // Find the corresponding label for the field
             const label = field.closest('.form-group, .col-md-6, .col-md-4, .col-md-2, .col-md-12')?.querySelector('label');
 
             if (label && !label.querySelector('.required-asterisk')) {
-                // Append a red asterisk to the label
                 const asterisk = document.createElement('span');
                 asterisk.classList.add('required-asterisk');
                 asterisk.innerHTML = ' *';
@@ -921,12 +871,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
 var availableSpecialties = @json($specialties2); 
-// If needed, transform objects -> strings:
-// availableSpecialties = availableSpecialties.map(item => item.specialty_2).filter(Boolean);
-
 $("#specialty_2").autocomplete({
     source: availableSpecialties
-    // minLength: 0 // (optional if you want to see results on empty input)
 });
 </script>
 

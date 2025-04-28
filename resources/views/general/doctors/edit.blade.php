@@ -643,7 +643,6 @@ $(document).ready(function () {
                 inputElement.addEventListener('input', function() {
                     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
                     if (!datePattern.test(this.value)) {
-                        // showError(this, 'التاريخ يجب أن يكون بالصيغة الصحيحة (سنة-شهر-يوم).');
                     } else {
                         removeError(this);
                     }
@@ -651,7 +650,6 @@ $(document).ready(function () {
             }
         });
 
-        // التحقق من كلمة المرور
         document.querySelector('input[name="password"]').addEventListener('input', function() {
             if (this.value.length < 6) {
                 showError(this, 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.');
@@ -660,7 +658,6 @@ $(document).ready(function () {
             }
         });
 
-        // التحقق من تأكيد كلمة المرور
         document.querySelector('input[name="password_confirmation"]').addEventListener('input', function() {
             const password = document.querySelector('input[name="password"]').value;
             if (this.value !== password) {

@@ -9,8 +9,8 @@ use App\Models\Invoice;
 use App\Models\Pricing;
 use App\Enums\DoctorType;
 use App\Enums\MembershipStatus;
-use Illuminate\Support\Facades\Log; // لإضافة السجلات في حالة الأخطاء
-use Illuminate\Console\Command; // الفئة الأساسية للأوامر في Laravel
+use Illuminate\Support\Facades\Log; 
+use Illuminate\Console\Command;  
 class GenerateMembershipInvoices extends Command
 {
     protected $signature = 'generate:membership-invoices';
@@ -18,7 +18,7 @@ class GenerateMembershipInvoices extends Command
 
     public function handle()
     {
-        $daysBeforeExpiration = 90; // عدد الأيام قبل انتهاء العضوية
+        $daysBeforeExpiration = 90;  
         $currentDate = Carbon::now();
         
         $doctors = Doctor::whereDate('membership_expiration_date', '<=', $currentDate->addDays($daysBeforeExpiration))

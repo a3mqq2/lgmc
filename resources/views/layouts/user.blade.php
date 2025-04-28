@@ -691,24 +691,22 @@
          document.querySelectorAll('input[type="date"], .date-picker').forEach(function(field) {
              let picker = new Litepicker({
                  element: field,
-                 format: "YYYY-MM-DD", // إجبار التنسيق على الظهور بشكل صحيح
+                 format: "YYYY-MM-DD",  
                  singleMode: true,
                  autoApply: true,
                  allowRepick: true,
                  minDate: "1900-01-01",
-                 lang: "en", // فرض اللغة الإنجليزية على التقويم
+                 lang: "en",
                  onSelect: function(date) {
-                     let selectedDate = date.format("YYYY-MM-DD"); // ضمان تنسيق التاريخ
+                     let selectedDate = date.format("YYYY-MM-DD"); 
                      field.value = selectedDate;
                      field.dispatchEvent(new Event('change', { bubbles: true }));
                      console.log("Selected date:", selectedDate);
                  }
              });
      
-             // إزالة placeholder لمنع عرض النصوص المعكوسة
              field.removeAttribute("placeholder");
      
-             // إجبار تنسيق التاريخ عند فقدان التركيز (Blur)
              field.addEventListener("blur", function() {
                  let dateValue = field.value.trim();
                  if (dateValue) {

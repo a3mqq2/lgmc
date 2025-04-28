@@ -20,9 +20,7 @@ class ProfileController extends Controller
             'password' => 'required|confirmed|min:8',
         ]);
 
-        // التحقق من كلمة المرور الحالية
         if (!Hash::check($request->current_password, auth()->user()->password)) {
-            // سجل محاولة فاشلة لتغيير كلمة المرور
             Log::create([
                 'user_id' => auth()->id(),
                 'details' => 'فشل في محاولة تغيير كلمة المرور بسبب كلمة مرور حالية غير صحيحة',

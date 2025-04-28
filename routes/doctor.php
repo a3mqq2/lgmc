@@ -6,7 +6,6 @@ use App\Http\Controllers\DoctorHomeController;
 
 
 Route::prefix('doctor')->name('doctor.')->middleware('auth:doctor')->group(function () {
-   // route for dashboard
    Route::get('/dashboard', [DoctorHomeController::class, 'dashboard'])->name('dashboard');
    Route::get('logout', [DoctorHomeController::class, 'logout'])->name('logout');
    Route::get('/licences/{licence}/print', [DoctorHomeController::class, 'licence_print'])->name('licences.print');

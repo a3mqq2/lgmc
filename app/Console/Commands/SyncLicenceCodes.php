@@ -10,12 +10,15 @@ use Carbon\Carbon;
 
 class SyncLicenceCodes extends Command
 {
-    protected $signature   = 'fix:licence-codes';
-    protected $description = 'Re-index licences per branch-issued-year and rebuild their codes correctly';
+    protected $signature = 'fix:licence-codes';
+    protected $description = 'Re-index licences per branch-issued-year and rebuild their codes safely';
 
     public function handle(): int
     {
         DB::transaction(function () {
+
+            Licence::query()->update(['code' => null]);
+
             Branch::chunkById(100, function ($branches) {
                 foreach ($branches as $branch) {
                     $licences = Licence::where('branch_id', $branch->id)
@@ -49,7 +52,7 @@ class SyncLicenceCodes extends Command
             });
         });
 
-        $this->info('Licence indices and codes synced correctly per real year.');
+        $this->info('Licence indices and codes synced successfully and safely.');
         return self::SUCCESS;
     }
 }
