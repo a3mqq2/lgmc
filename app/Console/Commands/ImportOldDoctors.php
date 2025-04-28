@@ -53,7 +53,6 @@ class ImportOldDoctors extends Command
 
                 // تحديد النوع حسب الدولة
                 $type = 'foreign';
-
                 if ($newCountry) {
                     $countryName = strtolower(trim($newCountry->name));
                     $countryEnName = strtolower(trim($newCountry->en_name));
@@ -64,7 +63,15 @@ class ImportOldDoctors extends Command
                         $type = 'palestinian';
                     }
                 }
-                
+
+                // خريطة تحويل role (نوع العضوية) إلى doctor_rank_id
+                $roleToRank = [
+                    1 => 1, // طبيب ممارس
+                    2 => 3, // أخصائي
+                    3 => 6, // استشاري
+                    4 => 1, // ممارس عام
+                ];
+
                 $doctor = Doctor::create([
                     'doctor_number' => $old->id,
                     'name' => $old->name,
@@ -73,6 +80,7 @@ class ImportOldDoctors extends Command
                     'mother_name' => $old->mother_name,
                     'date_of_birth' => $old->birthday,
                     'gender' => $old->gender == 1 ? 'male' : 'female',
+                    'marital_status' => $old->statuses == 2 ? 'married' : 'single', // الحالة الاجتماعية
                     'passport_number' => $old->pid,
                     'passport_expiration' => $old->pid_date,
                     'address' => $old->address,
@@ -80,7 +88,7 @@ class ImportOldDoctors extends Command
                     'internership_complete' => $old->internership_complete,
                     'qualification_university_id' => $newUniversityId,
                     'certificate_of_excellence_date' => $old->qualification_date,
-                    'doctor_rank_id' => $old->role,
+                    'doctor_rank_id' => $roleToRank[$old->role] ?? null, // نوع العضوية بعد التحويل
                     'experience' => $old->experience,
                     'notes' => $old->note,
                     'registered_at' => $old->regist_date,
@@ -91,7 +99,6 @@ class ImportOldDoctors extends Command
                     'type' => $type,
                 ]);
 
-                // توليد الكود
                 $doctor->save();
 
                 $this->info("✅ Imported: {$old->name}");

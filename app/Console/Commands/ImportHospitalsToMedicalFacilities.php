@@ -16,10 +16,7 @@ class ImportHospitalsToMedicalFacilities extends Command
         $oldHospitals = DB::connection('lgmc_r')->table('hospitals')->get();
 
         foreach ($oldHospitals as $hospital) {
-            // تحويل الملكية إلى enum (عام ← public | غير ذلك ← private)
             $ownership = strtolower($hospital->ownership) === 'عام' ? 'public' : 'private';
-
-            // إدخال السجل
             MedicalFacility::create([
                 'name' => $hospital->name,
                 'ownership' => $ownership,
