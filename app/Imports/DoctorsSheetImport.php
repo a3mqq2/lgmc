@@ -17,6 +17,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class DoctorsSheetImport implements ToModel, WithHeadingRow
 {
+    protected $licenceIndexes = [];
     protected $doctorRankMap = [
         'طبيب' => 1,
         'اخصائي' => 3,
@@ -72,13 +73,35 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
 
         if (!empty($row["tgdyd_2026"])) {
             $expiryDate = $this->parseDate($row["tgdyd_2026"]);
-
-            if ($expiryDate->format('m-d') === '12-31') {
+        
+            if ($expiryDate && $expiryDate->format('m-d') === '12-31') {
                 $issueDate = $expiryDate->copy()->startOfYear();
-            } else {
+            } elseif ($expiryDate) {
                 $issueDate = $expiryDate->copy()->addDay()->subYear();
+            } else {
+                $issueDate = now();
             }
-
+        
+            $year = $issueDate->format('Y');
+            $type = Doctor::class;
+            $branchCode = 'AJK';  
+        
+            $key = "{$doctor->branch_id}_{$type}_{$year}";
+        
+            if (!isset($this->licenceIndexes[$key])) {
+                $maxIndex = Licence::where('branch_id', $doctor->branch_id)
+                    ->whereYear('issued_date', $year)
+                    ->where('licensable_type', $type)
+                    ->max('index') ?? 0;
+                $this->licenceIndexes[$key] = $maxIndex;
+            }
+        
+            $this->licenceIndexes[$key]++;
+        
+            $index = $this->licenceIndexes[$key];
+            $prefix = 'LIC'; // هنا بما ان licensable_type Doctor
+            $code = $branchCode . '-' . $prefix . '-' . $year . '-' . str_pad($index, 3, '0', STR_PAD_LEFT);
+        
             $licence = Licence::create([
                 'licensable_id' => $doctor->id,
                 'licensable_type' => Doctor::class,
@@ -89,16 +112,16 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
                 'branch_id' => 3,
                 'created_by' => auth()->id(),
                 'doctor_type' => "libyan",
+                'index' => $index,
+                'code' => $code,
             ]);
-
-
+        
             $doctor->update([
                 'membership_status' => $expiryDate->isPast() ? 'inactive' : 'active',
                 'membership_expiration_date' => $expiryDate->format('Y-m-d'),
             ]);
-
         }
-
+        
         return $doctor;
     }
 
