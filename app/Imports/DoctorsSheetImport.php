@@ -4,10 +4,7 @@ namespace App\Imports;
 
 use Carbon\Carbon;
 use App\Models\Doctor;
-use App\Models\Invoice;
 use App\Models\Licence;
-use App\Models\Pricing;
-use App\Enums\DoctorType;
 use App\Models\Specialty;
 use App\Models\Institution;
 use Illuminate\Support\Facades\Log;
@@ -17,35 +14,8 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class DoctorsSheetImport implements ToModel, WithHeadingRow
 {
-
-    protected $existingLicenceIndexes = [];
-
-    public function __construct()
-    {
-        $this->initializeLicenceIndexes();
-    }
-    
-    protected function initializeLicenceIndexes()
-    {
-        $licences = Licence::select('branch_id', 'licensable_type', 'issued_date', 'index')
-            ->get();
-    
-        foreach ($licences as $licence) {
-            $year = optional($licence->issued_date)->format('Y') ?? now()->year;
-            $type = $licence->licensable_type;
-            $branchId = $licence->branch_id;
-    
-            $key = "{$branchId}_{$type}_{$year}";
-    
-            if (!isset($this->existingLicenceIndexes[$key])) {
-                $this->existingLicenceIndexes[$key] = [];
-            }
-    
-            $this->existingLicenceIndexes[$key][] = $licence->index;
-        }
-    }
-    
     protected $licenceIndexes = [];
+
     protected $doctorRankMap = [
         'طبيب' => 1,
         'اخصائي' => 3,
@@ -69,13 +39,9 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             $institution = Institution::firstOrCreate(['name' => $row['gh_alaaml'], 'branch_id' => 3]);
         }
 
-
-        // skip the row if doctor already exists
         if (Doctor::where('name', $row['alasm'])->exists()) {
             return null;
         }
-
-
 
         $doctor = new Doctor([
             'doctor_number' => $row['aadoy'],
@@ -91,17 +57,15 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             "date_of_birth" => $this->parseDate($row['almylad']),
             'registered_at' => $this->parseDate($row['alantsab']),
             'branch_id' => 3,
-            'code' => Doctor::count() + 1,
             'type' => "libyan",
             'country_id' => 1,
         ]);
 
         $doctor->save();
 
-
         if (!empty($row["tgdyd_2026"])) {
             $expiryDate = $this->parseDate($row["tgdyd_2026"]);
-            
+        
             if ($expiryDate && $expiryDate->format('m-d') === '12-31') {
                 $issueDate = $expiryDate->copy()->startOfYear();
             } elseif ($expiryDate) {
@@ -111,26 +75,27 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             }
         
             $year = $issueDate->format('Y');
-            $type = Doctor::class;
-            $branchCode = 'AJK';
+            $branchCode = 'AJK';  
             $branchId = 3;
+            $type = Doctor::class;
         
             $key = "{$branchId}_{$type}_{$year}";
         
-            if (!isset($this->existingLicenceIndexes[$key])) {
-                $this->existingLicenceIndexes[$key] = [];
+            if (!isset($this->licenceIndexes[$key])) {
+                $maxIndex = Licence::where('branch_id', $branchId)
+                    ->whereYear('issued_date', $year)
+                    ->where('licensable_type', $type)
+                    ->max('index') ?? 0;
+                $this->licenceIndexes[$key] = $maxIndex;
             }
         
-            $newIndex = empty($this->existingLicenceIndexes[$key]) 
-                ? 1 
-                : (max($this->existingLicenceIndexes[$key]) + 1);
+            $this->licenceIndexes[$key]++;
         
-            $this->existingLicenceIndexes[$key][] = $newIndex;
-        
+            $index = $this->licenceIndexes[$key];
             $prefix = 'LIC';
-            $code = $branchCode . '-' . $prefix . '-' . $year . '-' . str_pad($newIndex, 3, '0', STR_PAD_LEFT);
+            $code = $branchCode . '-' . $prefix . '-' . $year . '-' . str_pad($index, 3, '0', STR_PAD_LEFT);
         
-            $licence = Licence::create([
+            Licence::create([
                 'licensable_id' => $doctor->id,
                 'licensable_type' => Doctor::class,
                 'issued_date' => $issueDate->format('Y-m-d'),
@@ -140,7 +105,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
                 'branch_id' => $branchId,
                 'created_by' => auth()->id(),
                 'doctor_type' => "libyan",
-                'index' => $newIndex,
+                'index' => $index,
                 'code' => $code,
             ]);
         
@@ -149,8 +114,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
                 'membership_expiration_date' => $expiryDate->format('Y-m-d'),
             ]);
         }
-        
-        
+
         return $doctor;
     }
 

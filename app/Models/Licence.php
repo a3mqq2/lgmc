@@ -97,9 +97,12 @@ class Licence extends Model
     protected static function booted(): void
     {
         static::creating(function (Licence $licence) {
-            $licence->assignSequence();
+            if (!$licence->code) { // فقط لو الكود مش موجود
+                $licence->assignSequence();
+            }
         });
     }
+    
 
     public function assignSequence(): void
     {
