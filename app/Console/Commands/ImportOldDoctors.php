@@ -80,7 +80,7 @@ class ImportOldDoctors extends Command
                     'mother_name' => $old->mother_name,
                     'date_of_birth' => $old->birthday,
                     'gender' => $old->gender == 1 ? 'male' : 'female',
-                    'marital_status' => $old->statuses == 2 ? 'married' : 'single', // الحالة الاجتماعية
+                    // 'marital_status' => $old->statuses == 2 ? 'married' : 'single', // الحالة الاجتماعية
                     'passport_number' => $old->pid,
                     'passport_expiration' => $old->pid_date,
                     'address' => $old->address,

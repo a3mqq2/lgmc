@@ -56,7 +56,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
                 : null,
             "date_of_birth" => $this->parseDate($row['almylad']),
             'registered_at' => $this->parseDate($row['alantsab']),
-            'branch_id' => 6,
+            'branch_id' => 5,
             'type' => "libyan",
             'country_id' => 1,
         ]);
