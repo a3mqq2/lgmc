@@ -1,4 +1,3 @@
-// app/Console/Commands/ExpireMemberships.php
 <?php
 
 namespace App\Console\Commands;

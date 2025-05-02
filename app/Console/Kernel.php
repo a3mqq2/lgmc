@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('generate:membership-invoices')->daily();
         $schedule->command('licences:expiration')->daily();
         $schedule->command('doctors:expire-memberships')->daily();
+        $schedule->command('queue:work --stop-when-empty')->everyMinute();
 
     }
 
