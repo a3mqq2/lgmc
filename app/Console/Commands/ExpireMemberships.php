@@ -14,8 +14,8 @@ class ExpireMemberships extends Command
     public function handle(): int
     {
         Doctor::whereDate('membership_expiration_date', '<=', Carbon::today())
-              ->where('membership_status', '!=', 'expired')
-              ->update(['membership_status' => 'expired']);
+              ->where('membership_status', '!=', 'inactive')
+              ->update(['membership_status' => 'inactive']);
 
         return self::SUCCESS;
     }
