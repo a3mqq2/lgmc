@@ -34,15 +34,9 @@ class TestingEmail extends Mailable
     /**
      * Get the message content definition.
      */
-    public function content(): Content
+    public function content()
     {
-        return new Content(
-            markdown: 'emails.testing',
-            with: [
-                'name' => 'John Doe',
-                'message' => 'This is a test email.',
-            ],
-        );
+        return 'testing-email';
     }
 
     /**
