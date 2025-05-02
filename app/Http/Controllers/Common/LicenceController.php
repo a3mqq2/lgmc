@@ -47,6 +47,11 @@ class LicenceController extends Controller
         if ($request->doctor_type && $request->type === 'doctors') {
             $query->where('doctor_type', $request->doctor_type);
         }
+
+        if($request->code)
+        {
+            $query->where('code', 'like', '%' . $request->code . '%');
+        }
         
         if ($request->search) {
             $model = $request->type === 'doctors' ? Doctor::class : MedicalFacility::class;
@@ -55,20 +60,30 @@ class LicenceController extends Controller
             });
         }
         
-        if ($request->issued_date) {
-            $query->whereDate('issued_date', $request->issued_date);
+        if ($request->issued_from_date) {
+            $query->whereDate('issued_date', '>=', $request->issued_from_date);
         }
-        
-        if ($request->expiry_date) {
-            $query->whereDate('expiry_date', $request->expiry_date);
+
+        if ($request->issued_to_date) {
+            $query->whereDate('issued_date', '<=', $request->issued_to_date);
         }
+
+        if ($request->expiry_from_date) {
+            $query->whereDate('expiry_date', '>=', $request->expiry_from_date);
+        }
+
+        if ($request->expiry_to_date) {
+            $query->whereDate('expiry_date', '<=', $request->expiry_to_date);
+        }
+
+
     
         if (get_area_name() !== 'admin') {
             $query->where('branch_id', Auth::user()->branch_id);
         }
     
         return view('general.licences.index', [
-            'licences' => $query->orderBy('index')->paginate(10)
+            'licences' => $query->orderByDesc('index')->paginate(50)
         ]);
     }
     
@@ -108,6 +123,17 @@ class LicenceController extends Controller
                 $licensable = app($validatedData['licensable_type'])::findOrFail($validatedData['licensable_id']);
            
 
+                // check if duplicate licence
+                $licence = Licence::where('licensable_type', $validatedData['licensable_type'])
+                    ->where('licensable_id', $validatedData['licensable_id'])
+                    ->where('issued_date', $validatedData['issued_date']) 
+                    ->where('expiry_date', $validatedData['expiry_date'])
+                    ->first();
+
+                if ($licence) {
+                    return  throw new  \Exception('هذا الترخيص موجود بالفعل');
+                }
+
                 $licence = Licence::create([
                     'licensable_type' => $validatedData['licensable_type'],
                     'licensable_id' => $validatedData['licensable_id'],
@@ -129,11 +155,10 @@ class LicenceController extends Controller
                 ];
 
                 $pricingId = $pricingMap[$licensable->type->value][$licensable->doctor_rank_id] ?? null;
-
                 if ($pricingId) {
                     $pricing = Pricing::find($pricingId);
                     Invoice::create([
-                        'invoice_number' => 'LIC' . last_invoice_id() . '_' . $licensable->id,
+                        'invoice_number' => 'LIC' .  '_' .  rand(1, 600000) ,
                         'amount' => $pricing->amount,
                         'branch_id' => $licensable->branch_id,
                         'description' => 'تكلفة إصدار إذن مزاولة للطبيب ' . $licensable->name,
@@ -456,6 +481,15 @@ class LicenceController extends Controller
     }
 
     public function print(Licence $licence) {
+
+        if(auth()->user()->branch_id != $licence->branch_id) {
+            abort(404);
+        }
+
+        if($licence->status != "active") {
+            return redirect()->back()->withErrors(['لا يمكنك طباعة اذن مزاولة في هذه الحاله التي بها']);
+        }   
+
         Log::create([
             "user_id" => auth()->id(),
             "details" => " تمت طباعة اذن المزاولة " . $licence->id, 

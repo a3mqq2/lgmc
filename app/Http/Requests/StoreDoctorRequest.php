@@ -10,7 +10,7 @@ class StoreDoctorRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;  // يمكنك تعديل هذا إذا كنت تحتاج إلى منطق تفويض
+        return true; 
     }
 
     public function rules(): array
@@ -57,9 +57,8 @@ class StoreDoctorRequest extends FormRequest
             'certificate_of_excellence_date' => 'required|string',
             'doctor_rank_id' => 'required|numeric',
             'medical_facilities' => 'nullable|array',
-            'specialty_1_id' => 'required_unless:doctor_rank_id,1',
+            'specialty_1_id' => 'nullable',
             'specialty_2' => 'nullable',
-            'specialty_3_id' => 'nullable|numeric',
             'ex_medical_facilities' => 'nullable|array',
             'experience' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
@@ -71,7 +70,7 @@ class StoreDoctorRequest extends FormRequest
             'country_graduation_id' => 'nullable|numeric',
             'institution_id' => 'nullable',
             'registered_at' => "nullable",
-            'g-recaptcha-response' => ($routeName === 'register-store' && !$isLocalEnv) ? 'required|captcha' : '',
+            // 'g-recaptcha-response' => ($routeName === 'register-store' && !$isLocalEnv) ? 'required|captcha' : '',
 
             
             // قواعد التحقق المخصصة للتحقق من البلاك ليست
@@ -142,7 +141,6 @@ class StoreDoctorRequest extends FormRequest
             'doctor_rank_id.required' => 'حقل رتبة الطبيب مطلوب.',
             'doctor_rank_id.numeric' => 'حقل رتبة الطبيب يجب أن يكون رقمياً.',
             'medical_facilities.array' => 'حقل المرافق الطبية يجب أن يكون مصفوفة.',
-            'specialty_1_id.required' => 'حقل التخصص الأول مطلوب.',
             'specialty_1_id.numeric' => 'حقل التخصص الأول يجب أن يكون رقمياً.',
             'specialty_2_id.numeric' => 'حقل التخصص الثاني يجب أن يكون رقمياً.',
             'specialty_3_id.numeric' => 'حقل التخصص الثالث يجب أن يكون رقمياً.',

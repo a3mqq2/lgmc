@@ -36,7 +36,7 @@
                     </div>
 
                     {{-- Type --}}
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
                         <label for="type" class="form-label">النوع</label>
                         <select name="type" id="type" 
                                 class="form-select @error('type') is-invalid @enderror" required>
@@ -49,7 +49,9 @@
                         @error('type')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
-                    </div>
+                    </div> --}}
+
+                    <input type="hidden" name="type" value="service">
 
                     {{-- Entity Type --}}
                     <div class="mb-3">

@@ -99,6 +99,7 @@ class MedicalFacilityService
             if ($data['manager_id'] === null) {
                 unset($data['manager_id']);
             }
+            
 
             if (isset($data['date'])) {
                 $data['activity_start_date'] = $data['date'];
@@ -114,7 +115,6 @@ class MedicalFacilityService
                 }
             }
 
-            $medicalFacility->update($data);
 
             if (isset($data['documents'])) {
                 $fileTypes = FileType::where('type', 'medical_facility')->get();
@@ -135,6 +135,15 @@ class MedicalFacilityService
                     }
                 }
             }
+
+            if($data['documents'])
+            {
+                unset($data['documents']);
+            }
+
+            $medicalFacility->update($data);
+
+            
 
             Log::create([
                 'user_id' => Auth::id(),

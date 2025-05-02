@@ -5,6 +5,7 @@ use App\Http\Controllers\OtpController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WebsiteController;
 use App\Http\Controllers\Common\AuthController;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,13 @@ Route::get('change-branch', [AuthController::class, 'change_branch'])->name('cha
 Route::middleware('auth')->group(function() {
     Route::get('/sections', [AuthController::class, 'sections'])->name('sections');
 });
+
+
+// send testing email
+Route::get('/send-email', function() {
+    Mail::to('aishaaltery89@gmail.com', 'Test')->send(new \App\Mail\TestingEmail());
+});
+
 require __DIR__.'/admin.php';
 require __DIR__.'/user.php';
 require __DIR__.'/finance.php';

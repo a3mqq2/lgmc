@@ -65,7 +65,7 @@ class UpdateDoctorRequest extends FormRequest
             'certificate_of_excellence_date' => 'nullable',
             'doctor_rank_id' => 'required|numeric',
             'medical_facilities' => 'nullable|array',
-            'specialty_1_id' => 'required|numeric',
+            'specialty_1_id' => 'nullable',
             'specialty_2' => 'nullable',
             'specialty_3_id' => 'nullable|numeric',
             'ex_medical_facilities' => 'nullable|array',

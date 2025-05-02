@@ -10,11 +10,6 @@ var successSound = new Howl({
 });
 
 
-$(document).ready(function () {
-    $('.select2').selectize();
-});
-
-
 // copyclipboard-alert
 $(function() {
     $(".copy-message").click(function() {

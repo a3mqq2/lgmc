@@ -111,8 +111,8 @@ $(window).on('load', function() {
     if(licencable_type == "facilities") {
         setupSelect2('#licensable_id', '/search-facilities?branch_id=' + branch_id, 'ابحث عن المرخص...');
     } else {
-        setupSelect2('#licensable_id', '/search-licensables?branch_id=' + branch_id, 'ابحث عن المرخص...');
-        setupSelect2('#medical_facility_id', '/search-facilities?branch_id=' + branch_id, 'ابحث عن مكان العمل...');
+        setupSelect2('#licensable_id', '/search-licensables?justactive=1&branch_id=' + branch_id, 'ابحث عن المرخص...');
+        setupSelect2('#medical_facility_id', '/search-facilities?justactive=1&branch_id=' + branch_id, 'ابحث عن مكان العمل...');
     }
 });
 

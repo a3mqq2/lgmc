@@ -38,7 +38,8 @@ class UserController extends Controller
         {
             $doctor = Doctor::where('phone', 'like', '%' . request('phone') . '%')
             ->orWhere('phone_2', 'like', '%' . request('phone') . "%")
-            ->where('branch_id',auth()->user()->branch_id)->first();
+            ->where('branch_id',auth()->user()->branch_id)
+            ->first();
         }
 
         if(request('code'))

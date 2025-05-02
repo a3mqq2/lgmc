@@ -122,7 +122,7 @@
                                 </div>
                                 <div class="col-md-6 mt-2">
                                     <label for="">  تاريخ انتهاء صلاحية الجواز     </label>
-                                    <input type="date" required name="passport_expiration" value="{{old('passport_expiration', date('Y-m-d', strtotime($doctor->passport_expiration)))}}"  class="form-control">
+                                    <input type="date" required name="passport_expiration" value="{{old('passport_expiration', ($doctor->passport_expiration ? date('Y-m-d', strtotime($doctor->passport_expiration)) : "") )}}"  class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -193,7 +193,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for=""> تاريخ انتهاء الامتياز   </label>
-                                    <input type="date" name="internership_complete" required value="{{old('internership_complete', date('Y-m-d', strtotime($doctor->internership_complete)))}}"  class="form-control">
+                                    <input type="date" name="internership_complete" required value="{{old('internership_complete', $doctor->internership_complete ? date('Y-m-d', strtotime($doctor->internership_complete)) : "")}}"  class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -314,69 +314,62 @@
                 <div class="card-header bg-primary text-light">بيانات العمل الحالي</div>
                 <div class="card-body">
                     <div class="row">
-                       
                         <div class="col-md-6">
                             <label for="">الرقم النقابي الأول</label>
-                            <input type="text" name="doctor_number"   value="{{old('doctor_number', $doctor->doctor_number)}}"   class="form-control">
+                            <input type="text" name="doctor_number"   value="{{old('doctor_number', $doctor->doctor_number)}}"  id="" class="form-control">
                         </div>
 
                         <div class="col-md-6">
                             <label for=""> تاريخ الانتساب   </label>
-                            <input type="date" name="registered_at" value="{{date('Y-m-d', strtotime($doctor->registered_at))}}"  class="form-control">
-                        </div>
-
-
-                    
-
-                        <div class="col-md-12">
-                            <label for="">الصفة</label>
-                            <select name="doctor_rank_id" id="doctor_rank_id" class="form-control select2">
-                                <option value="">حدد الصفة</option>
-                                @foreach ($doctor_ranks as $doctor_rank)
-                                    <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id',$doctor->doctor_rank_id) == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
-                                @endforeach
-                            </select>
+                            <input type="date" name="registered_at" value="{{$doctor->registered_at ?? ''}}" id="" class="form-control">
                         </div>
 
 
                         <div class="col-md-6">
                             <label for="">جهة العمل</label>
-                            <select name="institution_id"  class="form-control select2">
+                            <select name="institution_id" id="" class="form-control select2">
                                 <option value="">حدد جهة العمل</option>
                                 @foreach (\App\Models\Institution::where('branch_id', auth()->user()->branch_id)->get(); as $institution)
-                                    <option value="{{$institution->id}}" {{old('institution_id',$doctor->institution_id) == $institution->id ? "selected" : ""}}>{{$institution->name}}</option>
+                                    <option value="{{$institution->id}}" {{old('institution_id') == $institution->id ? "selected" : ""}}>{{$institution->name}}</option>
                                 @endforeach
                             </select>
                         </div>
 
 
-
+                        <div class="col-md-6">
+                            <label for="">الصفة</label>
+                            <select name="doctor_rank_id" id="doctor_rank_id" required class="form-control select2">
+                                <option value="">حدد الصفة</option>
+                                @foreach ($doctor_ranks as $doctor_rank)
+                                    @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
+                                        <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id', $doctor->doctor_rank_id) == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
+                                        @else 
+                                            @if (request('type') != "visitor")
+                                                    <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
+                                            @endif
+                                        @endif
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="col-md-12 mt-2">
                             <div class="row">
-                                @if (get_area_name() == "admin")
-                                <div class="col-md-12 mt-1 mb-2">
-                                    <label for="">حدد فرع</label>
-                                    <select name="branch_id"  class="form-control select2">
-                                        <option value="">حدد فرع</option>
-                                        @foreach (App\Models\Branch::all() as $branch)
-                                        <option {{old('branch_id', $doctor->branch_id) == $branch->id ? "selected" : ""}} value="{{$branch->id}}">{{$branch->name}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                @endif
                                 <div class="col-md-6">
                                     <label for=""> تخصص اول</label>
-                                    <select name="specialty_1_id"  class="form-control">
+                                    <select name="specialty_1_id"  id="" class="form-control">
                                         <option value="">حدد تخصص اول</option>
                                         @foreach ($specialties as $specialty)
-                                            <option value="{{$specialty->id}}" {{old('specialty_1_id',$doctor->specialty_1_id) == $specialty->id ? "selected" : ""}}>{{$specialty->name}}</option>
+                                            <option value="{{$specialty->id}}" {{old('specialty_1_id') == $specialty->id ? "selected" : ""}}>{{$specialty->name}}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-6" id="specialty_2_container">
                                     <label for="specialty_2">تخصص دقيق</label>
-                                    <input type="text" name="specialty_2" id="specialty_2" value="{{ old('specialty_2', $doctor->specialty_2) }}" class="form-control" autocomplete="off">
-                                </div>  
+                                    <input type="text" name="specialty_2" id="specialty_2" value="{{ old('specialty_2') }}" class="form-control" autocomplete="off">
+                                </div>                                    
+                                <div class="col-md-12 mt-2">
+                                    <label for=""> سنوات الخبره  </label>
+                                    <input name="experience" required id="" type="number" class="form-control" value="{{old('experience')}}" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -399,10 +392,7 @@
                                 @endforeach
                             </select>                               
                         </div>
-                        <div class="col-md-12 mt-2">
-                            <label for=""> سنوات الخبره  </label>
-                            <input name="experience"  value="{{old('experience', $doctor->experience)}}" type="number" class="form-control"></textarea>
-                        </div>
+                  
                     </div>
                 </div>
             </div>
@@ -432,11 +422,15 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
+
+
+
     document.addEventListener('DOMContentLoaded', function () {
         const nationalNumberInput = document.getElementById('national_number');
         const birthYearInput = document.getElementById('birth_year');
         const dateOfBirthInput = document.getElementById('date_of_birth');
         const genderSelect = document.getElementById('gender');
+        const genderInput = document.getElementById('gender_input');
         // Initialize Flatpickr for the date input
         flatpickr(dateOfBirthInput, {
             dateFormat: "Y-m", // Year and month only
@@ -461,11 +455,10 @@
 
                 // Update Inputs
                 birthYearInput.value = year;
-                dateOfBirthInput.value = `${year}`; // Only the year for Flatpickr
+                dateOfBirthInput.value = `${year}`; 
                 genderSelect.value = gender;
                 genderInput.value = gender;
             } else {
-                // Clear inputs if the national number is not valid
                 birthYearInput.value = '';
                 dateOfBirthInput.value = '';
                 genderSelect.value = '';
@@ -477,13 +470,11 @@
 </script>
     <script>
         $(document).ready(function() {
-            // Function to show/hide tbody based on selected country
             function toggleTbody() {
                 const selectedCountryId = $('#country_id').val();
                 const libyanDoctorsTbody = $('#libyan_doctors');
                 const foreignDoctorsTbody = $('#foreign_doctors');
                 
-                // Show Libyan doctors if selected country is Libya, otherwise show foreign doctors
                 if (selectedCountryId === '1') {
                     libyanDoctorsTbody.show();
                     foreignDoctorsTbody.hide();
@@ -493,32 +484,27 @@
                 }
             }
     
-            // Call toggleTbody when the page loads
             toggleTbody();
     
-            // Listen for changes in the selected country
             $('#country_id').change(function() {
-                // Update the hidden input field with the selected country ID
                 $('#selected_country_id').val($(this).val());
-                // Call toggleTbody to show/hide tbody based on the selected country
                 toggleTbody();
             });
         });
     </script>
 <script>
     $(document).ready(function() {
-        // Set data-old attribute for Specialty 2 and Specialty 3 selects
+
+        $(".selectize").selectize();
+        
         $('select[name="specialty_2_id"]').attr('data-old', '{{ old("specialty_2_id") }}');
         $('select[name="specialty_3_id"]').attr('data-old', '{{ old("specialty_3_id") }}');
 
-        // Initialize Specialty 1 selectize
         var selectizeSpecialty1 = $('select[name="specialty_1_id"]').selectize({
             onChange: function(value) {
                 if (!value.length) return;
-                // Clear existing options
                 var selectizeSpecialty2 = selectizeSpecialty2Instance[0].selectize;
                 selectizeSpecialty2.clearOptions();
-                // Fetch data for specialty 2 based on selected value of specialty 1
                 $.ajax({
                     url: '/api/get-sub-specialties/' + value,
                     type: 'GET',
@@ -527,24 +513,19 @@
                         $.each(response, function(index, specialty) {
                             selectizeSpecialty2.addOption({value: specialty.id, text: specialty.name});
                         });
-                        // Restore old value for Specialty 2
                         selectizeSpecialty2.setValue($('select[name="specialty_2_id"]').data('old'));
                     }
                 });
             }
         });
 
-        // Trigger change event for Specialty 1 select to populate Specialty 2
         $('select[name="specialty_1_id"]').trigger('change');
 
-        // Initialize Specialty 2 selectize
         var selectizeSpecialty2Instance = $('select[name="specialty_2_id"]').selectize({
             onChange: function(value) {
                 if (!value.length) return;
-                // Clear existing options
                 var selectizeSpecialty3 = selectizeSpecialty3Instance[0].selectize;
                 selectizeSpecialty3.clearOptions();
-                // Fetch data for specialty 3 based on selected value of specialty 2
                 $.ajax({
                     url: '/api/get-sub-specialties/' + value,
                     type: 'GET',
@@ -553,14 +534,12 @@
                         $.each(response, function(index, specialty) {
                             selectizeSpecialty3.addOption({value: specialty.id, text: specialty.name});
                         });
-                        // Restore old value for Specialty 3
                         selectizeSpecialty3.setValue($('select[name="specialty_3_id"]').data('old'));
                     }
                 });
             }
         });
 
-        // Initialize Specialty 3 selectize
         var selectizeSpecialty3Instance = $('select[name="specialty_3_id"]').selectize();
     });
 </script>
@@ -578,7 +557,6 @@ $(document).ready(function () {
                      .removeClass('text-muted')
                      .addClass('text-success');
 
-        // تأكد من عدم عرض النص المكرر
         if (statusElement.hasClass('text-success')) {
             $(this).siblings('.file-name-display').remove();
         }
@@ -588,7 +566,6 @@ $(document).ready(function () {
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // التحقق من الاسم
         document.querySelector('input[name="name"]').addEventListener('input', function() {
             if (this.value.trim() === '') {
                 showError(this, 'حقل الاسم مطلوب.');
@@ -599,7 +576,6 @@ $(document).ready(function () {
             }
         });
 
-        // التحقق من الاسم بالإنجليزية
         document.querySelector('input[name="name_en"]').addEventListener('input', function() {
             if (this.value.trim() === '') {
                 showError(this, 'حقل الاسم باللغة الإنجليزية مطلوب.');
@@ -610,7 +586,6 @@ $(document).ready(function () {
             }
         });
 
-        // التحقق من الرقم الوطني في حال كان الطبيب ليبي
         const nationalNumberInput = document.querySelector('input[name="national_number"]');
         if (nationalNumberInput) {
             nationalNumberInput.addEventListener('input', function() {
@@ -618,17 +593,15 @@ $(document).ready(function () {
                 if (this.value.length !== 12) {
                     showError(this, 'الرقم الوطني يجب أن يتكون من 12 رقمًا.');
                 } else if (gender === 'male' && this.value[0] !== '1') {
-                    console.log(this.value[0]);
-                    // showError(this, 'الرقم الوطني للذكور يجب أن يبدأ بالرقم 1.');
+                    showError(this, 'الرقم الوطني للذكور يجب أن يبدأ بالرقم 1.');
                 } else if (gender === 'female' && this.value[0] !== '2') {
-                    // showError(this, 'الرقم الوطني للإناث يجب أن يبدأ بالرقم 2.');
+                    showError(this, 'الرقم الوطني للإناث يجب أن يبدأ بالرقم 2.');
                 } else {
                     removeError(this);
                 }
             });
         }
 
-        // التحقق من جميع الحقول التي تحتوي على تواريخ
         const dateInputs = [
             'date_of_birth',
             'passport_expiration',
@@ -667,7 +640,6 @@ $(document).ready(function () {
             }
         });
 
-        // دالة لإظهار الخطأ
         function showError(element, message) {
             removeError(element);
             const errorDiv = document.createElement('div');
@@ -677,7 +649,6 @@ $(document).ready(function () {
             element.parentNode.appendChild(errorDiv);
         }
 
-        // دالة لإزالة الخطأ
         function removeError(element) {
             element.classList.remove('is-invalid');
             const errorDiv = element.parentNode.querySelector('.text-danger');
@@ -690,39 +661,33 @@ $(document).ready(function () {
 
     <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Input elements
     const nationalNumberInput = document.getElementById('national_number');
     const birthYearInput = document.getElementById('birth_year');
     const genderSelect = document.getElementById('gender');
+    const genderInput = document.getElementById('gender_input');
     const nameEnInput = document.querySelector('input[name="name_en"]');
     const emailInput = document.querySelector('input[name="email"]');
-    const genderInput = document.querySelector('gender_input');
-    // Event listener for national number input
+
     nationalNumberInput.addEventListener('input', function () {
         const nationalNumber = this.value;
-
-        // Validate the length of the national number
         if (nationalNumber.length === 12) {
-            // Extract Gender
-            const genderDigit = parseInt(nationalNumber.charAt(0)); // First digit determines gender
+            const genderDigit = parseInt(nationalNumber.charAt(0)); 
             const gender = genderDigit === 1 ? 'male' : 'female';
             genderSelect.value = gender;
             genderInput.value = gender;
-            // Extract Birth Year, Month, and Day
-            const year = nationalNumber.substring(1, 5); // 2nd to 5th digits are the year
-            const month = parseInt(nationalNumber.substring(5, 7)); // 6th and 7th digits are the month
-            const day = parseInt(nationalNumber.substring(7, 9)); // 8th and 9th digits are the day
 
-            // Update inputs
+            const year = nationalNumber.substring(1, 5); 
+            const month = parseInt(nationalNumber.substring(5, 7)); 
+            const day = parseInt(nationalNumber.substring(7, 9)); 
+
             birthYearInput.value = year;
 
         } else {
-            // Clear inputs if the national number is invalid
             birthYearInput.value = '';
             genderSelect.value = '';
+            genderInput.value = '';
         }
     });
-
 });
 
     </script>
@@ -754,7 +719,6 @@ document.addEventListener('DOMContentLoaded', function () {
             // Update inputs
             birthYearInput.value = year;
 
-            // Regenerate email
         } else {
             // Clear inputs if the national number is invalid
             birthYearInput.value = '';
@@ -768,48 +732,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Input elements
         const nationalNumberInput = document.getElementById('national_number');
         const birthYearInput = document.getElementById('birth_year');
-        const daySelect = document.querySelector('select[name="day"]');
-        const dateOfBirthInput = document.querySelector('input[name="date_of_birth"]'); // For non-Libyan
+        const dateOfBirthInput = document.querySelector('input[name="date_of_birth"]'); 
         const nameEnInput = document.querySelector('input[name="name_en"]');
         const emailInput = document.querySelector('input[name="email"]');
 
-        // Check if request type is Libyan or not
-        const isLibyan = "{{ $doctor->type->value }}" === "libyan";
+        const isLibyan = "{{ request('type') }}" === "libyan";
 
-        // Event listener for Libyan national number input
         if (isLibyan && nationalNumberInput) {
             nationalNumberInput.addEventListener('input', function () {
                 const nationalNumber = this.value;
 
                 if (nationalNumber.length === 12) {
-                    // Extract Gender (optional if needed)
                     const genderDigit = parseInt(nationalNumber.charAt(0));
                     const gender = genderDigit === 1 ? 'male' : 'female';
 
-                    // Extract Birth Year, Month, Day
                     const year = nationalNumber.substring(1, 5);
                     const month = parseInt(nationalNumber.substring(5, 7));
                     const day = parseInt(nationalNumber.substring(7, 9));
 
-                    // Update fields
                     if (birthYearInput) birthYearInput.value = year;
 
-                    // Regenerate email
                 } else {
-                    // Clear fields if the national number is invalid
                     if (birthYearInput) birthYearInput.value = '';
                     emailInput.value = '';
                 }
             });
         }
 
-        // Event listener for date of birth (non-Libyan)
         if (!isLibyan && dateOfBirthInput) {
             dateOfBirthInput.addEventListener('input', function () {
-                const dob = this.value; // Format: YYYY-MM-DD
+                const dob = this.value; 
                 if (dob) {
                     const [year, month, day] = dob.split('-');
                 } else {
@@ -818,13 +772,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Event listener for English name input
         nameEnInput?.addEventListener('input', function () {
             if (isLibyan) {
-                // Libyan: Regenerate email using year, month, day
                 const year = birthYearInput?.value || '';
             } else {
-                // Non-Libyan: Regenerate email using date_of_birth input
                 const dob = dateOfBirthInput?.value || '';
                 if (dob) {
                     const [year, month, day] = dob.split('-');
@@ -833,20 +784,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         });
-
     });
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Find all input, select, and textarea fields with the "required" attribute
         const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
 
         requiredFields.forEach(function (field) {
-            // Find the corresponding label for the field
             const label = field.closest('.form-group, .col-md-6, .col-md-4, .col-md-2, .col-md-12')?.querySelector('label');
 
             if (label && !label.querySelector('.required-asterisk')) {
-                // Append a red asterisk to the label
                 const asterisk = document.createElement('span');
                 asterisk.classList.add('required-asterisk');
                 asterisk.innerHTML = ' *';
@@ -857,60 +804,39 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 </script>
 <script>
-    $(document).ready(function () {
-        $("#doctor_rank_id").change(function () {
-            var selectedRank = parseInt($(this).val());
-    
-            if (selectedRank === 1) {
-                // طبيب ممارس عام: إخفاء التخصصات
-                $("select[name='specialty_1_id']").parent().hide();
-                $("select[name='specialty_2_id']").parent().hide();
-            } else if ([2, 3, 4].includes(selectedRank)) {
-                // طبيب ممارس تخصصي - أخصائي أول - أخصائي ثاني: إظهار التخصص الأول فقط
+    $(document).ready(function(){
+        $("#doctor_rank_id").change(function(){
+            var selectedRank = $(this).val();
+            if ([5,6,"5","6"].includes(selectedRank)) {
                 $("select[name='specialty_1_id']").parent().show();
-                $("select[name='specialty_2_id']").parent().hide();
-            } else if ([5, 6].includes(selectedRank)) {
-                // استشاري أول - استشاري: إظهار التخصص الأول والتخصص الدقيق
-                $("select[name='specialty_1_id']").parent().show();
-                $("select[name='specialty_2_id']").parent().show();
-            }
-        });
-    
-        // تفعيل السكريبت عند تحميل الصفحة للتحقق من القيمة المحفوظة مسبقًا
-        $("#doctor_rank_id").trigger("change");
-    });
+                $("#specialty_2_container").show();
+            } else {
 
-    </script>
-    <script>
-        $(document).ready(function(){
-            $("#doctor_rank_id").change(function(){
-                var selectedRank = parseInt($(this).val());
-                if ([5,6].includes(selectedRank)) {
-                    $("select[name='specialty_1_id']").parent().show();
-                    $("#specialty_2_container").show();
+                if(selectedRank == 1 || selectedRank == '') {
+                    $("select[name='specialty_1_id']").parent().hide();
+                    $("#specialty_2_container").hide();
                 } else {
                     $("select[name='specialty_1_id']").parent().show();
                     $("#specialty_2_container").hide();
                 }
-            });
-            $("#doctor_rank_id").trigger("change");
+
+               
+            }
         });
-        </script>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
-    
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script>
-    var availableSpecialties = @json($specialties2); 
-    // If needed, transform objects -> strings:
-    // availableSpecialties = availableSpecialties.map(item => item.specialty_2).filter(Boolean);
-    
-    $("#specialty_2").autocomplete({
-        source: availableSpecialties
-        // minLength: 0 // (optional if you want to see results on empty input)
+        $("#doctor_rank_id").trigger("change");
     });
     </script>
-    
-    
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+var availableSpecialties = @json($specialties2); 
+$("#specialty_2").autocomplete({
+    source: availableSpecialties
+});
+</script>
+
+
 @endsection
 @section('styles')
     <style> 

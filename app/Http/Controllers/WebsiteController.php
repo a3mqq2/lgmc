@@ -58,7 +58,7 @@ class WebsiteController extends Controller
 
     public function checker()
     {
-        $licence = Licence::where('id', request('licence'))->first();
+        $licence = Licence::where('code', request('licence'))->first();
         return view('website.checker', compact('licence'));
     }
 }

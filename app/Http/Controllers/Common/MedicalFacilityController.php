@@ -7,6 +7,7 @@ use App\Models\Doctor;
 use App\Models\FileType;
 use Illuminate\Http\Request;
 use App\Models\MedicalFacility;
+use App\Models\MedicalFacilityFile;
 use App\Models\MedicalFacilityType;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
@@ -117,5 +118,13 @@ class MedicalFacilityController extends Controller
         
         return redirect()->route(get_area_name().'.medical-facilities.index')
             ->with('success', 'تم استيراد المنشآت الطبية بنجاح.');
+    }
+
+    public function file_destroy($fileId)
+    {
+        $file = MedicalFacilityFile::findOrFail($fileId);
+        $file->delete();
+
+        return redirect()->back()->with('success', 'تم حذف الملف بنجاح.');
     }
 }

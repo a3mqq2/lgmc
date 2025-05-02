@@ -73,6 +73,13 @@
                                             {{-- preview image --}}
                                             <a href="{{Storage::url($file->file_path)}}" target="_blank" class="btn btn-sm btn-success"><i class="fa fa-eye"></i></a>
                                             <a download href="{{Storage::url($file->file_path)}}" class="btn btn-sm btn-primary"><i class="fa fa-download"></i></a>
+                                            {{-- delete  --}}
+                                            <form action="{{ route(get_area_name().'.medical-facility-files.destroy', $file->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من حذف هذا الملف؟')"><i class="fa fa-trash"></i></button>
+                                            </form>
+                                            
                                         </td>
                                     </tr>
                                 @endforeach

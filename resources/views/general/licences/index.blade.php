@@ -20,6 +20,10 @@
                 <form action="{{ route(get_area_name() . '.licences.index') }}" method="GET">
                     <div class="row mb-3">
                         <div class="col-md-4">
+                            <label for="">رقم الاذن</label>
+                            <input type="text" class="form-control" name="code" placeholder="ابحث برقم الاذن ..." value="{{ request()->input('code') }}">
+                        </div>
+                        <div class="col-md-4">
                             <label for="status">حالة الإذن</label>
                             <select name="status" id="status" class="form-control">
                                 <option value="">-- الكل --</option>
@@ -35,14 +39,27 @@
                             <label for="search">بحث بالاسم</label>
                             <input type="text" class="form-control" id="search" name="search" placeholder="ابحث بالاسم ..." value="{{ request()->input('search') }}">
                         </div>
-                        <div class="col-md-4">
-                            <label for="issued_date">تاريخ الإصدار</label>
-                            <input type="date" class="form-control" id="issued_date" name="issued_date" value="{{ request()->input('issued_date') }}">
+                       
+                        <div class="col-md-4 mt-2">
+                            <label for="">الفتره ما بين (تاريخ الاصدار ) </label>
+                            <div class="input-group">
+                                <input type="date" class="form-control" name="issued_from_date" value="{{ request('from_date') }}">
+                                <span class="input-group-text">الى</span>
+                                <input type="date" class="form-control" name="issued_to_date" value="{{ request('to_date') }}">
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <label for="expiry_date">تاريخ الانتهاء</label>
-                            <input type="date" class="form-control" id="expiry_date" name="expiry_date" value="{{ request()->input('expiry_date') }}">
+
+
+                        <div class="col-md-4 mt-2">
+                            <label for="">الفتره ما بين (تاريخ الانتهاء  ) </label>
+                            <div class="input-group">
+                                <input type="date" class="form-control" name="expiry_from_date" value="{{ request('from_date') }}">
+                                <span class="input-group-text">الى</span>
+                                <input type="date" class="form-control" name="expiry_to_date" value="{{ request('to_date') }}">
+                            </div>
                         </div>
+
+
                         <div class="col-md-4 align-self-end">
                             <button type="submit" class="btn btn-primary w-100">بحث</button>
                         </div>

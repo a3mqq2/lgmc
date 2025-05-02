@@ -7,7 +7,6 @@
     <meta content="Libyan General Medical Council" name="description" />
     <link rel="shortcut icon" href="{{asset('/assets/images/lgmc-dark.png?v=44')}}">
     <script src="{{asset('/assets/js/layout.js')}}"></script>
-    <link href="{{asset('/css/app.css?v=34')}}" rel="stylesheet" type="text/css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Almarai&family=Lato:wght@700&display=swap" rel="stylesheet">
@@ -126,7 +125,7 @@
                                     <img src="{{asset('/assets/images/lgmc-dark.png?v=44')}}" alt="" height="50">
                                 </span>
                                 <span class="logo-lg">
-                                    <img src="{{asset('/assets/images/logo-primary`.png')}}" alt="" height="17">
+                                    <img src="{{asset('/assets/images/logo-primary.png')}}" alt="" height="17">
                                 </span>
                             </a>
                             <a href="{{route('sections')}}" class="logo logo-light">
@@ -291,7 +290,6 @@
     <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
         <i class="ri-arrow-up-line"></i>
     </button>
-    <script src="{{asset('/js/app.js?v=2')}}"></script>
     <script src="{{asset('/assets/libs/simplebar/simplebar.min.js')}}"></script>
     <script src="{{asset('/assets/libs/node-waves/waves.min.js')}}"></script>
     <script src="{{asset('/assets/libs/feather-icons/feather.min.js')}}"></script>
@@ -304,8 +302,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    <script src="https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
-    <script src="https://cdn.ckeditor.com/4.17.2/standard-all/translations/ar.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.2/css/pikaday.min.css">
@@ -327,13 +323,6 @@
         successSound.play();
     </script>
     @endif
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            CKEDITOR.replace('editor', {
-                language: 'ar'
-            });
-        });
-    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('[name="passport_number"]').forEach(function (input) {

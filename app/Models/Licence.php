@@ -26,60 +26,38 @@ class Licence extends Model
     ];
 
     protected $casts = [
-        "doctor_type" => DoctorType::class,
+        'doctor_type' => DoctorType::class,
     ];
 
-
-
-
-
-    /**
-     * Get the doctor associated with the licence.
-     */
     public function doctor()
     {
         return $this->belongsTo(Doctor::class);
     }
 
-    public function getStatusBadgeAttribute() {
-        $status = "";
-        switch ($this->status) {
-            case 'under_approve_branch':
-                $status = "<span class='badge badge-primary bg-primary text-light'>قيد موافقة الفرع</span>";
-                break;
-            case 'under_approve_admin':
-                $status =  "<span class='badge badge-primary bg-primary text-light'>قيد موافقة الادارة</span>";
-                break;
-            case 'under_payment':
-                $status = "<span class='badge badge-info bg-info text-light'>قيد المراجعة المالية </span>";
-                break;
-            case 'revoked':
-                $status = "<span class='badge badge-danger bg-danger text-light'> تم ايقافه    </span>";
-                break;
-            case 'expired':
-                $status =  "<span class='badge badge-danger bg-danger text-light'>  منتهي الصلاحية     </span>";
-                break;
-            case 'active':
-                $status =  "<span class='badge badge-success bg-success text-light'> ساري    </span>";
-                break;
-            
-            default:
-                $status = "<span class='badge badge-secondary text-light'> غير معروف    </span>";
-                break;
-        }
-
-        return $status;
+    public function getStatusBadgeAttribute()
+    {
+        return match ($this->status) {
+            'under_approve_branch' => "<span class='badge badge-primary bg-primary text-light'>قيد موافقة الفرع</span>",
+            'under_approve_admin'  => "<span class='badge badge-primary bg-primary text-light'>قيد موافقة الادارة</span>",
+            'under_payment'        => "<span class='badge badge-info bg-info text-light'>قيد المراجعة المالية </span>",
+            'revoked'              => "<span class='badge badge-danger bg-danger text-light'> تم ايقافه    </span>",
+            'expired'              => "<span class='badge badge-danger bg-danger text-light'>  منتهي الصلاحية     </span>",
+            'active'               => "<span class='badge badge-success bg-success text-light'> ساري    </span>",
+            default                => "<span class='badge badge-secondary text-light'> غير معروف    </span>",
+        };
     }
 
-    public function createdBy() {
+    public function createdBy()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function logs() {
+    public function logs()
+    {
         return $this->hasMany(LicenceLog::class, 'licence_id');
     }
 
-    public function MedicalFacility()
+    public function medicalFacility()
     {
         return $this->belongsTo(MedicalFacility::class, 'medical_facility_id');
     }
@@ -97,31 +75,48 @@ class Licence extends Model
     protected static function booted(): void
     {
         static::creating(function (Licence $licence) {
-            if (!$licence->code) {  
-                $licence->assignSequence();
-            }
+            DB::transaction(function () use ($licence) {
+                if (! $licence->code) {
+                    $licence->assignSequence();
+                }
+            });
         });
     }
-    
 
     public function assignSequence(): void
     {
-        $year = optional($this->issued_date)->format('Y') ?? now()->year;
-        $type = $this->licensable_type;
+        $year   = optional($this->issued_date)->format('Y') ?? now()->year;
+        $type   = $this->licensable_type;
         $prefix = $type === Doctor::class ? 'LIC' : 'PERM';
-    
+
         $nextIndex = self::where('branch_id', $this->branch_id)
-            ->whereYear('issued_date', $year)
             ->where('licensable_type', $type)
+            ->where(function ($q) use ($year) {
+                $q->whereYear('issued_date', $year)
+                  ->orWhere(function ($q2) use ($year) {
+                      $q2->whereNull('issued_date')
+                         ->whereYear('created_at', $year);
+                  });
+            })
+            ->lockForUpdate()
             ->max('index') + 1;
-    
+
+        do {
+            $candidate = $this->branch->code
+                . '-' . $prefix . '-'
+                . $year . '-'
+                . str_pad($nextIndex, 3, '0', STR_PAD_LEFT);
+
+            if (! self::where('code', $candidate)->exists()) {
+                break;
+            }
+
+            $nextIndex++;
+        } while (true);
+
         $this->index = $nextIndex;
-        $this->code  = $this->branch->code
-                      . '-' . $prefix . '-'
-                      . $year . '-'
-                      . str_pad($nextIndex, 3, '0', STR_PAD_LEFT);
+        $this->code  = $candidate;
     }
-    
 
     public function regenerateCode(): void
     {

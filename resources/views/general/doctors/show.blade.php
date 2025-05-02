@@ -55,7 +55,7 @@
                                                 </label>
                                                 <select name="pricing_id" id="pricing_id" class="form-control @error('pricing_id') is-invalid @enderror" required>
                                                     <option value="">اختر نوع الطلب</option>
-                                                    @foreach(App\Models\Pricing::where('doctor_type', $doctor->type)->get() as $pricing)
+                                                    @foreach(App\Models\Pricing::where('doctor_type', $doctor->type)->where('type','service')->get() as $pricing)
                                                         <option value="{{ $pricing->id }}" {{ old('pricing_id') == $pricing->id ? 'selected' : '' }}>
                                                             {{ $pricing->name }} - {{ number_format($pricing->amount, 2) }} د.ل
                                                         </option>

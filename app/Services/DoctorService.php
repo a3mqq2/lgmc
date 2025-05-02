@@ -21,6 +21,7 @@ use App\Mail\RejectionEmail;
 use App\Models\AcademicDegree;
 use App\Models\Institution;
 use App\Models\MedicalFacility;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -46,81 +47,91 @@ class DoctorService
      public function getDoctors()
      {
          $query = Doctor::query();
-         
+     
          if (request()->filled('branch_id')) {
              $query->where('branch_id', request('branch_id'));
          }
      
-         if (request('name')) {
+         if (request()->filled('doctor_number')) {
+             $query->where('doctor_number', request('doctor_number'));
+         }
+     
+         if (request()->filled('name')) {
              $query->where('name', 'like', '%' . request('name') . '%');
          }
      
-         if (request('phone')) {
+         if (request()->filled('phone')) {
              $query->where('phone', 'like', '%' . request('phone') . '%');
          }
      
-         if (request('email')) {
+         if (request()->filled('email')) {
              $query->where('email', 'like', '%' . request('email') . '%');
          }
      
-         if (request('national_number')) {
+         if (request()->filled('registered_at')) {
+             $query->whereDate('registered_at', request('registered_at'));
+         }
+     
+         if (request()->filled('membership_status')) {
+             $query->where('membership_status', request('membership_status'));
+         }
+     
+         if (request()->filled('last_license_status')) {
+             $query->where('last_license_status', request('last_license_status'));
+         }
+     
+         if (request()->filled('specialization')) {
+             $query->where('specialty_1_id', request('specialization'));
+         }
+     
+         if (request()->filled('national_number')) {
              $query->where('national_number', 'like', '%' . request('national_number') . '%');
          }
      
-         if (request('passport_number')) {
+
+         if(request('doctor_rank_id'))
+         {
+            $query->where('doctor_rank_id', request('doctor_rank_id'));
+         }
+
+         if (request()->filled('passport_number')) {
              $query->where('passport_number', 'like', '%' . request('passport_number') . '%');
          }
      
-         if (request('academic_degree')) {
+         if (request()->filled('academic_degree')) {
              $query->where('academic_degree_id', request('academic_degree'));
          }
      
-         if (request('type') == "libyan") {
+         // Type filters
+         if (request('type') === 'libyan') {
              $query->where('type', 'libyan');
-         }
-     
-         if (request('type') == "palestinian") {
+         } elseif (request('type') === 'palestinian') {
              $query->where('type', 'palestinian');
-         }
-     
-         if (request('type') == "visitor") {
+         } elseif (request('type') === 'visitor') {
              $query->where('type', 'visitor');
-         }
-     
-         if (request('type') == "foreign") {
+         } elseif (request('type') === 'foreign') {
              $query->where('type', 'foreign');
          }
      
-
-        //  if(request('regestration'))
-        //  {
-        //     $query->where('membership_status','pending');
-        //  } else if(request('init_approve')) {
-        //     $query->where('membership_status','init_approve');
-        //  } else if(request('rejection')) {
-        //     $query->where('membership_status','rejected');
-        //  } else   {
-        //     $query->where('membership_status','!=','pending');
-        //  }
-
-
-
-        if(request('banned'))
-        {
-            $query->where('membership_status','banned');
-        }
-
-         if (get_area_name() == "user" || get_area_name() == "finance") {
+         if (request()->filled('banned')) {
+             $query->where('membership_status', 'banned');
+         }
+     
+         // Area-based branch restriction
+         if (in_array(get_area_name(), ['user', 'finance'])) {
              $query->where('branch_id', auth()->user()->branch_id);
          }
      
-         if (get_area_name() == "finance") {
+         // Finance area: order by unpaid invoices count
+         if (get_area_name() === 'finance') {
              $query->withCount(['invoices as total_unpaid_invoices' => function ($q) {
                  $q->where('status', \App\Enums\InvoiceStatus::unpaid);
              }])->orderByDesc('total_unpaid_invoices');
          }
      
-         return $query->with('branch')->orderbyDesc('id')->paginate(50);
+         return $query->with('branch')
+                      ->orderByDesc('id')
+                      ->paginate(50);
      }
      
 
@@ -147,6 +158,7 @@ class DoctorService
             'specialties' => $specialties,
             'file_types' => $query->get(),
             'specialties2' => $specialties2,
+            'doctorRanks' => DoctorRank::all(),
         ];
     }
 
@@ -562,21 +574,9 @@ class DoctorService
                 'action' => 'delete_doctor',
             ]);
     
-            // إعادة ترتيب أكواد جميع الأطباء في نفس الفرع
-            $doctors = Doctor::where('branch_id', $branchId)->orderBy('id')->get();
-            $index = 0;
-    
-            foreach ($doctors as $doc) {
-                $code = str_pad($index++, 3, '0', STR_PAD_LEFT);
-                $doc->code = $code;
-    
-                if (!$doc->registered_at) {
-                    $doc->registered_at = now();
-                }
-    
-                $doc->save();
-            }
-    
+            
+            Artisan::call('fix:doctor-codes');
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();

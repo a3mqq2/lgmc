@@ -35,6 +35,7 @@ Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations'
     Route::post('/doctors/{doctor}/reject', [DoctorController::class, 'reject'])->name('doctors.reject');
     Route::resource('doctors', DoctorController::class);
     Route::resource('doctors.files', DoctorFileController::class)->shallow();
+    Route::delete('medical-facility-files/{file}/destroy', [MedicalFacilityController::class, 'file_destroy'])->name('medical-facility-files.destroy');
     Route::resource('medical-facilities', MedicalFacilityController::class);
     Route::resource('doctors.files', DoctorFileController::class)->shallow();
     Route::patch('/licences/{licence}/approve', [LicenceController::class, 'approve'])->name('licences.approve');

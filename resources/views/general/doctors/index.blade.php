@@ -17,6 +17,10 @@
                 <form action="{{ route(get_area_name().'.doctors.index') }}" method="GET">
                     <div class="row mb-3">
                         <div class="col-md-3">
+                            <label for="name"> الرقم النقابي الاول </label>
+                            <input type="text" class="form-control" id="name" name="doctor_number" placeholder="الرقم النقابي الاول" value="{{ request()->input('doctor_number') }}">
+                        </div>
+                        <div class="col-md-3">
                             <label for="name">اسم الطبيب</label>
                             <input type="text" class="form-control" id="name" name="name" placeholder="اسم الطبيب" value="{{ request()->input('name') }}">
                         </div>
@@ -25,26 +29,58 @@
                             <input type="text" class="form-control" id="phone" name="phone" placeholder="رقم الهاتف" maxlength="10" value="{{ request()->input('phone') }}">
                         </div>
                         <div class="col-md-3">
-                            <label for="email">البريد الالكتروني</label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="البريد الالكتروني" value="{{ request()->input('email') }}">
+                            <label for="email"> صفة الطبيب</label>
+                            <select class="form-control" name="doctor_rank_id" id="doctor_rank_id">
+                                <option value="">اختر صفة الطبيب</option>
+                                @foreach ($doctorRanks as $doctorRank)
+                                    <option value="{{ $doctorRank->id }}" {{ request()->input('doctor_rank_id') == $doctorRank->id ? 'selected' : '' }}>
+                                        {{ $doctorRank->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-3">
-                            <label for="academic_degree">الدرجة العلمية</label>
-                            <select class="form-control" id="academic_degree" name="academic_degree">
-                                <option value="">اختر الدرجة العلمية</option>
-                                @foreach($academicDegrees as $degree)
-                                <option value="{{ $degree->id }}" {{ request()->input('academic_degree') == $degree->id ? 'selected' : '' }}>
-                                    {{ $degree->name }}
-                                </option>
+                            <label for="registered_at">تاريخ الانتساب</label>
+                            <input type="date" lang="ar" dir="rtl" class="form-control date-picker" id="registered_at" name="registered_at" value="{{ request()->input('registered_at') }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label for="registered_at"> حالة العضوية </label>
+                            <select class="form-control" name="membership_status" id="membership_status">
+                                <option value="">اختر حالة العضوية</option>
+                                @foreach (\App\Enums\MembershipStatus::cases() as $status)
+                                    <option value="{{ $status->value }}" {{ request()->input('membership_status') == $status->value ? 'selected' : '' }}>
+                                        {{ $status->label() }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
+
                         <div class="col-md-3">
-                            <label for="created_at">تاريخ الاضافة</label>
-                            <input type="date" lang="ar" dir="rtl" class="form-control date-picker" id="created_at" name="created_at" value="{{ request()->input('created_at') }}">
+                            <label for="">حالة اخر اذن</label>
+                            <select class="form-control" name="last_license_status" id="last_license_status">
+                                <option value="">الكل</option>
+                                <option value="under_payment">قيد المراجعة المالية</option>
+                                <option value="active">ساري</option>
+                                <option value="expired">منتهي الصلاحية</option>
+                                <option value="revoked">متوقف</option>
+                            </select>
                         </div>
+
+                        <div class="col-md-3">
+                            <label for="">التخصص</label>
+                            <select class="form-control select2" name="specialization" id="specialization">
+                                <option value="">اختر التخصص</option>
+                                @foreach ($specialties as $specialization)
+                                    <option value="{{ $specialization->id }}" {{ request()->input('specialization') == $specialization->id ? 'selected' : '' }}>
+                                        {{ $specialization->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <div class="col-md-3">
                             <label>&nbsp;</label>
                             <button type="submit" class="btn btn-primary d-block">بحث</button>
