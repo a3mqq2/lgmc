@@ -44,12 +44,8 @@ class GenerateMembershipInvoices extends Command
         $this->info('تم إنشاء جميع الفواتير بنجاح.');
     }
 
-    /**
-     * إنشاء فاتورة للطبيب.
-     */
     private function createInvoice($doctor)
     {
-        // ألصق هنا طريقة `createInvoice` التي قدمتها
         if($doctor->type ==  DoctorType::Libyan)
         {
             if($doctor->doctor_rank_id == 1)

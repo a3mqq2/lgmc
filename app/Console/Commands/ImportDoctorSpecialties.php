@@ -14,7 +14,6 @@ class ImportDoctorSpecialties extends Command
 
     public function handle()
     {
-        // جلب التخصصات من قاعدة البيانات القديمة
         $oldSpecialties = DB::connection('lgmc_r')
             ->table('member_specialty')
             ->join('specialties', 'member_specialty.specialty_id', '=', 'specialties.id')
@@ -26,10 +25,8 @@ class ImportDoctorSpecialties extends Command
             $firstSpecialtyName = $specialties->pluck('name')->unique()->first();
 
             if ($firstSpecialtyName) {
-                // التأكد من وجود التخصص في الجدول الجديد أو إنشاؤه
                 $specialty = Specialty::firstOrCreate(['name' => $firstSpecialtyName]);
 
-                // ربط الطبيب بالتخصص
                 $doctor = Doctor::where('doctor_number', $memberId)->first();
 
                 if ($doctor) {

@@ -45,7 +45,6 @@ class DoctorHomeController extends Controller
 
         try {
 
-            // check if attachment and store in public/attachments in storage
             $attachment_name = null;
             if ($request->hasFile('attachment')) {
                 $attachment = $request->file('attachment');

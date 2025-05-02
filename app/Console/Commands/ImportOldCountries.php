@@ -17,7 +17,6 @@ class ImportOldCountries extends Command
 
         foreach ($oldCountries as $old) {
             try {
-                // Check if already exists to avoid duplicates
                 $exists = Country::where('name', $old->country_arabic)
                     ->orWhere('en_name', $old->country_english)
                     ->first();
@@ -30,15 +29,15 @@ class ImportOldCountries extends Command
                         'updated_at' => now(),
                     ]);
 
-                    $this->info("✅ Imported: {$old->country_arabic}");
+                    $this->info("  Imported: {$old->country_arabic}");
                 } else {
-                    $this->line("⏭️ Skipped (already exists): {$old->country_arabic}");
+                    $this->line(" Skipped (already exists): {$old->country_arabic}");
                 }
             } catch (\Exception $e) {
-                $this->error("❌ Failed to import: {$old->country_arabic} - " . $e->getMessage());
+                $this->error(" Failed to import: {$old->country_arabic} - " . $e->getMessage());
             }
         }
 
-        $this->info("🎉 All countries imported successfully.");
+        $this->info(" All countries imported successfully.");
     }
 }

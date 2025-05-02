@@ -32,12 +32,10 @@ class ProfileController extends Controller
             return back()->withErrors(['current_password' => 'كلمة المرور الحالية غير صحيحة']);
         }
 
-        // تحديث كلمة المرور
         auth()->user()->update([
             'password' => Hash::make($request->password),
         ]);
 
-        // سجل تغيير كلمة المرور الناجح
         Log::create([
             'user_id' => auth()->id(),
             'details' => 'تم تغيير كلمة المرور بنجاح',

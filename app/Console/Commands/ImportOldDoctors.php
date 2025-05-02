@@ -19,7 +19,6 @@ class ImportOldDoctors extends Command
 
         foreach ($oldDoctors as $old) {
             try {
-                // جلب الجامعة من قاعدة lgmc_r
                 $oldUniversity = DB::connection('lgmc_r')->table('universities')
                     ->where('id', $old->qualification_university_id)
                     ->first();
@@ -35,7 +34,6 @@ class ImportOldDoctors extends Command
                     }
                 }
 
-                // جلب الدولة من قاعدة lgmc_r
                 $oldCountry = DB::connection('lgmc_r')->table('countries')
                     ->where('id', $old->country_id)
                     ->first();
@@ -51,7 +49,6 @@ class ImportOldDoctors extends Command
                     }
                 }
 
-                // تحديد النوع حسب الدولة
                 $type = 'foreign';
                 if ($newCountry) {
                     $countryName = strtolower(trim($newCountry->name));
@@ -64,7 +61,6 @@ class ImportOldDoctors extends Command
                     }
                 }
 
-                // خريطة تحويل role (نوع العضوية) إلى doctor_rank_id
                 $roleToRank = [
                     1 => 2, // طبيب ممارس
                     2 => 3, // أخصائي
@@ -80,7 +76,6 @@ class ImportOldDoctors extends Command
                     'mother_name' => $old->mother_name,
                     'date_of_birth' => $old->birthday,
                     'gender' => $old->gender == 1 ? 'male' : 'female',
-                    // 'marital_status' => $old->statuses == 2 ? 'married' : 'single', // الحالة الاجتماعية
                     'passport_number' => $old->pid,
                     'passport_expiration' => $old->pid_date,
                     'address' => $old->address,
@@ -88,7 +83,7 @@ class ImportOldDoctors extends Command
                     'internership_complete' => $old->internership_complete,
                     'qualification_university_id' => $newUniversityId,
                     'certificate_of_excellence_date' => $old->qualification_date,
-                    'doctor_rank_id' => $roleToRank[$old->role] ?? null, // نوع العضوية بعد التحويل
+                    'doctor_rank_id' => $roleToRank[$old->role] ?? null,
                     'experience' => $old->experience,
                     'notes' => $old->note,
                     'registered_at' => $old->regist_date,
@@ -101,12 +96,12 @@ class ImportOldDoctors extends Command
 
                 $doctor->save();
 
-                $this->info("✅ Imported: {$old->name}");
+                $this->info("  Imported: {$old->name}");
             } catch (\Exception $e) {
-                $this->error("❌ Failed to import ID {$old->id}: " . $e->getMessage());
+                $this->error("  Failed to import ID {$old->id}: " . $e->getMessage());
             }
         }
 
-        $this->info("🎉 All doctors imported successfully.");
+        $this->info("  All doctors imported successfully.");
     }
 }

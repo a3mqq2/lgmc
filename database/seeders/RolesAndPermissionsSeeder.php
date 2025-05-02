@@ -25,11 +25,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ],
         ];
 
-        /**
-         * Define permissions in an associative array:
-         * Key   => English permission name
-         * Value => Arabic display name
-         */
+
         $generalAdministrationPermissions = [
             'manage-staff'              => 'الموظفين',
             'services-pricing'          => 'تسعير الخدمات',
@@ -86,28 +82,21 @@ class RolesAndPermissionsSeeder extends Seeder
                 ['name' => $permName],
                 ['display_name' => $permDisplay]
             );
-            // Update display_name if it already existed
             $permission->update(['display_name' => $permDisplay]);
 
-            // Assign to "إدارة عامة"
             $generalAdminRole->givePermissionTo($permission);
         }
 
-        // "عمليات الفرع"
         foreach ($branchOperationsPermissions as $permName => $permDisplay) {
             $permission = Permission::firstOrCreate(
                 ['name' => $permName],
                 ['display_name' => $permDisplay]
             );
             $permission->update(['display_name' => $permDisplay]);
-
-            // Assign to "عمليات الفرع"
             $branchOperationsRole->givePermissionTo($permission);
         }
 
-        /**
-         * 3) Attach ALL permissions to the first user (if any user exists)
-         */
+ 
         $firstUser = User::first();
         if ($firstUser) {
             $allPermissions = Permission::all();

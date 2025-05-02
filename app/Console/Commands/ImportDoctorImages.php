@@ -16,7 +16,6 @@ class ImportDoctorImages extends Command
     {
         $branchId = 1;
         
-        // Get all doctors of branch_id = 1, ordered by index
         $doctors = Doctor::where('branch_id', $branchId)
             ->orderBy('index')
             ->get();
@@ -24,10 +23,9 @@ class ImportDoctorImages extends Command
         $this->info("Found {$doctors->count()} doctors.");
 
         foreach ($doctors as $doctor) {
-            $fileName = "{$doctor->index}.jpg"; // بناء اسم الصورة بناءً على index
+            $fileName = "{$doctor->index}.jpg";
             $filePath = "profilepic/{$fileName}";
 
-            // Check if file exists
             if (Storage::disk('public')->exists($filePath)) {
 
                 DoctorFile::create([

@@ -20,7 +20,6 @@ enum DoctorType: string
     }
 
 
-    // If you wish to have badges for doctor types as well, add a badge class:
     public function badgeClass(): string
     {
         return match($this) {

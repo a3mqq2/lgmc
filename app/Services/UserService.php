@@ -88,35 +88,24 @@ class UserService
         $user->email = $data['email'];
     }
 
-    // Only update password if provided (not empty)
     if (!empty($data['password'])) {
         $user->password = Hash::make($data['password']);
     }
 
-    // Save the user
     $user->save();
 
-    // Sync branches if provided
     if (isset($data['branches']) && is_array($data['branches'])) {
-        // use sync() if you want to replace existing branches
         $user->branches()->sync($data['branches']);
     }
 
-    // Sync roles if provided
     if (isset($data['roles']) && is_array($data['roles'])) {
         $user->syncRoles($data['roles']);
     } else {
-        // If needed, you could do $user->syncRoles([]) to remove all roles
-        // or just skip if you want to keep existing roles when not specified
     }
 
-    // Sync permissions if provided
     if (isset($data['permissions']) && is_array($data['permissions'])) {
-        // dd($data['permissions']);
         $user->syncPermissions($data['permissions']);
     } else {
-        // If needed, remove direct permissions with syncPermissions([])
-        // or skip to preserve existing
     }
 
     // Log update
