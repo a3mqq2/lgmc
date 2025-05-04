@@ -31,6 +31,8 @@
     @endif
 
 @if(auth()->user()->permissions('manage-medical-facilities')->count())
+
+@if (auth()->user()->branch_id != 1)
 <div class="col-xl-6 col-md-6">
     <a href="{{route(get_area_name().'.medical-facilities.index')}}">
         <div class="card card-animate">
@@ -54,7 +56,10 @@
 </div>
 @endif
 
+@endif
+
 </div>
+
 
 
 @if(auth()->user()->permissions('manage-doctor-permits')->count())
@@ -151,6 +156,7 @@
 </div>
 @endif
 
+@if (auth()->user()->branch_id != 1)
 
 @if(auth()->user()->permissions('manage-medical-licenses')->count())
 <div class="row">
@@ -244,6 +250,7 @@
 
 
 </div>
+@endif
 @endif
 
 @endsection

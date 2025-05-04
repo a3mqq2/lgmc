@@ -18,7 +18,7 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label for="doctor_id" class="form-label">اسم الطبيب <span class="text-danger">*</span></label>
-                        <select name="doctor_id" id="doctor_id" class="form-control" required>
+                        <select name="doctor_id" id="doctor_id" class="form-control select2" required>
                             <option value="">اختر الطبيب</option>
                             @foreach($doctors as $doctor)
                                 <option value="{{ $doctor->id }}" {{ old('doctor_id') == $doctor->id ? 'selected' : '' }}>

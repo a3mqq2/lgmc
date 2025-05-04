@@ -198,10 +198,14 @@
                     </a>
          --}}
                     <!-- Toggle Ban/Unban Button (Modal Trigger) -->
+                  
+
+                    @if (auth()->user()->branch_id != 1)
                     <button type="button" class="btn {{ $doctor->membership_status->value === 'banned' ? 'btn-success' : 'btn-danger' }}" data-bs-toggle="modal" data-bs-target="#toggleBanDoctorModal">
                         <i class="fa {{ $doctor->membership_status->value === 'banned' ? 'fa-lock-open' : 'fa-lock' }}"></i>
                         {{ $doctor->membership_status->value === 'banned' ? 'رفع الحظر' : 'حظر الطبيب' }}
                     </button>
+                    @endif
         
                     <!-- Toggle Ban/Unban Modal -->
                     <div class="modal fade" id="toggleBanDoctorModal" tabindex="-1" aria-labelledby="toggleBanDoctorModalLabel" aria-hidden="true">
@@ -427,6 +431,23 @@
                                     </td>
                                     <td>{{ $doctor->membership_expiration_date ? $doctor->membership_expiration_date->format('Y-m-d') : 'N/A' }}</td>
                                 </tr>
+
+                              
+                                @if ($doctor->type->value == "visitor")
+                                <tr>
+                                    <th class="bg-primary text-light" colspan="5">تاريخ الزيارة من </th>
+                                    <th class="bg-primary text-light" colspan="3"> تاريخ الزيارة الى  </th>
+                                    <th class="bg-primary text-light" colspan="3">  اسم الشركة المستضيفه    </th>
+
+                                </tr>
+                                <tr>
+                                    <td colspan="5">{{ $doctor->visit_from ? $doctor->visit_from: 'N/A' }}</td>
+                                    <td colspan="3">{{ $doctor->visit_to ? $doctor->visit_to: 'N/A' }}</td>
+                                    <td colspan="3">{{ $doctor->medicalFacility?->name ?? 'N/A' }}</td>
+                                </tr>
+                                @endif
+
+
                             </tbody>
                         </table>
                     </div>

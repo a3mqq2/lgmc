@@ -56,7 +56,11 @@
             <li class="nav-item">
                 <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'Doctor', 'type' => 'membership'] ) }}" class="nav-link" data-key="t-horizontal">    فواتير تجديد العضويه  </a>
                 <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'Doctor'] ) }}" class="nav-link" data-key="t-horizontal">    فواتير الآطباء  </a>
-                <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'MedicalFaclitiy']) }}" class="nav-link" data-key="t-horizontal">    فواتير المنشآت الطبية  </a>
+
+                @if (auth()->user()->branch_id != 1)
+                  <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'MedicalFaclitiy']) }}" class="nav-link" data-key="t-horizontal">    فواتير المنشآت الطبية  </a>
+                @endif
+
             </li>
 
         </ul>

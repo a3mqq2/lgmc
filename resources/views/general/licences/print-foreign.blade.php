@@ -77,7 +77,9 @@
             <div class="libyan">
 
 
-                <div class="branch-sett">
+                <div class="branch-sett" style="position: absolute;
+                right: 50px;
+                top: 540px;">
                     <h6 class="font-weight-bold" style="margin-top:28px;"><strong>وبالإطلاع علـى سجل العضوية لنقابة أطباء {{ $licence->licensable->branch->name }}</strong></h6>
                 </div>
 
@@ -89,7 +91,11 @@
 
                 </div>
 
-                <div id="id-foreign">
+                <div id="id-foreign" style="width: 300px;
+                position: absolute;
+                top: 206px;
+                left: 31px;
+                font-size: 10px;">
                     <p>#{{$licence->code}}</p>
                 </div>
    
@@ -191,7 +197,12 @@
 
                 <div class="work-box card  p-3">
                     <h4 class="font-weight-bold">
-                        <strong>{{$licence->licensable->doctor_rank->name}} \ {{$licence->licensable->specialization}}  </strong>
+                        <strong>{{$licence->licensable->doctor_rank->name}}
+                            @if ($licence->licensable->specialty_1_id)
+                                -   {{$licence->licensable->specialization}}  
+                            @endif
+                        
+                        </strong>
                     </h4>
                 </div>
 

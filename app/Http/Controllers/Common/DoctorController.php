@@ -49,7 +49,7 @@ class DoctorController extends Controller
         try {
             $validatedData = $request->validated();
             $this->doctorService->create($validatedData);
-            return redirect()->route(get_area_name().'.doctors.index')->with('success', 'تم إضافة الطبيب بنجاح');
+            return redirect()->route(get_area_name().'.doctors.index', ['type' => request('type') ] )->with('success', 'تم إضافة الطبيب بنجاح');
         } catch (\Exception $e )  {
 
             return redirect()->back()->withInput()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني' . $e->getMessage()]);
@@ -79,7 +79,7 @@ class DoctorController extends Controller
             $validatedData = $request->validated();
             $doctor = Doctor::findOrFail($id);
             $this->doctorService->update($doctor, $validatedData);
-            return redirect()->route(get_area_name().'.doctors.index')->with('success', 'تم تعديل الطبيب بنجاح');
+            return redirect()->route(get_area_name().'.doctors.index', ['type' =>  $doctor->type->value  ])->with('success', 'تم تعديل الطبيب بنجاح');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني ' . $e->getMessage() ]);
         }

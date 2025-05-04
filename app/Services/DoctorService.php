@@ -367,7 +367,7 @@ class DoctorService
 
             if(!$price)
             {
-                return redirect()->back()->withInput()->withErrors(['لا يمكن اضافة طبيب زائر بدون تحديد الرتبة الصحيحة']);
+                return redirect()->back()->withInput()->withErrors(['لا يمكن اضافة طبيب زائر بدون تحديد الالصفة الصحيحة']);
             }
 
             
@@ -479,6 +479,7 @@ class DoctorService
                 unset($data['password']);
             }
             
+
 
 
             $doctor->update($data);
@@ -638,7 +639,8 @@ class DoctorService
 
                 // create invoice
                 $this->createInvoice($doctor);
-                $this->generateCode($doctor);
+                $doctor->generateCode();
+                $doctor->makeCode();
                 $this->sendFinalApprovalEmail($doctor);
 
             } else {

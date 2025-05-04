@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\SpecialtyController;
 use App\Http\Controllers\Admin\DoctorFileController;
 use App\Http\Controllers\Admin\DoctorRankController;
 use App\Http\Controllers\Admin\UniversityController;
+use App\Http\Controllers\Common\DoctorEmailController;
 use App\Http\Controllers\Common\TransactionController;
 use App\Http\Controllers\Admin\AcademicDegreeController;
 use App\Http\Controllers\Common\DoctorRequestController;
@@ -80,4 +81,7 @@ Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations'
     Route::resource('file-types', FileTypeController::class)->middleware('permission:branch-manager');
     Route::resource('medical-facility-types', MedicalFacilityTypeController::class)->middleware('permission:branch-manager');
     // =========== SETTINGS ============= //
+
+
+    Route::resource('doctor-emails', DoctorEmailController::class);
 });

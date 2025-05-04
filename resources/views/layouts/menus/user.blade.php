@@ -22,6 +22,7 @@
 
 
 
+@if (auth()->user()->branch_id != 1)
 @if(auth()->user()->permissions->where('name', 'doctor-requests')->count())
 
 <li class="nav-item">
@@ -32,15 +33,23 @@
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
                 <a href="{{ route(get_area_name().'.doctor-requests.index', ['doctor_type' => "libyan"]) }}" class="nav-link" data-key="t-horizontal"> طلبات الاطباء الليبيين  </a>
+
+                @if (auth()->user()->branch_id != 1)
                 <a href="{{ route(get_area_name().'.doctor-requests.index', ['doctor_type' => "palestinian"]) }}" class="nav-link" data-key="t-horizontal"> طلبات الاطباء الفلسطينيين  </a>
                 <a href="{{ route(get_area_name().'.doctor-requests.index', ['doctor_type' => "foreign"]) }}" class="nav-link" data-key="t-horizontal"> طلبات الاطباء الاجانب  </a>
                 <a href="{{ route(get_area_name().'.doctor-requests.index', ['doctor_type' => "visitor"]) }}" class="nav-link" data-key="t-horizontal"> طلبات الاطباء الزوار  </a>
+                @endif
+
             </li>
         </ul>
     </div>
 </li>
 
 @endif
+@endif
+
+
+@if (auth()->user()->branch_id != 1)
 @if(auth()->user()->permissions->where('name','manage-medical-facilities')->count())
 <li class="nav-item">
     <a class="nav-link menu-link" href="#medical-facility" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
@@ -56,6 +65,7 @@
         </ul>
     </div>
 </li>
+@endif
 @endif
 
 
@@ -94,9 +104,13 @@
                 <a href="{{ route(get_area_name().'.doctors.index', ['init_approve' => "1"]) }}" class="nav-link" data-key="t-horizontal">     اطباء تمت الموافقة عليهم بشكل مبدئي    </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['rejection' => "1"]) }}" class="nav-link" data-key="t-horizontal">    اطباء تم رفض عضوياتهم    </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan"]) }}" class="nav-link" data-key="t-horizontal">    الاطباء الليبيين  </a>
+
+                @if (auth()->user()->branch_id != 1)
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign"]) }}" class="nav-link" data-key="t-horizontal">    الاطباء الآجانب  </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor"]) }}" class="nav-link" data-key="t-horizontal">    الاطباء الزوار  </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian"]) }}" class="nav-link" data-key="t-horizontal">    الاطباء الفلسطينيين  </a>
+                @endif
+
                 <a href="{{ route(get_area_name().'.doctors.index', ['banned' => "1"]) }}" class="nav-link" data-key="t-horizontal">    الاطباء المحظورين  </a>
                 <a href="{{ route(get_area_name().'.doctors.index') }}" class="nav-link" data-key="t-horizontal">    عرض جميع الآطباء   </a>
             </li>
@@ -235,6 +249,9 @@
 @endphp
 
 
+
+@if (auth()->user()->branch_id != 1)
+
 <li class="nav-item">
     <a class="nav-link menu-link" href="#palestinian" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - فلسطينيين   </span>
@@ -254,6 +271,7 @@
         </ul>
     </div>
 </li>
+@endif
 
 
 
@@ -293,6 +311,7 @@
 @endphp
 
 
+@if (auth()->user()->branch_id != 1)
 <li class="nav-item">
     <a class="nav-link menu-link" href="#visitors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - زوار   </span>
@@ -312,6 +331,7 @@
         </ul>
     </div>
 </li>
+@endif
 
 
 @php
@@ -351,6 +371,8 @@
 
 
 
+@if (auth()->user()->branch_id != 1)
+
 <li class="nav-item">
     <a class="nav-link menu-link" href="#foreign" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - اجانب   </span>
@@ -370,6 +392,7 @@
         </ul>
     </div>
 </li>
+@endif
 
 
 
@@ -422,6 +445,9 @@
 
 
 @endphp
+
+
+@if (auth()->user()->branch_id != 1)
 <li class="nav-item">
     <a class="nav-link menu-link" href="#licences_facilities" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa-solid fa-house-medical"></i> <span data-key="t-layouts">     تراخيص المنشآت الطبية  </span>
@@ -441,6 +467,8 @@
         </ul>
     </div>
 </li>
+@endif
+
 @endif
 
 <li class="nav-item">

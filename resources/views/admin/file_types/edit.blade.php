@@ -41,7 +41,7 @@
                         <!-- Doctor Fields (Initially Hidden) -->
                         <div id="doctor-fields" style="display: none;">
                             <div class="mb-3">
-                                <label for="doctor_rank_id" class="form-label">الرتبة الطبية</label>
+                                <label for="doctor_rank_id" class="form-label">الصفة</label>
                                 <select name="doctor_rank_id" id="doctor_rank_id" class="form-control">
                                     <option value="">  الكل  </option>
                                     @foreach ($doctor_ranks as $doctor_rank)

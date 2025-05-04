@@ -20,6 +20,7 @@ class PricingController extends Controller
             $query->where('type', request('type'));
         }
 
+        
         if (request('entity_type')) {
             $query->where('entity_type', request('entity_type'));
         }

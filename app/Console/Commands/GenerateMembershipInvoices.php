@@ -104,7 +104,7 @@ class GenerateMembershipInvoices extends Command
             }
             if(!$price)
             {
-                throw new \Exception('لا يمكن إضافة طبيب زائر بدون تحديد الرتبة الصحيحة');
+                throw new \Exception('لا يمكن إضافة طبيب زائر بدون تحديد الالصفة الصحيحة');
             }
         } else if($doctor->type == DoctorType::Palestinian) {
             if($doctor->doctor_rank_id == 1)

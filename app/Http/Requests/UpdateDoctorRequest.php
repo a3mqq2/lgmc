@@ -18,7 +18,8 @@ class UpdateDoctorRequest extends FormRequest
 
         return [
             'name' => 'required|string|max:255',
-            'name_en' => 'required|string|max:255',
+            'name_en' => 'nullable|string|max:255',
+            "medical_facility_id" => "nullable|numeric",
             'national_number' => [
                 'required_if:type,libyan',
                 'digits:12',
@@ -33,15 +34,15 @@ class UpdateDoctorRequest extends FormRequest
                     }
                 },
             ],
-            'mother_name' => 'required|string|max:255',
+            'mother_name' => 'nullable|string|max:255',
             'country_id' => 'required_if:type,foreign|required_if:type,visitor',
             'date_of_birth' => 'nullable',
             'birth_year' => 'nullable|numeric|min:1900|max:2100',
             'email' => "nullable|unique:doctors,email,$doctorId",
             'month' => 'nullable|numeric|min:1|max:12',
             'day' => 'nullable|numeric|min:1|max:31',
-            'marital_status' => 'required|string|in:single,married',
-            'gender' => 'required|string|in:male,female',
+            'marital_status' => 'nullable|string|in:single,married',
+            'gender' => 'nullable|string|in:male,female',
             'passport_number' => 'required|string|max:20',
             'passport_expiration' => 'required|date',
             'password' => 'nullable|min:6|confirmed',
@@ -51,17 +52,16 @@ class UpdateDoctorRequest extends FormRequest
                 'regex:/^09[1-9][0-9]{7}$/',
                 function ($attribute, $value, $fail) {
                     if ($this->input('type') === 'libyan') {
-                        // تحقق من تنسيق رقم الهاتف الليبي: يبدأ بـ 218 ويتبعه 8 أرقام أو يبدأ بـ 0 ويتبعه 9 أرقام
                         if (!preg_match('/^(218\d{8}|0\d{9})$/', $value)) {
                             $fail('رقم الهاتف غير صالح. يجب أن يبدأ بـ 218 ويتبعه 8 أرقام أو بـ 0 ويتبعه 9 أرقام.');
                         }
                     }
                 },
             ],
-            'address' => 'required|string|max:255',
-            'hand_graduation_id' => 'required|numeric',
+            'address' => 'nullable|string|max:255',
+            'hand_graduation_id' => 'nullable|numeric',
             'internership_complete' => 'nullable',
-            'academic_degree_id' => 'required|numeric',
+            'academic_degree_id' => 'nullable|numeric',
             'certificate_of_excellence_date' => 'nullable',
             'doctor_rank_id' => 'required|numeric',
             'medical_facilities' => 'nullable|array',
@@ -69,15 +69,15 @@ class UpdateDoctorRequest extends FormRequest
             'specialty_2' => 'nullable',
             'specialty_3_id' => 'nullable|numeric',
             'ex_medical_facilities' => 'nullable|array',
-            'experience' => 'required|numeric|min:0',
+            'experience' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
             'branch_id' => 'nullable|numeric',
-            'qualification_university_id' => 'required|numeric',
+            'qualification_university_id' => 'nullable|numeric',
             'doctor_number' => 'nullable|string|max:255',
             'institution_id' => "nullable",
             'documents' => 'nullable',
             'registered_at' => "nullable",
-            'type' => 'required|in:libyan,palestinian,foreign,visitor',
+            'type' => 'nullable|in:libyan,palestinian,foreign,visitor',
 
             // قواعد التحقق المخصصة للتحقق من البلاك ليست
             'blacklist_check' => [
@@ -146,8 +146,8 @@ class UpdateDoctorRequest extends FormRequest
             'academic_degree_id.numeric' => 'حقل الدرجة الأكاديمية يجب أن يكون رقمياً.',
             'certificate_of_excellence_date.required' => 'حقل تاريخ شهادة التفوق مطلوب.',
             'certificate_of_excellence_date.date' => 'حقل تاريخ شهادة التفوق يجب أن يكون تاريخاً صالحاً.',
-            'doctor_rank_id.required' => 'حقل رتبة الطبيب مطلوب.',
-            'doctor_rank_id.numeric' => 'حقل رتبة الطبيب يجب أن يكون رقمياً.',
+            'doctor_rank_id.required' => 'حقل الصفة الطبيب مطلوب.',
+            'doctor_rank_id.numeric' => 'حقل الصفة الطبيب يجب أن يكون رقمياً.',
             'medical_facilities.array' => 'حقل المرافق الطبية يجب أن يكون مصفوفة.',
             'specialty_1_id.required' => 'حقل التخصص الأول مطلوب.',
             'specialty_1_id.numeric' => 'حقل التخصص الأول يجب أن يكون رقمياً.',

@@ -80,7 +80,7 @@ class DoctorRequestController extends Controller
             "doctor_type" => "required",
         ]);
 
-        $pricings = Pricing::where('doctor_type', $request->doctor_type)->where('type', 'service' )->get();
+        $pricings = Pricing::where('doctor_type', $request->doctor_type)->where('type', 'service' )->where('is_local', true)->get();
         $doctors = Doctor::latest()->where('type', $request->doctor_type)->when(auth()->user()->branch_id, function($q) {
             $q->where('branch_id', auth()->user()->branch_id);
         })->get();

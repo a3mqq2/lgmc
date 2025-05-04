@@ -25,12 +25,6 @@
                                     <input type="text" class="form-control" id="name" name="name" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="name" class="form-label"> رقم السجل التجاري </label>
-                                    <input type="text" class="form-control" id="commerical_number" name="commerical_number" required>
-                                </div>
-                            </div>
                             @if (get_area_name() == "admin")
                             <div class="col-md-12">
                                 <label for="branch">الفرع</label>

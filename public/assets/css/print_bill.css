@@ -297,7 +297,7 @@ table.print-table td.no-border {
   width: 340px;
   position: absolute;
   top: 207px;
-  left: 26px;
+  left: 16px;
 }
 
 
@@ -315,8 +315,9 @@ table.print-table td.no-border {
 {
   width: 300px;
   position: absolute;
-  top: 240px;
-  left: -60px;
+  top: 206px;
+  left: -9px;
+  font-size: 10px;
 }
 
 
@@ -333,7 +334,7 @@ table.print-table td.no-border {
 
 #id-foreign p {
   text-align: center;
-  font-size: 29px;
+  font-size: 28px;
   color: #e30613;
   font-weight: bold;
   font-family: sans-serif;

@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\Admin\SpecialtyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\FileTypeController;
+use App\Http\Controllers\Admin\SpecialtyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/get-sub-specialties/{id}', [SpecialtyController::class, 'get_subs']);
+Route::get('file-types', [FileTypeController::class, 'index_api']);

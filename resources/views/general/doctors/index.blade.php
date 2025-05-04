@@ -93,17 +93,35 @@
                             <tr>
                                 <th class="bg-light">#</th>
                                 <th class="bg-light">كود الطبيب</th>
-                                <th class="bg-light"> الرقم النقابي الاول </th>
+                                
+                                @if (request('type') != "visitor")
+                                 <th class="bg-light"> الرقم النقابي الاول </th>
+                                @endif
+
                                 <th class="bg-light">الاسم</th>
                                 <th class="bg-light">رقم الهاتف</th>
                                 <th class="bg-light"> الصفة / التخصص </th>
-                                <th class="bg-light">الإقامة</th>
+
+                                @if (request('type') != "visitor")
+                                    <th class="bg-light">الإقامة</th>
+                                @endif
+
+                                @if (request('type') == "visitor")
+                                    <th class="bg-light"> تاريخ بدء الزيارة </th>
+                                    <th class="bg-light"> تاريخ انتهاء الزيارة </th>
+                                @endif
+
                                 @if (request('type') == "libyan")
                                 <th class="bg-light">الرقم الوطني</th>
                                 @endif
                                 <th class="bg-light text-dark" >نوع الطبيب</th>
+                                
+                                @if (request('type') != "visitor")
                                 <th class="bg-light">الدرجة العلمية</th>
                                 <th class="bg-light">تاريخ الانتساب</th>
+                                @endif
+
+
                                 <th class="bg-light">المؤهل</th>
                                 <th class="bg-light">حالة العضوية</th>
                                 @if (request('init_approve') )
@@ -114,7 +132,11 @@
                                 <th class="bg-success text-light">القيمة المدفوعة الكلية</th>
                                 <th class="bg-warning text-light">القيمة المعفى عنه</th>
                                 @endif
-                                <th class="bg-light">جهة العمل</th>
+                                
+                                @if (request('type') != "visitor")
+                                    <th class="bg-light">جهة العمل</th>
+                                @endif
+
                                 <th class="bg-light">الإجراءات</th>
                             </tr>
                         </thead>
@@ -127,7 +149,12 @@
                             >
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $doctor->code }}</td>
+                                
+
+                                @if (request("type") != "visitor")
                                 <td>{{ $doctor->doctor_number }}</td>
+                                @endif
+
                                 <td>{{ $doctor->name }}</td>
                                 <td>{{ $doctor->phone }}</td>
                                 <td>
@@ -137,7 +164,18 @@
                                     @endif
                                    {{ $doctor->specialization  }}
                                 </td>
-                                <td>{{ $doctor->address }}</td>
+
+
+                                @if (request('type') != "visitor")
+                                    <td>{{ $doctor->address }}</td>
+                                @endif
+
+                                @if (request('type') == "visitor")
+                                <td>{{ $doctor->visit_from }}</td>
+                                <td>{{ $doctor->visit_to }}</td>
+
+                                @endif
+
                                 @if (request('type') == "libyan")
                                 <td>{{ $doctor->national_number }}</td>
                                 @endif
@@ -145,8 +183,13 @@
                                     {{ $doctor->type->label() }}
                                 </td>
                                 <td>{{ $doctor->academicDegree->name ?? 'N/A' }}</td>
+                                
+
+                                @if (request("type") != "visitor")
                                 <td>{{ $doctor->registered_at?->format('Y-m-d') }}</td>
                                 <td>{{ $doctor->certificate_of_excellence_date }}</td>
+                                @endif
+
                                 <td>
                                     <span class="badge {{$doctor->membership_status->badgeClass()}} ">
                                                 {{ $doctor->membership_status->label() }}
@@ -174,11 +217,16 @@
                                         {{ number_format($relief, 2) }} د.ل
                                     </td>
                                @endif
+                              
+
+                               @if (request('type') != "visitor" )
                                <td>
-                                @if ($doctor->institution)
-                                {{ $doctor->institution->name }}
-                                @endif
-                            </td>
+                                    @if ($doctor->institution)
+                                    {{ $doctor->institution->name }}
+                                    @endif
+                                </td>
+                               @endif
+
                                 <td>
 
 

@@ -256,7 +256,7 @@ class InvoiceController extends Controller
 
                     if(!$price)
                     {
-                        return redirect()->back()->withInput()->withErrors(['لا يمكن اضافة طبيب زائر بدون تحديد الرتبة الصحيحة']);
+                        return redirect()->back()->withInput()->withErrors(['لا يمكن اضافة طبيب زائر بدون تحديد الالصفة الصحيحة']);
                     }
 
                     

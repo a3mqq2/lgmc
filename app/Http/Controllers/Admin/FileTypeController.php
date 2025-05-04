@@ -14,6 +14,41 @@ class FileTypeController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+
+     public function index_api(Request $request)
+     {
+         // القيم المسموح بها لِـ doctor_type: libyan | palestinian | foreign | visitor
+         $type = $request->doctor_type;        // مطلوب دائماً
+         $rank = $request->rank_id;            // قد يكون null
+     
+         $files = FileType::where('type', 'doctor')
+             /*
+              * ① فلترة «نوع الطبيب»
+              *     ‑ إذا كان المستند مخصَّصاً لنوع الطبيب المطلوب OR مخصَّصاً للجميع (doctor_type = NULL)
+              */
+             ->where(function ($q) use ($type) {
+                 $q->where('doctor_type', $type)
+                   ->orWhereNull('doctor_type');
+             })
+             /*
+              * ② فلترة «الصفة/الرتبة»
+              *     ‑ عند وجود rank_id: نعيد المستندات المخصَّصة لهذه الرتبة أو العامة (doctor_rank_id = NULL)
+              *     ‑ عند عدم وجود rank_id: نعيد المستندات العامة فقط (doctor_rank_id = NULL)
+              */
+             ->when($rank, function ($q) use ($rank) {                 // يوجد rank
+                 $q->where(function ($q) use ($rank) {
+                     $q->where('doctor_rank_id', $rank)
+                       ->orWhereNull('doctor_rank_id');
+                 });
+             }, function ($q) {                                         // لا يوجد rank
+                 $q->whereNull('doctor_rank_id');
+             })
+             ->get(['id', 'name', 'is_required']);
+     
+         return response()->json($files);
+     }
+     
     public function index()
     {
         $fileTypes = FileType::all();

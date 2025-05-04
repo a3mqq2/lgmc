@@ -69,6 +69,9 @@ class Doctor extends Authenticatable
         'registered_at',
         'institution_id',
         'specialty_2',
+        'medical_facility_id',
+        'visit_from',
+        'visit_to',
     ];
 
 
@@ -222,6 +225,11 @@ class Doctor extends Authenticatable
             $doctor->setSequentialIndex();
             $doctor->makeCode();
         });
+    }
+
+    public function medicalFacility()
+    {
+        return $this->belongsTo(MedicalFacility::class);
     }
 
     public function setSequentialIndex(): void

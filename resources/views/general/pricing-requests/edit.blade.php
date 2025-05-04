@@ -72,7 +72,7 @@
 
                             <!-- Doctor Rank -->
                             <div class="col-md-6">
-                                <label for="doctor_rank_id" class="form-label">رتبة الطبيب</label>
+                                <label for="doctor_rank_id" class="form-label">الصفة الطبيب</label>
                                 <select 
                                     class="form-control @error('doctor_rank_id') is-invalid @enderror" 
                                     id="doctor_rank_id" 

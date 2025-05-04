@@ -113,7 +113,7 @@ $showDoctorColumns = $isDoctorEntity && request()->input('entity_type') != 'comp
                                 <th>نوع الكيان</th>
                                 @if($showDoctorColumns)
                                     <th>نوع الطبيب</th>
-                                    <th>الرتبة</th>
+                                    <th>الالصفة</th>
                                 @endif
                                 <th>الرسوم</th>
                                 <th>الحالة</th>
