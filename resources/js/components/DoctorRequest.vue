@@ -83,7 +83,6 @@
             v-model="selectedEmail"
             :options="availableEmails"
             label="label"
-            :reduce="e => e.email"
             placeholder="ابحث عن بريد…"
             @search="fetchEmails"
           />
@@ -262,7 +261,7 @@ async function handleSubmit() {
   const form = new FormData()
   form.append('doctor_id', selectedDoctor.value.id)
   addedEmails.value.forEach(e => form.append('emails[]', e))
-  selectedCountries.value.forEach(c => form.append('countries[]', c))
+  selectedCountries.value.forEach(c => form.append('countries[]', c.id))
   form.append('notes', notes.value)
   form.append('extracted_before', extractedBefore.value ? '1' : '0')
 
