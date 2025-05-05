@@ -98,6 +98,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
         'doctor-mails/{doctor_mail}/print',
         [DoctorMailController::class, 'print']
     )->name('doctor-mails.print');
+
+    Route::resource('emails', \App\Http\Controllers\Admin\EmailController::class)
+    ->middleware('permission:doctor-mails');
+
     
     // =========== DOCTOR MAILS ============= //
 

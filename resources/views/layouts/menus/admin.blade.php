@@ -49,6 +49,30 @@
 
 
 
+@if(auth()->user()->permissions()->where('name', 'doctor-mails')->count())
+<li class="nav-item">
+    <a class="nav-link menu-link" href="#emails" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fa fa-envelope"></i>
+        <span data-key="t-layouts">البريدات الإلكترونية</span>
+    </a>
+    <div class="collapse menu-dropdown" id="emails">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.emails.create') }}" class="nav-link" data-key="t-horizontal">
+                    إضافة بريد جديد
+                </a>
+                <a href="{{ route(get_area_name().'.emails.index') }}" class="nav-link" data-key="t-horizontal">
+                    عرض جميع البريدات
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+@endif
+
+
+
+
 
 @if(auth()->user()->permissions()->where('name', 'services-pricing')->count())
 <li class="nav-item">
