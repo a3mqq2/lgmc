@@ -436,65 +436,8 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
     <div class="collapse menu-dropdown" id="settings">
         <ul class="nav nav-sm flex-column">
 
-            {{-- Doctor Ranks --}}
-            <li class="nav-item">
-                <a class="nav-link menu-link" href="#doctor_ranks" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-                    <i class="fa fa-briefcase"></i>
-                    <span data-key="t-layouts">الصفات</span>
-                </a>
-                <div class="collapse menu-dropdown" id="doctor_ranks">
-                    <ul class="nav nav-sm flex-column">
-                        <li class="nav-item">
-                            <a href="{{ route(get_area_name().'.doctor_ranks.create') }}" class="nav-link" data-key="t-horizontal">
-                                إضافة صفة طبيب جديدة
-                            </a>
-                            <a href="{{ route(get_area_name().'.doctor_ranks.index') }}" class="nav-link" data-key="t-horizontal">
-                                عرض جميع صفات الأطباء
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
 
-            {{-- Academic Degrees --}}
-            <li class="nav-item">
-                <a class="nav-link menu-link" href="#academic-degrees" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-                    <i class="fa fa-graduation-cap"></i>
-                    <span data-key="t-layouts">الدرجات العلمية</span>
-                </a>
-                <div class="collapse menu-dropdown" id="academic-degrees">
-                    <ul class="nav nav-sm flex-column">
-                        <li class="nav-item">
-                            <a href="{{ route(get_area_name().'.academic-degrees.create') }}" class="nav-link" data-key="t-horizontal">
-                                إضافة درجة علمية جديدة
-                            </a>
-                            <a href="{{ route(get_area_name().'.academic-degrees.index') }}" class="nav-link" data-key="t-horizontal">
-                                عرض جميع الدرجات العلمية
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-            {{-- Universities --}}
-            <li class="nav-item">
-                <a class="nav-link menu-link" href="#universities" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-                    <i class="fa fa-university"></i>
-                    <span data-key="t-layouts">الجامعات</span>
-                </a>
-                <div class="collapse menu-dropdown" id="universities">
-                    <ul class="nav nav-sm flex-column">
-                        <li class="nav-item">
-                            <a href="{{ route(get_area_name().'.universities.create') }}" class="nav-link" data-key="t-horizontal">
-                                إضافة جامعة جديدة
-                            </a>
-                            <a href="{{ route(get_area_name().'.universities.index') }}" class="nav-link" data-key="t-horizontal">
-                                عرض جميع الجامعات
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+        
 
             {{-- Countries --}}
             <li class="nav-item">
@@ -537,7 +480,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
             </li>
 
             {{-- File Types --}}
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link menu-link" href="#fileTypes" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-file"></i>
                     <span data-key="t-layouts">المستندات المطلوبة</span>
@@ -554,10 +497,10 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
                         </li>
                     </ul>
                 </div>
-            </li>
+            </li> --}}
 
             {{-- Medical Facility Types --}}
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link menu-link" href="#medical-facility-types" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-hospital"></i>
                     <span data-key="t-layouts">أنواع المرافق الطبية</span>
@@ -574,7 +517,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
                         </li>
                     </ul>
                 </div>
-            </li>
+            </li> --}}
         </ul>
     </div>
 </li>

@@ -58,6 +58,7 @@
                                     <option value="">الكل</option>
                                     <option value="foreign" @if(old('doctor_type', $fileType->doctor_type) == 'foreign') selected @endif>أجنبي</option>
                                     <option value="visitor" @if(old('doctor_type', $fileType->doctor_type) == 'visitor') selected @endif>زائر</option>
+                                    <option value="palestinian" @if(old('doctor_type', $fileType->doctor_type) == 'palestinian') selected @endif>فلسطيني</option>
                                     <option value="libyan" @if(old('doctor_type', $fileType->doctor_type) == 'libyan') selected @endif>ليبي</option>
                                 </select>
                             </div>
