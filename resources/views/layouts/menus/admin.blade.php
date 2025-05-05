@@ -40,6 +40,11 @@
     <div class="collapse menu-dropdown" id="doctor_mails">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctor-mails.create') }}" class="nav-link" data-key="t-horizontal">
+                    اضف طلب جديد 
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="{{ route(get_area_name().'.doctor-mails.index') }}" class="nav-link" data-key="t-horizontal">
                     عرض جميع الطلبات
                 </a>
