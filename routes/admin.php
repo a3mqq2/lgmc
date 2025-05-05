@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\DoctorMailController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\EmailController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Common\VaultController;
@@ -99,7 +100,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
         [DoctorMailController::class, 'print']
     )->name('doctor-mails.print');
 
-    Route::resource('emails', \App\Http\Controllers\Admin\EmailController::class)
+    Route::resource('emails', EmailController::class)
     ->middleware('permission:doctor-mails');
 
     
