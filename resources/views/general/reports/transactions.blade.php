@@ -16,26 +16,55 @@
                         <thead>
                             <tr class="bg-light">
                                 <th>اشاري المعاملة</th>
-                                <th>الخرينة</th>
-                                <th> المستخدم</th>
+                                <th>الخزينة</th>
+                                <th>المستخدم</th>
                                 <th>الوصف</th>
-                                <th class="bg-danger text-light" >سحب</th>
-                                <th class="bg-success text-light">ايداع</th>
+                                <th class="bg-danger text-light">سحب</th>
+                                <th class="bg-success text-light">إيداع</th>
                                 <th>التاريخ والوقت</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @php
+                                $totalWithdrawals = 0;
+                                $totalDeposits = 0;
+                            @endphp
+
                             @foreach ($transactions as $transaction)
+                                @php
+                                    if($transaction->type == 'withdrawal') {
+                                        $totalWithdrawals += $transaction->amount;
+                                    } elseif($transaction->type == 'deposit') {
+                                        $totalDeposits += $transaction->amount;
+                                    }
+                                @endphp
+
                                 <tr>
                                     <td>{{ $transaction->id }}</td>
                                     <td>{{ $transaction->vault->name }}</td>
                                     <td>{{ $transaction->user->name }}</td>
                                     <td>{{ $transaction->desc }}</td>
-                                    <td>{{$transaction->type == "withdrawal" ? $transaction->amount . ' د.ل ' : ""}}</td>
-                                    <td>{{$transaction->type == "deposit" ? $transaction->amount  . 'د.ل' : ""}} </td>
+                                    <td>{{ $transaction->type == 'withdrawal' ? number_format($transaction->amount, 2) . ' د.ل' : '' }}</td>
+                                    <td>{{ $transaction->type == 'deposit' ? number_format($transaction->amount, 2) . ' د.ل' : '' }}</td>
                                     <td>{{ $transaction->created_at }}</td>
                                 </tr>
                             @endforeach
+
+                            <!-- الإجماليات -->
+                            <tr class="bg-light">
+                                <td colspan="4" class="text-center"><strong>الإجمالي</strong></td>
+                                <td><strong>{{ number_format($totalWithdrawals, 2) }} د.ل</strong></td>
+                                <td><strong>{{ number_format($totalDeposits, 2) }} د.ل</strong></td>
+                                <td></td>
+                            </tr>
+                            <tr class="bg-white">
+                                <td colspan="4" class="text-center"><strong>الرصيد الحالي</strong></td>
+                                <td colspan="3" class="text-center">
+                                    <strong>
+                                        {{ number_format($totalDeposits - $totalWithdrawals, 2) }} د.ل
+                                    </strong>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

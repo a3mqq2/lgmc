@@ -8,14 +8,16 @@ use App\Models\Doctor;
 use App\Models\Invoice;
 use App\Models\Pricing;
 use App\Enums\DoctorType;
+use App\Models\DoctorRank;
 use App\Enums\InvoiceStatus;
+use App\Mail\PaymentSuccess;
 use Illuminate\Http\Request;
 use App\Enums\MembershipStatus;
 use App\Models\MedicalFacility;
+use App\Models\TransactionType;
 use App\Services\InvoiceService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Mail\PaymentSuccess;
 use Illuminate\Support\Facades\Mail;
 
 class InvoiceController extends Controller
@@ -106,7 +108,9 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        return view('general.invoices.create');
+        $doctor_ranks = DoctorRank::all();
+        $transaction_types = TransactionType::all();
+        return view('general.invoices.create', compact('doctor_ranks','transaction_types'));
     }
 
     /**
@@ -115,216 +119,133 @@ class InvoiceController extends Controller
     /**
      * Store a newly created invoice in storage.
      */
-    public function store(Request $request)
-    {
-        // 1. Validate incoming data
-        $request->validate([
-            'description' => 'nullable|string|max:255',
-            'amount'      => 'nullable|numeric|min:0',
-            'invoiceable_type' => 'nullable|string|in:App\\Models\\Doctor,App\\Models\\MedicalFacility',
-            'invoiceable_id'   => 'nullable|string',
-            'transaction_type_id' => 'nullable|numeric',
-        ]);
 
 
+     public function store(Request $request)
+     {
+         $request->validate([
+             'description' => 'nullable|string|max:255',
+             'amount' => 'nullable|numeric|min:0',
+             'invoiceable_type' => 'nullable|string|in:App\\Models\\Doctor,App\\Models\\MedicalFacility',
+             'invoiceable_id' => 'nullable|string',
+             'transaction_type_id' => 'nullable|numeric',
+             'ranks' => 'array',
+             'from_years' => 'array',
+             'to_years' => 'array',
+         ]);
+     
 
-        // 2. Generate an invoice number like "INV-xxx"
-        $nextNumber = Invoice::count() + 1; 
-        $invoiceNumber = "INV-" . $nextNumber;
-
-
-        // if doctor search by code
-
-        if(!$request->type)
-        {
-            if($request->invoiceable_type == "App\Models\Doctor")
-            {
-                $doctor = Doctor::where('code', $request->invoiceable_id)->first();
-                if(!$doctor)
-                {
-                    return redirect()->back()->withErrors(['الطبيب غير موجود']);
-                }
-
-                if($doctor->branch_id != auth()->user()->branch_id)
-                {
-                    return redirect()->back()->withErrors(['لا يمكن إضافة قيمة فاتورة لطبيب ليس من فرعك']);
-                }
-            } elseif($request->invoiceable_type == "App\Models\MedicalFacility") {
-                $medical_facility = MedicalFacility::find($request->invoiceable_id);
-                if(!$medical_facility)
-                {
-                    return redirect()->back()->withErrors(['المنشأة الطبية غير موجودة']);
-                }
-
-                if($medical_facility->branch_id != auth()->user()->branch_id)
-                {
-                    return redirect()->back()->withErrors(['لا يمكن إضافة قيمة فاتورة لمنشأة طبية ليست من فرعك']);
-                }
-            }
-        }
-
-
-
-        $doctor = Doctor::whereCode($request->invoiceable_id)->first();
-
-        if($request->type)
-        {
-
-            if(!$doctor)
-            {
-                return redirect()->back()->withInput()->withErrors(['الطبيب غير موجود']);
-            }
-
-            if($doctor->membership_status == MembershipStatus::Banned)
-            {
-                return redirect()->back()->withInput()->withErrors(['لا يمكن إضافة قيمة فاتورة لطبيب محظور']);
-            }
-
-
-
-            if($doctor->membership_status == MembershipStatus::Active)
-            {
-                return redirect()->back()->withInput()->withErrors(['لا يمكن إضافة قيمة فاتورة لطبيب مفعل']);
-            }
-           
-
-            if(!$doctor->type || !$doctor->doctor_rank_id)
-            {
-                return redirect()->back()->withInput()->withErrors(['لا يمكن اضافة قيمة فاتورة لطبيب بدون تحديد صفه الطبيب']);
-            }
-
-
-            if($doctor->type ==  DoctorType::Libyan)
-            {
-                    if($doctor->doctor_rank_id == 1)
-                    {
-                        $price = Pricing::find(1);
-                    } else if($doctor->doctor_rank_id == 2) 
-                    {
-                        $price = Pricing::find(2);
-                    } else if($doctor->doctor_rank_id == 3)
-                    {
-                        $price = Pricing::find(3);
-                    } else if($doctor->doctor_rank_id == 4)
-                    {
-                        $price = Pricing::find(4);
-                    } else if($doctor->doctor_rank_id == 5)
-                    {
-                        $price = Pricing::find(5);  
-                    }else if($doctor->doctor_rank_id == 6)
-                    {
-                        $price = Pricing::find(6);  
-                    }
-
-            } else if($doctor->type == DoctorType::Foreign)
-            {
-                    if($doctor->doctor_rank_id == 1)
-                    {
-                        $price = Pricing::find(13);
-                    } else if($doctor->doctor_rank_id == 2) 
-                    {
-                        $price = Pricing::find(14);
-                    } else if($doctor->doctor_rank_id == 3)
-                    {
-                        $price = Pricing::find(15);
-                    } else if($doctor->doctor_rank_id == 4)
-                    {
-                        $price = Pricing::find(16);
-                    } else if($doctor->doctor_rank_id == 5)
-                    {
-                        $price = Pricing::find(17);  
-                    }else if($doctor->doctor_rank_id == 6)
-                    {
-                        $price = Pricing::find(18);  
-                    }
-            } else if($doctor->type == DoctorType::Visitor) {
-                    if($doctor->doctor_rank_id == 3 || $doctor->doctor_rank_id == 4)
-                    {
-                        $price = Pricing::find(25);
-                    }
-
-
-                    if($doctor->doctor_rank_id == 5)
-                    {
-                        $price = Pricing::find(26);
-                    }
-
-
-                    if($doctor->doctor_rank_id == 6)
-                    {
-                        $price = Pricing::find(27);
-                    }
-
-
-                    if(!$price)
-                    {
-                        return redirect()->back()->withInput()->withErrors(['لا يمكن اضافة طبيب زائر بدون تحديد الالصفة الصحيحة']);
-                    }
-
-                    
-            } else if($doctor->type == DoctorType::Palestinian) {
-
-                    if($doctor->doctor_rank_id == 1)
-                    {
-                        $price = Pricing::find(53);
-                    } else if($doctor->doctor_rank_id == 2) 
-                    {
-                        $price = Pricing::find(54);
-                    } else if($doctor->doctor_rank_id == 3)
-                    {
-                        $price = Pricing::find(55);
-                    } else if($doctor->doctor_rank_id == 4)
-                    {
-                        $price = Pricing::find(56);
-                    } else if($doctor->doctor_rank_id == 5)
-                    {
-                        $price = Pricing::find(57);  
-                    }else if($doctor->doctor_rank_id == 6)
-                    {
-                        $price = Pricing::find(58);  
-                    }
-
-            } else {
-                    \Log::error('Doctor Type is not exists to create an register invoice');
-            }
-
-
-            $data = [
-                'invoice_number' => $invoiceNumber,
-                'description'    => "قيمة تجديد العضوية للطبيب " . $doctor->name,
-                'amount'         => $request->amount,
-                'status'         => InvoiceStatus::unpaid,
-                'branch_id'      => $doctor->branch_id,
-                'user_id'        => auth()->id(),
-                'invoiceable_type' => 'App\Models\Doctor',
-                'pricing_id' => $price->id,
-                'invoiceable_id'   => $doctor->id,
-                'transaction_type_id' => 1,
-            ];
-        } else {
-            $data = [
-                'invoice_number' => $invoiceNumber,
-                'description'    => $request->description,
-                'amount'         => $request->amount,
-                'status'         => InvoiceStatus::unpaid,
-                'branch_id'      => isset($doctor) ? $doctor->branch_id : $medical_facility->branch_id,
-                'user_id'        => auth()->id(),
-                'invoiceable_type' => $request->invoiceable_type,
-                'invoiceable_id'   => $doctor->id,
-                'transaction_type_id' => $request->transaction_type_id,
-            ];
-        }
-
-
-
-        // 4. Create the invoice
-        $invoice = Invoice::create($data);
-
-        // 5. Redirect with a success message
-        return redirect()->route(get_area_name() . '.invoices.index')
-            ->with('success', 'تم إنشاء الفاتورة رقم ' . $invoice->invoice_number . ' بنجاح.');
-    }
-
+         $nextNumber = Invoice::count() + 1;
+         $invoiceNumber = "INV-" . $nextNumber;
+     
+         $doctor = null;
+         $medical_facility = null;
+     
+         if (!$request->type) {
+             if ($request->invoiceable_type == "App\Models\Doctor") {
+                 $doctor = Doctor::where('code', $request->invoiceable_id)->first();
+                 if (!$doctor) return back()->withErrors(['الطبيب غير موجود']);
+                 if ($doctor->branch_id != auth()->user()->branch_id) {
+                     return back()->withErrors(['لا يمكن إضافة قيمة فاتورة لطبيب ليس من فرعك']);
+                 }
+             } elseif ($request->invoiceable_type == "App\Models\MedicalFacility") {
+                 $medical_facility = MedicalFacility::find($request->invoiceable_id);
+                 if (!$medical_facility) return back()->withErrors(['المنشأة الطبية غير موجودة']);
+                 if ($medical_facility->branch_id != auth()->user()->branch_id) {
+                     return back()->withErrors(['لا يمكن إضافة قيمة فاتورة لمنشأة طبية ليست من فرعك']);
+                 }
+             }
+         }
+     
+         $doctor = $doctor ?? Doctor::whereCode($request->invoiceable_id)->first();
+     
+         if ($request->type) {
+             if (!$doctor) return back()->withInput()->withErrors(['الطبيب غير موجود']);
+             if ($doctor->membership_status == MembershipStatus::Banned)
+                 return back()->withInput()->withErrors(['لا يمكن إضافة قيمة فاتورة لطبيب محظور']);
+             if ($doctor->membership_status == MembershipStatus::Active)
+                 return back()->withInput()->withErrors(['لا يمكن إضافة قيمة فاتورة لطبيب مفعل']);
+             if (!$doctor->type || !$doctor->doctor_rank_id)
+                 return back()->withInput()->withErrors(['الصفة غير موجودة']);
+     
+             $price = Pricing::where('doctor_type', $doctor->type)
+                             ->where('rank_id', $doctor->doctor_rank_id)
+                             ->first();
+     
+             if (!$price) return back()->withInput()->withErrors(['لم يتم العثور على السعر المناسب']);
+     
+             $data = [
+                 'invoice_number' => $invoiceNumber,
+                 'description' => "قيمة تجديد العضوية للطبيب " . $doctor->name,
+                 'amount' => $request->amount,
+                 'status' => InvoiceStatus::unpaid,
+                 'branch_id' => $doctor->branch_id,
+                 'user_id' => auth()->id(),
+                 'invoiceable_type' => Doctor::class,
+                 'invoiceable_id' => $doctor->id,
+                 'pricing_id' => $price->id,
+                 'transaction_type_id' => 1,
+             ];
+         } else {
+             $amount = $request->amount;
+             $description = $request->description;
+     
+             // حساب الفاتورة تلقائيًا إذا تم تفعيل حساب الأذونات
+             if ($request->has('ranks') && $request->has('from_years') && $request->has('to_years')) {
+                 $amount = 0;
+                 foreach ($request->ranks as $index => $rankId) {
+                     if (!$rankId || !isset($request->from_years[$index]) || !isset($request->to_years[$index])) continue;
+                     $from = (int)$request->from_years[$index];
+                     $to = (int)$request->to_years[$index];
+                     $years = max(0, $to - $from + 1);
+     
+                     $pricing = Pricing::find($rankId);
+                     if ($pricing) {
+                         $amount += $pricing->amount * $years;
+                     }
+                 }
+             }
+     
+             $data = [
+                 'invoice_number' => $invoiceNumber,
+                 'description' => $description,
+                 'amount' => $amount,
+                 'status' => InvoiceStatus::unpaid,
+                 'branch_id' => $doctor?->branch_id ?? $medical_facility->branch_id,
+                 'user_id' => auth()->id(),
+                 'invoiceable_type' => $request->invoiceable_type,
+                 'invoiceable_id' => $doctor?->id ?? $medical_facility->id,
+                 'transaction_type_id' => $request->transaction_type_id,
+             ];
+         }
+     
+         $invoice = Invoice::create($data);
+     
+         // إنشاء البنود إذا كانت موجودة
+         if ($request->has('ranks') && $request->has('from_years') && $request->has('to_years')) {
+             foreach ($request->ranks as $index => $rankId) {
+                 if (!$rankId || !isset($request->from_years[$index]) || !isset($request->to_years[$index])) continue;
+     
+                 $from = (int)$request->from_years[$index];
+                 $to = (int)$request->to_years[$index];
+                 $years = max(0, $to - $from + 1);
+     
+                 $pricing = Pricing::find($rankId);
+                 if ($pricing) {
+                     $invoice->items()->create([
+                         'pricing_id' => $rankId,
+                         'from_year' => $from,
+                         'to_year' => $to,
+                         'amount' => $pricing->amount * $years,
+                     ]);
+                 }
+             }
+         }
+     
+         return redirect()->route(get_area_name() . '.invoices.index')
+             ->with('success', 'تم إنشاء الفاتورة رقم ' . $invoice->invoice_number . ' بنجاح.');
+     }
+     
 
     /**
      * Display the specified resource.
@@ -392,52 +313,53 @@ class InvoiceController extends Controller
 
     public function received(Invoice $invoice, Request $request)
     {
-
         try {
             DB::beginTransaction();
-            if($invoice->status != InvoiceStatus::unpaid)
-            {
-                return redirect()->back()
-                ->withErrors(['لا يمكن الاستلام من هذه الفاتورة']);
+    
+            if ($invoice->status != InvoiceStatus::unpaid) {
+                return redirect()->back()->withErrors(['لا يمكن الاستلام من هذه الفاتورة']);
             }
     
-
-
-    
-            if($invoice->branch_id != auth()->user()->branch_id)
-            {
+            if ($invoice->branch_id != auth()->user()->branch_id) {
                 return redirect()->back()->withErrors(['لا يمكن استلام قيمة فاتورة لغير فرعها الحالي']);
             }
+    
             $vault = auth()->user()->branch_id ? auth()->user()->branch->vault : Vault::first();
-            $this->invoiceService->markAsPaid($vault,$invoice, $request->notes);
-
-
-            // check the invoice have doctor email 
-
-            if($invoice->doctorMail)
-            {
+            $this->invoiceService->markAsPaid($vault, $invoice, $request->notes);
+    
+            $currentYear = now()->year;
+            $hasCurrentYear = $invoice->items()->where(function ($query) use ($currentYear) {
+                $query->where('from_year', '<=', $currentYear)
+                      ->where('to_year', '>=', $currentYear);
+            })->exists();
+    
+            if ($hasCurrentYear && $invoice->invoiceable_type === Doctor::class) {
+                $doctor = $invoice->invoiceable;
+                $doctor->membership_status = MembershipStatus::Active;
+                $doctor->membership_expiration_date = now()->addYear()->format('Y-m-d');
+                $doctor->save();
+            }
+    
+            if ($invoice->doctorMail) {
                 $mail = $invoice->doctorMail;
                 $mail->status = 'under_proccess';
                 $mail->save();
-
-
-                if($invoice->invoiceable->email)
-                {
+    
+                if ($invoice->invoiceable->email) {
                     Mail::to($invoice->invoiceable->email)->send(new PaymentSuccess($mail));
                 }
-
             }
-
+    
             DB::commit();
-        } catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()->withErrors([$e->getMessage()]);
         }
-
-        return redirect()->route(get_area_name().'.invoices.index')
+    
+        return redirect()->route(get_area_name() . '.invoices.index')
             ->with('success', 'تم تحديث حالة الفاتورة إلى مدفوعة.');
     }
+    
 
     public function relief(Request $request, Invoice $invoice)
     {

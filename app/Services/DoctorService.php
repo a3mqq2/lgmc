@@ -105,6 +105,17 @@ class DoctorService
       
 
 
+         if(request('regestration'))
+         {
+            $query->where('code', null);
+         }
+
+         if(request('init_approve'))
+         {
+            $query->where('membership_status', 'init_approve');
+         }
+
+
          // Type filters
          if (request('type') === 'libyan') {
              $query->where('type', 'libyan');

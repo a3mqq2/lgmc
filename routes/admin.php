@@ -37,6 +37,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
     Route::get('/search', [UserController::class, 'search'])->name('search');
 
     Route::post('/doctors/{doctor}/ban', [DoctorController::class, 'ban'])->name('doctors.toggle-ban');
+    Route::get('/doctors/print-list', [DoctorController::class, 'printList'])->name('doctors.print_list');
     Route::get('/reports', [ReportController::class, 'index'])->middleware('permission:manage-branches-reports')->name('reports.index');
     Route::get('/doctors/{doctor}/print-id', [DoctorController::class, 'print_id'])->name('doctors.print-id');
     Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->middleware('permission:manage-doctors')->name('doctors.print');

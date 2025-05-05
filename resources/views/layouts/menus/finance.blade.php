@@ -103,6 +103,8 @@
     </div>
 </li>
 
+@endif
+
 <li class="nav-item">
     <a class="nav-link menu-link" href="#layer-group" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-layer-group"></i><span data-key="t-layouts">   تصنيفات الحركات المالية  </span>
@@ -116,7 +118,10 @@
         </ul>
     </div>
 </li>
-@endif
+
+
+
+
 
 
 
@@ -138,5 +143,12 @@
 <li class="nav-item">
     <a class="nav-link menu-link" href="{{ route(get_area_name().'.profile.change-password') }}">
         <i class="ri-lock-password-line"></i> <span>تغيير كلمة المرور</span>
+    </a>
+</li>
+
+
+<li class="nav-item">
+    <a class="nav-link menu-link" href="{{route('finance.reports.index')}}">
+        <i class="fa fa-file"></i> <span> التقارير  </span>
     </a>
 </li>

@@ -216,7 +216,7 @@
                 <div class="qr-code card p-2">
                     <div class="code">
                         @php
-                        $link = env('APP_URL') . "checker?licence=" . $licence->id;
+                        $link = env('APP_URL') . "checker?licence=" . $licence->licensable->code;
                     $qrCode = DNS2D::getBarcodePNG($link, 'QRCODE', 5, 5);
                     @endphp
                     <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 50px; height: 50px;" />

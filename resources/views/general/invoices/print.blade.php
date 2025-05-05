@@ -205,6 +205,48 @@
             </table>
         </div>
 
+
+<!-- Items Section -->
+<div class="items">
+    <h4>تفاصيل إضافية</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>الصفة</th>
+                <th>من سنة</th>
+                <th>إلى سنة</th>
+                <th>السعر السنوي</th>
+                <th>عدد السنوات</th>
+                <th>الإجمالي</th>
+            </tr>
+        </thead> 
+        <tbody>
+            @forelse($invoice->items as $index => $item)
+                @php
+                    $years = ($item->to_year - $item->from_year) + 1;
+                @endphp
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $item->rank?->name ?? '-' }}</td>
+                    <td>{{ $item->from_year }}</td>
+                    <td>{{ $item->to_year }}</td>
+                    <td>{{ number_format($item->amount, 2) }} د.ل</td>
+                    <td>{{ $years }}</td>
+                    <td>{{ number_format($item->amount * $years, 2) }} د.ل</td>
+                </tr>
+            @empty
+                <tr>
+                    <td>1</td>
+                    <td colspan="5">{{ $invoice->description }}</td>
+                    <td>{{ number_format($invoice->amount, 2) }} د.ل</td>
+                </tr>
+            @endforelse
+        </tbody>
+        
+    </table>
+</div>
+
         <!-- Footer Section -->
         <div class="footer">
             <p><strong>التوقيع:</strong> ______________________</p>

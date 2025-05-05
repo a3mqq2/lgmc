@@ -1,16 +1,17 @@
 <?php
 
-use App\Http\Controllers\Common\DoctorController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Common\VaultController;
 use App\Http\Controllers\Finance\HomeController;
+use App\Http\Controllers\TotalInvoiceController;
+use App\Http\Controllers\Common\DoctorController;
+use App\Http\Controllers\Common\ReportController;
 use App\Http\Controllers\Common\TicketController;
 use App\Http\Controllers\VaultTransferController;
 use App\Http\Controllers\Common\InvoiceController;
 use App\Http\Controllers\Common\TransactionController;
 use App\Http\Controllers\Common\TransactionTypeController;
-use App\Http\Controllers\TotalInvoiceController;
 
 Route::prefix('finance')->name('finance.')->middleware('auth', 'check.finance.permission')->group(function () {
    Route::get('/home', [HomeController::class, 'home'])->name('home');
@@ -34,4 +35,14 @@ Route::prefix('finance')->name('finance.')->middleware('auth', 'check.finance.pe
     Route::get('total-invoices', [TotalInvoiceController::class, 'index'])->name('total_invoices.index')->middleware('permission:total_invoices');
     Route::get('total-invoices/{invoice}/show', [TotalInvoiceController::class, 'show_invoice'])->name('total_invoices.show')->middleware('permission:total_invoices');
     Route::get('total-invoices/{invoice}/print', [TotalInvoiceController::class, 'print'])->name('total_invoices.print')->middleware('permission:total_invoices');
+
+
+        // ================ REPORTS ================ //
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/transactions', [ReportController::class, 'transactions'])->name('reports.transactions');
+        Route::get('/reports/licences', [ReportController::class, 'licences'])->name('reports.licences');
+        Route::get('/reports/licences/print', [ReportController::class, 'licences_print'])->name('reports.licences_print');
+        Route::get('/reports/transactions/print', [ReportController::class, 'transactions_print'])->name('reports.transactions_print');
+        // =============== REPORTS ================ //
+    
 });

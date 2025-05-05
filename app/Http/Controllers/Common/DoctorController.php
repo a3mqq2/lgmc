@@ -197,4 +197,52 @@ class DoctorController extends Controller
     }
     
     
+
+    public function printList(Request $request)
+    {
+        $query = Doctor::query();
+    
+        if ($request->filled('doctor_number')) {
+            $query->where('doctor_number', $request->doctor_number);
+        }
+    
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+    
+        if ($request->filled('phone')) {
+            $query->where('phone', 'like', '%' . $request->phone . '%');
+        }
+    
+        if ($request->filled('doctor_rank_id')) {
+            $query->where('doctor_rank_id', $request->doctor_rank_id);
+        }
+    
+        if ($request->filled('registered_at')) {
+            $query->whereDate('registered_at', $request->registered_at);
+        }
+    
+        if ($request->filled('membership_status')) {
+            $query->where('membership_status', $request->membership_status);
+        }
+    
+        if ($request->filled('specialization')) {
+            $query->where('specialization_id', $request->specialization);
+        }
+    
+        if ($request->filled('last_license_status')) {
+            $query->whereHas('latestLicence', function($q) use ($request) {
+                $q->where('status', $request->last_license_status);
+            });
+        }
+    
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+    
+        $doctors = $query->get();
+    
+        return view('general.doctors.print_list', compact('doctors'));
+    }
+    
 }

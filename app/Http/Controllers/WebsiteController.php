@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Doctor;
 use App\Models\Licence;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -58,7 +59,7 @@ class WebsiteController extends Controller
 
     public function checker()
     {
-        $licence = Licence::where('code', request('licence'))->first();
-        return view('website.checker', compact('licence'));
+        $doctor = Doctor::where('code', request('licence'))->first();
+        return view('website.checker', compact('doctor'));
     }
 }

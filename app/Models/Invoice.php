@@ -171,4 +171,10 @@ class Invoice extends Model
         return $this->belongsTo(DoctorMail::class);
     }
    
+
+    public function items()
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
+    
 }

@@ -51,4 +51,17 @@ class Pricing extends Model
     {
         return $this->doctor_type->label();
     }
+
+
+    public function scopeMembershipForDoctor($query, \App\Models\Doctor $doctor)
+    {
+        // نستدعي الـ accessor اللي أنشأناه للصفة النهائية
+        $displayRank = $doctor->rank_name; 
+
+        return $query
+            ->where('type', 'membership')
+            ->where('entity_type', 'doctor')
+            ->where('doctor_type', $doctor->type->value)
+            ->where('name', $displayRank);
+    }
 }

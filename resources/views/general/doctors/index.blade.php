@@ -81,6 +81,18 @@
                             </select>
                         </div>
 
+
+                        <div class="col-md-3">
+
+                            @if(count(array_filter(request()->except('page')))) 
+                            <div class="mb-3">
+                                <a href="{{ route(get_area_name().'.doctors.print_list', request()->all()) }}" class="btn btn-secondary">
+                                    <i class="fa fa-print"></i> طباعة النتائج
+                                </a>
+                            </div>
+                        @endif
+                        </div>
+                        
                         <div class="col-md-3">
                             <label>&nbsp;</label>
                             <button type="submit" class="btn btn-primary d-block">بحث</button>

@@ -403,10 +403,10 @@
           </div>
         <div class="col-lg-12 text-center">
             <h2 class="fs-16 text-center text-uppercase text-line text-primary mb-3">
-              تأكّد من إذن المزاولة بواسطة الأداة
+              تأكّد من طبيبك بواسطة الأداة
             </h2>
             <h3 class="display-4 mb-0 text-danger text-center">
-              متحقّق الأذونات
+              تحقق من بيانات طبيب
             </h3>
           </div>
           <div class="col-md-12 text-center text-danger">

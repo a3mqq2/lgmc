@@ -98,132 +98,79 @@
 
 
 
-    <section class="wrapper  " dir="rtl">
-      <div class="container py-14 pt-md-17 ">
-        <div class="row gx-lg-8 gx-xl-12 gy-10 gy-lg-0 mb-2 align-items-end">
-          <div class="col-md-12 d-flex justify-content-center mb-3">
-            <img src="{{asset('/assets/images/shield.png')}}" width="50" alt="" style="width: 80px!important;">
-          </div>
-        <div class="col-lg-12 text-center">
-            <h2 class="fs-16 text-center text-uppercase text-line text-primary mb-3">
-              تأكّد من إذن المزاولة بواسطة الأداة
-            </h2>
-            <h3 class="display-4 mb-0 text-danger text-center">
-              متحقّق الأذونات
-            </h3>
-          </div>
-
-          <div class="col-md-12">
-           <form action="">
-               <label for="">رقم الاذن</label>
-               <input type="text" name="licence" value="{{request('licence')}}"   id="" class="form-control" placeholder="يرجى ادخال رقم الاذن للتآكد منه">
-               <button class="btn btn-primary mt-3 text-light">تحقق</button>
-           </form>
-         </div>
-
-
-         @if (request('licence'))
-             @if ($licence)
-
-               <div class="col-md-12">
-
-                  <div class="card">
-                     <div class="card-body">
-                           <table class="table table-bordered border-2">
-                              <tr>
-                                 <th>
-                                       <strong class="text-danger ml-3 font-weight-bold">
-                                          رقم الاذن : 
-                                       </strong>
-
-                                       <span>#{{$licence->id}}</span>
-                                 </th>
-                              </tr>
-                              <tr>
-                                 <th>
-                                       <strong class="text-danger ml-3 font-weight-bold">
-                                          الاسم : 
-                                       </strong>
-
-                                       <span>{{$licence->licensable ? $licence->licensable->name : ""}}</span>
-                                 </th>
-                              </tr>
-
-
-                              @if ($licence->licensable instanceof \App\Models\Doctor)
-
-
-
-                              <tr>
-                                 <th>
-                                       <strong class="text-danger ml-3 font-weight-bold">
-                                          مكان العمل : 
-                                       </strong>
-                                          
-                                          <span>{{$licence->medicalFacility ? $licence->medicalFacility->name : "-" }}</span>
-                                 </th>
-                              </tr>
-
-
-
-                              <tr>
-                                 <th>
-                                       <strong class="text-danger ml-3 font-weight-bold">
-                                          التخصص : 
-                                       </strong>
-                                          
-                                          <span>{{$licence->licensable->rank_name}} \ 
-                                          {{$licence->licensable->getSpecializationAttribute()}}</span>
-                                          </span>
-                                 </th>
-                              </tr>
-
-
-
-
-                              <tr>
-                                    <th>
-                                          <strong class="text-danger ml-3 font-weight-bold">
-                                             الجنسية : 
-                                          </strong>
-                                             
-                                             <span>{{$licence->licensable->country->name}}</span>
-                                    </th>
-                                 </tr>
-
-
-                                  
-                              @endif
-
-
-                              <tr>
-                                 <th>
-                                       <strong class="text-danger ml-3 font-weight-bold">
-                                           حالة الاذن  : 
-                                       </strong>
-
-                                       <span>{!!$licence->getStatusBadgeAttribute() !!}</span>
-                                 </th>
-                              </tr>
-                           </table>
-                     </div>
-                  </div>
-               </div>
-
-                 @else 
-
-
-                 <div class="col-md-12">
-                  <h3 class="text-center font-weight-bold text-danger">لم يتم العثور على نتائج</h3>
-                 </div>
-
-             @endif
-         @endif
-
+    <section class="wrapper" dir="rtl">
+      <div class="container py-14 pt-md-17">
+        <div class="text-center mb-5">
+          <img src="{{asset('/assets/images/shield.png')}}" width="80" alt="">
+          <h2 class="fs-16 text-primary mb-1">تحقق من بيانات الطبيب</h2>
+          <h3 class="display-4 text-danger">التحقق من طبيب</h3>
         </div>
-        <!-- /.row -->
+
+        <form action="">
+          <label for="">كود الطبيب</label>
+          <input type="text" name="licence" value="{{ request('licence') }}" class="form-control" placeholder="أدخل كود الطبيب">
+          <button class="btn btn-primary mt-3 text-light">تحقق</button>
+        </form>
+
+        @if (request('licence'))
+          @if ($doctor)
+            <div class="card mt-4">
+              <div class="card-body">
+                <table class="table table-bordered">
+                  <tr>
+                    <th><strong class="text-danger">الكود:</strong> {{ $doctor->code }}</th>
+                  </tr>
+                  <tr>
+                    <th><strong class="text-danger">الطبيب:</strong> {{ $doctor->name }}</th>
+                  </tr>
+                  <tr>
+                    <th><strong class="text-danger">الصفة:</strong> {{ $doctor->doctor_rank?->name ?? '-' }}</th>
+                  </tr>
+                  <tr>
+                    <th><strong class="text-danger">التخصص:</strong> {{ $doctor->specialization ?? '-' }}</th>
+                  </tr>
+                  <tr>
+                    <th><strong class="text-danger">حالة العضوية:</strong> 
+                      <span class="badge {{ $doctor->membership_status->badgeClass() }}">
+                        {{ $doctor->membership_status->label() }}
+                      </span>
+                    </th>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <div class="card mt-4 p-3">
+              <h5>آخر الأذونات السارية للطبيب:</h5>
+          
+              @php
+                  $activeLicences = $doctor->licenses()
+                      ->where('status', 'active')
+                      ->where('expiry_date', '>=', now())
+                      ->get();
+              @endphp
+
+              @if ($activeLicences->count())
+                  <ul>
+                      @foreach ($activeLicences as $item)
+                          <li>
+                              إذن رقم: <strong>{{ $item->code }}</strong> -
+                              ساري من <strong>{{ $item->issued_date }}</strong> إلى <strong>{{ $item->expiry_date }}</strong>
+                          </li>
+                      @endforeach
+                  </ul>
+              @else
+                  <p class="text-danger">لا يوجد أي إذن ساري لهذا الطبيب.</p>
+              @endif
+          </div>
+          
+          @else
+            <h4 class="text-center text-danger mt-5">لم يتم العثور على طبيب بهذا الكود</h4>
+          @endif
+        @endif
       </div>
-      <!-- /.container -->
+
+
     </section>
     
     

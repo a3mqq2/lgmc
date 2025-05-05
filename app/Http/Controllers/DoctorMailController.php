@@ -204,6 +204,7 @@ class DoctorMailController extends Controller
                     'description'      => "فاتورة طلب أوراق خارجية رقم {$doctorMail->id}",
                     'amount'           => $doctorMail->grand_total,
                     'status'           => InvoiceStatus::unpaid,
+                    'branch_id'      => $doctorMail->doctor->branch_id,
                 ]);
 
                 if($doctorMail->doctor->email)

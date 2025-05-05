@@ -129,11 +129,15 @@
               <td>
                <div class="btn-group btn-group-sm" role="group">
                    {{-- زرّ عرض --}}
+                  
+
+                   @if (get_area_name() == "admin")
                    <a href="{{ route(get_area_name().'.doctor-mails.show', $mail) }}"
-                      class="btn btn-outline-info" title="عرض">
-                      <i class="fa fa-eye"></i>
-                   </a>
-             
+                    class="btn btn-outline-info" title="عرض">
+                    <i class="fa fa-eye"></i>
+                  </a>
+                   @endif
+
                    {{-- زرّ اكتمال (يظهر فقط إذا كان قيد المعالجة) --}}
                    @if($mail->status === 'under_proccess')
                      <form action="{{ route(get_area_name().'.doctor-mails.complete', $mail) }}"
@@ -152,13 +156,17 @@
                    </a>
              
                    {{-- زرّ حذف --}}
+                 
+                   @if (get_area_name() == "active")
                    <form action="{{ route(get_area_name().'.doctor-mails.destroy', $mail) }}"
-                         method="POST" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
-                     @csrf @method('DELETE')
-                     <button type="submit" class="btn btn-outline-danger" title="حذف">
-                       <i class="fa fa-trash"></i>
-                     </button>
-                   </form>
+                        method="POST" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn btn-outline-danger" title="حذف">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </form>
+                   @endif
+
                </div>
              </td>
              
