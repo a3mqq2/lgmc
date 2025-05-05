@@ -42,7 +42,7 @@ class DoctorFileController extends Controller
         try {
             $file = $request->file('document');
             $fileName = $file->getClientOriginalName();
-            $filePath = $file->storeAs('/public/doctor_files', $fileName, 'public');
+            $filePath = $file->storeAs('files', $fileName, 'public');
 
             $doctorFile = DoctorFile::create([
                 'doctor_id' => $doctor->id,

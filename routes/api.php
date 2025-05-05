@@ -1,5 +1,6 @@
 <?php
 
+use Faker\Core\File;
 use App\Models\Email;
 use App\Models\Doctor;
 use App\Models\Country;
@@ -7,6 +8,8 @@ use App\Models\Pricing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DoctorMailController;
+use App\Http\Controllers\Admin\FileTypeController;
+use App\Http\Controllers\Admin\SpecialtyController;
 
 Route::get('/doctors', function (Request $request) {
     $search = $request->get('search');
@@ -66,3 +69,7 @@ Route::get('/pricings', function (Request $request) {
 
 Route::post('/doctor-mails', [DoctorMailController::class, 'store'])
      ->name('doctor-mails.store');
+
+
+     Route::get('/get-sub-specialties/{id}', [SpecialtyController::class, 'get_subs']);
+     Route::get('file-types', [FileTypeController::class, 'index_api']);

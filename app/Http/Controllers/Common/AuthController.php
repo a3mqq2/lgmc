@@ -133,32 +133,11 @@ class AuthController extends Controller
             // استخراج نوع الطبيب من البيانات
             $doctorType = $data['type'];
 
-            // بناء استعلام التحقق من البلاك ليست بناءً على نوع الطبيب
-            $blacklistQuery = Blacklist::where('doctor_type', $doctorType)
-                ->where(function ($query) use ($data, $doctorType) {
-                    $query->where('name', $data['name'])
-                        ->orWhere('number_phone', $data['phone']);
-                    
-                    if ($doctorType === 'libyan') {
-                        // تحقق من رقم الهوية الوطنية لليبيا
-                        $query->orWhere('id_number', $data['national_number']);
-                    } else {
-                        // تحقق من رقم الجواز للأطباء غير الليبيين
-                        $query->orWhere('passport_number', $data['passport_number']);
-                    }
-                });
-
-            // إذا كان الطبيب موجودًا في البلاك ليست، إلقاء استثناء
-            if ($blacklistQuery->exists()) {
-                return redirect()->back()->withInput()->withErrors(['حسابك موجود من ضمن القائمة السوداء للاطباء !! يرجى التواصل مع الادارة']);
-            }
-
-
+          
              // check the doctor is exists before
             $doctor = Doctor::where('name', $data['name'])
             ->where('phone', $data['phone'])
             ->where('email', $data['email'])
-            ->where('passport_number', $data['passport_number'])
             ->where('type', $data['type'])
             ->first();
 

@@ -153,7 +153,7 @@
 
                 <div class="work-box card  p-3">
                     <h4 class="font-weight-bold">
-                        <strong>{{$licence->licensable->doctor_rank->name}}
+                        <strong>{{$licence->licensable->rank_name}}
                             @if ($licence->licensable->specialty_1_id)
                                 -   {{$licence->licensable->specialization}}  
                             @endif

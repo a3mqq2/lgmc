@@ -102,6 +102,9 @@ class DoctorService
              $query->where('academic_degree_id', request('academic_degree'));
          }
      
+      
+
+
          // Type filters
          if (request('type') === 'libyan') {
              $query->where('type', 'libyan');
@@ -179,8 +182,6 @@ class DoctorService
                     // تحقق من رقم الهوية الوطنية لليبيا
                     $query->orWhere('id_number', $data['national_number']);
                 } else {
-                    // تحقق من رقم الجواز للأطباء غير الليبيين
-                    $query->orWhere('passport_number', $data['passport_number']);
                 }
             });
 
@@ -194,7 +195,6 @@ class DoctorService
         $doctor = Doctor::where('name', $data['name'])
             ->where('phone', $data['phone'])
             ->where('email', $data['email'])
-            ->where('passport_number', $data['passport_number'])
             ->where('type', $data['type'])
             ->first();
 
@@ -639,8 +639,7 @@ class DoctorService
 
                 // create invoice
                 $this->createInvoice($doctor);
-                $doctor->generateCode();
-                $doctor->makeCode();
+                $doctor->regenerateCode();
                 $this->sendFinalApprovalEmail($doctor);
 
             } else {
@@ -669,7 +668,7 @@ class DoctorService
             DB::commit();
         } catch (\Exception $e) {
             // throw error
-            throw new \Exception('حدث خطأ أثناء الموافقة على الطبيب.');
+            throw new \Exception('حدث خطأ أثناء الموافقة على الطبيب. ' . $e->getMessage());
             // return redirect()->back()->withErrors(['حدث خطأ أثناء الموافقة على الطبيب.']);
             DB::rollback();
             throw $e;  // Re-throw the exception after rolling back

@@ -231,7 +231,7 @@
 
 
 
-                                    @if (get_area_name() == "user" && $doctor->code == null && $doctor->membership_status == \App\Enums\MembershipStatus::Pending)
+                                    @if ($doctor->code == null && $doctor->membership_status == \App\Enums\MembershipStatus::Pending)
                                     <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approve{{ $doctor->id }}"> القبول المبدئي للعضوية </button>
                                     <!-- Delete Modal -->
                                     <div class="modal fade" id="approve{{ $doctor->id }}" tabindex="-1" aria-labelledby="approveLabel" aria-hidden="true">

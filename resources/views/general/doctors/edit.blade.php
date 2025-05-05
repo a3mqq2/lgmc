@@ -342,20 +342,31 @@
 
 
                         <div class="col-md-4">
-                            <label for="">الصفة</label>
+                            <label for="doctor_rank_id">الصفة</label>
                             <select name="doctor_rank_id" id="doctor_rank_id" required class="form-control select2">
                                 <option value="">حدد الصفة</option>
-                                @foreach ($doctor_ranks as $doctor_rank)
-                                    @if ($doctor->type->value == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
-                                        <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id', $doctor->doctor_rank_id) == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
-                                        @else 
-                                            @if ($doctor->type->value != "visitor")
-                                                    <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
-                                            @endif
+                                @foreach ($doctor_ranks as $rank)
+                                    @if($doctor->type->value === 'visitor')
+                                        @if(! in_array($rank->id, [1, 2]))
+                                            <option value="{{ $rank->id }}"
+                                                {{ old('doctor_rank_id', $doctor->doctor_rank_id) == $rank->id ? 'selected' : '' }}>
+                                                {{ ($rank->id === 6 && $doctor->type->value !== 'libyan') 
+                                                    ? 'استشاري تخصص دقيق' 
+                                                    : $rank->name }}
+                                            </option>
                                         @endif
+                                    @else
+                                        <option value="{{ $rank->id }}"
+                                            {{ old('doctor_rank_id', $doctor->doctor_rank_id) == $rank->id ? 'selected' : '' }}>
+                                            {{ ($rank->id === 6 && $doctor->type->value !== 'libyan') 
+                                                ? 'استشاري تخصص دقيق' 
+                                                : $rank->name }}
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>
+                        
 
                         <div class="col-md-4">
                             <label for=""> تخصص اول</label>

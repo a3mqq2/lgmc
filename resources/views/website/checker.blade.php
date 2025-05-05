@@ -172,7 +172,7 @@
                                           التخصص : 
                                        </strong>
                                           
-                                          <span>{{$licence->licensable->doctor_rank->name}} \ 
+                                          <span>{{$licence->licensable->rank_name}} \ 
                                           {{$licence->licensable->getSpecializationAttribute()}}</span>
                                           </span>
                                  </th>

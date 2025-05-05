@@ -274,4 +274,12 @@ class Doctor extends Authenticatable
                     ->orderBy('created_at', 'desc');
     }
 
+
+    public function getRankNameAttribute(): string
+    {
+        return $this->doctor_rank_id === 6
+            ? 'استشاري تخصص دقيق'
+            : $this->doctor_rank->name;
+    }
+
 }

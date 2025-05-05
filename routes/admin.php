@@ -84,6 +84,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
     Route::post('profile/change-password', [ProfileController::class, 'change_password_store'])->name('profile.change-password');
 
 
+    Route::post('/doctors/{doctor}/approve', [DoctorController::class, 'approve'])->name('doctors.approve');
+    Route::post('/doctors/{doctor}/reject', [DoctorController::class, 'reject'])->name('doctors.reject');
+
     // =========== DOCTOR MAILS ============= //
     Route::resource('doctor-mails', DoctorMailController::class);
     Route::put(

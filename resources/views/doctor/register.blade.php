@@ -380,7 +380,7 @@
                                                 </div>
                                                </div>
                                                <div class="row">
-                                                <div class="row mt-3">
+                                                <div class="row mt-3" dir="rtl">
                                                    <div class="col-md-6">
                                                        <a href="{{route('register', ['type' => 'libyan' ])}}">
                                                            <div class="card {{App\Enums\DoctorType::Libyan->badgeClass()}} text-light text-center p-3 d-flex justify-content-center align-items-center" style="height: 100px;">
@@ -425,33 +425,48 @@
                                                              <input type="text" required name="name" value="{{old('name')}}"  id="" class="form-control">
                                                              <input type="hidden" name="type" value="{{request('type')}}">
                                                          </div>
+                                                         
+                                                         @if (request('type') == "libyan")
                                                          <div class="col-md-6">
-                                                             <label for="">الاسم بالكامل باللغه الانجليزيه</label>
-                                                             <input type="text" required name="name_en" value="{{old('name_en')}}"  id="name_en" class="form-control">
-                                                         </div>
+                                                            <label for="">الاسم بالكامل باللغه الانجليزيه</label>
+                                                            <input type="text" required name="name_en" value="{{old('name_en')}}"  id="name_en" class="form-control">
+                                                        </div>                               
+                                                         @endif
+
                                                          @if (request('type') == "libyan")
                                                          <div class="col-md-6 mt-2">
                                                              <label for="">الرقم الوطني</label>
                                                              <input type="number" required name="national_number" value="{{old('national_number')}}" id="national_number" class="form-control">
                                                          </div>
                                                          @endif
-                                                         <div class="col-md-6 mt-2">
-                                                             <label for=""> اسم الام </label>
-                                                             <input type="text" required name="mother_name" value="{{old('mother_name')}}" id="" class="form-control">
-                                                         </div>
+                                                         
+                                                            @if (request('type') != "foreign" &&  request('type') !="visitor")
+
+                                                            <div class="col-md-6 mt-2">
+                                                                <label for=""> اسم الام </label>
+                                                                <input type="text" required name="mother_name" value="{{old('mother_name')}}" id="" class="form-control">
+                                                            </div>
+
+                                                            @endif
+
+
                                                          <div class="col-md-6 mt-2">
                                                              <label for="">  الجنسية  </label>
                                                              <select name="country_id" required id="country_id" class="form-control" 
                                                              @if(request('type') == "libyan" || request('type') == "palestinian") disabled @endif>
                                                              <option value="">حدد دوله من القائمة</option>
                                                              @foreach ($countries as $country)
+                                                             @if ((request('type') == "visitor" || request('type') == "foreign") && ($country->id == 1 || $country->id == 2))
+                                                                 @continue  
+                                                                 @else 
                                                                  <option value="{{ $country->id }}"
                                                                      {{ old('country_id') == $country->id ? 'selected' : '' }}
                                                                      @if(request('type') == "libyan" && $country->id == 1) selected @endif
                                                                      @if(request('type') == "palestinian" && $country->id == 2) selected @endif>
                                                                      {{ $country->name }}
                                                                  </option>
-                                                             @endforeach
+                                                             @endif
+                                                         @endforeach
                      
                                                              @if (request('type') == "palestinian")
                                                                  <input type="hidden" name="country_id" value="2" class="form-control">
@@ -464,66 +479,69 @@
                                                          </select>
                                                          
                                                          </div>
-                                                         @if (request('type') == "libyan")
-                                                            <div class="col-md-2 mt-2">
-                                                                <label for="birth_year">سنة الميلاد</label>
-                                                                <input type="text"  required name="birth_year" value="{{ old('birth_year') }}" id="birth_year" class="form-control" readonly>
-                                                            </div>
                                                         
-                                                            <!-- Month & Day -->
-                                                            <div class="col-md-2 mt-2">
-                                                                <label for="date_of_birth">الشهر </label>
-                                                                <select name="month" required id="" class="form-control">
-                                                                    <option value=""> حدد </option>
-                                                                    @foreach (range(1, 12) as $month)
-                                                                        <option value="{{ $month }}" {{ old('month') == $month ? 'selected' : '' }}>
-                                                                            {{ $month }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-2 mt-2">
-                                                                <label for="day"> اليوم </label>
-                                                                <select name="day" required id="" class="form-control">
-                                                                    <option value=""> حدد </option>
-                                                                    @foreach (range(1, 31) as $day)
-                                                                        <option value="{{ $day }}" {{ old('day') == $day ? 'selected' : '' }}>
-                                                                            {{ $day }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                            @else 
-                                                            <div class="col-md-6 mt-2">
-                                                                <label for=""> تاريخ الميلاد </label>
-                                                                <input type="date" required name="date_of_birth" value="{{old('date_of_birth')}}" id="" class="form-control">
-                                                            </div>
-                                                            @endif
-                                                         <div class="col-md-6 mt-2">
-                                                             <label for="">  الحالة الاجتماعية  </label>
-                                                             <select name="marital_status"  required id="" class="form-control">
-                                                                 <option value="single" {{old('marital_status') == "single" ? "selected" : ""}}>اعزب</option>
-                                                                 <option value="married" {{old('marital_status') == "married" ? "selected" : ""}}>متزوج</option>
+                                                         @if (request('type') == "libyan")
+                                                         @if (request('type') == "libyan")
+                                                         <div class="col-md-2 mt-2">
+                                                             <label for="birth_year">سنة الميلاد</label>
+                                                             <input type="text"  required name="birth_year" value="{{ old('birth_year') }}" id="birth_year" class="form-control" readonly>
+                                                         </div>
+                                                     
+                                                         <!-- Month & Day -->
+                                                         <div class="col-md-2 mt-2">
+                                                             <label for="date_of_birth">الشهر </label>
+                                                             <select name="month" required id="" class="form-control">
+                                                                 <option value=""> حدد </option>
+                                                                 @foreach (range(1, 12) as $month)
+                                                                     <option value="{{ $month }}" {{ old('month') == $month ? 'selected' : '' }}>
+                                                                         {{ $month }}
+                                                                     </option>
+                                                                 @endforeach
                                                              </select>
                                                          </div>
-                                                         <div class="col-md-6 mt-2">
-                                                             <label for="">  النوع   </label>
-                                                             <select name="gender" required id="gender" class="form-control" >
-                                                                 <option value="male" {{old('gender') == "male" ? "selected" : ""}}>ذكر</option>
-                                                                 <option value="female" {{old('gender') == "female" ? "selected" : ""}}>انثى</option>
+                                                         <div class="col-md-2 mt-2">
+                                                             <label for="day"> اليوم </label>
+                                                             <select name="day" required id="" class="form-control">
+                                                                 <option value=""> حدد </option>
+                                                                 @foreach (range(1, 31) as $day)
+                                                                     <option value="{{ $day }}" {{ old('day') == $day ? 'selected' : '' }}>
+                                                                         {{ $day }}
+                                                                     </option>
+                                                                 @endforeach
                                                              </select>
-                                    
                                                          </div>
+                                                         @else 
+                                                         <div class="col-md-6 mt-2">
+                                                             <label for=""> تاريخ الميلاد </label>
+                                                             <input type="date" required name="date_of_birth" value="{{old('date_of_birth')}}" id="" class="form-control">
+                                                         </div>
+                                                         <div class="col-md-6 mt-2">
+                                                            <label for="">  الحالة الاجتماعية  </label>
+                                                            <select name="marital_status"  required id="" class="form-control">
+                                                                <option value="single" {{old('marital_status') == "single" ? "selected" : ""}}>اعزب</option>
+                                                                <option value="married" {{old('marital_status') == "married" ? "selected" : ""}}>متزوج</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-6 mt-2">
+                                                            <label for="">  النوع   </label>
+                                                            <select name="gender" required id="gender" class="form-control" >
+                                                                <option value="male" {{old('gender') == "male" ? "selected" : ""}}>ذكر</option>
+                                                                <option value="female" {{old('gender') == "female" ? "selected" : ""}}>انثى</option>
+                                                            </select>
+                                   
+                                                        </div>
 
-                                                         
-                                                         <div class="col-md-6 mt-2">
-                                                             <label for=""> رقم جواز السفر   </label>
-                                                             <input type="text"  name="passport_number" pattern="[A-Z0-9]+"  required value="{{old('passport_number')}}" id="" class="form-control">
-                                                         </div>
-                                                         <div class="col-md-6 mt-2">
-                                                             <label for="">  تاريخ انتهاء صلاحية الجواز     </label>
-                                                             <input type="date" required name="passport_expiration" value="{{old('passport_expiration', date('Y-m-d'))}}" id="" class="form-control">
-                                                         </div>
+                                                        
+                                                        <div class="col-md-6 mt-2">
+                                                            <label for=""> رقم جواز السفر   </label>
+                                                            <input type="text"  name="passport_number" pattern="[A-Z0-9]+"  required value="{{old('passport_number')}}" id="" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-6 mt-2">
+                                                            <label for="">  تاريخ انتهاء صلاحية الجواز     </label>
+                                                            <input type="date" required name="passport_expiration" value="{{old('passport_expiration', date('Y-m-d'))}}" id="" class="form-control">
+                                                        </div>
+                                                         @endif
+                                                         @endif
                                                      </div>
 
 
@@ -558,6 +576,36 @@
 
 
 
+
+                                                   <h4 class="card-title mt-2 mb-2"> بكالوريس    </h4>
+                                                   <div class="row mt-2 mb-4">
+                                                      @if (request('type') == "visitor")
+                                                      <div class="col-md-4">
+                                                          <label for=""> دولة التخرج </label>
+                                                          <select name="country_graduation_id" id="" class="form-control select2">
+                                                              <option value="">حدد دولة التخرج </option>
+                                                              @foreach ($countries as $country)
+                                                                  <option value="{{$country->id}}" {{old('country_graduation_id') == $country->id ? "selected" : ""}}>{{$country->name}}</option>
+                                                              @endforeach
+                                                          </select>
+                                                      </div>
+                                                      @endif
+                                                      <div class="col-md-4">
+                                                          <label for=""> جهة التخرج </label>
+                                                          <select name="hand_graduation_id" id="" class="form-control">
+                                                              <option value="">حدد جهة التخرج </option>
+                                                              @foreach ($universities as $university)
+                                                                  <option value="{{$university->id}}" {{old('hand_graduation_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
+                                                              @endforeach
+                                                          </select>
+                                                      </div>
+                                                      <div class="col-md-8">
+                                                          <label for=""> تاريخ انتهاء الامتياز   </label>
+                                                          <input type="date" name="internership_complete" value="{{old('internership_complete')}}" id="" class="form-control">
+                                                      </div>
+                                                  </div>
+
+
                                                    <h4 class="card-title mt-3"> الدرجة العلمية   </h4>
                                                    
                                                    <div class="row">
@@ -586,33 +634,6 @@
                                                   </div>
 
 
-                                                   <h4 class="card-title mt-2 mb-2"> بكالوريس    </h4>
-                                                   <div class="row mt-2 mb-4">
-                                                      @if (request('type') == "visitor")
-                                                      <div class="col-md-4">
-                                                          <label for=""> دولة التخرج </label>
-                                                          <select name="country_graduation_id" id="" class="form-control select2">
-                                                              <option value="">حدد دولة التخرج </option>
-                                                              @foreach ($countries as $country)
-                                                                  <option value="{{$country->id}}" {{old('country_graduation_id') == $country->id ? "selected" : ""}}>{{$country->name}}</option>
-                                                              @endforeach
-                                                          </select>
-                                                      </div>
-                                                      @endif
-                                                      <div class="col-md-4">
-                                                          <label for=""> جهة التخرج </label>
-                                                          <select name="hand_graduation_id" id="" class="form-control">
-                                                              <option value="">حدد جهة التخرج </option>
-                                                              @foreach ($universities as $university)
-                                                                  <option value="{{$university->id}}" {{old('hand_graduation_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
-                                                              @endforeach
-                                                          </select>
-                                                      </div>
-                                                      <div class="col-md-4">
-                                                          <label for=""> تاريخ انتهاء الامتياز   </label>
-                                                          <input type="date" name="internership_complete" value="{{old('internership_complete')}}" id="" class="form-control">
-                                                      </div>
-                                                  </div>
 
 
                                                    <h4 class="mb-2 mt-2">📑 المستندات المطلوبة</h4>
@@ -722,10 +743,15 @@
                                                             @endforeach
                                                         </select>
                                                   </div>
+                                                  
+
+                                                  @if (request('type') == "libyan")
                                                   <div class="col-md-12 mt-2">
-                                                      <label for=""> سنوات الخبره  </label>
-                                                      <input name="experience" id="" type="number" class="form-control"></textarea>
-                                                  </div>
+                                                    <label for=""> سنوات الخبره  </label>
+                                                    <input name="experience" id="" type="number" class="form-control"></textarea>
+                                                </div>
+
+                                                  @endif
 
                                                   <div class="col-md-12 mt-3">
                                                    <label for=""> بيانات اضافيه</label>

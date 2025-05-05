@@ -8,103 +8,6 @@
                 <div class="card-body">
                     <h4 class="main-content-label">الإجراءات</h4>
         
-                    <!-- Print ID Button -->
-
-                    <!-- Doctor Request Modal Trigger Button -->
-                    <button type="button" class="btn btn-primary text-light" data-bs-toggle="modal" data-bs-target="#doctorRequestModal">
-                        <i class="fa fa-plus"></i> إضافة طلب جديد
-                    </button>
-
-                    <!-- Doctor Request Modal -->
-                    <div class="modal fade" id="doctorRequestModal" tabindex="-1" aria-labelledby="doctorRequestModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <form method="POST" action="{{ route(get_area_name().'.doctor-requests.store') }}">
-                                    @csrf
-
-                                    <!-- Modal Header -->
-                                    <div class="modal-header  text-light">
-                                        <h5 class="modal-title" id="doctorRequestModalLabel">
-                                            <i class="fa fa-plus"></i> إضافة طلب جديد
-                                        </h5>
-                                        <button type="button" class="btn-close text-light" data-bs-dismiss="modal" aria-label="إغلاق"></button>
-                                    </div>
-
-                                    <!-- Modal Body -->
-                                    <div class="modal-body">
-                                        <input type="hidden" name="doctor_type" value="{{ $doctor->type }}">
-
-                                        <div class="row">
-                                            <!-- Doctor Selection -->
-                                            <div class="col-md-4 mb-3">
-                                                <label for="doctor_id" class="form-label">
-                                                    <i class="fa fa-user-md"></i> اسم الطبيب <span class="text-danger">*</span>
-                                                </label>
-                                                <select name="doctor_id" id="doctor_id" class="form-control select2 @error('doctor_id') is-invalid @enderror" required>
-                                                    <option value="{{$doctor->id}}">{{$doctor->name}}</option>
-                                                </select>
-                                                @error('doctor_id')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Pricing Selection -->
-                                            <div class="col-md-4 mb-3">
-                                                <label for="pricing_id" class="form-label">
-                                                    <i class="fa fa-list"></i> اختيار نوع الطلب <span class="text-danger">*</span>
-                                                </label>
-                                                <select name="pricing_id" id="pricing_id" class="form-control @error('pricing_id') is-invalid @enderror" required>
-                                                    <option value="">اختر نوع الطلب</option>
-                                                    @foreach(App\Models\Pricing::where('doctor_type', $doctor->type)->where('type','service')->get() as $pricing)
-                                                        <option value="{{ $pricing->id }}" {{ old('pricing_id') == $pricing->id ? 'selected' : '' }}>
-                                                            {{ $pricing->name }} - {{ number_format($pricing->amount, 2) }} د.ل
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                @error('pricing_id')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <!-- Request Date -->
-                                            <div class="col-md-4 mb-3">
-                                                <label for="date" class="form-label">
-                                                    <i class="fa fa-calendar-alt"></i> تاريخ الطلب <span class="text-danger">*</span>
-                                                </label>
-                                                <input type="date" name="date" id="date" value="{{ old('date', date('Y-m-d')) }}" class="form-control @error('date') is-invalid @enderror" required>
-                                                @error('date')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Notes -->
-                                        <div class="mb-3">
-                                            <label for="notes" class="form-label">
-                                                <i class="fa fa-info-circle"></i> الملاحظات
-                                            </label>
-                                            <textarea name="notes" id="notes" class="form-control @error('notes') is-invalid @enderror" rows="3" placeholder="أضف ملاحظات إضافية">{{ old('notes') }}</textarea>
-                                            @error('notes')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Modal Footer -->
-                                    <div class="modal-footer d-flex justify-content-end">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                            <i class="fa fa-times"></i> إلغاء
-                                        </button>
-                                        <button type="submit" class="btn btn-success">
-                                            <i class="fa fa-check"></i> إضافة الطلب
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-
 
                     <!-- Doctor Transfer Modal Trigger Button -->
                     <button type="button" class="btn btn-warning text-light" data-bs-toggle="modal" data-bs-target="#doctorTransferModal">
@@ -236,7 +139,7 @@
                     </div>
         
                     <!-- Approve Membership (Initial Approval) -->
-                    @if (get_area_name() == "user" && $doctor->code == null && $doctor->membership_status === \App\Enums\MembershipStatus::Pending)
+                    @if ( $doctor->code == null && $doctor->membership_status === \App\Enums\MembershipStatus::Pending)
                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approveInitial{{ $doctor->id }}">
                             القبول المبدئي للعضوية
                         </button>
@@ -265,7 +168,7 @@
                     @endif
         
                     <!-- Approve Membership (Final Approval) -->
-                    @if (get_area_name() == "user" && $doctor->code == null && $doctor->membership_status === \App\Enums\MembershipStatus::InitApprove)
+                    @if ($doctor->code == null && $doctor->membership_status === \App\Enums\MembershipStatus::InitApprove)
                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approveFinal{{ $doctor->id }}">
                             القبول النهائي للعضوية
                         </button>
@@ -516,6 +419,9 @@
                             </tbody>
                         </table>
                     </div>
+
+                    {{-- add file button --}}
+                    <a href="{{route(get_area_name().'.doctors.files.create', $doctor)}}" class="btn btn-primary text-light mb-3" >اضف ملف للطبيب</a>
                     <h4 class="main-content-label">  ملفات الطبيب  </h4>
                     <div class="table-responsive">
                         <table class="table table-bordered">
@@ -537,11 +443,11 @@
                                             <a href="{{Storage::url($file->file_path)}}" class="btn  btn-primary" target="_blank"><i class="fa fa-eye"></i></a>
 
                                             <a download href="{{Storage::url($file->file_path)}}" class="btn  btn-primary"><i class="fa fa-download"></i></a>
-                                            {{-- <form action="{{ route(get_area_name().'.files.destroy', ['doctor' => $doctor->id, 'file' => $file->id]) }}" method="POST" class="d-inline">
+                                            <form action="{{ route(get_area_name().'.files.destroy', ['doctor' => $doctor->id, 'file' => $file->id]) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger " onclick="return confirm('هل أنت متأكد من رغبتك في حذف هذه الدرجة العلمية؟')">حذف</button>
-                                            </form> --}}
+                                                <button type="submit" class="btn btn-danger " onclick="return confirm('هل أنت متأكد من رغبتك في حذف هذه  ')">حذف</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -582,32 +488,107 @@
 
 
 
-
-
-
-                    <h4 class="main-content-label">  سجلات الطبيب  </h4>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th class="bg-primary text-light">#</th>
-                                    <th class="bg-primary text-light">المستخدم</th>
-                                    <th class="bg-primary text-light">تفاصيل</th>
-                                    <th class="bg-primary text-light">تاريخ الانشاء</th>
-                                </tr>
+                    @if(auth()->user()->permissions()->where('name', 'doctor-mail')->count())
+                    <h4 class="main-content-label mt-4">  طلبات الاوراق الخارجية  </h4>
+                    <div class="table-responsive mt-3">
+                        <table class="table table-hover table-bordered mb-0">
+                            <thead class="table-light">
+                              <tr>
+                                <th style="width:50px">#</th>
+                                <th>الطبيب</th>
+                                <th>الإيميلات</th>
+                                <th>الدول</th>
+                                <th>الإجمالي</th>
+                                <th>الحالة</th>
+                                <th>تاريخ الإنشاء</th>
+                                <th style="width:170px">إجراءات</th>
+                              </tr>
                             </thead>
                             <tbody>
-                                @foreach ($doctor->logs as $log)
+                              @forelse($doctor->doctor_mails as $mail)
                                 <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $log->user->name }}</td>
-                                    <td>{{ $log->details}}</td>
-                                    <td>{{ $log->created_at}}</td>
+                                  <td>{{ $mail->id }}</td>
+                                  <td>
+                                    <strong>{{ $mail->doctor->name }}</strong><br>
+                                    <small class="text-muted">{{ $mail->doctor->code }}</small>
+                                  </td>
+                                  <td>
+                                    <ul class="mb-0 ps-3">
+                                      @foreach($mail->emails as $e) <li>{{ $e }}</li> @endforeach
+                                    </ul>
+                                  </td>
+                                  <td>{{ $mail->country_names }}</td>
+                                  <td>{{ number_format($mail->grand_total,2) }} د.ل</td>
+                                  <td>
+                                    @php
+                                      $badge = [
+                                        'under_approve'  => 'bg-warning',
+                                        'under_payment'  => 'bg-info',
+                                        'under_proccess' => 'bg-primary',
+                                        'done'      => 'bg-success',
+                                        'failed'         => 'bg-danger',
+                                         'under_edit' => 'bg-secondary',
+                                      ][$mail->status] ?? 'bg-secondary';
+                    
+                                      $label = [
+                                        'under_approve'  => 'قيد الموافقة',
+                                        'under_payment'  => 'قيد الدفع',
+                                        'under_proccess' => 'قيد المعالجة',
+                                        'done'      => 'مكتمل',
+                                         'under_edit' => 'قيد التعديل',
+                                        'failed'         => 'فشل',
+                                      ][$mail->status] ?? 'غير معروف';
+                                    @endphp
+                                    <span class="badge {{ $badge }}">{{ $label }}</span>
+                                  </td>
+                                  <td>{{ $mail->created_at->format('Y-m-d') }}</td>
+                                  <td>
+                                   <div class="btn-group btn-group-sm" role="group">
+                                       {{-- زرّ عرض --}}
+                                       <a href="{{ route(get_area_name().'.doctor-mails.show', $mail) }}"
+                                          class="btn btn-outline-info" title="عرض">
+                                          <i class="fa fa-eye"></i>
+                                       </a>
+                                 
+                                       {{-- زرّ اكتمال (يظهر فقط إذا كان قيد المعالجة) --}}
+                                       @if($mail->status === 'under_proccess')
+                                         <form action="{{ route(get_area_name().'.doctor-mails.complete', $mail) }}"
+                                               method="POST" onsubmit="return confirm('تأكيد الإكمال؟');">
+                                           @csrf @method('PUT')
+                                           <button type="submit" class="btn btn-outline-success" title="اكتمال">
+                                             <i class="fa fa-check"></i>
+                                           </button>
+                                         </form>
+                                       @endif
+                                 
+                                       {{-- زرّ طباعة --}}
+                                       <a href="{{ route(get_area_name().'.doctor-mails.print', $mail) }}"
+                                          target="_blank" class="btn btn-outline-primary" title="طباعة">
+                                          <i class="fa fa-print"></i>
+                                       </a>
+                                 
+                                       {{-- زرّ حذف --}}
+                                       <form action="{{ route(get_area_name().'.doctor-mails.destroy', $mail) }}"
+                                             method="POST" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+                                         @csrf @method('DELETE')
+                                         <button type="submit" class="btn btn-outline-danger" title="حذف">
+                                           <i class="fa fa-trash"></i>
+                                         </button>
+                                       </form>
+                                   </div>
+                                 </td>
+                                 
                                 </tr>
-                                @endforeach
+                              @empty
+                                <tr>
+                                  <td colspan="8" class="text-center py-4">لا توجد طلبات لعرضها</td>
+                                </tr>
+                              @endforelse
                             </tbody>
-                        </table>
+                          </table>
                     </div>
+                    @endif
+
 
 
                 </div>

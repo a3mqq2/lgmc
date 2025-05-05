@@ -171,7 +171,7 @@
 
                 <div class="work-box card  p-3">
                     <h4 class="font-weight-bold">
-                        <strong>{{$licence->licensable->doctor_rank->name}} \ {{$licence->licensable->specialization}}  </strong>
+                        <strong>{{$licence->licensable->rank_name}} \ {{$licence->licensable->specialization}}  </strong>
                     </h4>
                 </div>
 

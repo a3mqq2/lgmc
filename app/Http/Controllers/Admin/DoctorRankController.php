@@ -93,7 +93,12 @@ class DoctorRankController extends Controller
      */
     public function destroy(DoctorRank $doctor_rank)
     {
-        $name = $doctor_rank->name;
+        $name = $@if($doctor->doctor_rank_id === 6)
+        استشاري تخصص دقيق
+    @else
+        {{ $doctor->doctor_rank->name }}
+    @endif
+    ;
         $doctor_rank->delete();
 
         Log::create([
