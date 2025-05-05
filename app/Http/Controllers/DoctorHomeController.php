@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Ticket;
 use App\Models\Licence;
 use App\Enums\ReplyType;
+use App\Models\DoctorMail;
 use App\Models\TicketReply;
 use Illuminate\Http\Request;
 use App\Models\DoctorRequest;
+use App\Models\DoctorMailItem;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class DoctorHomeController extends Controller
 {
@@ -157,5 +160,36 @@ class DoctorHomeController extends Controller
     {
         auth('doctor')->logout();
         return redirect('/');
+    }
+
+
+    public function show_mail(DoctorMail $doctorMail)
+    {
+        return view('doctor.doctor-mails.show', compact('doctorMail'));
+    }
+
+
+
+    public function update_mail(Request $request, DoctorMail $doctorMail)
+    {
+        $request->validate([
+            'files.*' => 'nullable|file|max:10240',
+        ]);
+    
+        if ($ids = $request->input('remove_items')) {
+            DoctorMailItem::whereIn('id', $ids)->delete();
+        }
+    
+        foreach ($request->file('files', []) as $id => $file) {
+            $path = $file->store('doctor_mail_items', 'public');
+            DoctorMailItem::where('id', $id)->update(['file' => $path, 'rejected_reason' => null, 'status' => 'pending']);
+        }
+    
+        $doctorMail->status = 'under_approve';
+        $doctorMail->save();
+    
+        return redirect()
+            ->route('doctor.doctor-mails.show', $doctorMail->id)
+            ->with('success', 'تم تحديث الطلب وتحويله إلى قيد الموافقة');
     }
 }

@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg">
 
 
-<!-- Mirrored from themesbrand.com/velzon/html/default/pages-profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 13 May 2022 22:33:04 GMT -->
+<!-- Mirrored from themesbrand.com/Hululit/html/default/pages-profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 13 May 2022 22:33:04 GMT -->
 <head>
 
     <meta charset="utf-8" />
@@ -30,6 +30,10 @@
     {{-- fontawesome import --}}
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
+      {{-- import vite --}}
+        @vite(['resources/js/app.js'])
+    
+        {{-- import vue --}}
 
       <style>
          /* Extended Background Colors */
@@ -358,7 +362,7 @@
 
       <div class="main-content" style="margin: 30px; !important;padding:0!important;">
 
-         <div class="page-content p-3">
+         <div class="page-content p-3" id="app">
              <div class="container-fluid">
                  <div class="profile-foreground position-relative mx-n4 mt-n4">
                      <div class="profile-wid-bg">
@@ -424,7 +428,7 @@
          <div class="container-fluid">
              <div class="row">
                  <div class="col-sm-6">
-                     <script>document.write(new Date().getFullYear())</script> © Velzon.
+                     <script>document.write(new Date().getFullYear())</script> © Hululit.
                  </div>
                  <div class="col-sm-6">
                      <div class="text-sm-end d-none d-sm-block">
@@ -481,5 +485,5 @@
 </body>
 
 
-<!-- Mirrored from themesbrand.com/velzon/html/default/pages-profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 13 May 2022 22:33:06 GMT -->
+<!-- Mirrored from themesbrand.com/Hululit/html/default/pages-profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 13 May 2022 22:33:06 GMT -->
 </html>

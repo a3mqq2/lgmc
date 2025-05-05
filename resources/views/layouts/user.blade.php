@@ -636,6 +636,7 @@
 
     <!-- JAVASCRIPT -->
 
+    @vite('resources/js/app.js')
     <script src="{{asset('/js/app.js?v=2')}}"></script>
     <script src="{{asset('/assets/libs/simplebar/simplebar.min.js')}}"></script>
     <script src="{{asset('/assets/libs/node-waves/waves.min.js')}}"></script>

@@ -194,7 +194,7 @@
 
 
                     {{-- <a href="{{ route(get_area_name().'.doctors.print-id', $doctor) }}" class="btn btn-primary text-light">
-                        <i class="fa fa-id-card"></i> طباعة بطاقة الهوية
+                        <i class="fa fa-id-card"></i> طباعة بطاقة العضويه
                     </a>
          --}}
                     <!-- Toggle Ban/Unban Button (Modal Trigger) -->
@@ -557,6 +557,7 @@
                                     <th class="bg-primary text-light">المرخص له</th>
                                     <th class="bg-primary text-light">تاريخ الإصدار</th>
                                     <th class="bg-primary text-light">تاريخ الانتهاء</th>
+                                    <th class="bg-primary text-light"> المنشآه الطبية </th>
                                     <th class="bg-primary text-light">الحالة</th>
                                     <th class="bg-primary text-light">الإجراءات</th>
                                 </tr>
@@ -568,6 +569,7 @@
                                     <td>{{ $licence->licensable->name }}</td>
                                     <td>{{ $licence->issued_date }}</td>
                                     <td>{{ $licence->expiry_date }}</td>
+                                    <td>{{ $licence->medicalFacility?->name  }}</td>
                                     <td>{!! $licence->status_badge !!}</td>
                                     <td>
                                         <a href="{{ route(get_area_name().'.licences.show', $licence) }}" class="btn btn-primary  text-light">عرض <i class="fa fa-eye"></i></a>

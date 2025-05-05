@@ -1,24 +1,68 @@
 <?php
 
+use App\Models\Email;
+use App\Models\Doctor;
+use App\Models\Country;
+use App\Models\Pricing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\FileTypeController;
-use App\Http\Controllers\Admin\SpecialtyController;
+use App\Http\Controllers\DoctorMailController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::get('/doctors', function (Request $request) {
+    $search = $request->get('search');
+    return Doctor::where('name', 'like', "%{$search}%")
+        ->orWhere('code', 'like', "%{$search}%")
+        ->select('id', 'name', 'code', 'type')
+        ->limit(10)
+        ->get();
 });
 
-Route::get('/get-sub-specialties/{id}', [SpecialtyController::class, 'get_subs']);
-Route::get('file-types', [FileTypeController::class, 'index_api']);
+
+
+Route::get('/doctors/{id}', function (Request $request, $id) {
+    $doctor = Doctor::findOrFail($id);
+    return $doctor;
+});
+
+
+
+Route::get('/emails', function (Request $request) {
+    $search = $request->get('search');
+    return Email::where('email', 'like', "%{$search}%")
+        ->select('email')
+        ->limit(10)
+        ->get();
+});
+
+Route::post('/emails', function (Request $request) {
+    $request->validate([
+        'email' => 'required|email|unique:emails,email'
+    ]);
+
+    return Email::create([
+        'email' => $request->email
+    ]);
+});
+
+Route::get('/countries', function (Request $request) {
+    $search = $request->get('search');
+    return Country::where('name', 'like', "%{$search}%")
+        ->select('id', 'name')
+        ->limit(10)
+        ->get();
+});
+
+Route::get('/pricing/{id}', function ($id) {
+    return Pricing::findOrFail($id);
+});
+
+Route::get('/pricings', function (Request $request) {
+    return Pricing::where('type', $request->get('type'))
+        ->where('doctor_type', $request->get('doctor_type'))
+        ->select('id', 'name', 'amount')
+        ->get();
+});
+
+
+Route::post('/doctor-mails', [DoctorMailController::class, 'store'])
+     ->name('doctor-mails.store');

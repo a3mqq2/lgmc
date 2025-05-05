@@ -63,7 +63,7 @@
                 @if (!request()->type)
                 <div class="form-check form-switch mb-3">
                   <input class="form-check-input" type="checkbox" id="previousLicensesSwitch" name="previous_licenses_switch" {{ old('previous_licenses_switch') ? 'checked' : '' }}>
-                  <label class="form-check-label" for="previousLicensesSwitch">حساب اذونات مزاولة سابقة</label>
+                  <label class="form-check-label" for="previousLicensesSwitch">حساب الاشتركات السنوية</label>
               </div>
                 <div class="row mb-3" id="previousLicensesFields" style="display:none;">
                   <div class="col-md-4">

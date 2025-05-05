@@ -74,6 +74,14 @@ class TotalInvoiceController extends Controller
                     $invoice->licence->save();
                 }
             }
+
+            if($invoice->doctorMail)
+            {
+                $mail = $invoice->doctorMail;
+                $mail->status = 'under_proccess';
+                $mail->save();
+            }
+
         }
 
         $vault = auth()->user()->branch_id ? auth()->user()->branch->vault : Vault::first();

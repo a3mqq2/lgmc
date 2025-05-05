@@ -37,6 +37,7 @@ class Invoice extends Model
         'received_at',
         'relief_at',
         'received_by',
+        'doctor_mail_id',
         'relief_by',
         'relief_reason',
         'branch_id',
@@ -165,5 +166,9 @@ class Invoice extends Model
     }
 
 
+    public function doctorMail()
+    {
+        return $this->belongsTo(DoctorMail::class);
+    }
    
 }

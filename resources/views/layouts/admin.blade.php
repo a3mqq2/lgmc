@@ -20,6 +20,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    {{-- ast --}}
+    <meta name="ast" content="{{ request()->cookie('access_token') }}" />
+
+
     <style>
         .cke_editable {
             font-family: 'Amiri', serif;

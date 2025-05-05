@@ -5,6 +5,7 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\DoctorMailController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\BranchController;
@@ -81,5 +82,20 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
      
     Route::get('profile/change-password', [ProfileController::class, 'change_password'])->name('profile.change-password');
     Route::post('profile/change-password', [ProfileController::class, 'change_password_store'])->name('profile.change-password');
+
+
+    // =========== DOCTOR MAILS ============= //
+    Route::resource('doctor-mails', DoctorMailController::class);
+    Route::put(
+        'doctor-mails/{doctor_mail}/complete',
+        [DoctorMailController::class, 'markComplete']
+    )->name('doctor-mails.complete');
+    Route::get(
+        'doctor-mails/{doctor_mail}/print',
+        [DoctorMailController::class, 'print']
+    )->name('doctor-mails.print');
+    
+    // =========== DOCTOR MAILS ============= //
+
 });
 

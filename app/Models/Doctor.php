@@ -267,4 +267,11 @@ class Doctor extends Authenticatable
                 });
         });
     }
+
+    public function doctor_mails()
+    {
+        return $this->hasMany(DoctorMail::class, 'doctor_id')
+                    ->orderBy('created_at', 'desc');
+    }
+
 }

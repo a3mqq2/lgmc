@@ -304,77 +304,80 @@
                                  <div class="card-body">
                                      <div class="doctor-requests">
                                          <h4 class="font-weight-bold text-primary mb-3">
-                                             <i class="fa fa-list-alt text-primary"></i> قائمة طلبات الأطباء
+                                             <i class="fa fa-list-alt text-primary"></i> اوراق الخارج 
                                          </h4>
  
                                          <a href="{{ route(get_area_name() . '.doctor-requests.create') }}" class="btn btn-success btn-sm mb-3">
                                              <i class="fa fa-plus text-light"></i> آضف طلب جديد </a>
  
                                          <div class="list-group">
-                                             @forelse(auth('doctor')->user()->doctorRequests as $request)
+                                             @forelse(auth('doctor')->user()->doctor_mails as $request)
                                                  <div class="list-group-item mb-3 border border-3 rounded">
+                                                    
                                                      <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-user-md text-info"></i> اسم الطبيب:</span>
-                                                         <span>{{ $request->doctor->name }}</span>
+                                                         <span><i class="fa fa-map-marker-alt text-info"></i> الايميلات :</span>
+                                                         <ul class="mb-0 ps-3">
+                                                            @foreach($request->emails as $e) <li>{{ $e }}</li> @endforeach
+                                                          </ul>
                                                      </div>
-                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-map-marker-alt text-info"></i> الفرع:</span>
-                                                         <span>{{ $request->branch?->name }}</span>
-                                                     </div>
-                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-file-alt text-info"></i> نوع الطلب:</span>
-                                                         <span>{{ $request->pricing->name }}</span>
-                                                     </div>
-                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-money-bill-alt text-info"></i> السعر:</span>
-                                                         <span>{{ number_format($request->pricing->amount, 2) }} د.ل</span>
-                                                     </div>
-                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-calendar text-info"></i> تاريخ الطلب:</span>
-                                                         <span>{{ $request->date->format('Y-m-d') }}</span>
-                                                     </div>
-                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-info-circle text-info"></i> الحالة:</span>
-                                                         <span class="badge {{ $request->status->badgeClass() }}">{{ $request->status->label() }}</span>
-                                                     </div>
+                                                     
                                                      <div class="d-flex justify-content-between align-items-center border-bottom p-2">
                                                          <span><i class="fa fa-sticky-note text-info"></i> الملاحظات:</span>
                                                          <span>{{ $request->notes ?? '-' }}</span>
                                                      </div>
+
+
                                                      <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-user-check text-info"></i> الموافقة بواسطة:</span>
-                                                         <span>{{ $request->approvedBy->name ?? '-' }}</span>
-                                                     </div>
-                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-calendar-check text-info"></i> تاريخ الموافقة:</span>
-                                                         <span>{{ $request->approved_at ? $request->approved_at->format('Y-m-d H:i') : '-' }}</span>
-                                                     </div>
-                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-user-times text-info"></i> الرفض بواسطة:</span>
-                                                         <span>{{ $request->rejectedBy->name ?? '-' }}</span>
-                                                     </div>
-                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-calendar-times text-info"></i> تاريخ الرفض:</span>
-                                                         <span>{{ $request->rejected_at ? $request->rejected_at->format('Y-m-d H:i') : '-' }}</span>
-                                                     </div>
-                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-user-check text-info"></i> الإكمال بواسطة:</span>
-                                                         <span>{{ $request->doneBy->name ?? '-' }}</span>
-                                                     </div>
-                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-calendar-check text-info"></i> تاريخ الإكمال:</span>
-                                                         <span>{{ $request->done_at ? $request->done_at->format('Y-m-d H:i') : '-' }}</span>
-                                                     </div>
-                                                     <div class="d-flex justify-content-between align-items-center border-bottom p-2">
-                                                         <span><i class="fa fa-calendar-minus text-info"></i> تاريخ الإلغاء:</span>
-                                                         <span>{{ $request->canceled_at ? $request->canceled_at->format('Y-m-d H:i') : '-' }}</span>
-                                                     </div>
+                                                        <span><i class="fa fa-sticky-note text-info"></i> الحالة:</span>
+                                                        @php
+                                                        $badge = [
+                                                          'under_approve'  => 'bg-warning',
+                                                          'under_payment'  => 'bg-info',
+                                                          'under_proccess' => 'bg-primary',
+                                                          'done'      => 'bg-success',
+                                                            'under_edit' => 'bg-secondary',
+                                                          'failed'         => 'bg-danger',
+                                                        ][$request->status] ?? 'bg-secondary';
+                                      
+                                                        $label = [
+                                                          'under_approve'  => 'قيد الموافقة',
+                                                          'under_payment'  => 'قيد الدفع',
+                                                          'under_proccess' => 'قيد المعالجة',
+                                                          'done'      => 'مكتمل',
+                                                          'under_edit' => 'قيد التعديل',
+                                                          'failed'         => 'فشل',
+                                                        ][$request->status] ?? 'غير معروف';
+                                                      @endphp
+                                                      <span class="badge {{ $badge }}">{{ $label }}</span>
+                                                    </div>
+
+                                                    
+
+                                                    <div class="d-flex justify-content-between align-items-center border-bottom p-2">
+                                                        <span><i class="fa fa-sticky-note text-info"></i>تاريخ الادخال:</span>
+                                                        <span>{{ $request->created_at ?? '-' }}</span>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-between align-items-center border-bottom p-2">
+                                                        <span><i class="fa fa-dollar-sign text-info"></i> قيمة الفاتورة :</span>
+                                                        <span>{{ $request->grand_total ?? '-' }} د.ل </span>
+                                                    </div>
+
+                                                
                                                      <div class="d-flex justify-content-between align-items-center border-bottom p-2">
                                                          <span><i class="fa fa-file-invoice text-info"></i> حالة الفاتورة:</span>
                                                          <span class="badge {{ $request->invoice ? $request->invoice->status->badgeClass() : 'bg-secondary' }}">
                                                              {{ $request->invoice ? $request->invoice->status->label() : 'لا توجد فاتورة' }}
                                                          </span>
                                                      </div>
+
+
+                                                   @if ($request->status == "under_edit")
+                                                        <div class="d-flex justify-content-between align-items-center border-bottom p-2">
+                                                            <a class="btn btn-primary text-light mt-3" href="{{route("doctor.doctor-mails.show", $request)}}" >عرض الملف</a>
+                                                        </div>
+                                                   @endif
+
                                                  </div>
                                              @empty
                                                  <div class="text-center p-3 border rounded">لا توجد طلبات مسجلة.</div>

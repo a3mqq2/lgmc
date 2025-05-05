@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('doctor_emails', function (Blueprint $table) {
-            $table->boolean('has_docs')->default(false);
-            $table->unsignedSmallInteger('last_year')->nullable();
+        Schema::create('emails', function (Blueprint $table) {
+            $table->id();
+            $table->string('email')->unique();
+            $table->timestamps();
         });
-        
     }
 
     /**
@@ -23,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('doctor_emails', function (Blueprint $table) {
-            $table->dropColumn(['has_docs', 'last_year']);
-        });
+        Schema::dropIfExists('emails');
     }
 };

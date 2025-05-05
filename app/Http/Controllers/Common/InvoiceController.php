@@ -15,6 +15,8 @@ use App\Models\MedicalFacility;
 use App\Services\InvoiceService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Mail\PaymentSuccess;
+use Illuminate\Support\Facades\Mail;
 
 class InvoiceController extends Controller
 {
@@ -408,6 +410,23 @@ class InvoiceController extends Controller
             }
             $vault = auth()->user()->branch_id ? auth()->user()->branch->vault : Vault::first();
             $this->invoiceService->markAsPaid($vault,$invoice, $request->notes);
+
+
+            // check the invoice have doctor email 
+
+            if($invoice->doctorMail)
+            {
+                $mail = $invoice->doctorMail;
+                $mail->status = 'under_proccess';
+                $mail->save();
+
+
+                if($invoice->invoiceable->email)
+                {
+                    Mail::to($invoice->invoiceable->email)->send(new PaymentSuccess($mail));
+                }
+
+            }
 
             DB::commit();
         } catch(\Exception $e)

@@ -28,6 +28,27 @@
 {{-- PRICING SERVICES --}}
 
 
+{{-- doctor mails --}}
+
+
+<li class="nav-item">
+    <a class="nav-link menu-link" href="#doctor_mails" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fa fa-file"></i>
+        <span data-key="t-layouts">طلبات اوراق الخارج</span>
+    </a>
+    <div class="collapse menu-dropdown" id="doctor_mails">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctor-mails.index') }}" class="nav-link" data-key="t-horizontal">
+                    عرض جميع الطلبات
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+
+
 
 @if(auth()->user()->permissions()->where('name', 'services-pricing')->count())
 <li class="nav-item">

@@ -102,7 +102,7 @@
                 <div class="permit">
                     <h6 class="font-weight-bold">
                         <strong>
-                            يـــــؤذن لل{{$licence->licensable->gender->value == "female" ? "سيدة" : "سيد"}}
+                            يـــــؤذن للطبيب
                         </strong>
                     </h6>
                 </div>
