@@ -21,11 +21,6 @@
                      </a>
                  </li>
                  <li class="nav-item">
-                     <a class="nav-link fs-14 "   data-bs-toggle="tab"  href="#tickets"  role="tab">
-                         <i class="ri-price-tag-line d-inline-block d-m"></i> <span class=" d-md-inline-block">تذاكر الدعم</span>
-                     </a>
-                 </li>
-                 <li class="nav-item">
                      <a class="nav-link fs-14" data-bs-toggle="tab"   href="#requests" role="tab">
                          <i class="ri-folder-4-line d-inline-block d-m"></i> <span class=" d-md-inline-block">اوراق الخارج</span>
                      </a>

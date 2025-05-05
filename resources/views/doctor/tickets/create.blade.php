@@ -18,11 +18,7 @@
                         <i class="ri-list-unordered d-inline-block d-m"></i> <span class=" d-md-inline-block">أذونات المزاولة</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link fs-14 active"  href="{{route('doctor.dashboard', ['tickets' => 1])}}"  role="tab">
-                        <i class="ri-price-tag-line d-inline-block d-m"></i> <span class=" d-md-inline-block">تذاكر الدعم</span>
-                    </a>
-                </li>
+
                 <li class="nav-item">
                     <a class="nav-link fs-14"  href="{{route('doctor.dashboard', ['requests' => 1])}}" role="tab">
                         <i class="ri-folder-4-line d-inline-block d-m"></i> <span class=" d-md-inline-block">اوراق الخارج</span>
