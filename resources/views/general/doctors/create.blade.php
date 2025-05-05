@@ -522,19 +522,7 @@
                 </div>
                 @endif
 
-                <div class="card">
-                    <div class="card-header bg-primary text-light">بيانات اخرى   </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <label for=""> بيانات اضافيه</label>
-                                <textarea name="notes" id="" cols="30" rows="4" class="form-control">{{old('notes')}}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn btn-primary text-light mb-3">حفظ</button>
+          
             </div>
             
             <div class="col-md-12">
@@ -548,6 +536,19 @@
                 </div>
             </div>
             
+            <div class="card">
+                <div class="card-header bg-primary text-light">بيانات اخرى   </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for=""> بيانات اضافيه</label>
+                            <textarea name="notes" id="" cols="30" rows="4" class="form-control">{{old('notes')}}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary text-light mb-3">حفظ</button>
             
     
     
