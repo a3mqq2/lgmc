@@ -95,15 +95,7 @@ class Invoice extends Model
         return $this->belongsTo(Pricing::class);
     }
 
-    /**
-     * ✅ Relationship with the User (creator).
-     *
-     * @return BelongsTo
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
+   
 
     /**
      * ✅ Relationship with User (receiver).
@@ -177,4 +169,9 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItem::class);
     }
     
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

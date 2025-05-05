@@ -25,7 +25,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link fs-14"  href="{{route('doctor.dashboard', ['requests' => 1])}}" role="tab">
-                        <i class="ri-folder-4-line d-inline-block d-m"></i> <span class=" d-md-inline-block">الطلبات</span>
+                        <i class="ri-folder-4-line d-inline-block d-m"></i> <span class=" d-md-inline-block">اوراق الخارج</span>
                     </a>
                 </li>
                 <li class="nav-item">

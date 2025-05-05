@@ -6,7 +6,6 @@
     <title>فاتورة رقم {{ $invoice->invoice_number }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap" rel="stylesheet">
     <style>
-
         body {
             font-family: 'Cairo', sans-serif;
             margin: 0;
@@ -25,7 +24,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Header Section */
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -43,7 +41,6 @@
             font-weight: 600;
         }
 
-        /* Invoice Details */
         .details {
             margin-top: 20px;
         }
@@ -60,12 +57,11 @@
             font-size: 14px;
         }
 
-        .bg-light{
+        .bg-light {
             font-weight: bold;
             background-color: #f9fafc;
         }
 
-        /* Items Section */
         .items {
             margin-top: 30px;
         }
@@ -93,7 +89,6 @@
             font-weight: bold;
         }
 
-        /* Footer Section */
         .footer {
             margin-top: 40px;
             text-align: center;
@@ -148,43 +143,37 @@
 </head>
 <body>
     <div class="invoice-container">
-        <!-- Header Section -->
         <div class="header">
-            <img src="{{asset('/assets/images/lgmc-dark.png')}}" style="width: 330px!important;margin: 20px auto;" alt="">
+            <img src="{{ asset('/assets/images/lgmc-dark.png') }}" style="width: 330px!important;margin: 20px auto;" alt="">
             <h2>فاتورة</h2>
         </div>
 
-        <!-- Invoice Details -->
         <div class="details">
-         <table>
-             <tr>
-                 <td class="bg-light"><strong>الاسم:</strong></td>
-                 <td>{{ $invoice->invoiceable->name }}</td>
-                 <td><strong>المستخدم:</strong></td>
-                 <td>{{ $invoice->user?->name ?? '-' }}</td>
-             </tr>
-             <tr>
-               
-             </tr>
-             <tr>
-                 <td class="bg-light"><strong>الحالة:</strong></td>
-                 <td>
-                     @if($invoice->status->value == 'paid')
-                         مدفوعة
-                     @elseif($invoice->status->value == 'relief')
-                         معفى عنها
-                     @else
-                         غير مدفوعة
-                     @endif
-               </td>
-                 <td class="bg-light"><strong>تاريخ الإنشاء:</strong></td>
-                 <td>{{ $invoice->created_at->format('Y-m-d') }}</td>
-             </tr>
-         </table>
-     </div>
-     
+            <table>
+                <tr>
+                    <td class="bg-light"><strong>الاسم:</strong></td>
+                    <td>{{ $invoice->invoiceable->name }}</td>
+                    <td><strong>المستخدم:</strong></td>
+                    <td>{{ $invoice->user?->name ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="bg-light"><strong>الحالة:</strong></td>
+                    <td>
+                        @if($invoice->status->value == 'paid')
+                            مدفوعة
+                        @elseif($invoice->status->value == 'relief')
+                            معفى عنها
+                        @else
+                            غير مدفوعة
+                        @endif
+                    </td>
+                    <td class="bg-light"><strong>تاريخ الإنشاء:</strong></td>
+                    <td>{{ $invoice->created_at->format('Y-m-d') }} / {{ $invoice->created_at->format('h:i A') }}</td>
+                </tr>
+            </table>
+        </div>
 
-        <!-- Items Section -->
+        @if ($invoice->doctorMail)
         <div class="items">
             <h4>تفاصيل إضافية</h4>
             <table>
@@ -196,64 +185,45 @@
                     </tr>
                 </thead> 
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>{{ $invoice->description }}</td>
-                        <td>{{ number_format($invoice->amount, 2) }} د.ل</td>
-                    </tr>
+                    @php
+                        $index = 1;
+                        $unit = match($invoice->doctorMail->doctor->type->value) {
+                            'libyan', 'palestinian' => 50,
+                            'foreign' => 100,
+                            default => 0,
+                        };
+                        $total = 0;
+                    @endphp
+
+                    @foreach ($invoice->doctorMail->emails as $email)
+                        @php $total += $unit; @endphp
+                        <tr>
+                            <td>{{ $index++ }}</td>
+                            <td>بريد إلكتروني</td>
+                            <td>{{ number_format($unit, 2) }} د.ل</td>
+                        </tr>
+                    @endforeach
+
+                    @foreach ($invoice->doctorMail->doctorMailItems as $item)
+                        @php $total += $item->pricing->amount; @endphp
+                        <tr>
+                            <td>{{ $index++ }}</td>
+                            <td>{{ $item->pricing->name }}</td>
+                            <td>{{ number_format($item->pricing->amount, 2) }} د.ل</td>
+                        </tr>
+                    @endforeach
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="2" class="text-end">الإجمالي</th>
+                        <th>{{ number_format($total, 2) }} د.ل</th>
+                    </tr>
+                </tfoot>
             </table>
-        </div>
+        </div>    
+        @endif
 
 
-<!-- Items Section -->
-<div class="items">
-    <h4>تفاصيل إضافية</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>الصفة</th>
-                <th>من سنة</th>
-                <th>إلى سنة</th>
-                <th>السعر السنوي</th>
-                <th>عدد السنوات</th>
-                <th>الإجمالي</th>
-            </tr>
-        </thead> 
-        <tbody>
-            @forelse($invoice->items as $index => $item)
-                @php
-                    $years = ($item->to_year - $item->from_year) + 1;
-                @endphp
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $item->rank?->name ?? '-' }}</td>
-                    <td>{{ $item->from_year }}</td>
-                    <td>{{ $item->to_year }}</td>
-                    <td>{{ number_format($item->amount, 2) }} د.ل</td>
-                    <td>{{ $years }}</td>
-                    <td>{{ number_format($item->amount * $years, 2) }} د.ل</td>
-                </tr>
-            @empty
-                <tr>
-                    <td>1</td>
-                    <td colspan="5">{{ $invoice->description }}</td>
-                    <td>{{ number_format($invoice->amount, 2) }} د.ل</td>
-                </tr>
-            @endforelse
-        </tbody>
-        
-    </table>
-</div>
-
-        <!-- Footer Section -->
-        <div class="footer">
-            <p><strong>التوقيع:</strong> ______________________</p>
-            <p><strong>تاريخ الطباعة:</strong> {{ now()->format('Y-m-d') }}</p>
-        </div>
-
-        <!-- Print Button -->
         <div class="print-button no-print">
             <button onclick="window.print()">طباعة الفاتورة</button>
             <a href="{{ route(get_area_name().'.invoices.index') }}">

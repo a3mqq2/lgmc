@@ -364,15 +364,13 @@
                                     <th class="bg-primary text-light">الدرجة العلمية</th>
                                     <th class="bg-primary text-light">جهة التخرج</th>
                                     <th class="bg-primary text-light">تاريخ التأهيل</th>
-                                    <th class="bg-primary text-light">سنة  الإمتياز</th>
                                 </tr>
                                 <tr>
                                     <td>{{ $doctor->handGraduation->name ?? 'N/A' }}</td>
-                                    <td>{{ $doctor->internership_complete ? $doctor->internership_complete->format('Y-m-d') : 'N/A' }}</td>
+                                    <td>{{ $doctor->graduation_certificate ? $doctor->graduation_certificate->format('Y-m-d') : 'N/A' }}</td>
                                     <td>{{ $doctor->academicDegree->name ?? 'N/A' }}</td>
                                     <td>{{ $doctor->qualificationUniversity->name ?? 'N/A' }}</td>
                                     <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date: 'N/A' }}</td>
-                                    <td>{{$doctor->internership_complete ? $doctor->internership_complete->format('Y-m-d') : 'N/A' }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -421,8 +419,8 @@
                     </div>
 
                     {{-- add file button --}}
-                    <a href="{{route(get_area_name().'.doctors.files.create', $doctor)}}" class="btn btn-primary text-light mb-3" >اضف ملف للطبيب</a>
-                    <h4 class="main-content-label">  ملفات الطبيب  </h4>
+                    <a href="{{route(get_area_name().'.doctors.files.create', $doctor)}}" class="btn btn-primary text-light mb-3" >اضف مستند للطبيب</a>
+                    <h4 class="main-content-label">  مستندات الطبيب  </h4>
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <thead>

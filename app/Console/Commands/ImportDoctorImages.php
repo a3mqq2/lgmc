@@ -17,7 +17,7 @@ class ImportDoctorImages extends Command
         $branchId = 1;
         
         $doctors = Doctor::where('branch_id', $branchId)
-            ->orderBy('index')
+            ->orderBy('doctor_number')
             ->get();
 
         $this->info("Found {$doctors->count()} doctors.");

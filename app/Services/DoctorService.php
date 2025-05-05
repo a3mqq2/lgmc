@@ -420,6 +420,7 @@ class DoctorService
             'pricing_id' => $price->id,
             'status' => 'unpaid',
             'branch_id' => auth()->user()->branch_id,
+            'user_id' => auth()->user()->id,
         ];
 
 
@@ -450,6 +451,7 @@ class DoctorService
                 'pricing_id' => $price->id,
                 'status' => 'unpaid',
                 'branch_id' => auth()->user()->branch_id,
+                'user_id' => auth()->user()->id,
             ];
     
     
@@ -772,6 +774,7 @@ class DoctorService
                     'pricing_id' => $price->id,
                     'status' => 'unpaid',
                     'branch_id' => auth()->user()->branch_id,
+                    'user_id' => auth()->user()->id,
                 ];
 
                 $invoice = Invoice::create($data);
@@ -788,6 +791,7 @@ class DoctorService
                     'pricing_id' => $price->id,
                     'status' => 'unpaid',
                     'branch_id' => auth()->user()->branch_id,
+                    'user_id' => auth()->user()->id,
                 ];
                 $invoice = Invoice::create($data);
 
@@ -804,6 +808,7 @@ class DoctorService
                     'pricing_id' => $price->id,
                     'status' => 'unpaid',
                     'branch_id' => auth()->user()->branch_id,
+                    'user_id' => auth()->user()->id,
                 ];
                 $invoice = Invoice::create($data);
             } 

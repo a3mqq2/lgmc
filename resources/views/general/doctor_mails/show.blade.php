@@ -95,7 +95,13 @@
           <tbody>
             @foreach($doctorMail->doctorMailItems as $item)
               <tr>
-                <td>{{ $item->pricing->name }}</td>
+                <td>{{ $item->pricing->name }} /  @if ($item->work_mention === 'with')
+                  مع ذكر جهة العمل
+                @elseif ($item->work_mention === 'without')
+                  دون ذكر جهة العمل
+                @else
+                  —
+                @endif </td>
                 <td class="text-end">{{ number_format($item->pricing->amount,2) }} د.ل</td>
                 <td>
                   @if($item->file)
@@ -167,7 +173,13 @@
         <tbody>
           @foreach($doctorMail->doctorMailItems as $item)
             <tr>
-              <td>{{ $item->pricing->name }}</td>
+              <td>{{ $item->pricing->name }} /  @if ($item->work_mention === 'with')
+                مع ذكر جهة العمل
+              @elseif ($item->work_mention === 'without')
+                دون ذكر جهة العمل
+              @else
+                —
+              @endif </td>
               <td class="text-center">{{ number_format($item->pricing->amount,2) }} د.ل</td>
                <td class="text-center">
                   {{ $item->rejected_reason ?? '—' }}

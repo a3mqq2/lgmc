@@ -223,6 +223,7 @@ class MedicalFacilityService
             'status' => 'unpaid',
             'pricing_id' => $price->id,
             'branch_id' => auth()->user()->branch_id,
+            'user_id' => auth()->user()->id,
         ]);
     }
 }

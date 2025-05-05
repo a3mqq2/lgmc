@@ -334,6 +334,7 @@ class DoctorRequestController extends Controller
             'pricing_id' => $doctorRequest->pricing_id,
             'status' => 'unpaid',
             'branch_id' => $doctorRequest->doctor->branch_id,
+            'user_id' => auth()->user()->id,
         ];
 
 

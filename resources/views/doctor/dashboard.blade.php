@@ -27,7 +27,7 @@
                  </li>
                  <li class="nav-item">
                      <a class="nav-link fs-14" data-bs-toggle="tab"   href="#requests" role="tab">
-                         <i class="ri-folder-4-line d-inline-block d-m"></i> <span class=" d-md-inline-block">الطلبات</span>
+                         <i class="ri-folder-4-line d-inline-block d-m"></i> <span class=" d-md-inline-block">اوراق الخارج</span>
                      </a>
                  </li>
                  <li class="nav-item">
@@ -505,10 +505,14 @@
                                          <span><i class="fas fa-calendar-check text-info"></i> تاريخ الانتهاء:</span>
                                          <span>{{ $licence->expiry_date }}</span>
                                      </div>
+                                     
+                                     @if ($licence->status == \App\Enums\LicenceStatus::Active)
                                      <div class="d-flex justify-content-between align-items-center border-bottom pb-3 pt-3">
-                                         <span><i class="fas fa-download text-info"></i> تحميل الرخصة :</span>
-                                             <a href="{{route('doctor.licences.print', $licence)}}" class="btn btn-primary text-light">تحميل</a>
-                                     </div>
+                                        <span><i class="fas fa-download text-info"></i> تحميل الرخصة :</span>
+                                            <a href="{{route('doctor.licences.print', $licence)}}" class="btn btn-primary text-light">تحميل</a>
+                                    </div>
+                                     @endif
+                                     
                                  </div>
                                  @endforeach
                              </div>

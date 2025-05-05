@@ -17,6 +17,7 @@ class DoctorMailItem extends Model
         'status',
         'rejected_reason',
         'file',
+        'work_mention',
     ];
 
     public function doctorMail()
@@ -27,5 +28,15 @@ class DoctorMailItem extends Model
     public function pricing()
     {
         return $this->belongsTo(Pricing::class);
+    }
+
+    // ✅ ترجمة لقيمة work_mention
+    public function getWorkMentionLabelAttribute(): string
+    {
+        return match ($this->work_mention) {
+            'with'    => 'مع ذكر جهة العمل',
+            'without' => 'دون ذكر جهة العمل',
+            default   => '',
+        };
     }
 }

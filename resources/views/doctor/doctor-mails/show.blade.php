@@ -30,7 +30,7 @@
                    </li>
                    <li class="nav-item">
                        <a class="nav-link fs-14 active" href="{{ route('doctor.dashboard', ['requests' => 1]) }}" role="tab">
-                           <i class="ri-folder-4-line d-inline-block d-m"></i> <span class="d-md-inline-block">الطلبات</span>
+                           <i class="ri-folder-4-line d-inline-block d-m"></i> <span class="d-md-inline-block">اوراق الخارج</span>
                        </a>
                    </li>
                    <li class="nav-item">
@@ -125,51 +125,61 @@
                            <form method="POST" action="{{ route('doctor.doctor-emails.update', $doctorMail->id) }}" enctype="multipart/form-data">
                                @csrf
                                @method('PUT')
+                           
                                <table class="table table-bordered mb-0">
-                                   <thead class="text-primary bg-light">
-                                       <tr>
-                                           <th>الخدمة</th>
-                                           <th class="text-center">المبلغ</th>
-                                           <th class="text-center">الملف</th>
-                                           <th class="text-center">سبب الرفض</th>
-                                             @if ($doctorMail->status == "under_edit")
-                                             <th class="text-center">حذف</th>
-                                             @endif
-                                       </tr>
-                                   </thead>
-                                   <tbody>
-                                       @foreach($doctorMail->doctorMailItems as $item)
-                                           <tr class="@if($item->status === 'approved') table-success @elseif($item->status === 'rejected') table-danger @endif">
-                                               <td>{{ $item->pricing->name }}</td>
-                                               <td class="text-center">{{ number_format($item->pricing->amount, 2) }} د.ل</td>
-                                               <td class="text-center">
-                                                   @if($item->file)
-                                                       <a download href="{{ asset('storage/'.$item->file) }}" target="_blank" class="btn btn-primary btn-sm">عرض الملف</a>
-                                                   @else
-                                                       —
-                                                   @endif
-                                                   @if($doctorMail->status !== 'under_approve')
-                                                       @if ($item->status == "rejected")
-                                                         <input type="file" name="files[{{ $item->id }}]" class="form-control form-control-sm mt-1">
-                                                       @endif
-                                                   @endif
-                                               </td>
-                                               <td class="text-center">{{ $item->rejected_reason ?? '—' }}</td>
-                                               
-                                               @if ($doctorMail->status == "under_edit")
-                                                   <td class="text-center">
-                                                      @if ($item->status == "rejected")
-                                                         <input type="checkbox" name="items[{{ $item->id }}]" class="switch" id="item-{{ $item->id }}" >
-                                                         <label for="item-{{ $item->id }}" class="slider"></label>
-                                                      @endif
-                                                   </td>
-                                               @endif
-
-                                           </tr>
-                                       @endforeach
-                                   </tbody>
-                               </table>
-                               
+                                <thead class="text-primary bg-light">
+                                    <tr>
+                                        <th>الخدمة</th>
+                                        <th>جهة العمل</th> <!-- ✅ العمود الجديد -->
+                                        <th class="text-center">المبلغ</th>
+                                        <th class="text-center">الملف</th>
+                                        <th class="text-center">سبب الرفض</th>
+                                        @if ($doctorMail->status == "under_edit")
+                                            <th class="text-center">حذف</th>
+                                        @endif
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($doctorMail->doctorMailItems as $item)
+                                        <tr class="@if($item->status === 'approved') table-success @elseif($item->status === 'rejected') table-danger @endif">
+                                            <td>{{ $item->pricing->name }}</td>
+                            
+                                            <!-- ✅ عرض جهة العمل -->
+                                            <td>
+                                                @if ($item->work_mention === 'with')
+                                                    مع ذكر جهة العمل
+                                                @elseif ($item->work_mention === 'without')
+                                                    دون ذكر جهة العمل
+                                                @else
+                                                    —
+                                                @endif
+                                            </td>
+                            
+                                            <td class="text-center">{{ number_format($item->pricing->amount, 2) }} د.ل</td>
+                                            <td class="text-center">
+                                                @if($item->file)
+                                                    <a download href="{{ asset('storage/'.$item->file) }}" target="_blank" class="btn btn-primary btn-sm">عرض الملف</a>
+                                                @else
+                                                    —
+                                                @endif
+                                                @if($doctorMail->status !== 'under_approve' && $item->status == "rejected")
+                                                    <input type="file" name="files[{{ $item->id }}]" class="form-control form-control-sm mt-1">
+                                                @endif
+                                            </td>
+                                            <td class="text-center">{{ $item->rejected_reason ?? '—' }}</td>
+                            
+                                            @if ($doctorMail->status == "under_edit")
+                                                <td class="text-center">
+                                                    @if ($item->status == "rejected")
+                                                        <input type="checkbox" name="items[{{ $item->id }}]" class="switch" id="item-{{ $item->id }}">
+                                                        <label for="item-{{ $item->id }}" class="slider"></label>
+                                                    @endif
+                                                </td>
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>   
                                @if ($doctorMail->status == "under_edit")
                                <div class="mt-3 text-end me-3">
                                     <button type="submit" class="btn btn-success">تحديث الطلب</button>

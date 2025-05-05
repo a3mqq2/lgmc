@@ -81,7 +81,10 @@ class DoctorMailController extends Controller
             'services.*.id'    => ['required','exists:pricings,id'],
             'services.*.file'  => ['nullable','file'],
             'services.*.amount'=> ['nullable','numeric'],   // ترسل من الواجهة
+            'services.*.work_mention' => ['nullable', 'in:with,without'],
         ]);
+
+
 
         DB::beginTransaction();
         try {
@@ -127,6 +130,7 @@ class DoctorMailController extends Controller
                     'pricing_id'     => $item['id'],
                     'status'         => 'pending',
                     'file'           => $path,
+                    'work_mention'   => $item['work_mention'] ?? null, // ✅ تمت إضافته هنا
                 ]);
             }
 
@@ -205,6 +209,7 @@ class DoctorMailController extends Controller
                     'amount'           => $doctorMail->grand_total,
                     'status'           => InvoiceStatus::unpaid,
                     'branch_id'      => $doctorMail->doctor->branch_id,
+                    'user_id' => auth()->user()->id,
                 ]);
 
                 if($doctorMail->doctor->email)

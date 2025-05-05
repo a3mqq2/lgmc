@@ -11,11 +11,11 @@
     <thead>
         <tr>
             <th>#</th>
+            <th>رقم العضوية</th>
             <th>الاسم</th>
             <th>الصفة</th>
-            <th>نوع الطبيب</th>
             <th>الهاتف</th>
-            <th>حالة العضوية</th>
+            <th> البريد الالكتروني</th>
         </tr>
     </thead>
     <tbody>
@@ -26,15 +26,11 @@
                 @endif
             >
                 <td>{{ $index + 1 }}</td>
+                <td>{{ $doctor->code }}</td>
                 <td>{{ $doctor->name }}</td>
                 <td>{{ $doctor->doctor_rank->name ?? '-' }}</td>
-                <td>{{ $doctor->type->label() }}</td>
                 <td>{{ $doctor->phone }}</td>
-                <td>
-                    <span class="badge {{ $doctor->membership_status->badgeClass() }}">
-                        {{ $doctor->membership_status->label() }}
-                    </span>
-                </td>
+                <td>{{ $doctor->email }}</td>
             </tr>
         @endforeach
     </tbody>

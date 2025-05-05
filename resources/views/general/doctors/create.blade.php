@@ -79,6 +79,15 @@
                                     </div>
                                     @endif
                                  
+
+                                    @if (request('type') != "visitor" && request('type') != "foreign")
+                                    <div class="col-md-6">
+                                        <label for="">الرقم النقابي الأول</label>
+                                        <input type="text" name="doctor_number"   value="{{old('doctor_number')}}"  id="" class="form-control">
+                                    </div>
+                                    @endif
+
+
                                     @if (request('type') != "visitor" && request('type') != "foreign")
                                     <div class="col-md-6 mt-2">
                                         <label for=""> اسم الام </label>
@@ -245,7 +254,7 @@
                                         <input type="password"  name="password_confirmation" value="{{old('password_confirmation')}}" id="" class="form-control">
                                     </div>
                                     {{-- email input --}}
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <label for="">البريد الالكتروني  </label>
                                         <input type="email"  name="email" value="{{old('email')}}" id="email" class="form-control">
                                     </div>
@@ -272,7 +281,7 @@
                                         </select>
                                     </div>
                                     @endif
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <label for=""> جهة التخرج </label>
                                         <select name="hand_graduation_id"  required id="" class="form-control form-control select2">
                                             <option value="">حدد جهة التخرج </option>
@@ -281,9 +290,66 @@
                                             @endforeach
                                         </select>
                                     </div>
+                              
+
+                                    <div class="col-md-6">
+                                        <label for="graduationـcertificate">تاريخ الحصول عليها</label>
+                                        <select name="graduationـcertificate" id="graduationـcertificate" class="form-control select2" required>
+                                            @php
+                                                $currentYear = date('Y');
+                                                $selectedYear = old('graduationـcertificate', $currentYear);
+                                            @endphp
+                                            @for($year = $currentYear; $year >= 1950; $year--)
+                                                <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+
+
+
+
+                                </div>
+                            </div>
+                    
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header bg-primary text-light">
+                                <h4 class="card-title"> الامتياز    </h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    @if (request('type') == "visitor")
                                     <div class="col-md-4">
-                                        <label for=""> تاريخ انتهاء الامتياز   </label>
-                                        <input type="date" name="internership_complete" required value="{{old('internership_complete')}}" id="" class="form-control">
+                                        <label for=""> دولة التخرج </label>
+                                        <select name="country_graduation_id" required  id="" class="form-control form-control select2">
+                                            <option value="">حدد دولة التخرج </option>
+                                            @foreach ($countries as $country)
+                                                <option value="{{$country->id}}" {{old('country_graduation_id') == $country->id ? "selected" : ""}}>{{$country->name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @endif
+                                    <div class="col-md-6">
+                                        <label for=""> جهة الحصول على الامتياز </label>
+                                        <select name="qualification_university_id"  required id="" class="form-control form-control select2">
+                                            <option value="">حدد جهة  </option>
+                                            @foreach ($universities as $university)
+                                                <option value="{{$university->id}}" {{old('qualification_university_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="certificate_of_excellence_date">تاريخ الحصول عليها</label>
+                                        <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control select2" required>
+                                            @php
+                                                $currentYear = date('Y');
+                                                $selectedYear = old('certificate_of_excellence_date', $currentYear);
+                                            @endphp
+                                            @for($year = $currentYear; $year >= 1950; $year--)
+                                                <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                            @endfor
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -333,95 +399,10 @@
                                             @endforeach
                                         </select>
                                     </div>
+
         
                                 
         
-                                </div>
-                            </div>
-                    
-                        </div>
-                    </div>
-                    @endif
-                </div>
-            </div>
-    
-            <div class="col-md-12">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h4 class="mb-0">📑 المستندات المطلوبة</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="row" id="documents_container"></div>
-                    </div>
-                </div>
-            </div>
-            
-            
-    
-    
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header bg-primary text-light">بيانات العمل الحالي</div>
-                    <div class="card-body">
-                        <div class="row">
-                            
-                            @if (request('type') != "visitor" && request('type') != "foreign")
-                            <div class="col-md-6">
-                                <label for="">الرقم النقابي الأول</label>
-                                <input type="text" name="doctor_number"   value="{{old('doctor_number')}}"  id="" class="form-control">
-                            </div>
-                            @endif
-
-                            
-                            @if (request('type') != "visitor" && request('type') != "foreign")
-                            <div class="col-md-6">
-                                <label for=""> تاريخ الانتساب   </label>
-                                <input type="date" name="registered_at" value="{{date('Y-m-d')}}" id="" class="form-control">
-                            </div>
-                            @endif
-
-
-                          @if (request('type') != "visitor")
-                          <div class="col-md-6">
-                            <label for="">جهة العمل</label>
-                            <select name="institution_id" id="" class="form-control select2">
-                                <option value="">حدد جهة العمل</option>
-                                @foreach (\App\Models\Institution::where('branch_id', auth()->user()->branch_id)->get(); as $institution)
-                                    <option value="{{$institution->id}}" {{old('institution_id') == $institution->id ? "selected" : ""}}>{{$institution->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                          @endif
-
-
-                            <div class="col-md-6">
-                                <label for="">الصفة</label>
-                                <select name="doctor_rank_id" id="doctor_rank_id" required class="form-control select2">
-                                    <option value="">حدد الصفة</option>
-                                    @foreach ($doctor_ranks as $doctor_rank)
-                                        @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
-                                            <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
-                                            @else 
-                                                @if (request('type') != "visitor")
-                                                        <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
-                                                @endif
-                                            @endif
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-12 mt-2">
-                                <div class="row">
-                                    @if (get_area_name() == "admin")
-                                    <div class="col-md-12 mt-1 mb-2">
-                                        <label for="">حدد فرع</label>
-                                        <select name="branch_id" id="" required class="form-control select2">
-                                            <option value="">حدد فرع</option>
-                                            @foreach (App\Models\Branch::all() as $branch)
-                                            <option value="{{$branch->id}}">{{$branch->name}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    @endif
                                     <div class="col-md-6">
                                         <label for=""> تخصص اول</label>
                                         <select name="specialty_1_id"  id="" class="form-control">
@@ -436,10 +417,80 @@
                                         <input type="text" name="specialty_2" id="specialty_2" value="{{ old('specialty_2') }}" class="form-control" autocomplete="off">
                                     </div>                                    
                                    
-                                    @if (request("type") != "visitor" && request("type") != "foreign")
-                                    <div class="col-md-6 mt-2">
-                                        <label for=""> سنوات الخبره  </label>
-                                        <input name="experience"  id="" type="number" class="form-control" value="{{old('experience')}}" />
+
+
+                                
+
+
+                                    @if (request('type') != "visitor" && request('type') != "foreign")
+                                    <div class="col-md-12">
+                                        <label for=""> تاريخ الانتساب   </label>
+                                        <input type="date" name="registered_at" value="{{date('Y-m-d')}}" id="" class="form-control">
+                                    </div>
+                                    @endif
+
+
+                                </div>
+                            </div>
+                    
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+    
+
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-light">بيانات العمل الحالي</div>
+                    <div class="card-body">
+                        <div class="row">
+                            
+                         
+
+
+                          @if (request('type') != "visitor")
+                          <div class="col-md-12">
+                            <label for="">جهة العمل</label>
+                            <select name="institution_id" id="" class="form-control select2">
+                                <option value="">حدد جهة العمل</option>
+                                @foreach (\App\Models\Institution::where('branch_id', auth()->user()->branch_id)->get(); as $institution)
+                                    <option value="{{$institution->id}}" {{old('institution_id') == $institution->id ? "selected" : ""}}>{{$institution->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                          @endif
+
+
+
+                        <div class="col-md-12">
+                            <label for="">الصفة المهنية</label>
+                            <select name="doctor_rank_id" id="doctor_rank_id" required class="form-control select2">
+                                <option value="">حدد الصفة</option>
+                                @foreach ($doctor_ranks as $doctor_rank)
+                                    @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
+                                        <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
+                                        @else 
+                                            @if (request('type') != "visitor")
+                                                    <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
+                                            @endif
+                                        @endif
+                                @endforeach
+                            </select>
+                        </div>
+
+                            <div class="col-md-12 mt-2">
+                                <div class="row">
+                                    @if (get_area_name() == "admin")
+                                    <div class="col-md-12 mt-1 mb-2">
+                                        <label for="">حدد فرع</label>
+                                        <select name="branch_id" id="" required class="form-control select2">
+                                            <option value="">حدد فرع</option>
+                                            @foreach (App\Models\Branch::all() as $branch)
+                                            <option value="{{$branch->id}}">{{$branch->name}}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                     @endif
 
@@ -449,6 +500,8 @@
                     </div>
                 </div>
                
+
+
                 @if (request("type") != "visitor")
                 <div class="card">
                     <div class="card-header bg-primary text-light">بيانات العمل السابق</div>
@@ -483,6 +536,21 @@
 
                 <button class="btn btn-primary text-light mb-3">حفظ</button>
             </div>
+            
+            <div class="col-md-12">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h4 class="mb-0">📑 المستندات المطلوبة</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="documents_container"></div>
+                    </div>
+                </div>
+            </div>
+            
+            
+    
+    
         </div>
     </form>
 @endif

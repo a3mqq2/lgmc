@@ -1,5 +1,5 @@
 @extends('layouts.'.get_area_name())
-@section('title', 'إضافة ملف جديد للطبيب')
+@section('title', 'إضافة مستند جديد للطبيب')
 @section('content')
 
 <div class="">
@@ -7,7 +7,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">إضافة ملف جديد للطبيب</h4>
+                    <h4 class="card-title">إضافة مستند جديد للطبيب</h4>
                 </div>
                 <div class="card-body">
                     <form action="{{ route(get_area_name().'.doctors.files.store', $doctor->id) }}" method="POST" enctype="multipart/form-data">
