@@ -7,7 +7,7 @@ use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\DoctorMailController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\EmailController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Common\VaultController;
