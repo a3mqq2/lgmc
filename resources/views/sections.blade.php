@@ -91,6 +91,8 @@
                                                  
 
 
+                                                 @if(auth()->user()->permissions()->where('name', 'financial-administration')->count() || auth()->user()->permissions()->where('name', 'financial-branch')->count())
+                                                     
                                                  <div class="col-md-12  p-2 mt-2" style="border-bottom:1px solid #ddd;">
                                                     <a href="{{route('finance.home')}}">
                                                      <div class=" d-flex align-items-center">
@@ -104,6 +106,8 @@
                                                      </div>
                                                     </a>
                                                  </div>
+                                                 @endif
+
 
 
                                                 <div class="col-md-12  p-2 mt-3" style="border-bottom:1px solid #ddd;">
