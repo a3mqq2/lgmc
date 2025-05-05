@@ -176,7 +176,7 @@ class DoctorHomeController extends Controller
             'files.*' => 'nullable|file|max:10240',
         ]);
     
-        if ($ids = $request->input('remove_items')) {
+        if ($ids = array_keys($request->input('items', []))) {
             DoctorMailItem::whereIn('id', $ids)->delete();
         }
     

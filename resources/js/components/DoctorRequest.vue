@@ -104,14 +104,13 @@
         <div class="card-body">
           <label class="form-label">اختر مجموعة دول</label>
           <Select
-            v-model="selectedCountries"
-            :options="availableCountries"
-            label="label"
-            :reduce="c => c.id"
-            multiple
-            placeholder="ابحث عن دول…"
-            @search="fetchCountries"
-          />
+          v-model="selectedCountries"
+          :options="availableCountries"
+          label="label"
+          multiple
+          placeholder="ابحث عن دول…"
+          @search="fetchCountries"
+        />        
         </div>
       </div>
 
@@ -123,7 +122,12 @@
           <textarea v-model="notes" class="form-control" rows="3" placeholder="أضف ملاحظات…"></textarea>
           <div class="form-check mt-3">
             <input class="form-check-input" type="checkbox" v-model="extractedBefore" id="extractedBefore" />
-            <label class="form-check-label" for="extractedBefore">هل سبق له استخراج ملفات سابقاً؟</label>
+            <label class="form-check-label" for="extractedBefore">هل سبق لك استخراج ملفات؟</label>
+          </div>
+      
+          <div v-if="extractedBefore" class="mt-3">
+            <label class="form-label">أدخل آخر سنة استخراج</label>
+            <input type="number" v-model="lastExtractYear" class="form-control" placeholder="مثل: 2022" min="1900" max="2099" />
           </div>
         </div>
       </div>
@@ -198,7 +202,7 @@ watch(selectedDoctor, async doc => {
 })
 
 watch(selectedEmail, em => {
-  if (em && !addedEmails.value.includes(em)) addedEmails.value.push(em)
+  if (em && !addedEmails.value.includes(em)) addedEmails.value.push(em.email)
   selectedEmail.value = null
 })
 
@@ -274,6 +278,13 @@ async function handleSubmit() {
     }
   })
 
+
+    const lastExtractYear = ref('');
+    if (extractedBefore.value && lastExtractYear.value) {
+      form.append('last_extract_year', lastExtractYear.value)
+    }
+
+
   try {
     await axios.post('/api/doctor-mails', form, {
       headers: { 'Content-Type': 'multipart/form-data' }
@@ -281,7 +292,7 @@ async function handleSubmit() {
     await Swal.fire({ icon: 'success', title: 'تم الحفظ بنجاح', timer: 1500, showConfirmButton: false })
 
     if (props.doctorId) {
-      window.location = 'doctor/dashboard?requests=1'
+      window.location = '/doctor/dashboard?requests=1'
     } else {
       window.location = '/admin/doctor-mails'
     }

@@ -65,8 +65,9 @@
                     @foreach($doctorMail->doctorMailItems as $item)
                         <tr>
                             <td>{{ $index++ }}</td>
-                            <td>{{ $item->pricing->name }}</td>
                             <td>
+
+                                {{ $item->pricing->name }} - 
                                 @if ($item->work_mention === 'with')
                                     مع ذكر جهة العمل
                                 @elseif ($item->work_mention === 'without')

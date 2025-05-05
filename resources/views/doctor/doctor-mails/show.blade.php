@@ -72,6 +72,11 @@
                                        <th class="text-primary bg-light">استخراج سابقًا</th>
                                        <td>{{ $doctorMail->contacted_before ? 'نعم' : 'لا' }}</td>
                                    </tr>
+                                   {{-- last year  --}}
+                                      <tr>
+                                        <th class="text-primary bg-light">اخر سنة استخراج</th>
+                                        <td>{{ $doctorMail->last_extract_year ?? '—' }}</td>
+                                    </tr>
                                    <tr>
                                        <th class="text-primary bg-light">الإيميلات</th>
                                        <td>
@@ -142,7 +147,13 @@
                                 <tbody>
                                     @foreach($doctorMail->doctorMailItems as $item)
                                         <tr class="@if($item->status === 'approved') table-success @elseif($item->status === 'rejected') table-danger @endif">
-                                            <td>{{ $item->pricing->name }}</td>
+                                            <td>{{ $item->pricing->name }} /  @if ($item->work_mention === 'with')
+                                                مع ذكر جهة العمل
+                                              @elseif ($item->work_mention === 'without')
+                                                دون ذكر جهة العمل
+                                              @else
+                                                —
+                                              @endif </td>
                             
                                             <!-- ✅ عرض جهة العمل -->
                                             <td>

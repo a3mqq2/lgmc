@@ -17,6 +17,7 @@ class DoctorMail extends Model
         'status',
         'notes',
         'countries',
+        'last_extract_year',
         'emails',
         'grand_total',
     ];

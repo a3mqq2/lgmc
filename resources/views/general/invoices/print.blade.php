@@ -208,7 +208,13 @@
                         @php $total += $item->pricing->amount; @endphp
                         <tr>
                             <td>{{ $index++ }}</td>
-                            <td>{{ $item->pricing->name }}</td>
+                            <td>{{ $item->pricing->name }} /  @if ($item->work_mention === 'with')
+                                مع ذكر جهة العمل
+                              @elseif ($item->work_mention === 'without')
+                                دون ذكر جهة العمل
+                              @else
+                                —
+                              @endif </td>
                             <td>{{ number_format($item->pricing->amount, 2) }} د.ل</td>
                         </tr>
                     @endforeach

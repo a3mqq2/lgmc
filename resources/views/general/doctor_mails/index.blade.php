@@ -83,6 +83,8 @@
             <th>الإيميلات</th>
             <th>الدول</th>
             <th>الإجمالي</th>
+            <th>هل اصدر اوراق من قبل ؟ </th>
+            <th>سنة الاصدار</th>
             <th>الحالة</th>
             <th>تاريخ الإنشاء</th>
             <th style="width:170px">إجراءات</th>
@@ -103,6 +105,20 @@
               </td>
               <td>{{ $mail->country_names }}</td>
               <td>{{ number_format($mail->grand_total,2) }} د.ل</td>
+              <td>
+                @if ($mail->contacted_before)
+                  <span class="badge bg-success">نعم</span>
+                @else
+                  <span class="badge bg-danger">لا</span>
+                @endif
+              </td>
+              <td>
+                @if ($mail->last_extract_year)
+                  {{ $mail->last_extract_year }}
+                @else
+                  <span class="badge bg-secondary">غير محدد</span>
+                @endif
+              </td>
               <td>
                 @php
                   $badge = [
@@ -150,11 +166,11 @@
                    @endif
              
                    {{-- زرّ طباعة --}}
-                   <a href="{{ route(get_area_name().'.doctor-mails.print', $mail) }}"
+                   {{-- <a href="{{ route(get_area_name().'.doctor-mails.print', $mail) }}"
                       target="_blank" class="btn btn-outline-primary" title="طباعة">
                       <i class="fa fa-print"></i>
                    </a>
-             
+              --}}
                    {{-- زرّ حذف --}}
                  
                    @if (get_area_name() == "active")

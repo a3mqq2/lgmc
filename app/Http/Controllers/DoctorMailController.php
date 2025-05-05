@@ -82,6 +82,7 @@ class DoctorMailController extends Controller
             'services.*.file'  => ['nullable','file'],
             'services.*.amount'=> ['nullable','numeric'],   // ترسل من الواجهة
             'services.*.work_mention' => ['nullable', 'in:with,without'],
+            'last_extract_year' => ['nullable','integer','digits:4'],
         ]);
 
 
@@ -118,6 +119,7 @@ class DoctorMailController extends Controller
                 'countries'        => $data['countries'] ?? [],
                 'emails'           => $data['emails'],
                 'grand_total'      => $grandTotal,
+                'last_extract_year'=> $data['last_extract_year'] ?? null,
             ]);
 
             /* --------- العناصر ---------------------------------------- */
