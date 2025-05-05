@@ -373,6 +373,8 @@
     </div>
     @endif
     
+    @if (auth()->user()->permissions->where('name','manage-medical-facilities')->count())
+
     <div class="col-xl-3 col-md-6">
         <a href="{{route(get_area_name().'.licences.index', ['type' => 'facilities', 'status' => 'active'])}}">
             <div class="card bg-primary card-height-100">
@@ -460,6 +462,8 @@
             </div>
         </a>
     </div>
+
+    @endif
 </div>
 
 
