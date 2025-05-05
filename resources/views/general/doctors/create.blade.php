@@ -546,13 +546,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <button class="btn btn-primary text-light mb-3">حفظ</button>
-            
-    
-    
+            </div>    
         </div>
+        <button class="btn btn-primary text-light mb-3">حفظ</button>
     </form>
 @endif
 @endsection
