@@ -36,7 +36,7 @@
                                 </span>
                             @enderror
                         </div>
-
+ 
                         <!-- Doctor Fields (Initially Hidden) -->
                         <div id="doctor-fields"  >
                             <div class="mb-3">
