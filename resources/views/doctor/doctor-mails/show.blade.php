@@ -135,7 +135,6 @@
                                 <thead class="text-primary bg-light">
                                     <tr>
                                         <th>الخدمة</th>
-                                        <th>جهة العمل</th> <!-- ✅ العمود الجديد -->
                                         <th class="text-center">المبلغ</th>
                                         <th class="text-center">الملف</th>
                                         <th class="text-center">سبب الرفض</th>
@@ -147,24 +146,13 @@
                                 <tbody>
                                     @foreach($doctorMail->doctorMailItems as $item)
                                         <tr class="@if($item->status === 'approved') table-success @elseif($item->status === 'rejected') table-danger @endif">
-                                            <td>{{ $item->pricing->name }} /  @if ($item->work_mention === 'with')
-                                                مع ذكر جهة العمل
+                                            <td>{{ $item->pricing->name }}  @if ($item->work_mention === 'with')
+                                                مع ذكر جهة العمل /  
                                               @elseif ($item->work_mention === 'without')
-                                                دون ذكر جهة العمل
+                                                دون ذكر جهة العمل / 
                                               @else
-                                                —
                                               @endif </td>
                             
-                                            <!-- ✅ عرض جهة العمل -->
-                                            <td>
-                                                @if ($item->work_mention === 'with')
-                                                    مع ذكر جهة العمل
-                                                @elseif ($item->work_mention === 'without')
-                                                    دون ذكر جهة العمل
-                                                @else
-                                                    —
-                                                @endif
-                                            </td>
                             
                                             <td class="text-center">{{ number_format($item->pricing->amount, 2) }} د.ل</td>
                                             <td class="text-center">
