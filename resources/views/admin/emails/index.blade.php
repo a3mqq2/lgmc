@@ -24,7 +24,6 @@
                                 <tr>
                                     <th class="bg-light" scope="col">#</th>
                                     <th class="bg-light" scope="col">البريد الإلكتروني</th>
-                                    <th class="bg-light" scope="col">تاريخ الإضافة</th>
                                     <th class="bg-light" scope="col">الإجراءات</th>
                                 </tr>
                             </thead>
@@ -33,7 +32,6 @@
                                     <tr>
                                         <th scope="row">{{ $email->id }}</th>
                                         <td>{{ $email->email }}</td>
-                                        <td>{{ $email->created_at->format('Y-m-d') }}</td>
                                         <td>
                                             <a href="{{ route(get_area_name().'.emails.edit', $email->id) }}" class="btn btn-primary btn-sm">تعديل</a>
                                             <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $email->id }}">حذف</button>
