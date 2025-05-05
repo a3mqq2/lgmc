@@ -506,7 +506,7 @@
                                          <span>{{ $licence->expiry_date }}</span>
                                      </div>
                                      
-                                     @if ($licence->status == \App\Enums\LicenceStatus::Active)
+                                     @if ($licence->status == \App\Enums\Status::Active)
                                      <div class="d-flex justify-content-between align-items-center border-bottom pb-3 pt-3">
                                         <span><i class="fas fa-download text-info"></i> تحميل الرخصة :</span>
                                             <a href="{{route('doctor.licences.print', $licence)}}" class="btn btn-primary text-light">تحميل</a>
