@@ -31,6 +31,7 @@
 {{-- doctor mails --}}
 
 
+@if(auth()->user()->permissions()->where('name', 'doctor-mail')->count())
 <li class="nav-item">
     <a class="nav-link menu-link" href="#doctor_mails" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-file"></i>
@@ -49,7 +50,6 @@
 
 
 
-@if(auth()->user()->permissions()->where('name', 'doctor-mails')->count())
 <li class="nav-item">
     <a class="nav-link menu-link" href="#emails" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-envelope"></i>
