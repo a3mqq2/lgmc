@@ -38,7 +38,7 @@
                         </div>
 
                         <!-- Doctor Fields (Initially Hidden) -->
-                        <div id="doctor-fields" >
+                        <div id="doctor-fields"  >
                             <div class="mb-3">
                                 <label for="doctor_rank_id" class="form-label">الصفة</label>
                                 <select name="doctor_rank_id" id="doctor_rank_id" class="form-control">
@@ -53,7 +53,7 @@
                                 <label for="doctor_type" class="form-label">نوع الطبيب</label>
                                 <select name="doctor_type" id="doctor_type" class="form-control">
                                     <option value="">الكل</option>
-                                    <option value="palestinian">فلسطيني</option>
+                                    <option value="foreign">أجنبي</option>
                                     <option value="visitor">زائر</option>
                                     <option value="libyan">ليبي</option>
                                     <option value="palestinian">فلسطيني</option>
