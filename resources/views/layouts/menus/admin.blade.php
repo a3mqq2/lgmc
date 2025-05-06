@@ -6,7 +6,7 @@
 @if(auth()->user()->permissions()->where('name', 'manage-staff')->count())
 
 <li class="nav-item">
-    <a class="nav-link menu-link" href="#users" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+    <a class="nav-link menu-link" data-bs-target="#users" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-users"></i>
         <span data-key="t-layouts">الموظفين</span>
     </a>
@@ -33,7 +33,7 @@
 
 @if(auth()->user()->permissions()->where('name', 'doctor-mail')->count())
 <li class="nav-item">
-    <a class="nav-link menu-link" href="#doctor_mails" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+    <a class="nav-link menu-link" data-bs-target="#doctor_mails" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-file"></i>
         <span data-key="t-layouts">طلبات اوراق الخارج</span>
     </a>
@@ -56,7 +56,7 @@
 
 
 <li class="nav-item">
-    <a class="nav-link menu-link" href="#emails" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+    <a class="nav-link menu-link" data-bs-target="#emails" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-envelope"></i>
         <span data-key="t-layouts">البريد الإلكترونية</span>
     </a>
@@ -81,7 +81,7 @@
 
 @if(auth()->user()->permissions()->where('name', 'services-pricing')->count())
 <li class="nav-item">
-    <a class="nav-link menu-link" href="#pricing_licenses_all" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+    <a class="nav-link menu-link" data-bs-target="#pricing_licenses_all" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-money-bill"></i>
         <span data-key="t-layouts">تسعير الخدمات</span>
     </a>
@@ -103,7 +103,7 @@
 {{-- DOCTORS --}}
 @if(auth()->user()->permissions()->where('name', 'manage-doctors')->count())
 <li class="nav-item">
-    <a class="nav-link menu-link" href="#doctors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+    <a class="nav-link menu-link" data-bs-target="#doctors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-user-doctor"></i>
         <span data-key="t-layouts">الأطباء</span>
     </a>
@@ -126,7 +126,7 @@
 @if(auth()->user()->permissions()->where('name', 'manage-medical-facilities')->count())
 
 <li class="nav-item">
-    <a class="nav-link menu-link" href="#medical-facility" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+    <a class="nav-link menu-link" data-bs-target="#medical-facility" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-hospital"></i>
         <span data-key="t-layouts">المرافق الطبية</span>
     </a>
@@ -146,7 +146,7 @@
 @if(auth()->user()->permissions()->where('name', 'manage-doctor-permits')->count())
 
                 <li class="nav-item">
-                <a class="nav-link menu-link" href="#licences" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                <a class="nav-link menu-link" data-bs-target="#licences" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - الاطباء   </span>
                 </a>
                 <div class="collapse menu-dropdown" id="licences">
@@ -180,7 +180,7 @@
                     @endphp
                     
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="#libyan" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                        <a class="nav-link menu-link" data-bs-target="#libyan" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                             <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - لليبيين   </span>
                         </a>
                         <div class="collapse menu-dropdown" id="libyan">
@@ -226,7 +226,7 @@
                     
                     
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="#palestinian" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                        <a class="nav-link menu-link" data-bs-target="#palestinian" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                             <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - فلسطينيين   </span>
                         </a>
                         <div class="collapse menu-dropdown" id="palestinian">
@@ -271,7 +271,7 @@
                     
                     
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="#visitors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                        <a class="nav-link menu-link" data-bs-target="#visitors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                             <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - زوار   </span>
                         </a>
                         <div class="collapse menu-dropdown" id="visitors">
@@ -316,7 +316,7 @@
                     
                     
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="#foreign" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                        <a class="nav-link menu-link" data-bs-target="#foreign" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                             <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - اجانب   </span>
                         </a>
                         <div class="collapse menu-dropdown" id="foreign">
@@ -374,7 +374,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 
 @endphp
 <li class="nav-item">
-<a class="nav-link menu-link" href="#licences_facilities" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+<a class="nav-link menu-link" data-bs-target="#licences_facilities" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
     <i class="fa-solid fa-house-medical"></i> <span data-key="t-layouts">     تراخيص المنشآت الطبية  </span>
 </a>
 <div class="collapse menu-dropdown" id="licences_facilities">
@@ -398,7 +398,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 {{-- BRANCHES (managing branches & reports) --}}
 @if(auth()->user()->permissions()->where('name','manage-branches')->count())
 <li class="nav-item">
-    <a class="nav-link menu-link" href="#branches" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+    <a class="nav-link menu-link" data-bs-target="#branches" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-building"></i>
         <span data-key="t-layouts">الفروع</span>
     </a>
@@ -420,7 +420,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 {{-- REPORTS (branch-reports or manage-branches-reports, depends on your choice) --}}
 @if(auth()->user()->permissions()->where('name','manage-branches-reports')->count())
 <li class="nav-item">
-    <a class="nav-link menu-link" href="{{ route(get_area_name().'.reports.index') }}">
+    <a class="nav-link menu-link" data-bs-target="{{ route(get_area_name().'.reports.index') }}">
         <i class="fa fa-file"></i>
         <span>التقارير</span>
     </a>
@@ -430,7 +430,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 {{-- SECURITY LOGS (could be 'manage-staff' or 'manage-all-tickets' or some other permission) --}}
 @if(auth()->user()->permissions()->where('name','logs')->count())
 <li class="nav-item">
-    <a class="nav-link menu-link" href="{{ route(get_area_name().'.logs') }}">
+    <a class="nav-link menu-link" data-bs-target="{{ route(get_area_name().'.logs') }}">
         <i class="fa fa-font-awesome"></i>
         <span>السجلات الأمنية</span>
     </a>
@@ -440,7 +440,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 {{-- BLACKLIST --}}
 {{-- @if(auth()->user()->permissions()->where('name','manage-blacklist')->count())
 <li class="nav-item">
-    <a class="nav-link menu-link" href="#blacklists" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="blacklists">
+    <a class="nav-link menu-link" data-bs-target="#blacklists" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="blacklists">
         <i class="fa fa-ban"></i>
         <span data-key="t-blacklists">البلاك ليست</span>
     </a>
@@ -458,7 +458,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 {{-- REGISTRATION SETTINGS --}}
 @if(auth()->user()->permissions()->where('name','registration-settings')->count())
 <li class="nav-item">
-    <a class="nav-link menu-link" href="#settings" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+    <a class="nav-link menu-link" data-bs-target="#settings" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-cog"></i>
         <span data-key="t-layouts">اعدادات التسجيل</span>
     </a>
@@ -470,7 +470,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 
             {{-- Countries --}}
             <li class="nav-item">
-                <a class="nav-link menu-link" href="#countries" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                <a class="nav-link menu-link" data-bs-target="#countries" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-globe"></i>
                     <span data-key="t-layouts">الجنسيات</span>
                 </a>
@@ -490,7 +490,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 
             {{-- Specialties --}}
             <li class="nav-item">
-                <a class="nav-link menu-link" href="#specialties" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                <a class="nav-link menu-link" data-bs-target="#specialties" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-stethoscope"></i>
                     <span data-key="t-layouts">التخصصات الطبية</span>
                 </a>
@@ -510,7 +510,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 
             {{-- File Types --}}
             {{-- <li class="nav-item">
-                <a class="nav-link menu-link" href="#fileTypes" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                <a class="nav-link menu-link" data-bs-target="#fileTypes" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-file"></i>
                     <span data-key="t-layouts">المستندات المطلوبة</span>
                 </a>
@@ -530,7 +530,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 
             {{-- Medical Facility Types --}}
             {{-- <li class="nav-item">
-                <a class="nav-link menu-link" href="#medical-facility-types" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                <a class="nav-link menu-link" data-bs-target="#medical-facility-types" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-hospital"></i>
                     <span data-key="t-layouts">أنواع المرافق الطبية</span>
                 </a>
@@ -553,7 +553,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 @endif
 
 <li class="nav-item">
-    <a class="nav-link menu-link" href="{{ route(get_area_name().'.profile.change-password') }}">
+    <a class="nav-link menu-link" data-bs-target="{{ route(get_area_name().'.profile.change-password') }}">
         <i class="ri-lock-password-line"></i> <span>تغيير كلمة المرور</span>
     </a>
 </li>
