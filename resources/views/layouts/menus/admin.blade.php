@@ -56,7 +56,7 @@
 
 
 <li class="nav-item">
-    <a class="nav-link menu-link" data-bs-target="#emails" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+    <a class="nav-link menu-link" data-bs-toggle="collapse" data-bs-target="#emails" role="button" aria-expanded="false" aria-controls="emails">
         <i class="fa fa-envelope"></i>
         <span data-key="t-layouts">البريد الإلكترونية</span>
     </a>
