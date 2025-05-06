@@ -8,7 +8,7 @@ use App\Models\Country;
 
 class ImportOldCountries extends Command
 {
-    protected $signature = '    ';
+    protected $signature = 'import:countries';
     protected $description = 'Import countries from lgmc_r.countries into LGMC.countries';
 
     public function handle()
