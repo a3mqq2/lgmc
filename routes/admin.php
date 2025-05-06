@@ -100,8 +100,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
         [DoctorMailController::class, 'print']
     )->name('doctor-mails.print');
 
-    Route::resource('emails', EmailController::class)
-    ->middleware('permission:doctor-mails');
+    Route::resource('emails', EmailController::class);
 
     
     // =========== DOCTOR MAILS ============= //
