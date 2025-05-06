@@ -546,7 +546,7 @@
                                       $label = [
                                         'under_approve'  => 'قيد الموافقة',
                                         'under_payment'  => 'قيد الدفع',
-                                        'under_proccess' => 'قيد المعالجة',
+                                        'under_proccess' => 'قيد التجهيز',
                                         'done'      => 'مكتمل',
                                          'under_edit' => 'قيد التعديل',
                                         'failed'         => 'فشل',
@@ -563,7 +563,7 @@
                                           <i class="fa fa-eye"></i>
                                        </a>
                                  
-                                       {{-- زرّ اكتمال (يظهر فقط إذا كان قيد المعالجة) --}}
+                                       {{-- زرّ اكتمال (يظهر فقط إذا كان قيد التجهيز) --}}
                                        @if($mail->status === 'under_proccess')
                                          <form action="{{ route(get_area_name().'.doctor-mails.complete', $mail) }}"
                                                method="POST" onsubmit="return confirm('تأكيد الإكمال؟');">

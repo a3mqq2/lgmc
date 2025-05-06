@@ -52,7 +52,7 @@
             <option value="">اختر الحالة</option>
             <option value="under_approve"   @selected(request('status')=='under_approve') >قيد الموافقة</option>
             <option value="under_payment"   @selected(request('status')=='under_payment') >قيد الدفع</option>
-            <option value="under_proccess"  @selected(request('status')=='under_proccess')>قيد المعالجة</option>
+            <option value="under_proccess"  @selected(request('status')=='under_proccess')>قيد التجهيز</option>
             <option value="done"       @selected(request('status')=='done')     >مكتمل</option>
             <option value="failed"          @selected(request('status')=='failed')        >فشل</option>
           </select>
@@ -139,7 +139,7 @@
                   $label = [
                     'under_approve'  => 'قيد الموافقة',
                     'under_payment'  => 'قيد الدفع',
-                    'under_proccess' => 'قيد المعالجة',
+                    'under_proccess' => 'قيد التجهيز',
                     'done'      => 'مكتمل',
                      'under_edit' => 'قيد التعديل',
                     'failed'         => 'فشل',
@@ -160,7 +160,7 @@
                   </a>
                    @endif
 
-                   {{-- زرّ اكتمال (يظهر فقط إذا كان قيد المعالجة) --}}
+                   {{-- زرّ اكتمال (يظهر فقط إذا كان قيد التجهيز) --}}
                    @if($mail->status === 'under_proccess')
                      <form action="{{ route(get_area_name().'.doctor-mails.complete', $mail) }}"
                            method="POST" onsubmit="return confirm('تأكيد الإكمال؟');">

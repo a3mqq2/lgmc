@@ -284,7 +284,7 @@ class DoctorRequestController extends Controller
             if ($doctorRequest->status !== \App\Enums\RequestStatus::under_process) {
                 return redirect()
                     ->back()
-                    ->withErrors(['لا يمكن إكمال الطلب إذا لم يكن في حالة "قيد المعالجة".']);
+                    ->withErrors(['لا يمكن إكمال الطلب إذا لم يكن في حالة "قيد التجهيز".']);
             }
 
 

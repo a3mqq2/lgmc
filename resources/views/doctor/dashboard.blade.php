@@ -337,7 +337,7 @@
                                                         $label = [
                                                           'under_approve'  => 'قيد الموافقة',
                                                           'under_payment'  => 'قيد الدفع',
-                                                          'under_proccess' => 'قيد المعالجة',
+                                                          'under_proccess' => 'قيد التجهيز',
                                                           'done'      => 'مكتمل',
                                                           'under_edit' => 'قيد التعديل',
                                                           'failed'         => 'فشل',

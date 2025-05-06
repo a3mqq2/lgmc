@@ -15,7 +15,7 @@ enum RequestStatus: string
         return match ($this) {
             self::pending => 'قيد الانتظار',
             self::rejected => 'مرفوض',
-            self::under_process => 'قيد المعالجة',
+            self::under_process => 'قيد التجهيز',
             self::done => 'مكتمل',
             self::canceled => 'ملغي',
         };

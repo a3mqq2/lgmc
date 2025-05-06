@@ -145,28 +145,21 @@
     <div class="invoice-container">
         <div class="header">
             <img src="{{ asset('/assets/images/lgmc-dark.png') }}" style="width: 330px!important;margin: 20px auto;" alt="">
-            <h2>فاتورة</h2>
+            <h2>فاتورة  #(( {{$invoice->invoice_number}} )) </h2>
         </div>
 
         <div class="details">
             <table>
                 <tr>
+                    <td class="bg-light"><strong>الرقم النقابي :</strong></td>
+                    <td>{{ $invoice->invoiceable->code }}</td>
+
                     <td class="bg-light"><strong>الاسم:</strong></td>
                     <td>{{ $invoice->invoiceable->name }}</td>
                     <td><strong>المستخدم:</strong></td>
                     <td>{{ $invoice->user?->name ?? '-' }}</td>
                 </tr>
                 <tr>
-                    <td class="bg-light"><strong>الحالة:</strong></td>
-                    <td>
-                        @if($invoice->status->value == 'paid')
-                            مدفوعة
-                        @elseif($invoice->status->value == 'relief')
-                            معفى عنها
-                        @else
-                            غير مدفوعة
-                        @endif
-                    </td>
                     <td class="bg-light"><strong>تاريخ الإنشاء:</strong></td>
                     <td>{{ $invoice->created_at->format('Y-m-d') }} / {{ $invoice->created_at->format('h:i A') }}</td>
                 </tr>

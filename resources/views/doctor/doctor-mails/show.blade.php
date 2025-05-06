@@ -108,7 +108,7 @@
                                                };
                                                $label = match($doctorMail->status) {
                                                    'under_approve' => 'قيد الموافقة',
-                                                   'under_proccess' => 'قيد المعالجة',
+                                                   'under_proccess' => 'قيد التجهيز',
                                                    'under_payment' => 'قيد الدفع',
                                                    'done' => 'مكتمل',
                                                    'failed' => 'فشل',
