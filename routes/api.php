@@ -50,6 +50,7 @@ Route::post('/emails', function (Request $request) {
 Route::get('/countries', function (Request $request) {
     $search = $request->get('search');
     return Country::where('name', 'like', "%{$search}%")
+        ->where('mailable', 1)
         ->select('id', 'name')
         ->limit(10)
         ->get();
