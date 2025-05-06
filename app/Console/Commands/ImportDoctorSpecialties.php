@@ -30,7 +30,12 @@ class ImportDoctorSpecialties extends Command
                 $doctor = Doctor::where('doctor_number', $memberId)->first();
 
                 if ($doctor) {
-                    $doctor->specialty_1_id = $specialty->id;
+                    if ($specialty->name === 'ممارس عام') {
+                        $doctor->specialty_1_id = null;
+                    } else {
+                        $doctor->specialty_1_id = $specialty->id;
+                    }
+
                     $doctor->save();
 
                     $this->info("✅ Linked doctor {$doctor->id} to specialty '{$specialty->name}'");
