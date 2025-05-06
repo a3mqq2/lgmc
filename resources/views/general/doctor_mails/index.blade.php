@@ -107,7 +107,7 @@
               </td>
               <td>
                 @foreach ($mail->countries as $country)
-                  <span class="badge bg-secondary">{{ $country->name }}</span>
+                  <span class="badge bg-secondary">{{ App\Models\Country::find($country) ? App\Models\Country::find($country)->name : "" }}</span>
                 @endforeach
               </td>
               <td>{{ number_format($mail->grand_total,2) }} د.ل</td>
