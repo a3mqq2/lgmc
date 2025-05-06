@@ -36,26 +36,13 @@
             <li v-for="(s, i) in selectedServices" :key="i" class="list-group-item">
               <div class="mb-2">{{ s.label }} — {{ s.amount.toFixed(2) }} د.ل</div>
 
-              <!-- خيار جهة العمل -->
               <div v-if="[43, 44, 45].includes(s.id)" class="mb-2">
                 <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    :name="'work_mention_' + i"
-                    value="with"
-                    v-model="s.work_mention"
-                  />
+                  <input class="form-check-input" type="radio" :name="'work_mention_' + i" value="with" v-model="s.work_mention" />
                   <label class="form-check-label">مع ذكر جهة العمل</label>
                 </div>
                 <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    :name="'work_mention_' + i"
-                    value="without"
-                    v-model="s.work_mention"
-                  />
+                  <input class="form-check-input" type="radio" :name="'work_mention_' + i" value="without" v-model="s.work_mention" />
                   <label class="form-check-label">دون ذكر جهة العمل</label>
                 </div>
               </div>
@@ -68,31 +55,43 @@
             </li>
           </ul>
 
-          <div class="mt-3 text-end h5">
-            إجمالي الخدمات: {{ totalServicesAmount.toFixed(2) }} د.ل
-          </div>
+          <div class="mt-3 text-end h5">إجمالي الخدمات: {{ totalServicesAmount.toFixed(2) }} د.ل</div>
         </div>
       </div>
 
       <!-- البريد -->
       <div class="card mb-4">
-        <div class="card-header bg-primary text-white">البريد الإلكترونية</div>
+        <div class="card-header bg-primary text-white">البريد الإلكتروني</div>
         <div class="card-body">
-          <label class="form-label">اختر بريد إلكتروني</label>
+          <label class="form-label">اختر أو أدخل بريد إلكتروني</label>
           <Select
             v-model="selectedEmail"
             :options="availableEmails"
             label="label"
-            placeholder="ابحث عن بريد…"
+            placeholder="اختر بريد…"
             @search="fetchEmails"
           />
+          <div class="input-group mt-2">
+            <input type="email" v-model="newEmail" class="form-control" placeholder="أدخل بريد جديد…" />
+            <button class="btn btn-outline-success" @click.prevent="addNewEmail">إضافة</button>
+          </div>
 
-          <ul class="list-group mt-3" v-if="addedEmails.length">
-            <li v-for="(email, i) in addedEmails" :key="i" class="list-group-item d-flex justify-content-between align-items-center">
-              {{ email }}
-              <button class="btn btn-sm btn-danger" @click="removeEmail(i)">حذف</button>
-            </li>
-          </ul>
+          <table class="table mt-3" v-if="addedEmails.length">
+            <thead>
+              <tr>
+                <th>البريد</th>
+                <th>التحكم</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(email, i) in addedEmails" :key="i">
+                <td>{{ email }}</td>
+                <td>
+                  <button class="btn btn-sm btn-danger" @click="removeEmail(i)">حذف</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
           <div class="mt-3 text-end h5">إجمالي البريد: {{ totalAmount.toFixed(2) }} د.ل</div>
         </div>
@@ -104,13 +103,13 @@
         <div class="card-body">
           <label class="form-label">اختر مجموعة دول</label>
           <Select
-          v-model="selectedCountries"
-          :options="availableCountries"
-          label="label"
-          multiple
-          placeholder="ابحث عن دول…"
-          @search="fetchCountries"
-        />        
+            v-model="selectedCountries"
+            :options="availableCountries"
+            label="label"
+            multiple
+            placeholder="ابحث عن دول…"
+            @search="fetchCountries"
+          />
         </div>
       </div>
 
@@ -124,7 +123,6 @@
             <input class="form-check-input" type="checkbox" v-model="extractedBefore" id="extractedBefore" />
             <label class="form-check-label" for="extractedBefore">هل سبق لك استخراج ملفات؟</label>
           </div>
-      
           <div v-if="extractedBefore" class="mt-3">
             <label class="form-label">أدخل آخر سنة استخراج</label>
             <input type="number" v-model="lastExtractYear" class="form-control" placeholder="مثل: 2022" min="1900" max="2099" />
@@ -159,6 +157,7 @@ const props = defineProps({ doctorId: [Number, String] })
 const selectedDoctor = ref(null)
 const doctors = ref([])
 const selectedEmail = ref(null)
+const newEmail = ref('')
 const availableEmails = ref([])
 const addedEmails = ref([])
 const selectedCountries = ref([])
@@ -169,6 +168,7 @@ const filteredServices = ref([])
 const selectedServices = ref([])
 const notes = ref('')
 const extractedBefore = ref(false)
+const lastExtractYear = ref('')
 const unitPrice = ref(0)
 const submitting = ref(false)
 
@@ -202,7 +202,7 @@ watch(selectedDoctor, async doc => {
 })
 
 watch(selectedEmail, em => {
-  if (em && !addedEmails.value.includes(em)) addedEmails.value.push(em.email)
+  if (em && !addedEmails.value.includes(em.email)) addedEmails.value.push(em.email)
   selectedEmail.value = null
 })
 
@@ -235,6 +235,13 @@ function fetchServices(q) {
 
 function removeEmail(i) { addedEmails.value.splice(i, 1) }
 function removeService(i) { selectedServices.value.splice(i, 1) }
+function addNewEmail() {
+  const email = newEmail.value.trim()
+  if (email && !addedEmails.value.includes(email)) {
+    addedEmails.value.push(email)
+    newEmail.value = ''
+  }
+}
 function onServiceFileChange(e, i) {
   const f = e.target.files[0]
   if (f) selectedServices.value[i].file = f
@@ -249,7 +256,7 @@ const grandTotal = computed(() => totalAmount.value + totalServicesAmount.value)
 async function handleSubmit() {
   if (!addedEmails.value.length) {
     return Swal.fire('تنبيه', 'أضف بريداً واحداً على الأقل', 'warning')
-  } 
+  }
 
   if (!selectedServices.value.length) {
     return Swal.fire('تنبيه', 'اختر خدمة واحدة على الأقل', 'warning')
@@ -268,6 +275,9 @@ async function handleSubmit() {
   selectedCountries.value.forEach(c => form.append('countries[]', c.id))
   form.append('notes', notes.value)
   form.append('extracted_before', extractedBefore.value ? '1' : '0')
+  if (extractedBefore.value && lastExtractYear.value) {
+    form.append('last_extract_year', lastExtractYear.value)
+  }
 
   selectedServices.value.forEach((s, i) => {
     form.append(`services[${i}][id]`, s.id)
@@ -277,13 +287,6 @@ async function handleSubmit() {
       form.append(`services[${i}][work_mention]`, s.work_mention)
     }
   })
-
-
-    const lastExtractYear = ref('');
-    if (extractedBefore.value && lastExtractYear.value) {
-      form.append('last_extract_year', lastExtractYear.value)
-    }
-
 
   try {
     await axios.post('/api/doctor-mails', form, {
