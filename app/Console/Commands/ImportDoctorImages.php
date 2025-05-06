@@ -17,6 +17,7 @@ class ImportDoctorImages extends Command
         $branchId = 1;
         
         $doctors = Doctor::where('branch_id', $branchId)
+            ->whereNotNull('doctor_number')
             ->orderBy('doctor_number')
             ->get();
 
