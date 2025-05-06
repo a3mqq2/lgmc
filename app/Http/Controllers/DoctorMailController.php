@@ -65,7 +65,7 @@ class DoctorMailController extends Controller
     public function create()   { return view('general.doctor_mails.create'); }
 
     /* ===============================================================
-     * تخزين طلب جديد
+     * تخزين طلب جديد 
      * =============================================================== */
     public function store(Request $request)
     {
