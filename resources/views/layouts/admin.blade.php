@@ -375,16 +375,21 @@
             });
         });
     </script>
+
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll('.menu-link[data-bs-toggle="collapse"]').forEach(link => {
             const targetSelector = link.getAttribute('data-bs-target');
             const targetElement = document.querySelector(targetSelector);
+
+            if (!targetElement) return;
+
             const bsCollapse = new bootstrap.Collapse(targetElement, {
                 toggle: false
             });
 
-            link.addEventListener('click', function (e) {
+            link.addEventListener("click", function (e) {
                 e.preventDefault();
                 if (targetElement.classList.contains('show')) {
                     bsCollapse.hide();
@@ -395,5 +400,7 @@
         });
     });
 </script>
+
+
 </body>
 </html>
