@@ -108,6 +108,7 @@ class DoctorService
          if(request('regestration'))
          {
             $query->where('code', null);
+            $query->where('status', 'init_approve');
          }
 
          if(request('init_approve'))
@@ -127,6 +128,9 @@ class DoctorService
              $query->where('type', 'foreign');
          }
      
+
+
+
          if (request()->filled('banned')) {
              $query->where('membership_status', 'banned');
          }
