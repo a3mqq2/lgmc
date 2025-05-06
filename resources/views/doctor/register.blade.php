@@ -636,101 +636,65 @@
 
 
 
-                                                   <h4 class="mb-2 mt-2">📑 المستندات المطلوبة</h4>
+                                                  <div class=" text-primary mt-2  mb-2">بيانات العمل الحالي</div>
+                                                  <div class="row">
+                                                     <div class="col-md-12">
+                                                         <label for="">الصفة</label>
+                                                         <select name="doctor_rank_id" id="doctor_rank_id" class="form-control select2">
+                                                             <option value="">حدد الصفة</option>
+                                                             @foreach ($doctor_ranks as $doctor_rank)
+                                                                 @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
+                                                                     <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
+                                                                     @else 
+                                                                         @if (request('type') != "visitor")
+                                                                                 <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
+                                                                         @endif
+                                                                     @endif
+                                                             @endforeach
+                                                         </select>
+                                                     </div>
+                                                     <div class="col-md-12 mt-2">
+                                                         <div class="row">
+                                                             <div class="col-md-12 mt-1 mb-2">
+                                                                 <label for="">حدد فرع</label>
+                                                                 <select name="branch_id" id="" class="form-control select2">
+                                                                     <option value="">حدد فرع</option>
+                                                                     @foreach (App\Models\Branch::all() as $branch)
+                                                                     <option value="{{$branch->id}}">{{$branch->name}}</option>
+                                                                     @endforeach
+                                                                 </select>
+                                                             </div>
+                                                             <div class="col-md-6">
+                                                               <label for=""> تخصص اول</label>
+                                                               <select name="specialty_1_id"  class="form-control">
+                                                                   <option value="">حدد تخصص اول</option>
+                                                                   @foreach ($specialties as $specialty)
+                                                                       <option value="{{$specialty->id}}" {{old('specialty_1_id') == $specialty->id ? "selected" : ""}}>{{$specialty->name}}</option>
+                                                                   @endforeach
+                                                               </select>
+                                                           </div>
+                                                           <div class="col-md-6">
+                                                               <label for=""> تخصص دقيق</label>
+                                                               <select name="specialty_2_id" data-old="{{old('specialty_2_id')}}"  class="form-control">
+                                                                   <option value="">حدد    دقيق</option>
+                                                               </select>
+                                                           </div>
+                                                         </div>
+                                                     </div>
+                                                 </div>
 
-                                                   <div class="row">
-                                                      @foreach ($file_types as $file_type)
-                                                          <div class="col-md-6 col-lg-4 mb-4">
-                                                              <div class="document-card shadow-sm border rounded text-center p-3 position-relative">
-                                                                  <div class="document-icon mb-3">
-                                                                      <i class="fas fa-file-upload fa-3x text-primary"></i>
-                                                                  </div>
-                                                                  <h6 class="document-title mb-2">
-                                                                      {{ $file_type->name }}
-                                                                      @if ($file_type->is_required)
-                                                                          <span class="text-danger">*</span>
-                                                                      @endif
-                                                                  </h6>
-                                                                  <div class="custom-file">
-                                                                      <input type="file" name="documents[{{ $file_type->id }}]" 
-                                                                             class="custom-file-input"
-                                                                             id="file_{{ $file_type->id }}"
-                                                                             @if($file_type->is_required) required @endif>
-                                                                      <label class="custom-file-label" for="file_{{ $file_type->id }}">
-                                                                          اختر ملف
-                                                                      </label>
-                                                                  </div>
-                                                                  <small class="text-muted d-block mt-2">
-                                                                      الملف يجب أن يكون بصيغة <b>PDF</b> أو صورة
-                                                                  </small>
-                                                                  <div id="status_{{ $file_type->id }}" class="mt-2 text-muted">
-                                                                      🔄 لم يتم الرفع بعد
-                                                                  </div>
-                                                                  @if ($file_type->is_required)
-                                                                      <div class="alert alert-warning mt-3 p-2 text-center rounded-lg shadow-sm"
-                                                                           style="background: linear-gradient(135deg, #fff8e1, #ffe0b2); 
-                                                                                  border-left: 5px solid #ff9800;
-                                                                                  color: #5d4037;">
-                                                                          <i class="fas fa-exclamation-circle"></i> 
-                                                                          <strong>ملف إلزامي:</strong> يُرجى التأكد من رفع هذا الملف.
-                                                                      </div>
-                                                                  @endif
-                                                              </div>
-                                                          </div>
-                                                      @endforeach
-                                                  </div>
+                                                 
 
-
-                                                   <div class=" text-primary mt-2  mb-2">بيانات العمل الحالي</div>
-                                                   <div class="row">
-                                                      {{-- <div class="col-md-12">
-                                                          <label for="">الرقم النقابي الأول</label>
-                                                          <input type="text" name="doctor_number" value="{{old('doctor_number')}}"  id="" class="form-control">
-                                                      </div> --}}
-                                                      <div class="col-md-12">
-                                                          <label for="">الصفة</label>
-                                                          <select name="doctor_rank_id" id="doctor_rank_id" class="form-control select2">
-                                                              <option value="">حدد الصفة</option>
-                                                              @foreach ($doctor_ranks as $doctor_rank)
-                                                                  @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
-                                                                      <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
-                                                                      @else 
-                                                                          @if (request('type') != "visitor")
-                                                                                  <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
-                                                                          @endif
-                                                                      @endif
-                                                              @endforeach
-                                                          </select>
-                                                      </div>
-                                                      <div class="col-md-12 mt-2">
-                                                          <div class="row">
-                                                              <div class="col-md-12 mt-1 mb-2">
-                                                                  <label for="">حدد فرع</label>
-                                                                  <select name="branch_id" id="" class="form-control select2">
-                                                                      <option value="">حدد فرع</option>
-                                                                      @foreach (App\Models\Branch::all() as $branch)
-                                                                      <option value="{{$branch->id}}">{{$branch->name}}</option>
-                                                                      @endforeach
-                                                                  </select>
-                                                              </div>
-                                                              <div class="col-md-6">
-                                                                <label for=""> تخصص اول</label>
-                                                                <select name="specialty_1_id"  class="form-control">
-                                                                    <option value="">حدد تخصص اول</option>
-                                                                    @foreach ($specialties as $specialty)
-                                                                        <option value="{{$specialty->id}}" {{old('specialty_1_id') == $specialty->id ? "selected" : ""}}>{{$specialty->name}}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <label for=""> تخصص دقيق</label>
-                                                                <select name="specialty_2_id" data-old="{{old('specialty_2_id')}}"  class="form-control">
-                                                                    <option value="">حدد    دقيق</option>
-                                                                </select>
-                                                            </div>
-                                                          </div>
-                                                      </div>
-                                                  </div>
+                                                  <div class="col-md-12">
+                                                    <div class="card shadow-sm mb-4">
+                                                        <div class="card-header bg-primary text-white text-center">
+                                                            <h4 class="mb-0">📑 المستندات المطلوبة</h4>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="row" id="documents_container"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
 
                                                    <div class="text-primary mt-2 mb-2">بيانات العمل السابق</div>
@@ -1145,6 +1109,53 @@
     
         </script>
     
+
+    <script>
+        $(function () {
+            let doctorType = '{{ request("type") }}';
+        
+            function loadFileTypes(rankId = '') {
+                $.get('/api/file-types', { doctor_type: doctorType, rank_id: rankId }, function (data) {
+                    let html = '';
+                    data.forEach(f => {
+                        html += `
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="document-card shadow-sm border rounded text-center p-3 position-relative">
+                <div class="document-icon mb-3">
+                    <i class="fas fa-file-upload fa-3x text-primary"></i>
+                </div>
+                <h6 class="document-title mb-2">${f.name}${f.is_required ? '<span class="text-danger">*</span>' : ''}</h6>
+                <div class="custom-file">
+                    <input type="file" name="documents[${f.id}]" class="custom-file-input" id="file_${f.id}" ${f.is_required ? 'required' : ''}>
+                    <label class="custom-file-label" for="file_${f.id}">اختر ملف</label>
+                </div>
+                <small class="text-muted d-block mt-2">الملف يجب أن يكون بصيغة <b>PDF</b> أو صورة</small>
+                <div id="status_${f.id}" class="mt-2 text-muted">🔄 لم يتم الرفع بعد</div>
+            </div>
+        </div>`;
+                    });
+                    $('#documents_container').html(html);
+                });
+            }
+        
+            loadFileTypes();
+        
+            $('#doctor_rank_id').on('change', function () {
+                loadFileTypes($(this).val());
+            });
+        
+            $(document).on('change', '.custom-file-input', function () {
+                let fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').html(fileName);
+                $('#status_' + $(this).attr('id').split('_')[1])
+                    .html('✅ تم الرفع: ' + fileName)
+                    .removeClass('text-muted')
+                    .addClass('text-success');
+            });
+        });
+        </script>
+        
+        
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {
