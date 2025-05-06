@@ -23,21 +23,21 @@
                                 @if ($doctor->type->value != "visitor")
                                 <div class="col-md-6">
                                     <label for="">الاسم بالكامل باللغه الانجليزيه</label>
-                                    <input type="text" required name="name_en" value="{{old('name_en')}}"  id="" class="form-control">
+                                    <input type="text" required name="name_en" value="{{old('name_en', $doctor->name_en)}}"  id="" class="form-control">
                                 </div>
                                 @endif
                                 
                                 @if ($doctor->type->value == "libyan")
                                 <div class="col-md-6 mt-2">
                                     <label for="">الرقم الوطني</label>
-                                    <input type="number" required name="national_number" value="{{old('national_number')}}" id="national_number" class="form-control">
+                                    <input type="number" required name="national_number" value="{{old('national_number', $doctor->national_number)}}" id="national_number" class="form-control">
                                 </div>
                                 @endif
                              
                                 @if ($doctor->type->value != "visitor")
                                 <div class="col-md-6 mt-2">
                                     <label for=""> اسم الام </label>
-                                    <input type="text" required name="mother_name" value="{{old('mother_name')}}" id="" class="form-control">
+                                    <input type="text" required name="mother_name" value="{{old('mother_name', $doctor->mother_name)}}" id="" class="form-control">
                                 </div>
                                 @endif
 
