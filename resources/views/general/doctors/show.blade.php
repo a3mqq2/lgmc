@@ -274,86 +274,89 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="main-content-label">المعلومات الشخصية </h4>
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr>
-                                    <th class="{{$doctor->type->badgeClass()}}">نوع الطبيب</th>
-                                    <th class="bg-primary text-light">كود الطبيب</th>
-                                    <th class="bg-primary text-light"> الرقم النقابي الاول </th>
-                                    <th class="bg-primary text-light">الاسم</th>
-                                    <th class="bg-primary text-light">الاسم بالإنجليزية</th>
-                                    @if ($doctor->type == "libyan")
-                                    <th class="bg-primary text-light">الرقم الوطني</th>
-                                    @endif
-                                    <th class="bg-primary text-light">اسم الأم</th>
-                                    <th class="bg-primary text-light">الدولة</th>
-                                    <th class="bg-primary text-light">تاريخ الميلاد</th>
-                                    <th class="bg-primary text-light">الحالة الاجتماعية</th>
-                                </tr>
-                                <tr>
-                                    <td  class="{{$doctor->type->badgeClass()}}" >{{ $doctor->type->label() }}</td>
-                                    <td>{{ $doctor->code }}</td>
-                                    <td>{{ $doctor->doctor_number }}</td>
-                                    <td>{{ $doctor->name }}</td>
-                                    <td>{{ $doctor->name_en }}</td>
-                                    <td>{{ $doctor->mother_name }}</td>
-                                    @if ($doctor->type == "libyan")
-                                    <td>{{ $doctor->national_number }}</td>
-                                    @endif
-                                    <td>{{ $doctor->country->name ?? '-' }}</td>
-                                    <td>{{ $doctor->date_of_birth ? $doctor->date_of_birth->format('Y-m-d') : '-' }}</td>
-                                    <td>
-                                        {{ $doctor->marital_status->label() }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="bg-primary text-light">الجنس</th>
-                                    <th class="bg-primary text-light">رقم الجواز</th>
-                                    <th class="bg-primary text-light">تاريخ انتهاء الجواز</th>
-                                    <th class="bg-primary text-light">الإقامة</th>
-                                    <th class="bg-primary text-light">رقم الهاتف</th>
-                                    <th class="bg-primary text-light"> رقم الواتساب  </th>
-                                    <th class="bg-primary text-light">البريد الالكتروني</th>
-                                    <th class="bg-primary text-light">حالة العضوية</th>
-                                    <th class="bg-primary text-light">تاريخ انتهاء العضوية</th>
-                                </tr>
-                                <tr>
-                                    <td>{{ $doctor->gender ? $doctor->gender->label() : "" }}</td>
-                                    <td>{{ $doctor->passport_number }}</td>
-                                    <td>{{ $doctor->passport_expiration ? $doctor->passport_expiration->format('Y-m-d') : '-' }}</td>
-                                    <td>{{ $doctor->address }}</td>
-                                    <td>{{ $doctor->phone }}</td>
-                                    <td>{{ $doctor->phone_2 }}</td>
-                                    <td>{{ $doctor->email }}</td>
-                                    <td>
-                                        <span class="badge {{$doctor->membership_status->badgeClass()}} ">
-                                            {{ $doctor->membership_status->label() }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $doctor->membership_expiration_date ? $doctor->membership_expiration_date->format('Y-m-d') : '-' }}</td>
-                                </tr>
-
-                              
-                                @if ($doctor->type->value == "visitor")
-                                <tr>
-                                    <th class="bg-primary text-light" colspan="5">تاريخ الزيارة من </th>
-                                    <th class="bg-primary text-light" colspan="3"> تاريخ الزيارة الى  </th>
-                                    <th class="bg-primary text-light" colspan="3">  اسم الشركة المستضيفه    </th>
-
-                                </tr>
-                                <tr>
-                                    <td colspan="5">{{ $doctor->visit_from ? $doctor->visit_from: '-' }}</td>
-                                    <td colspan="3">{{ $doctor->visit_to ? $doctor->visit_to: '-' }}</td>
-                                    <td colspan="3">{{ $doctor->medicalFacility?->name ?? '-' }}</td>
-                                </tr>
-                                @endif
-
-
-                            </tbody>
-                        </table>
+                    <h4 class="main-content-label">المعلومات الشخصية</h4>
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <th class="{{$doctor->type->badgeClass()}}">نوع الطبيب</th>
+                                            <th class="bg-primary text-light">كود الطبيب</th>
+                                            <th class="bg-primary text-light">الرقم النقابي الاول</th>
+                                            <th class="bg-primary text-light">الاسم</th>
+                                            <th class="bg-primary text-light">الاسم بالإنجليزية</th>
+                                            @if ($doctor->type == "libyan")
+                                                <th class="bg-primary text-light">الرقم الوطني</th>
+                                            @endif
+                                            <th class="bg-primary text-light">اسم الأم</th>
+                                            <th class="bg-primary text-light">الدولة</th>
+                                            <th class="bg-primary text-light">تاريخ الميلاد</th>
+                                            <th class="bg-primary text-light">الحالة الاجتماعية</th>
+                                        </tr>
+                                        <tr>
+                                            <td class="{{$doctor->type->badgeClass()}}">{{ $doctor->type->label() }}</td>
+                                            <td>{{ $doctor->code }}</td>
+                                            <td>{{ $doctor->doctor_number }}</td>
+                                            <td>{{ $doctor->name }}</td>
+                                            <td>{{ $doctor->name_en }}</td>
+                                            <td>{{ $doctor->mother_name }}</td>
+                                            @if ($doctor->type == "libyan")
+                                                <td>{{ $doctor->national_number }}</td>
+                                            @endif
+                                            <td>{{ $doctor->country->name ?? '-' }}</td>
+                                            <td>{{ $doctor->date_of_birth ? $doctor->date_of_birth->format('Y-m-d') : '-' }}</td>
+                                            <td>{{ $doctor->marital_status->label() }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th class="bg-primary text-light">الجنس</th>
+                                            <th class="bg-primary text-light">رقم الجواز</th>
+                                            <th class="bg-primary text-light">تاريخ انتهاء الجواز</th>
+                                            <th class="bg-primary text-light">الإقامة</th>
+                                            <th class="bg-primary text-light">رقم الهاتف</th>
+                                            <th class="bg-primary text-light">رقم الواتساب</th>
+                                            <th class="bg-primary text-light">البريد الالكتروني</th>
+                                            <th class="bg-primary text-light">حالة العضوية</th>
+                                            <th class="bg-primary text-light">تاريخ انتهاء العضوية</th>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ $doctor->gender?->label() ?? '' }}</td>
+                                            <td>{{ $doctor->passport_number }}</td>
+                                            <td>{{ $doctor->passport_expiration?->format('Y-m-d') ?? '-' }}</td>
+                                            <td>{{ $doctor->address }}</td>
+                                            <td>{{ $doctor->phone }}</td>
+                                            <td>{{ $doctor->phone_2 }}</td>
+                                            <td>{{ $doctor->email }}</td>
+                                            <td>
+                                                <span class="badge {{ $doctor->membership_status->badgeClass() }}">
+                                                    {{ $doctor->membership_status->label() }}
+                                                </span>
+                                            </td>
+                                            <td>{{ $doctor->membership_expiration_date?->format('Y-m-d') ?? '-' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                
+                        <div class="col-md-3 text-center">
+                            @php
+                                $profileImage = $doctor->files->first();
+                            @endphp
+                
+                            @if ($profileImage)
+                                <img src="{{ Storage::url($profileImage->file_path) }}"
+                                     alt="صورة الطبيب"
+                                     class="img-thumbnail"
+                                     style="max-width: 100%; max-height: 300px;">
+                                <p class="mt-2 text-muted">{{ $profileImage->file_name }}</p>
+                            @else
+                                <div class="text-muted">لا توجد صورة</div>
+                            @endif
+                        </div>
                     </div>
+                </div>
+                
                     <h4 class="main-content-label"> بكالوريس </h4>
                     <div class="table-responsive">
                         <table class="table table-bordered">
