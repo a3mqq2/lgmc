@@ -37,7 +37,7 @@
               <div class="mb-2">{{ s.label }} — {{ s.amount.toFixed(2) }} د.ل</div>
 
               <!-- خيار جهة العمل -->
-              <div v-if="[31, 41, 65].includes(s.id)" class="mb-2">
+              <div v-if="[43, 44, 45].includes(s.id)" class="mb-2">
                 <div class="form-check">
                   <input
                     class="form-check-input"
@@ -256,7 +256,7 @@ async function handleSubmit() {
   }
 
   for (let s of selectedServices.value) {
-    if ([31, 41, 65].includes(s.id) && !s.work_mention) {
+    if ([43,44,45].includes(s.id) && !s.work_mention) {
       return Swal.fire('تنبيه', 'يرجى اختيار "مع أو دون جهة العمل" للخدمة المطلوبة', 'warning')
     }
   }
@@ -273,7 +273,7 @@ async function handleSubmit() {
     form.append(`services[${i}][id]`, s.id)
     form.append(`services[${i}][amount]`, s.amount)
     if (s.file) form.append(`services[${i}][file]`, s.file)
-    if ([31, 41, 65].includes(s.id) && s.work_mention) {
+    if ([43,44,45].includes(s.id) && s.work_mention) {
       form.append(`services[${i}][work_mention]`, s.work_mention)
     }
   })
