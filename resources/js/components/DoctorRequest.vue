@@ -24,13 +24,13 @@
         <div class="card-body">
           <label class="form-label">اختر خدمة</label>
           <Select
-            v-model="selectedService"
-            :options="filteredServices"
-            label="label"
-            :reduce="s => s"
-            placeholder="اختر خدمة…"
-            @search="fetchServices"
-          />
+          v-model="selectedService"
+          :options="servicesFull"
+          label="label"
+          :reduce="s => s"
+          placeholder="اختر خدمة…"
+        />
+        
           <ul class="list-group mt-3" v-if="selectedServices.length">
             <li v-for="(s, i) in selectedServices" :key="i" class="list-group-item">
               <div class="mb-2">{{ s.label }} — {{ s.amount.toFixed(2) }} د.ل</div>
@@ -193,23 +193,21 @@ watch(selectedDoctor, async doc => {
     unitPrice.value = Number(resp.data.amount)
   }
 
-  // جلب قائمة الخدمات كاملة من السيرفر
-  const srv = await axios.get('/api/pricings', {
+  // جلب قائمة الخدمات من السيرفر وحطّيها في servicesFull
+  const { data: srv } = await axios.get('/api/pricings', {
     params: { type: 'service', doctor_type: doc.type }
   })
-  servicesFull.value = srv.data
+  servicesFull.value = srv
     .filter(p => ![85,86,87].includes(p.id))
     .map(p => ({
       id: p.id,
-      label: `${p.name} (${p.amount.toFixed(2)} د.ل)`,
+      label: `${p.name} (${Number(p.amount).toFixed(2)} د.ل)`,
       amount: Number(p.amount),
       file: null,
       work_mention: null
     }))
-
-  // initialize filteredServices to show all on open
-  fetchServices('')
 })
+
 
 // تنقية وعرض الخدمات حسب البحث
 function fetchServices(search) {
