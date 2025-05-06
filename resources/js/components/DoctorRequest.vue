@@ -1,7 +1,7 @@
 <!-- resources/js/components/DoctorRequest.vue -->
 <template>
   <form @submit.prevent="handleSubmit">
-    <!-- الطبيب -->
+    <!-- اختيار الطبيب -->
     <div v-if="!doctorId" class="card mb-4">
       <div class="card-header bg-primary text-white">البيانات الأساسية</div>
       <div class="card-body">
@@ -18,22 +18,24 @@
     </div>
 
     <template v-if="selectedDoctor">
-      <!-- الخدمات -->
+      <!-- الطلبات -->
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">الطلبات</div>
         <div class="card-body">
-          <label class="form-label">اختر خدمة</label>
+          <label class="form-label">ابحث واختر خدمة</label>
           <Select
             v-model="selectedService"
             :options="filteredServices"
             label="label"
             :reduce="s => s"
-            placeholder="اختر خدمة…"
+            placeholder="ابحث عن خدمة…"
             @search="fetchServices"
           />
+
           <ul class="list-group mt-3" v-if="selectedServices.length">
             <li v-for="(s, i) in selectedServices" :key="i" class="list-group-item">
               <div class="mb-2">{{ s.label }} — {{ s.amount.toFixed(2) }} د.ل</div>
+
               <div v-if="[43, 44, 45].includes(s.id)" class="mb-2">
                 <div class="form-check">
                   <input class="form-check-input" type="radio" :name="'work_mention_' + i" value="with" v-model="s.work_mention" />
@@ -44,6 +46,7 @@
                   <label class="form-check-label">دون ذكر جهة العمل</label>
                 </div>
               </div>
+
               <div class="d-flex align-items-center gap-2">
                 <input type="file" @change="onServiceFileChange($event, i)" />
                 <span v-if="s.file" class="small text-muted">مرفق: {{ s.file.name }}</span>
@@ -51,11 +54,12 @@
               </div>
             </li>
           </ul>
+
           <div class="mt-3 text-end h5">إجمالي الخدمات: {{ totalServicesAmount.toFixed(2) }} د.ل</div>
         </div>
       </div>
 
-      <!-- الإيميلات -->
+      <!-- البريد الإلكتروني -->
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">البريد الإلكتروني</div>
         <div class="card-body">
@@ -68,11 +72,14 @@
             @search="fetchEmails"
           />
           <div class="input-group mt-2">
-            <input type="email" v-model="newEmail" class="form-control" placeholder="بريد جديد…" />
+            <input type="email" v-model="newEmail" class="form-control" placeholder="أدخل بريد جديد…" />
             <button class="btn btn-outline-success" @click.prevent="addNewEmail">إضافة</button>
           </div>
+
           <table class="table mt-3" v-if="addedEmails.length">
-            <thead><tr><th>البريد</th><th>تحكم</th></tr></thead>
+            <thead>
+              <tr><th>البريد</th><th>التحكم</th></tr>
+            </thead>
             <tbody>
               <tr v-for="(email, i) in addedEmails" :key="i">
                 <td>{{ email }}</td>
@@ -80,6 +87,7 @@
               </tr>
             </tbody>
           </table>
+
           <div class="mt-3 text-end h5">إجمالي البريد: {{ totalAmount.toFixed(2) }} د.ل</div>
         </div>
       </div>
@@ -88,9 +96,9 @@
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">الدول المستهدفة</div>
         <div class="card-body">
-          <label class="form-label">اختر أو أضف دولة</label>
+          <label class="form-label">اختر مجموعة دول</label>
           <Select
-            v-model="selectedCountriesTemp"
+            v-model="selectedCountries"
             :options="availableCountries"
             label="label"
             :reduce="c => c"
@@ -98,41 +106,32 @@
             placeholder="اختر دول…"
             @search="fetchCountries"
           />
-          <div class="input-group mt-2">
-            <input v-model="newCountry" class="form-control" placeholder="دولة جديدة…" />
-            <button class="btn btn-outline-success" @click.prevent="addNewCountry">إضافة</button>
-          </div>
-          <table class="table mt-3" v-if="selectedCountries.length">
-            <thead><tr><th>الدولة</th><th>تحكم</th></tr></thead>
-            <tbody>
-              <tr v-for="(c, i) in selectedCountries" :key="i">
-                <td>{{ c.label }}</td>
-                <td><button class="btn btn-sm btn-danger" @click="selectedCountries.splice(i, 1)">حذف</button></td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
 
       <!-- الملاحظات -->
       <div class="card mb-4">
-        <div class="card-header bg-primary text-white">ملاحظات</div>
+        <div class="card-header bg-primary text-white">معلومات إضافية</div>
         <div class="card-body">
-          <textarea v-model="notes" class="form-control" rows="3" placeholder="ملاحظات…"></textarea>
+          <label class="form-label">ملاحظات</label>
+          <textarea v-model="notes" class="form-control" rows="3" placeholder="أضف ملاحظات…"></textarea>
           <div class="form-check mt-3">
             <input class="form-check-input" type="checkbox" v-model="extractedBefore" id="extractedBefore" />
-            <label class="form-check-label" for="extractedBefore">سبق استخراج ملفات؟</label>
+            <label class="form-check-label" for="extractedBefore">هل سبق لك استخراج ملفات؟</label>
           </div>
           <div v-if="extractedBefore" class="mt-3">
-            <input type="number" v-model="lastExtractYear" class="form-control" placeholder="مثال: 2022" />
+            <label class="form-label">أدخل آخر سنة استخراج</label>
+            <input type="number" v-model="lastExtractYear" class="form-control" placeholder="مثل: 2022" min="1900" max="2099" />
           </div>
         </div>
       </div>
 
-      <!-- إرسال -->
+      <!-- الإرسال -->
       <div class="card mb-4">
         <div class="card-body text-end">
-          <div class="alert alert-primary">الإجمالي الكلي: {{ grandTotal.toFixed(2) }} د.ل</div>
+          <div class="alert border-primary text-primary mb-3">
+            <strong style="font-size:20px;">الإجمالي الكلي: {{ grandTotal.toFixed(2) }} د.ل</strong>
+          </div>
           <button type="submit" class="btn btn-primary" :disabled="submitting">
             {{ submitting ? 'جاري الإرسال…' : 'إرسال النموذج' }}
           </button>
@@ -150,15 +149,15 @@ import Select from 'vue3-select'
 import 'vue3-select/dist/vue3-select.css'
 
 const props = defineProps({ doctorId: [Number, String] })
+
 const selectedDoctor = ref(null)
+const doctors = ref([])
 const selectedEmail = ref(null)
 const newEmail = ref('')
-const newCountry = ref('')
-const selectedCountries = ref([])
-const selectedCountriesTemp = ref([])
-const availableCountries = ref([])
 const availableEmails = ref([])
 const addedEmails = ref([])
+const selectedCountries = ref([])
+const availableCountries = ref([])
 const selectedService = ref(null)
 const servicesFull = ref([])
 const filteredServices = ref([])
@@ -168,7 +167,6 @@ const extractedBefore = ref(false)
 const lastExtractYear = ref('')
 const unitPrice = ref(0)
 const submitting = ref(false)
-const doctors = ref([])
 
 onMounted(async () => {
   if (props.doctorId) {
@@ -188,7 +186,14 @@ watch(selectedDoctor, async doc => {
   })
   servicesFull.value = srv.data
     .filter(p => ![85, 86, 87].includes(p.id))
-    .map(p => ({ ...p, label: `${p.name} (${p.amount.toFixed(2)} د.ل)`, file: null, work_mention: null }))
+    .map(p => ({
+      id: p.id,
+      name: p.name,
+      amount: Number(p.amount),
+      label: `${p.name} (${Number(p.amount).toFixed(2)} د.ل)`,
+      file: null,
+      work_mention: null
+    }))
   filteredServices.value = [...servicesFull.value]
 })
 
@@ -200,15 +205,6 @@ watch(selectedEmail, em => {
 watch(selectedService, svc => {
   if (svc) selectedServices.value.push({ ...svc, work_mention: null })
   selectedService.value = null
-})
-
-watch(selectedCountriesTemp, (arr) => {
-  arr.forEach(c => {
-    if (!selectedCountries.value.find(x => x.id === c.id)) {
-      selectedCountries.value.push(c)
-    }
-  })
-  selectedCountriesTemp.value = []
 })
 
 function fetchDoctors(q) {
@@ -232,20 +228,15 @@ function fetchServices(q) {
     s.label.toLowerCase().includes(str)
   )
 }
+
 function removeEmail(i) { addedEmails.value.splice(i, 1) }
 function removeService(i) { selectedServices.value.splice(i, 1) }
 function addNewEmail() {
   const email = newEmail.value.trim()
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!re.test(email)) return Swal.fire('خطأ', 'البريد غير صالح', 'error')
-  if (!addedEmails.value.includes(email)) addedEmails.value.push(email)
-  newEmail.value = ''
-}
-function addNewCountry() {
-  const name = newCountry.value.trim()
-  if (!name || selectedCountries.value.find(c => c.label === name)) return
-  selectedCountries.value.push({ id: `new_${name}`, label: name })
-  newCountry.value = ''
+  if (email && !addedEmails.value.includes(email)) {
+    addedEmails.value.push(email)
+    newEmail.value = ''
+  }
 }
 function onServiceFileChange(e, i) {
   const f = e.target.files[0]
@@ -259,11 +250,17 @@ const totalServicesAmount = computed(() =>
 const grandTotal = computed(() => totalAmount.value + totalServicesAmount.value)
 
 async function handleSubmit() {
-  if (!addedEmails.value.length) return Swal.fire('تنبيه', 'أضف بريداً واحداً على الأقل', 'warning')
-  if (!selectedServices.value.length) return Swal.fire('تنبيه', 'اختر خدمة واحدة على الأقل', 'warning')
+  if (!addedEmails.value.length) {
+    return Swal.fire('تنبيه', 'أضف بريداً واحداً على الأقل', 'warning')
+  }
+
+  if (!selectedServices.value.length) {
+    return Swal.fire('تنبيه', 'اختر خدمة واحدة على الأقل', 'warning')
+  }
+
   for (let s of selectedServices.value) {
-    if ([43,44,45].includes(s.id) && !s.work_mention) {
-      return Swal.fire('تنبيه', 'يرجى اختيار جهة العمل للخدمة', 'warning')
+    if ([43, 44, 45].includes(s.id) && !s.work_mention) {
+      return Swal.fire('تنبيه', 'يرجى اختيار "مع أو دون جهة العمل" للخدمة المطلوبة', 'warning')
     }
   }
 
@@ -277,19 +274,27 @@ async function handleSubmit() {
   if (extractedBefore.value && lastExtractYear.value) {
     form.append('last_extract_year', lastExtractYear.value)
   }
+
   selectedServices.value.forEach((s, i) => {
     form.append(`services[${i}][id]`, s.id)
     form.append(`services[${i}][amount]`, s.amount)
     if (s.file) form.append(`services[${i}][file]`, s.file)
-    if ([43,44,45].includes(s.id) && s.work_mention) {
+    if ([43, 44, 45].includes(s.id) && s.work_mention) {
       form.append(`services[${i}][work_mention]`, s.work_mention)
     }
   })
 
   try {
-    await axios.post('/api/doctor-mails', form)
+    await axios.post('/api/doctor-mails', form, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
     await Swal.fire({ icon: 'success', title: 'تم الحفظ بنجاح', timer: 1500, showConfirmButton: false })
-    window.location = props.doctorId ? '/doctor/dashboard?requests=1' : '/admin/doctor-mails'
+
+    if (props.doctorId) {
+      window.location = '/doctor/dashboard?requests=1'
+    } else {
+      window.location = '/admin/doctor-mails'
+    }
   } catch (e) {
     console.error(e)
   } finally {
