@@ -108,7 +108,7 @@ class DoctorService
          if(request('regestration'))
          {
             $query->where('code', null);
-            $query->where('status', 'init_approve');
+            $query->where('membership_status','!=', 'init_approve');
          }
 
          if(request('init_approve'))
