@@ -160,11 +160,7 @@
                                 @endif
                             >
                                 <td>{{ $loop->iteration }}</td>
-                                <td>
-                                    <a href="{{route(get_area_name().'.doctors.show', {{ $doctor->id }})}}">
-                                        {{ $doctor->code }}
-                                    </a>
-                                </td>
+                                <td>{{ $doctor->code }}</td>
                                 
 
                                 @if (request("type") != "visitor")
