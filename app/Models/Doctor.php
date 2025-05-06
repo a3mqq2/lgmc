@@ -38,7 +38,7 @@ class Doctor extends Authenticatable
         'academic_degree_id',
         'qualification_university_id',
         'certificate_of_excellence',
-        'graduationـcertificate',
+        'graduation_certificate',
         'passport',
         'id_card',
         'employeer_message',

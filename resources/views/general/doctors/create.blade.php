@@ -293,11 +293,11 @@
                               
 
                                     <div class="col-md-6">
-                                        <label for="graduationـcertificate">تاريخ الحصول عليها</label>
-                                        <select name="graduationـcertificate" id="graduationـcertificate" class="form-control select2" required>
+                                        <label for="graduation_certificate">تاريخ الحصول عليها</label>
+                                        <select name="graduation_certificate" id="graduation_certificate" class="form-control select2" required>
                                             @php
                                                 $currentYear = date('Y');
-                                                $selectedYear = old('graduationـcertificate', $currentYear);
+                                                $selectedYear = old('graduation_certificate', $currentYear);
                                             @endphp
                                             @for($year = $currentYear; $year >= 1950; $year--)
                                                 <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>

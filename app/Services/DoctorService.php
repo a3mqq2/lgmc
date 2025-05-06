@@ -609,7 +609,7 @@ class DoctorService
     {
         $files = [
             'certificate_of_excellence',
-            'graduationـcertificate',
+            'graduation_certificate',
             'passport',
             'id_card',
             'employeer_message',

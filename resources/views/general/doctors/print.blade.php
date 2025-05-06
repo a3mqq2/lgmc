@@ -113,7 +113,7 @@
                         </tr>
                         <tr>
                             <th class="bg-light">شهادة التخرج</th>
-                            <td>{{ $doctor->graduationـcertificate }}</td>
+                            <td>{{ $doctor->graduation_certificate }}</td>
                         </tr>
                     </tbody>
                 </table>
