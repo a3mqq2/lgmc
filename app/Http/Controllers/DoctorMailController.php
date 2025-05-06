@@ -71,46 +71,48 @@ class DoctorMailController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'doctor_id'            => ['required','exists:doctors,id'],
-            'emails'               => ['required','array','min:1'],
-            'emails.*'             => ['required','email'],
-            'countries'            => ['nullable','array'],
-            'countries.*'          => ['required'],
-            'notes'                => ['nullable','string'],
-            'extracted_before'     => ['boolean'],
-            'services'             => ['required','array','min:1'],
-            'services.*.id'        => ['required','exists:pricings,id'],
-            'services.*.file'      => ['nullable','file'],
-            'services.*.amount'    => ['nullable','numeric'],
+            'doctor_id'             => ['required','exists:doctors,id'],
+            'emails'                => ['required','array','min:1'],
+            'emails.*'              => ['required','email'],
+            'countries'             => ['nullable','array'],
+            'countries.*'           => ['required'],
+            'notes'                 => ['nullable','string'],
+            'extracted_before'      => ['boolean'],
+            'services'              => ['required','array','min:1'],
+            'services.*.id'         => ['required','exists:pricings,id'],
+            'services.*.file'       => ['nullable','file'],
+            'services.*.amount'     => ['nullable','numeric'],
             'services.*.work_mention'=> ['nullable','in:with,without'],
-            'last_extract_year'    => ['nullable','integer','digits:4'],
+            'last_extract_year'     => ['nullable','integer','digits:4'],
         ]);
-
-        // Handle new/existing emails: create Email records and collect addresses
+    
+        // Handle emails
         $emailsList = [];
         foreach ($data['emails'] as $email) {
             $record = Email::firstOrCreate(['email' => $email]);
             $emailsList[] = $record->email;
         }
-
-        // Handle new/existing countries: translate "new_…" entries into Country IDs
+    
+        // Handle countries
         $countriesList = [];
         if (! empty($data['countries'])) {
             foreach ($data['countries'] as $c) {
                 if (is_string($c) && str_starts_with($c, 'new_')) {
                     $name = substr($c, 4);
-                    $country = Country::firstOrCreate(['name' => $name, 'en_name' => '--', 'mailable' => 1]);
+                    $country = Country::firstOrCreate([
+                        'name'    => $name,
+                        'en_name' => '--',
+                        'mailable'=> 1
+                    ]);
                     $countriesList[] = $country->id;
                 } else {
-                    // assume integer ID
                     $countriesList[] = $c;
                 }
             }
         }
-
+    
         DB::beginTransaction();
         try {
-            // حساب الأسعار
             $doctor = Doctor::findOrFail($data['doctor_id']);
             $typeKey = $doctor->type instanceof DoctorType
                      ? $doctor->type->value
@@ -120,8 +122,8 @@ class DoctorMailController extends Controller
             $unitPrice = $unitPrice
                        ? (Pricing::find($unitMap[$typeKey])->amount ?? 0)
                        : 0;
-
-            $emailsTotal = $unitPrice * count($emailsList);
+    
+            $emailsTotal   = $unitPrice * count($emailsList);
             $servicesTotal = collect($data['services'])->reduce(function($sum, $srv) {
                 return $sum + (
                     isset($srv['amount'])
@@ -130,8 +132,7 @@ class DoctorMailController extends Controller
                 );
             }, 0);
             $grandTotal = $emailsTotal + $servicesTotal;
-
-            // حفظ الطلب
+    
             $mail = DoctorMail::create([
                 'doctor_id'         => $data['doctor_id'],
                 'contacted_before'  => $data['extracted_before'] ?? false,
@@ -142,10 +143,14 @@ class DoctorMailController extends Controller
                 'grand_total'       => $grandTotal,
                 'last_extract_year' => $data['last_extract_year'] ?? null,
             ]);
-
-            // حفظ العناصر
+    
             foreach ($data['services'] as $item) {
-                $path = $item['file']?->store('doctor_mail_items', 'public') ?: null;
+                // use null-coalescing to avoid undefined index
+                $file = $item['file'] ?? null;
+                $path = $file 
+                    ? $file->store('doctor_mail_items', 'public') 
+                    : null;
+    
                 DoctorMailItem::create([
                     'doctor_mail_id' => $mail->id,
                     'pricing_id'     => $item['id'],
@@ -154,7 +159,7 @@ class DoctorMailController extends Controller
                     'work_mention'   => $item['work_mention'] ?? null,
                 ]);
             }
-
+    
             DB::commit();
             return redirect()
                 ->route(get_area_name() . '.doctor-mails.index')
@@ -165,7 +170,7 @@ class DoctorMailController extends Controller
             return back()->withErrors('حدث خطأ أثناء المعالجة');
         }
     }
-
+    
     /* =============================================================== */
     public function show(DoctorMail $doctorMail)
     {
