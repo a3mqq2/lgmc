@@ -249,7 +249,7 @@ const grandTotal = computed(() => totalAmount.value + totalServicesAmount.value)
 async function handleSubmit() {
   if (!addedEmails.value.length) {
     return Swal.fire('تنبيه', 'أضف بريداً واحداً على الأقل', 'warning')
-  }
+  } 
 
   if (!selectedServices.value.length) {
     return Swal.fire('تنبيه', 'اختر خدمة واحدة على الأقل', 'warning')
