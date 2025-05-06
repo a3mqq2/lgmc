@@ -372,6 +372,24 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <h4 class="main-content-label"> الامتياز </h4>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th class="bg-primary text-light"> جهة الحصول على الامتياز   </th>
+                                    <th class="bg-primary text-light">تاريخ الحصول عليها</th>
+                                </tr>
+                                <tr>
+                                    <td>{{ $doctor->qualificationUniversity->name ?? '-' }}</td>
+                                    <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date: '-' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
                     <h4 class="main-content-label"> العمل الحالي  </h4>
                     <div class="table-responsive">
                         <table class="table table-bordered">

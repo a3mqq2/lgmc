@@ -319,17 +319,6 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    @if (request('type') == "visitor")
-                                    <div class="col-md-4">
-                                        <label for=""> دولة التخرج </label>
-                                        <select name="country_graduation_id" required  id="" class="form-control form-control select2">
-                                            <option value="">حدد دولة التخرج </option>
-                                            @foreach ($countries as $country)
-                                                <option value="{{$country->id}}" {{old('country_graduation_id') == $country->id ? "selected" : ""}}>{{$country->name}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    @endif
                                     <div class="col-md-6">
                                         <label for=""> جهة الحصول على الامتياز </label>
                                         <select name="qualification_university_id"  required id="" class="form-control form-control select2">
