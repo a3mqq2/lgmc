@@ -70,75 +70,94 @@ class DoctorMailController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'doctor_id'        => ['required','exists:doctors,id'],
-            'emails'           => ['required','array','min:1'],
-            'emails.*'         => ['required','email'],
-            'countries'        => ['nullable','array'],
-            'countries.*'      => ['integer','exists:countries,id'],
-            'notes'            => ['nullable','string'],
-            'extracted_before' => ['boolean'],
-            'services'         => ['required','array','min:1'],
-            'services.*.id'    => ['required','exists:pricings,id'],
-            'services.*.file'  => ['nullable','file'],
-            'services.*.amount'=> ['nullable','numeric'],   // ترسل من الواجهة
-            'services.*.work_mention' => ['nullable', 'in:with,without'],
-            'last_extract_year' => ['nullable','integer','digits:4'],
+            'doctor_id'            => ['required','exists:doctors,id'],
+            'emails'               => ['required','array','min:1'],
+            'emails.*'             => ['required','email'],
+            'countries'            => ['nullable','array'],
+            'countries.*'          => ['required'],
+            'notes'                => ['nullable','string'],
+            'extracted_before'     => ['boolean'],
+            'services'             => ['required','array','min:1'],
+            'services.*.id'        => ['required','exists:pricings,id'],
+            'services.*.file'      => ['nullable','file'],
+            'services.*.amount'    => ['nullable','numeric'],
+            'services.*.work_mention'=> ['nullable','in:with,without'],
+            'last_extract_year'    => ['nullable','integer','digits:4'],
         ]);
 
+        // Handle new/existing emails: create Email records and collect addresses
+        $emailsList = [];
+        foreach ($data['emails'] as $email) {
+            $record = Email::firstOrCreate(['email' => $email]);
+            $emailsList[] = $record->email;
+        }
 
+        // Handle new/existing countries: translate "new_…" entries into Country IDs
+        $countriesList = [];
+        if (! empty($data['countries'])) {
+            foreach ($data['countries'] as $c) {
+                if (is_string($c) && str_starts_with($c, 'new_')) {
+                    $name = substr($c, 4);
+                    $country = Country::firstOrCreate(['name' => $name]);
+                    $countriesList[] = $country->id;
+                } else {
+                    // assume integer ID
+                    $countriesList[] = $c;
+                }
+            }
+        }
 
         DB::beginTransaction();
         try {
-            /* --------- حساب الإجمالي ---------------------------------- */
+            // حساب الأسعار
             $doctor = Doctor::findOrFail($data['doctor_id']);
-
             $typeKey = $doctor->type instanceof DoctorType
                      ? $doctor->type->value
                      : (string) $doctor->type;
-
             $unitMap   = ['libyan'=>85,'palestinian'=>86,'foreign'=>87];
-            $unitPrice = isset($unitMap[$typeKey])
-                       ? (Pricing::find($unitMap[$typeKey])?->amount ?? 0)
+            $unitPrice = $unitMap[$typeKey] ?? 0;
+            $unitPrice = $unitPrice
+                       ? (Pricing::find($unitMap[$typeKey])->amount ?? 0)
                        : 0;
 
-            $emailsTotal = $unitPrice * count($data['emails']);
-
-            /* إذا أرسلت الواجهة السعر، نستخدمه – وإلا نستعلم */
-            $servicesTotal = collect($data['services'])->reduce(function($sum,$srv){
-                return $sum + (isset($srv['amount']) ? $srv['amount'] : Pricing::find($srv['id'])?->amount ?? 0);
-            },0);
-
+            $emailsTotal = $unitPrice * count($emailsList);
+            $servicesTotal = collect($data['services'])->reduce(function($sum, $srv) {
+                return $sum + (
+                    isset($srv['amount'])
+                        ? $srv['amount']
+                        : (Pricing::find($srv['id'])->amount ?? 0)
+                );
+            }, 0);
             $grandTotal = $emailsTotal + $servicesTotal;
 
-            /* --------- إنشاء الطلب ------------------------------------ */
+            // حفظ الطلب
             $mail = DoctorMail::create([
-                'doctor_id'        => $data['doctor_id'],
-                'contacted_before' => $data['extracted_before'] ?? false,
-                'status'           => 'under_approve',
-                'notes'            => $data['notes'] ?? null,
-                'countries'        => $data['countries'] ?? [],
-                'emails'           => $data['emails'],
-                'grand_total'      => $grandTotal,
-                'last_extract_year'=> $data['last_extract_year'] ?? null,
+                'doctor_id'         => $data['doctor_id'],
+                'contacted_before'  => $data['extracted_before'] ?? false,
+                'status'            => 'under_approve',
+                'notes'             => $data['notes'] ?? null,
+                'countries'         => $countriesList,
+                'emails'            => $emailsList,
+                'grand_total'       => $grandTotal,
+                'last_extract_year' => $data['last_extract_year'] ?? null,
             ]);
 
-            /* --------- العناصر ---------------------------------------- */
+            // حفظ العناصر
             foreach ($data['services'] as $item) {
-                $path = !empty($item['file'])
-                      ? $item['file']->store('doctor_mail_items','public')
-                      : null;
+                $path = $item['file']?->store('doctor_mail_items', 'public') ?: null;
                 DoctorMailItem::create([
                     'doctor_mail_id' => $mail->id,
                     'pricing_id'     => $item['id'],
                     'status'         => 'pending',
                     'file'           => $path,
-                    'work_mention'   => $item['work_mention'] ?? null, // ✅ تمت إضافته هنا
+                    'work_mention'   => $item['work_mention'] ?? null,
                 ]);
             }
 
             DB::commit();
-            return redirect()->route(get_area_name().'.doctor-mails.index')
-                             ->with('success','تم إنشاء الطلب بنجاح');
+            return redirect()
+                ->route(get_area_name() . '.doctor-mails.index')
+                ->with('success', 'تم إنشاء الطلب بنجاح');
         } catch (\Throwable $e) {
             DB::rollBack();
             \Log::error($e);

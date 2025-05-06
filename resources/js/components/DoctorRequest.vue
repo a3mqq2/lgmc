@@ -18,7 +18,7 @@
     </div>
 
     <template v-if="selectedDoctor">
-      <!-- الخدمات -->
+      <!-- الطلبات -->
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">الطلبات</div>
         <div class="card-body">
@@ -88,14 +88,13 @@
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">الدول المستهدفة</div>
         <div class="card-body">
-          <label class="form-label">اختر أو أضف دولة</label>
+          <label class="form-label">اختر أو أدخل دولة</label>
           <Select
-            v-model="selectedCountriesTemp"
+            v-model="selectedCountry"
             :options="availableCountries"
             label="label"
             :reduce="c => c"
-            multiple
-            placeholder="اختر دول…"
+            placeholder="اختر دولة…"
             @search="fetchCountries"
           />
           <div class="input-group mt-2">
@@ -105,9 +104,9 @@
           <table class="table mt-3" v-if="selectedCountries.length">
             <thead><tr><th>الدولة</th><th>تحكم</th></tr></thead>
             <tbody>
-              <tr v-for="(c, i) in selectedCountries" :key="i">
+              <tr v-for="(c, i) in selectedCountries" :key="c.id">
                 <td>{{ c.label }}</td>
-                <td><button class="btn btn-sm btn-danger" @click="selectedCountries.splice(i, 1)">حذف</button></td>
+                <td><button class="btn btn-sm btn-danger" @click="removeCountry(i)">حذف</button></td>
               </tr>
             </tbody>
           </table>
@@ -150,25 +149,25 @@ import Select from 'vue3-select'
 import 'vue3-select/dist/vue3-select.css'
 
 const props = defineProps({ doctorId: [Number, String] })
-const selectedDoctor = ref(null)
-const selectedEmail = ref(null)
-const newEmail = ref('')
-const newCountry = ref('')
+const selectedDoctor    = ref(null)
+const selectedEmail     = ref(null)
+const newEmail          = ref('')
+const availableEmails   = ref([])
+const addedEmails       = ref([])
+const selectedCountry   = ref(null)
+const newCountry        = ref('')
+const availableCountries= ref([])
 const selectedCountries = ref([])
-const selectedCountriesTemp = ref([])
-const availableCountries = ref([])
-const availableEmails = ref([])
-const addedEmails = ref([])
-const selectedService = ref(null)
-const servicesFull = ref([])
-const filteredServices = ref([])
-const selectedServices = ref([])
-const notes = ref('')
-const extractedBefore = ref(false)
-const lastExtractYear = ref('')
-const unitPrice = ref(0)
-const submitting = ref(false)
-const doctors = ref([])
+const selectedService   = ref(null)
+const servicesFull      = ref([])
+const filteredServices  = ref([])
+const selectedServices  = ref([])
+const notes             = ref('')
+const extractedBefore   = ref(false)
+const lastExtractYear   = ref('')
+const unitPrice         = ref(0)
+const submitting        = ref(false)
+const doctors           = ref([])
 
 onMounted(async () => {
   if (props.doctorId) {
@@ -182,10 +181,7 @@ watch(selectedDoctor, async doc => {
   const map = { libyan: 85, palestinian: 86, foreign: 87 }
   const { data } = await axios.get(`/api/pricing/${map[doc.type]}`)
   unitPrice.value = Number(data.amount)
-
-  const srv = await axios.get('/api/pricings', {
-    params: { type: 'service', doctor_type: doc.type }
-  })
+  const srv = await axios.get('/api/pricings', { params: { type: 'service', doctor_type: doc.type } })
   servicesFull.value = srv.data
     .filter(p => ![85, 86, 87].includes(p.id))
     .map(p => ({ ...p, label: `${p.name} (${p.amount.toFixed(2)} د.ل)`, file: null, work_mention: null }))
@@ -202,38 +198,33 @@ watch(selectedService, svc => {
   selectedService.value = null
 })
 
-watch(selectedCountriesTemp, (arr) => {
-  arr.forEach(c => {
-    if (!selectedCountries.value.find(x => x.id === c.id)) {
-      selectedCountries.value.push(c)
-    }
-  })
-  selectedCountriesTemp.value = []
+watch(selectedCountry, c => {
+  if (c && !selectedCountries.value.find(x => x.id === c.id)) {
+    selectedCountries.value.push(c)
+  }
+  selectedCountry.value = null
 })
 
 function fetchDoctors(q) {
-  axios.get('/api/doctors', { params: { search: q } }).then(r => {
-    doctors.value = r.data.map(d => ({ ...d, label: `${d.name} (${d.code})` }))
-  })
+  axios.get('/api/doctors', { params: { search: q } })
+    .then(r => doctors.value = r.data.map(d => ({ ...d, label: `${d.name} (${d.code})` })))
 }
+
 function fetchEmails(q) {
-  axios.get('/api/emails', { params: { search: q } }).then(r => {
-    availableEmails.value = r.data.map(e => ({ email: e.email, label: e.email }))
-  })
+  axios.get('/api/emails', { params: { search: q } })
+    .then(r => availableEmails.value = r.data.map(e => ({ email: e.email, label: e.email })))
 }
+
 function fetchCountries(q) {
-  axios.get('/api/countries', { params: { search: q } }).then(r => {
-    availableCountries.value = r.data.map(c => ({ id: c.id, label: c.name }))
-  })
+  axios.get('/api/countries', { params: { search: q } })
+    .then(r => availableCountries.value = r.data.map(c => ({ id: c.id, label: c.name })))
 }
+
 function fetchServices(q) {
   const str = q.toLowerCase()
-  filteredServices.value = servicesFull.value.filter(s =>
-    s.label.toLowerCase().includes(str)
-  )
+  filteredServices.value = servicesFull.value.filter(s => s.label.toLowerCase().includes(str))
 }
-function removeEmail(i) { addedEmails.value.splice(i, 1) }
-function removeService(i) { selectedServices.value.splice(i, 1) }
+
 function addNewEmail() {
   const email = newEmail.value.trim()
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -241,22 +232,41 @@ function addNewEmail() {
   if (!addedEmails.value.includes(email)) addedEmails.value.push(email)
   newEmail.value = ''
 }
+
 function addNewCountry() {
   const name = newCountry.value.trim()
-  if (!name || selectedCountries.value.find(c => c.label === name)) return
-  selectedCountries.value.push({ id: `new_${name}`, label: name })
+  if (!name) {
+    return Swal.fire('خطأ', 'يرجى إدخال اسم الدولة', 'error')
+  }
+  if (selectedCountries.value.some(c => c.label === name)) {
+    return Swal.fire('خطأ', 'هذه الدولة موجودة مسبقاً', 'error')
+  }
+  const newItem = { id: `new_${name}`, label: name }
+  availableCountries.value.push(newItem)
+  selectedCountries.value.push(newItem)
   newCountry.value = ''
 }
+
+function removeEmail(i) {
+  addedEmails.value.splice(i, 1)
+}
+
+function removeService(i) {
+  selectedServices.value.splice(i, 1)
+}
+
+function removeCountry(i) {
+  selectedCountries.value.splice(i, 1)
+}
+
 function onServiceFileChange(e, i) {
   const f = e.target.files[0]
   if (f) selectedServices.value[i].file = f
 }
 
-const totalAmount = computed(() => unitPrice.value * addedEmails.value.length)
-const totalServicesAmount = computed(() =>
-  selectedServices.value.reduce((sum, s) => sum + s.amount, 0)
-)
-const grandTotal = computed(() => totalAmount.value + totalServicesAmount.value)
+const totalAmount        = computed(() => unitPrice.value * addedEmails.value.length)
+const totalServicesAmount= computed(() => selectedServices.value.reduce((sum, s) => sum + s.amount, 0))
+const grandTotal         = computed(() => totalAmount.value + totalServicesAmount.value)
 
 async function handleSubmit() {
   if (!addedEmails.value.length) return Swal.fire('تنبيه', 'أضف بريداً واحداً على الأقل', 'warning')
