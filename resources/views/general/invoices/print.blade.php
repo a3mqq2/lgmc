@@ -151,11 +151,14 @@
         <div class="details">
             <table>
                 <tr>
-                    <td class="bg-light"><strong>الرقم النقابي :</strong></td>
-                    <td>{{ $invoice->invoiceable->code }}</td>
 
                     <td class="bg-light"><strong>الاسم:</strong></td>
                     <td>{{ $invoice->invoiceable->name }}</td>
+                    
+                    <td class="bg-light"><strong>الرقم النقابي :</strong></td>
+                    <td>{{ $invoice->invoiceable->code }}</td>
+
+                 
                 </tr>
                 <tr>
                     <td><strong>المستخدم:</strong></td>
