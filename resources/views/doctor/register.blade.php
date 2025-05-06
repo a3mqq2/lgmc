@@ -600,10 +600,47 @@
                                                           </select>
                                                       </div>
                                                       <div class="col-md-8">
-                                                          <label for=""> تاريخ انتهاء الامتياز   </label>
-                                                          <input type="date" name="internership_complete" value="{{old('internership_complete')}}" id="" class="form-control">
+                                                        <label for="graduationـcertificate">تاريخ الحصول عليها</label>
+                                                        <select name="graduationـcertificate" id="graduationـcertificate" class="form-control select2" required>
+                                                            @php
+                                                                $currentYear = date('Y');
+                                                                $selectedYear = old('graduationـcertificate', $currentYear);
+                                                            @endphp
+                                                            @for($year = $currentYear; $year >= 1950; $year--)
+                                                                <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                                            @endfor
+                                                        </select>
                                                       </div>
+                                                      
                                                   </div>
+
+
+
+                                                  <h4 class="card-title mt-2 mb-2"> الامتياز    </h4>
+                                                  <div class="row mt-2 mb-4">
+                                                    <div class="col-md-6">
+                                                        <label for=""> جهة الحصول على الامتياز </label>
+                                                        <select name="qualification_university_id"  required id="" class="form-control form-control select2">
+                                                            <option value="">حدد جهة  </option>
+                                                            @foreach ($universities as $university)
+                                                                <option value="{{$university->id}}" {{old('qualification_university_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="certificate_of_excellence_date">تاريخ الحصول عليها</label>
+                                                        <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control select2" required>
+                                                            @php
+                                                                $currentYear = date('Y');
+                                                                $selectedYear = old('certificate_of_excellence_date', $currentYear);
+                                                            @endphp
+                                                            @for($year = $currentYear; $year >= 1950; $year--)
+                                                                <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                                            @endfor
+                                                        </select>
+                                                    </div>
+                                                     
+                                                 </div>
 
 
                                                    <h4 class="card-title mt-3"> الدرجة العلمية   </h4>
@@ -1119,20 +1156,20 @@
                     let html = '';
                     data.forEach(f => {
                         html += `
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="document-card shadow-sm border rounded text-center p-3 position-relative">
-                <div class="document-icon mb-3">
-                    <i class="fas fa-file-upload fa-3x text-primary"></i>
-                </div>
-                <h6 class="document-title mb-2">${f.name}${f.is_required ? '<span class="text-danger">*</span>' : ''}</h6>
-                <div class="custom-file">
-                    <input type="file" name="documents[${f.id}]" class="custom-file-input" id="file_${f.id}" ${f.is_required ? 'required' : ''}>
-                    <label class="custom-file-label" for="file_${f.id}">اختر ملف</label>
-                </div>
-                <small class="text-muted d-block mt-2">الملف يجب أن يكون بصيغة <b>PDF</b> أو صورة</small>
-                <div id="status_${f.id}" class="mt-2 text-muted">🔄 لم يتم الرفع بعد</div>
-            </div>
-        </div>`;
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="document-card shadow-sm border rounded text-center p-3 position-relative">
+                            <div class="document-icon mb-3">
+                                <i class="fas fa-file-upload fa-3x text-primary"></i>
+                            </div>
+                            <h6 class="document-title mb-2">${f.name}${f.is_required ? '<span class="text-danger">*</span>' : ''}</h6>
+                            <div class="custom-file">
+                                <input type="file" name="documents[${f.id}]" class="custom-file-input" id="file_${f.id}" ${f.is_required ? 'required' : ''}>
+                                <label class="custom-file-label" for="file_${f.id}">اختر ملف</label>
+                            </div>
+                            <small class="text-muted d-block mt-2">الملف يجب أن يكون بصيغة <b>PDF</b> أو صورة</small>
+                            <div id="status_${f.id}" class="mt-2 text-muted">🔄 لم يتم الرفع بعد</div>
+                        </div>
+                    </div>`;
                     });
                     $('#documents_container').html(html);
                 });
