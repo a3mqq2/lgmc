@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Email;
 use App\Models\Doctor;
 use App\Models\Country;
 use App\Models\Invoice;
