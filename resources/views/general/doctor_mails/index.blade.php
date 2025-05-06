@@ -105,7 +105,11 @@
                   @foreach($mail->emails as $e) <li>{{ $e }}</li> @endforeach
                 </ul>
               </td>
-              <td>{{ $mail->country_names }}</td>
+              <td>
+                @foreach ($mail->countries as $country)
+                  <span class="badge bg-secondary">{{ $country->name }}</span>
+                @endforeach
+              </td>
               <td>{{ number_format($mail->grand_total,2) }} د.ل</td>
               <td>
                 @if ($mail->contacted_before)
