@@ -95,8 +95,10 @@
             <tr>
               <td>{{ $mail->id }}</td>
               <td>
-                <strong>{{ $mail->doctor->name }}</strong><br>
-                <small class="text-muted">{{ $mail->doctor->code }}</small>
+                  <a href="{{route(get_area_name().'.doctors.show', $mail->doctor->id)}}">
+                    <strong>{{ $mail->doctor->name }}</strong><br>
+                    <small class="text-muted">{{ $mail->doctor->code }}</small>
+                  </a>
               </td>
               <td>
                 <ul class="mb-0 ps-3">
