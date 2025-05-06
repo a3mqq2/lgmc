@@ -1,5 +1,5 @@
 @extends('layouts.' . get_area_name())
-@section('title', 'عرض البريدات الإلكترونية')
+@section('title', 'عرض البريد الإلكترونية')
 
 @section('content')
 
@@ -14,7 +14,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header text-light bg-primary">
-                    <h5 class="card-title text-white">قائمة البريدات الإلكترونية</h5>
+                    <h5 class="card-title text-white">قائمة البريد الإلكترونية</h5>
                 </div>
 
                 <div class="card-body">

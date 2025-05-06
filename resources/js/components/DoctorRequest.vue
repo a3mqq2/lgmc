@@ -20,7 +20,7 @@
     <template v-if="selectedDoctor">
       <!-- الخدمات -->
       <div class="card mb-4">
-        <div class="card-header bg-primary text-white">الطلبات الإضافية</div>
+        <div class="card-header bg-primary text-white">الطلبات</div>
         <div class="card-body">
           <label class="form-label">ابحث واختر خدمة</label>
           <Select
@@ -74,9 +74,9 @@
         </div>
       </div>
 
-      <!-- البريدات -->
+      <!-- البريد -->
       <div class="card mb-4">
-        <div class="card-header bg-primary text-white">البريدات الإلكترونية</div>
+        <div class="card-header bg-primary text-white">البريد الإلكترونية</div>
         <div class="card-body">
           <label class="form-label">اختر بريد إلكتروني</label>
           <Select
@@ -94,7 +94,7 @@
             </li>
           </ul>
 
-          <div class="mt-3 text-end h5">إجمالي البريدات: {{ totalAmount.toFixed(2) }} د.ل</div>
+          <div class="mt-3 text-end h5">إجمالي البريد: {{ totalAmount.toFixed(2) }} د.ل</div>
         </div>
       </div>
 

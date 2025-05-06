@@ -58,7 +58,7 @@
 <li class="nav-item">
     <a class="nav-link menu-link" href="#emails" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-envelope"></i>
-        <span data-key="t-layouts">البريدات الإلكترونية</span>
+        <span data-key="t-layouts">البريد الإلكترونية</span>
     </a>
     <div class="collapse menu-dropdown" id="emails">
         <ul class="nav nav-sm flex-column">
@@ -67,7 +67,7 @@
                     إضافة بريد جديد
                 </a>
                 <a href="{{ route(get_area_name().'.emails.index') }}" class="nav-link" data-key="t-horizontal">
-                    عرض جميع البريدات
+                    عرض جميع البريد
                 </a>
             </li>
         </ul>
