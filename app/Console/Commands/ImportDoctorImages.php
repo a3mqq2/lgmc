@@ -24,7 +24,7 @@ class ImportDoctorImages extends Command
         $this->info("Found {$doctors->count()} doctors.");
 
         foreach ($doctors as $doctor) {
-            $fileName = "{$doctor->index}.jpg";
+            $fileName = "{$doctor->doctor_number}.jpg";
             $filePath = "profilepic/{$fileName}";
 
             if (Storage::disk('public')->exists($filePath)) {
