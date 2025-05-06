@@ -99,7 +99,7 @@ class DoctorMailController extends Controller
             foreach ($data['countries'] as $c) {
                 if (is_string($c) && str_starts_with($c, 'new_')) {
                     $name = substr($c, 4);
-                    $country = Country::firstOrCreate(['name' => $name]);
+                    $country = Country::firstOrCreate(['name' => $name, 'en_name' => '--']);
                     $countriesList[] = $country->id;
                 } else {
                     // assume integer ID
