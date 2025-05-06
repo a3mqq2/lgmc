@@ -390,7 +390,7 @@
                                         </select>
                                     </div>
                                     
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <label for=""> الجهة  </label>
                                         <select name="qualification_university_id" required id="" class="form-control select2">
                                             <option value="">حدد جهة  </option>
@@ -401,6 +401,23 @@
                                     </div>
 
         
+
+
+                        <div class="col-md-12">
+                            <label for="">الصفة المهنية</label>
+                            <select name="doctor_rank_id" id="doctor_rank_id" required class="form-control select2">
+                                <option value="">حدد الصفة</option>
+                                @foreach ($doctor_ranks as $doctor_rank)
+                                    @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
+                                        <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
+                                        @else 
+                                            @if (request('type') != "visitor")
+                                                    <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
+                                            @endif
+                                        @endif
+                                @endforeach
+                            </select>
+                        </div>
                                 
         
                                     <div class="col-md-6">
@@ -464,21 +481,6 @@
 
 
 
-                        <div class="col-md-12">
-                            <label for="">الصفة المهنية</label>
-                            <select name="doctor_rank_id" id="doctor_rank_id" required class="form-control select2">
-                                <option value="">حدد الصفة</option>
-                                @foreach ($doctor_ranks as $doctor_rank)
-                                    @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
-                                        <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
-                                        @else 
-                                            @if (request('type') != "visitor")
-                                                    <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
-                                            @endif
-                                        @endif
-                                @endforeach
-                            </select>
-                        </div>
 
                             <div class="col-md-12 mt-2">
                                 <div class="row">

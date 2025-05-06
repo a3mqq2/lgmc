@@ -138,10 +138,10 @@ $showDoctorColumns = $isDoctorEntity && request()->input('entity_type') != 'comp
                                                     {{ $doctorType->label() }}
                                                 </span>
                                             @else
-                                                N/A
+                                                -
                                             @endif
                                         </td>
-                                        <td>{{ $request->doctorRank->name ?? 'N/A' }}</td>
+                                        <td>{{ $request->doctorRank->name ?? '-' }}</td>
                                     @endif
                                     <td>{{ number_format($request->amount, 2) }}</td>
                                     <td>{{ $request->active ? 'نشط' : 'غير نشط' }}</td>

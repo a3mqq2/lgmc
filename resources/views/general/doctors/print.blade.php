@@ -33,11 +33,11 @@
                         </tr>
                         <tr>
                             <th class="bg-light">الدولة</th>
-                            <td>{{ $doctor->country->name ?? 'N/A' }}</td>
+                            <td>{{ $doctor->country->name ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">تاريخ الميلاد</th>
-                            <td>{{ $doctor->date_of_birth ? $doctor->date_of_birth->format('Y-m-d') : 'N/A' }}</td>
+                            <td>{{ $doctor->date_of_birth ? $doctor->date_of_birth->format('Y-m-d') : '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">الحالة الاجتماعية</th>
@@ -53,7 +53,7 @@
                         </tr>
                         <tr>
                             <th class="bg-light">تاريخ انتهاء الجواز</th>
-                            <td>{{ $doctor->passport_expiration ? $doctor->passport_expiration->format('Y-m-d') : 'N/A' }}</td>
+                            <td>{{ $doctor->passport_expiration ? $doctor->passport_expiration->format('Y-m-d') : '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">الإقامة</th>
@@ -85,23 +85,23 @@
                     <tbody>
                         <tr>
                             <th class="bg-light">جامعة التخرج</th>
-                            <td>{{ $doctor->handGraduation->name ?? 'N/A' }}</td>
+                            <td>{{ $doctor->handGraduation->name ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">تاريخ إنهاء التدريب</th>
-                            <td>{{ $doctor->internership_complete ? $doctor->internership_complete->format('Y-m-d') : 'N/A' }}</td>
+                            <td>{{ $doctor->internership_complete ? $doctor->internership_complete->format('Y-m-d') : '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">الدرجة العلمية</th>
-                            <td>{{ $doctor->academicDegree->name ?? 'N/A' }}</td>
+                            <td>{{ $doctor->academicDegree->name ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">جامعة التأهيل</th>
-                            <td>{{ $doctor->qualificationUniversity->name ?? 'N/A' }}</td>
+                            <td>{{ $doctor->qualificationUniversity->name ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">تاريخ التأهيل</th>
-                            <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date: 'N/A' }}</td>
+                            <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date: '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">شهادة الإمتياز</th>
@@ -109,7 +109,7 @@
                         </tr>
                         <tr>
                             <th class="bg-light">تاريخ شهادة الإمتياز</th>
-                            <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date: 'N/A' }}</td>
+                            <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date: '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">شهادة التخرج</th>
@@ -129,15 +129,15 @@
                     <tbody>
                         <tr>
                             <th class="bg-light">الفرع</th>
-                            <td>{{ $doctor->branch?->name ?? 'N/A' }}</td>
+                            <td>{{ $doctor->branch?->name ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">التخصص الأول</th>
-                            <td>{{ $doctor->specialty1->name ?? 'N/A' }}</td>
+                            <td>{{ $doctor->specialty1->name ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">التخصص الدقيق</th>
-                            <td>{{ $doctor->specialty2->name ?? 'N/A' }}</td>
+                            <td>{{ $doctor->specialty2->name ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">تاريخ الإضافة</th>

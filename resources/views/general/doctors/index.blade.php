@@ -194,7 +194,7 @@
                                 <td class="{{$doctor->type->badgeClass()}}" >
                                     {{ $doctor->type->label() }}
                                 </td>
-                                <td>{{ $doctor->academicDegree->name ?? 'N/A' }}</td>
+                                <td>{{ $doctor->academicDegree->name ?? '-' }}</td>
                                 
 
                                 @if (request("type") != "visitor")

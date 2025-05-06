@@ -144,7 +144,7 @@
                                         @if($ticket->closedBy)
                                             {{ $ticket->closedBy->name }}
                                         @else
-                                            N/A
+                                            -
                                         @endif
                                     </td>
                                     <td>

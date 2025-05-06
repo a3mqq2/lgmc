@@ -302,8 +302,8 @@
                                     @if ($doctor->type == "libyan")
                                     <td>{{ $doctor->national_number }}</td>
                                     @endif
-                                    <td>{{ $doctor->country->name ?? 'N/A' }}</td>
-                                    <td>{{ $doctor->date_of_birth ? $doctor->date_of_birth->format('Y-m-d') : 'N/A' }}</td>
+                                    <td>{{ $doctor->country->name ?? '-' }}</td>
+                                    <td>{{ $doctor->date_of_birth ? $doctor->date_of_birth->format('Y-m-d') : '-' }}</td>
                                     <td>
                                         {{ $doctor->marital_status->label() }}
                                     </td>
@@ -322,7 +322,7 @@
                                 <tr>
                                     <td>{{ $doctor->gender ? $doctor->gender->label() : "" }}</td>
                                     <td>{{ $doctor->passport_number }}</td>
-                                    <td>{{ $doctor->passport_expiration ? $doctor->passport_expiration->format('Y-m-d') : 'N/A' }}</td>
+                                    <td>{{ $doctor->passport_expiration ? $doctor->passport_expiration->format('Y-m-d') : '-' }}</td>
                                     <td>{{ $doctor->address }}</td>
                                     <td>{{ $doctor->phone }}</td>
                                     <td>{{ $doctor->phone_2 }}</td>
@@ -332,7 +332,7 @@
                                             {{ $doctor->membership_status->label() }}
                                         </span>
                                     </td>
-                                    <td>{{ $doctor->membership_expiration_date ? $doctor->membership_expiration_date->format('Y-m-d') : 'N/A' }}</td>
+                                    <td>{{ $doctor->membership_expiration_date ? $doctor->membership_expiration_date->format('Y-m-d') : '-' }}</td>
                                 </tr>
 
                               
@@ -344,9 +344,9 @@
 
                                 </tr>
                                 <tr>
-                                    <td colspan="5">{{ $doctor->visit_from ? $doctor->visit_from: 'N/A' }}</td>
-                                    <td colspan="3">{{ $doctor->visit_to ? $doctor->visit_to: 'N/A' }}</td>
-                                    <td colspan="3">{{ $doctor->medicalFacility?->name ?? 'N/A' }}</td>
+                                    <td colspan="5">{{ $doctor->visit_from ? $doctor->visit_from: '-' }}</td>
+                                    <td colspan="3">{{ $doctor->visit_to ? $doctor->visit_to: '-' }}</td>
+                                    <td colspan="3">{{ $doctor->medicalFacility?->name ?? '-' }}</td>
                                 </tr>
                                 @endif
 
@@ -359,18 +359,12 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <th class="bg-primary text-light">جامعة التخرج</th>
-                                    <th class="bg-primary text-light">تاريخ إنهاء الامتياز</th>
-                                    <th class="bg-primary text-light">الدرجة العلمية</th>
                                     <th class="bg-primary text-light">جهة التخرج</th>
-                                    <th class="bg-primary text-light">تاريخ التأهيل</th>
+                                    <th class="bg-primary text-light">تاريخ الحصول عليها</th>
                                 </tr>
                                 <tr>
-                                    <td>{{ $doctor->handGraduation->name ?? 'N/A' }}</td>
-                                    <td>{{ $doctor->graduation_certificate ? $doctor->graduation_certificate->format('Y-m-d') : 'N/A' }}</td>
-                                    <td>{{ $doctor->academicDegree->name ?? 'N/A' }}</td>
-                                    <td>{{ $doctor->qualificationUniversity->name ?? 'N/A' }}</td>
-                                    <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date: 'N/A' }}</td>
+                                    <td>{{ $doctor->handGraduation->name ?? '-' }}</td>
+                                    <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date: '-' }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -386,9 +380,9 @@
                                     <th class="bg-primary text-light">تاريخ الإضافة</th>
                                 </tr>
                                 <tr>
-                                    <td>{{ $doctor->branch?->name ?? 'N/A' }}</td>
-                                    <td>{{ $doctor->specialty1->name ?? 'N/A' }}</td>
-                                    <td>{{ $doctor->specialty2->name ?? 'N/A'}}
+                                    <td>{{ $doctor->branch?->name ?? '-' }}</td>
+                                    <td>{{ $doctor->specialty1->name ?? '-' }}</td>
+                                    <td>{{ $doctor->specialty2->name ?? '-'}}
                                     <td>{{ $doctor->created_at->format('Y-m-d') }}</td>
 
                                 </tr>

@@ -221,9 +221,9 @@ class DoctorService
             
             // توليد رمز الطبيب
             $data['branch_id'] = get_area_name() == "admin" ? $data['branch_id'] : auth()->user()->branch_id;
-            // $data['date_of_birth'] = isset($data['birth_year'], $data['month'], $data['day']) 
-            // ? "{$data['birth_year']}-".str_pad($data['month'], 2, '0', STR_PAD_LEFT)."-".str_pad($data['day'], 2, '0', STR_PAD_LEFT)
-            // : null;
+            $data['date_of_birth'] = isset($data['birth_year'], $data['month'], $data['day']) 
+            ? "{$data['birth_year']}-".str_pad($data['month'], 2, '0', STR_PAD_LEFT)."-".str_pad($data['day'], 2, '0', STR_PAD_LEFT)
+            : null;
 
             if(!isset($data['branch_id']))
             {

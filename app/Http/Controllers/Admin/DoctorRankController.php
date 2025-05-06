@@ -93,21 +93,9 @@ class DoctorRankController extends Controller
      */
     public function destroy(DoctorRank $doctor_rank)
     {
-        $name = $@if($doctor->doctor_rank_id === 6)
-        استشاري تخصص دقيق
-    @else
-        {{ $doctor->doctor_rank->name }}
-    @endif
     ;
         $doctor_rank->delete();
 
-        Log::create([
-            'user_id' => auth()->id(),
-            'details' => "تم حذف صفه طبيب: {$name}",
-            'loggable_id' => $doctor_rank->id,
-            'loggable_type' => DoctorRank::class,
-            'action' => 'delete_doctor_rank',
-        ]);
 
         return redirect()->route(get_area_name() . '.doctor_ranks.index')
             ->with('success', 'تم حذف صفه طبيب بنجاح.');

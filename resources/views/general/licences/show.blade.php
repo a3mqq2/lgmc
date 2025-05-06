@@ -78,7 +78,7 @@
                                 @endif
                                 <tr>
                                     <th class="bg-light">تاريخ الميلاد</th>
-                                    <td>{{ $licence->licensable->date_of_birth ? $licence->licensable->date_of_birth->format('Y-m-d') : 'N/A' }}</td>
+                                    <td>{{ $licence->licensable->date_of_birth ? $licence->licensable->date_of_birth->format('Y-m-d') : '-' }}</td>
                                 </tr>
                                 <tr>
                                     <th class="bg-light">الجنس</th>

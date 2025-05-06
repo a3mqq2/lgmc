@@ -95,11 +95,11 @@
                                              </div>
                                              <div class="list-group-item d-flex justify-content-between align-items-center">
                                                  <span><i class="fas fa-flag text-info"></i> الدولة</span>
-                                                 <span>{{ auth('doctor')->user()->country->name ?? 'N/A' }}</span>
+                                                 <span>{{ auth('doctor')->user()->country->name ?? '-' }}</span>
                                              </div>
                                              <div class="list-group-item d-flex justify-content-between align-items-center">
                                                  <span><i class="fas fa-birthday-cake text-info"></i> تاريخ الميلاد</span>
-                                                 <span>{{ auth('doctor')->user()->date_of_birth ? auth('doctor')->user()->date_of_birth->format('Y-m-d') : 'N/A' }}</span>
+                                                 <span>{{ auth('doctor')->user()->date_of_birth ? auth('doctor')->user()->date_of_birth->format('Y-m-d') : '-' }}</span>
                                              </div>
                                              <div class="list-group-item d-flex justify-content-between align-items-center">
                                                  <span><i class="fas fa-heart text-info"></i> الحالة الاجتماعية</span>
@@ -120,7 +120,7 @@
                                              </div>
                                              <div class="list-group-item d-flex justify-content-between align-items-center">
                                                  <span><i class="fas fa-calendar-alt text-info"></i> تاريخ انتهاء الجواز</span>
-                                                 <span>{{ auth('doctor')->user()->passport_expiration ? auth('doctor')->user()->passport_expiration->format('Y-m-d') : 'N/A' }}</span>
+                                                 <span>{{ auth('doctor')->user()->passport_expiration ? auth('doctor')->user()->passport_expiration->format('Y-m-d') : '-' }}</span>
                                              </div>
                                              <div class="list-group-item d-flex justify-content-between align-items-center">
                                                  <span><i class="fas fa-map-marker-alt text-info"></i> الإقامة</span>
@@ -146,7 +146,7 @@
                                              </div>
                                              <div class="list-group-item d-flex justify-content-between align-items-center">
                                                  <span><i class="fas fa-calendar-check text-info"></i> تاريخ انتهاء العضوية</span>
-                                                 <span>{{ auth('doctor')->user()->membership_expiration_date ? auth('doctor')->user()->membership_expiration_date->format('Y-m-d') : 'N/A' }}</span>
+                                                 <span>{{ auth('doctor')->user()->membership_expiration_date ? auth('doctor')->user()->membership_expiration_date->format('Y-m-d') : '-' }}</span>
                                              </div>
                                          </div>
                                      </div>
@@ -213,7 +213,7 @@
                                                  </div>
                                                  <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
                                                      <span><i class="fas fa-user text-info"></i> المغلق بواسطة:</span>
-                                                     <span>{{ $ticket->closedBy ? $ticket->closedBy->name : 'N/A' }}</span>
+                                                     <span>{{ $ticket->closedBy ? $ticket->closedBy->name : '-' }}</span>
                                                  </div>
                                                  <div class="d-flex justify-content-end mt-2">
                                                      <a href="{{ route(get_area_name() . '.tickets.show', $ticket) }}" class="btn btn-primary rounded btn-sm text-light ml-3">
