@@ -156,10 +156,10 @@
 
                     <td class="bg-light"><strong>الاسم:</strong></td>
                     <td>{{ $invoice->invoiceable->name }}</td>
-                    <td><strong>المستخدم:</strong></td>
-                    <td>{{ $invoice->user?->name ?? '-' }}</td>
                 </tr>
                 <tr>
+                    <td><strong>المستخدم:</strong></td>
+                    <td>{{ $invoice->user?->name ?? '-' }}</td>
                     <td class="bg-light"><strong>تاريخ الإنشاء:</strong></td>
                     <td>{{ $invoice->created_at->format('Y-m-d') }} / {{ $invoice->created_at->format('h:i A') }}</td>
                 </tr>
