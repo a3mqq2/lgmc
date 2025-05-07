@@ -60,7 +60,7 @@ class TransactionController extends Controller
      */
     public function create()
     {
-        $transactionTypes = TransactionType::all();
+        $transaction_types = TransactionType::all();
         $branches = Branch::all();
 
         $vaults = Vault::query();
@@ -69,7 +69,7 @@ class TransactionController extends Controller
         }
         $vaults = $vaults->get();
 
-        return view('general.transactions.create', compact('transactionTypes', 'branches', 'vaults'));
+        return view('general.transactions.create', compact('transaction_types', 'branches', 'vaults'));
     }
 
     /**
