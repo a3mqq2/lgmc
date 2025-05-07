@@ -7,7 +7,7 @@ use App\Models\DoctorFile;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
-class internship_certificate extends Command
+class passport extends Command
 {
     /**
      * The name and signature of the console command.
