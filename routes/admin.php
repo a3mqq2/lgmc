@@ -69,7 +69,7 @@ Route::patch('medical-facilities/{facility}/reject',
     Route::resource('doctors.files', DoctorFileController::class)->shallow()->middleware('permission:manage-doctors');
     Route::resource('medical-facility-files', DoctorFileController::class)->shallow()->middleware('permission:manage-doctors');
     Route::patch('/licences/{licence}/approve', [LicenceController::class, 'approve'])->middleware('permission:manage-medical-licenses,manage-doctor-permits')->name('licences.approve');
-    Route::get('/licences/{licence}/print', [LicenceController::class, 'print'])->middleware('permission:manage-medical-licenses,manage-doctor-permits')->name('licences.print');
+    Route::get('/licences/{licence}/print', [LicenceController::class, 'print'])->name('licences.print');
     Route::resource('licences', LicenceController::class)->middleware('permission:manage-medical-licenses,manage-doctor-permits');
     Route::resource('pricings', PricingController::class)->middleware('permission:services-pricing');
     Route::resource('blacklists', BlacklistController::class)->middleware('permission:manage-blacklist');

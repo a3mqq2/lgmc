@@ -489,10 +489,7 @@ public function store(Request $request)
 
     public function print(Licence $licence) {
 
-        if(auth()->user()->branch_id != $licence->branch_id) {
-            abort(404);
-        }
-
+   
         if($licence->status != "active") {
             return redirect()->back()->withErrors(['لا يمكنك طباعة اذن مزاولة في هذه الحاله التي بها']);
         }   
