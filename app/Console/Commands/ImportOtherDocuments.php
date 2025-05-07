@@ -16,7 +16,7 @@ class ImportOtherDocuments extends Command
     public function handle()
     {
         $branchId = 1;
-        $fileTypeId = 30;
+        $fileTypeId = 69;
 
         $doctors = Doctor::where('branch_id', $branchId)
                          ->whereNotNull('doctor_number')
