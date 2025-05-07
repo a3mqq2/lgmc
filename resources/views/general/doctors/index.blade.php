@@ -143,7 +143,7 @@
                                 @endif
 
 
-                                <th class="bg-light">حالة العضوية</th>
+                                <th class="bg-light">حالة الاشتراك</th>
 
                                 @if (request('init_approve') )
                                     <th class="bg-light"> تاريخ الزيارة</th>
