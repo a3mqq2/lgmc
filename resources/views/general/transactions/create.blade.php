@@ -39,7 +39,10 @@
                         <div class="mb-3">
                             <label for="transaction_type_id" class="form-label">نوع المعاملة المالية</label>
                             <select class="form-control" id="transaction_type_id" name="transaction_type_id" required>
-                                <!-- Options will be populated dynamically based on user selection -->
+                                <option value="">حدد نوع الحركة</option>
+                                @foreach ($transaction_types as $transaction_type)
+                                    <option value="{{$transaction_type->id}}">{{$transaction_type->name}}</option>
+                                @endforeach
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary">إنشاء</button>
@@ -48,39 +51,4 @@
             </div>
         </div>
     </div>
-@endsection
-
-@section('scripts')
-    <script>
-        // Function to update transaction types based on selected type (deposit or withdrawal)
-        function updateTransactionTypes() {
-            var selectedType = document.getElementById('type').value;
-            var transactionTypesSelect = document.getElementById('transaction_type_id');
-
-            // Clear existing options
-            transactionTypesSelect.innerHTML = '';
-
-            // Populate options based on selected type
-            @foreach ($transactionTypes as $type)
-                @if ($type->type == 'deposit')
-                    if (selectedType === 'deposit') {
-                        var option = document.createElement('option');
-                        option.value = '{{ $type->id }}';
-                        option.text = '{{ $type->name }}';
-                        transactionTypesSelect.appendChild(option);
-                    }
-                @elseif ($type->type == 'withdrawal')
-                    if (selectedType === 'withdrawal') {
-                        var option = document.createElement('option');
-                        option.value = '{{ $type->id }}';
-                        option.text = '{{ $type->name }}';
-                        transactionTypesSelect.appendChild(option);
-                    }
-                @endif
-            @endforeach
-        }
-
-        // Initial call to populate transaction types on page load
-        updateTransactionTypes();
-    </script>
 @endsection
