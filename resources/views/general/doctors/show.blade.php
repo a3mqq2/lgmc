@@ -242,6 +242,14 @@
                                             <td>{{ $doctor->doctor_number }}</td>
                                         </tr>
                                         @endif
+                                       
+                                        @if (get_area_name() == "admin")
+                                            <tr>
+                                                <th class="bg-light text-primary"> الفرع   </th>
+                                                <td>{{ $doctor->branch ? $doctor->branch->name : "" }}</td>
+                                            </tr>
+                                        @endif
+
                                         <tr>
                                             <th class="bg-light text-primary">الاسم</th>
                                             <td>{{ $doctor->name }}</td>

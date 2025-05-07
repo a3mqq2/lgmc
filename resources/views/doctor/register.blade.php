@@ -578,6 +578,9 @@
                     
                                                     </div>
 
+
+                                                    <hr>
+
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <label for="">رقم الهاتف
@@ -592,7 +595,7 @@
                                                             <label for=""> رقم الواتساب </label>
                                                             <input type="phone" name="phone_2" value="{{old('phone_2')}}" id="" maxlength="10" class="form-control">
                                                         </div>
-                                                        @if (request('type') != "visitor")
+                                                        @if (request('type') == "libyan")
                                                         <div class="col-md-6">
                                                             <label for="">الاقامة</label>
                                                             <input type="text" required name="address" value="{{old('address')}}" id="" class="form-control">
@@ -607,7 +610,7 @@
                                                             <input type="password"  name="password_confirmation" value="{{old('password_confirmation')}}" id="" class="form-control">
                                                         </div>
                                                         {{-- email input --}}
-                                                        <div class="col-md-{{request('type')=="visitor"?"6":"12"}}">
+                                                        <div class="col-md-6">
                                                             <label for="">البريد الالكتروني  </label>
                                                             <input type="email"  name="email" value="{{old('email')}}" id="email" class="form-control">
                                                         </div>
@@ -616,7 +619,6 @@
 
 
 
-                                                   @if (request('type') != "visitor")
                                                         <h4 class="card-title mt-2 mb-2"> بكالوريس    </h4>
                                                         <div class="row mt-2 mb-4">
                                                             @if (request('type') == "visitor")
@@ -653,7 +655,6 @@
                                                             </div>
                                                             
                                                         </div>
-                                                   @endif
 
 
 
