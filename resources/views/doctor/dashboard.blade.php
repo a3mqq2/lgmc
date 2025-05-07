@@ -151,7 +151,7 @@
                                                  </span>
                                              </div>
                                              <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                 <span><i class="fas fa-calendar-check text-info"></i> الاشتراك السنوي</span>
+                                                 <span><i class="fas fa-calendar-check text-info"></i> تاريخ انتهاء العضوية</span>
                                                  <span>{{ auth('doctor')->user()->membership_expiration_date ? auth('doctor')->user()->membership_expiration_date->format('Y-m-d') : '-' }}</span>
                                              </div>
                                          </div>

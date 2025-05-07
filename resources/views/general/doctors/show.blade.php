@@ -321,14 +321,13 @@
                                             <td>{{ $doctor->email }}</td>
                                         </tr>
                                         <tr>
-                                            <th class="bg-light text-primary">الاشتراك السنوي</th>
+                                            <th class="bg-light text-primary">حالة العضوية</th>
                                             <td><span class="badge {{ $doctor->membership_status->badgeClass() }}">{{ $doctor->membership_status->label() }}</span></td>
                                         </tr>
                                         <tr>
-                                            <th class="bg-light text-primary">تاريخ انتهاء</th>
+                                            <th class="bg-light text-primary">تاريخ انتهاء العضوية</th>
                                             <td>{{ $doctor->membership_expiration_date?->format('Y-m-d') ?? '-' }}</td>
                                         </tr>
-
                                     </tbody>
                                 </table>
                             </div>

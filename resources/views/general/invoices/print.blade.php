@@ -163,7 +163,7 @@
                 <tr>
                     <td><strong>المستخدم:</strong></td>
                     <td>{{ $invoice->user?->name ?? '-' }}</td>
-                    <td class="bg-light"><strong>تاريخ الإنشاء:</strong></td>
+                    <td class="bg-light"><strong>تاريخ التقديم :</strong></td>
                     <td>{{ $invoice->created_at->format('Y-m-d') }} / {{ $invoice->created_at->format('h:i A') }}</td>
                 </tr>
               
@@ -180,7 +180,6 @@
             </table>
         </div>
 
-        @if ($invoice->doctorMail)
         <div class="items">
             <h4>تفاصيل إضافية</h4>
             <table>
@@ -243,10 +242,6 @@
         {{ $invoice->created_at->addWeek()->format('Y-m-d') }}  </p>
 
         </p>
-
-        @endif
-
-
 
 
 

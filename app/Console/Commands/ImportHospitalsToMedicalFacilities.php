@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Institution;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Models\MedicalFacility;
@@ -16,10 +17,8 @@ class ImportHospitalsToMedicalFacilities extends Command
         $oldHospitals = DB::connection('lgmc_r')->table('hospitals')->get();
 
         foreach ($oldHospitals as $hospital) {
-            $ownership = strtolower($hospital->ownership) === 'عام' ? 'public' : 'private';
-            MedicalFacility::create([
+            Institution::create([
                 'name' => $hospital->name,
-                'ownership' => $ownership,
                 'address' => $hospital->address,
                 'phone_number' => $hospital->contacts,
                 'membership_status' => 'active',

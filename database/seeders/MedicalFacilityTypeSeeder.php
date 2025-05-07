@@ -15,11 +15,11 @@ class MedicalFacilityTypeSeeder extends Seeder
     {
         $medicalFacilityTypes = [
             [
-                'name' => 'عيادة فردية - ( Private Clinic )',
+                'name' => 'عيادة فردية ',
                 'en_name' => 'Private Clinic',
             ],
             [
-                'name' => 'خدمات طبية - ( Medical Services )',
+                'name' => 'خدمات طبية ',
                 'en_name' => 'Medical Services',
             ],
         ];
