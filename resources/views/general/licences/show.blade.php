@@ -41,12 +41,6 @@
                                 <th class="bg-light">الحالة</th>
                                 <td>{!! $licence->status_badge !!}</td>
                             </tr>
-                            @if ($licence->licensable_type == "App\Models\MedicalFacility")
-                            <tr>
-                                <th class="bg-light"> الممثل </th>
-                                <td>{{ $licence->licensable->manager ? $licence->licensable->manager->name : "لا احد" }}</td>
-                            </tr>
-                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -133,37 +127,6 @@
     </div>
 @endif
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">سجلات اذن المزاولة</div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <th>#</th>
-                            <th>التفاصيل</th>
-                            <th>المستخدم</th>
-                            <th>التاريخ</th>
-                        </thead>
-                        <tbody>
-                            @foreach ($licence->logs as $log)
-                                <tr>
-                                    <td class="bg-primary text-light">{{$loop->iteration}}</td>
-                                    <td>{{$log->details}}</td>
-                                    <td>{{$log->user?->name}}</td>
-                                    <td>
-                                        {{date('Y-m-d H:i', strtotime($log->created_at))}}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 

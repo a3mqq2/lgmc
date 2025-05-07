@@ -287,10 +287,7 @@ class InvoiceController extends Controller
             ->withErrors(['لا يمكن حذف هذه الفاتورة']);
         }
 
-        if($invoice->branch_id != auth()->user()->branch_id)
-        {
-            return redirect()->back()->withErrors(['لا يمكن حذف قيمة فاتورة لغير فرعها الحالي']);
-        }
+
 
 
         // if the invoice paid you cannot delete it 
@@ -315,9 +312,7 @@ class InvoiceController extends Controller
                 return redirect()->back()->withErrors(['لا يمكن الاستلام من هذه الفاتورة']);
             }
     
-            if ($invoice->branch_id != auth()->user()->branch_id) {
-                return redirect()->back()->withErrors(['لا يمكن استلام قيمة فاتورة لغير فرعها الحالي']);
-            }
+         
     
             $vault = auth()->user()->branch_id ? auth()->user()->branch->vault : Vault::first();
             $this->invoiceService->markAsPaid($vault, $invoice, $request->notes);
@@ -366,10 +361,7 @@ class InvoiceController extends Controller
                 ->withErrors(['لا يمكن الإعفاء من هذه الفاتورة']);
             }
     
-            if($invoice->branch_id != auth()->user()->branch_id)
-            {
-                return redirect()->back()->withErrors(['لا يمكن إعفاء قيمة فاتورة لغير فرعها الحالي']);
-            }
+       
             $this->invoiceService->markAsRelief($invoice, $request->notes);
             DB::commit();
         } catch(\Exception $e)

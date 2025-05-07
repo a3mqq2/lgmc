@@ -32,7 +32,7 @@ class MedicalFacilityController extends Controller
     {
         // Retrieve filtered/paginated results from the service
         $medicalFacilities = $this->medicalFacilityService->getAll(
-            $request->only(['name', 'ownership', 'medical_facility_type_id']), 
+            $request->only(['q', 'ownership', 'medical_facility_type_id']), 
             10
         );
 

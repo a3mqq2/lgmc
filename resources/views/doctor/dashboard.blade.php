@@ -145,13 +145,13 @@
                                                  <span>{{ auth('doctor')->user()->email }}</span>
                                              </div>
                                              <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                 <span><i class="fas fa-check-circle text-info"></i> حالة العضوية</span>
+                                                 <span><i class="fas fa-check-circle text-info"></i> الاشتراك السنوي</span>
                                                  <span class="badge {{auth('doctor')->user()->membership_status->badgeClass()}}">
                                                      {{ auth('doctor')->user()->membership_status->label() }}
                                                  </span>
                                              </div>
                                              <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                 <span><i class="fas fa-calendar-check text-info"></i> تاريخ انتهاء العضوية</span>
+                                                 <span><i class="fas fa-calendar-check text-info"></i> الاشتراك السنوي</span>
                                                  <span>{{ auth('doctor')->user()->membership_expiration_date ? auth('doctor')->user()->membership_expiration_date->format('Y-m-d') : '-' }}</span>
                                              </div>
                                          </div>

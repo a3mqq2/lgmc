@@ -166,6 +166,17 @@
                     <td class="bg-light"><strong>تاريخ الإنشاء:</strong></td>
                     <td>{{ $invoice->created_at->format('Y-m-d') }} / {{ $invoice->created_at->format('h:i A') }}</td>
                 </tr>
+              
+
+                @if (!$invoice->doctorMail)
+                <tr>
+                    <th class="bg-light border">وذلك عن</th>
+                    <td colspan="3">
+                        {{$invoice->description}}
+                    </td>
+                </tr>
+                @endif
+
             </table>
         </div>
 
@@ -223,7 +234,20 @@
                 </tfoot>
             </table>
         </div>    
+
+
+
+        <p>ملاحظة هامة : 
+
+        يحتاج هذا الاجراء اسبوع للتنفيذ بعد تسديد الفاتورة ٫ مما يعني ان الاستلام سيكون يوم 
+        {{ $invoice->created_at->addWeek()->format('Y-m-d') }}  </p>
+
+        </p>
+
         @endif
+
+
+
 
 
         <div class="print-button no-print">

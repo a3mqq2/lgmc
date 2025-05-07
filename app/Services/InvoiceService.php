@@ -73,7 +73,7 @@ class InvoiceService
             'type' => 'deposit',
             'transaction_type_id' => $transaction_type_id,
             'desc' => ' دفع لقيمة الفاتورة '.$invoice->id . "وذلك عن : " . $invoice->description, 
-            'branch_id' => $invoice->branch_id,
+            'branch_id' => auth()->user()->branch_id,
             'user_id' => Auth::id(),
          ]); 
 

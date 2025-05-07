@@ -130,7 +130,7 @@
                     <th><strong class="text-danger">التخصص:</strong> {{ $doctor->specialization ?? '-' }}</th>
                   </tr>
                   <tr>
-                    <th><strong class="text-danger">حالة العضوية:</strong> 
+                    <th><strong class="text-danger">الاشتراك السنوي:</strong> 
                       <span class="badge {{ $doctor->membership_status->badgeClass() }}">
                         {{ $doctor->membership_status->label() }}
                       </span>

@@ -60,6 +60,7 @@ class PricingSeeder extends Seeder
             ['name' => 'استشاري تخصص دقيق', 'amount' => 100, 'type' => 'license', 'entity_type' => 'doctor', 'doctor_type' => 'palestinian'],
        
             ['name' => 'تجديد اذن نشاط', 'amount' => 500, 'type' => 'license', 'entity_type' => 'medical_facility'],
+            ['name' => 'تجديد اذن نشاط - لاول مره', 'amount' => 2000, 'type' => 'license', 'entity_type' => 'medical_facility'],
             ['name' => 'غرامة تآخير', 'amount' => 1000, 'type' => 'penalty', 'entity_type' => 'medical_facility'],
 
         ];

@@ -46,7 +46,7 @@
                                 <td>{{ $doctorTransfer->created_at }}</td>
                             </tr>
                             <tr>
-                                <th>الملاحظات</th>
+                                <th>السبب</th>
                                 <td>{{ $doctorTransfer->note ?? 'لا توجد ملاحظات' }}</td>
                             </tr>
                             <tr>

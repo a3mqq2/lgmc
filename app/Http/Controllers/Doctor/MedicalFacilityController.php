@@ -60,6 +60,7 @@ class MedicalFacilityController extends Controller
             'membership_status'        => 'pending',
             'medical_facility_type_id' => $validated['type'],
             'user_id'                  => auth('doctor')->id(),
+            'branch_id'                => auth('doctor')->user()->branch_id,
         ]);
     
         // 4) Store each uploaded file

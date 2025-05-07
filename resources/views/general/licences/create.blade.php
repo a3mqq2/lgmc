@@ -9,7 +9,7 @@
                 انشاء اذن مزاولة جديد
             </div>
             <div class="card-body">
-                <form action="{{ route(get_area_name().'.licences.store') }}" method="POST">
+                <form action="{{ route(get_area_name().'.licences.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <div class="row">
@@ -51,7 +51,7 @@
                                     @endif
                                 </label>
                                 
-                                @if ($doctor->type->value == App\Enums\DoctorType::Visitor->value)
+                                @if ($doctor->type->value == App\Enums\DoctorType::Visitor->value )
                                         <input type="text" class="form-control" id="medical_facility_id" value="{{ $doctor->medicalFacility->name }}" readonly>
                                         <input type="hidden" name="medical_facility_id" value="{{$doctor->medicalFacility->id}}" >
                                         @else 
@@ -61,18 +61,16 @@
                                         </select> 
                                     @endif
                                     @else 
+                                    
+                                    @if (request('type') != "facilities")
                                     <label for="medical_facility_id" class="form-label">اختر مكان العمل</label>
                                     <select name="medical_facility_id" id="medical_facility_id" class="form-control select2-search">
                                         <option value="">اختر مكان العمل</option>
                                     </select> 
+                                    @endif
                                @endif
 
                             </div>
-                            @else 
-                            <label for="medical_facility_id" class="form-label">اختر مكان العمل</label>
-                            <select name="medical_facility_id" id="medical_facility_id" class="form-control select2-search">
-                                <option value="">اختر مكان العمل</option>
-                            </select> 
                             @endif
                         </div>
 
@@ -97,6 +95,31 @@
                             </div>
                         </div>
                     </div>
+
+
+                    @if (request('type') == 'facilities')
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white text-center">
+                          <h4 class="mb-0">📑 المستندات المطلوبة</h4>
+                        </div>
+                        <div class="card-body">
+                          <div class="row">
+                            @foreach($file_types as $ft)
+                                <div class="mb-3">
+                                    <label>{{ $ft->name }} @if($ft->is_required)*@endif</label>
+                                    <input type="file"
+                                        name="documents[{{ $ft->id }}]"
+                                        class="form-control"
+                                        {{ $ft->is_required ? 'required' : '' }}
+                                        accept=".pdf,image/*">
+                                </div>
+                                @endforeach
+                          </div>
+                        </div>
+                      </div>
+                    @endif
+                
+
 
                     <button type="submit" class="btn btn-primary">إنشاء</button>
                 </form>

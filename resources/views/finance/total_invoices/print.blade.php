@@ -71,6 +71,20 @@
                         </tr>
                     </tfoot>
                 </table>
+
+
+
+                    @if ($totalInvoice->invoices->first()->doctor_mail_id)
+                
+                    <p>ملاحظة هامة : 
+
+                        يحتاج هذا الاجراء اسبوع للتنفيذ بعد تسديد الفاتورة ٫ مما يعني ان الاستلام سيكون يوم 
+                        {{ $invoice->created_at->addWeek()->format('Y-m-d') }}  </p>
+                
+                        </p>
+                    
+                    @endif
+                    
             </div>
         </div>
     </div>

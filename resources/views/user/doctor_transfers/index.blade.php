@@ -30,7 +30,7 @@
                         <div class="col-md-4">
                             <label for="q" class="form-label">بحث</label>
                             <input type="text" id="q" name="q" class="form-control"
-                                   placeholder="ابحث برقم الطلب أو اسم الطبيب أو الملاحظات" 
+                                   placeholder="ابحث برقم الطلب أو اسم الطبيب أو السبب" 
                                    value="{{ request('q') }}">
                         </div>
 
@@ -128,8 +128,8 @@
                                                 @method('PATCH')
                                                 <div class="modal-body">
                                                     <div class="mb-3">
-                                                        <label for="approve_note{{ $transfer->id }}" class="form-label">ملاحظات</label>
-                                                        <textarea name="approve_note" id="approve_note{{ $transfer->id }}" class="form-control" rows="3" placeholder="أدخل ملاحظاتك (اختياري)"></textarea>
+                                                        <label for="approve_note{{ $transfer->id }}" class="form-label">السبب</label>
+                                                        <textarea name="approve_note" id="approve_note{{ $transfer->id }}" class="form-control" rows="3" placeholder="أدخل السبب (اختياري)"></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">

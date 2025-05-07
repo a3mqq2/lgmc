@@ -191,8 +191,8 @@ class MedicalFacilityService
     {
         $query = MedicalFacility::query();
 
-        if (!empty($filters['name'])) {
-            $query->where('name', 'like', '%' . $filters['name'] . '%');
+        if (!empty($filters['q'])) {
+            $query->where('name', 'like', '%' . $filters['q'] . '%');
         }
 
         if (!empty($filters['ownership'])) {

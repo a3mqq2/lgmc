@@ -60,9 +60,9 @@
                         </div>
 
                         <div class="col-md-3">
-                            <label for="registered_at"> حالة العضوية </label>
+                            <label for="registered_at"> الاشتراك السنوي </label>
                             <select class="form-control" name="membership_status" id="membership_status">
-                                <option value="">اختر حالة العضوية</option>
+                                <option value="">اختر الاشتراك السنوي</option>
                                 @foreach (\App\Enums\MembershipStatus::cases() as $status)
                                     <option value="{{ $status->value }}" {{ request()->input('membership_status') == $status->value ? 'selected' : '' }}>
                                         {{ $status->label() }}
@@ -143,7 +143,7 @@
                                 @endif
 
 
-                                <th class="bg-light">حالة العضوية</th>
+                                <th class="bg-light">الاشتراك السنوي</th>
                                 @if (request('init_approve') )
                                     <th class="bg-light"> تاريخ الزيارة</th>
                                 @endif

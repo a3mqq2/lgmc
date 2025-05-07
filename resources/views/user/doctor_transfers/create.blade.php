@@ -79,7 +79,7 @@
                     <div class="row g-3">
                         <div class="col-md-12">
                             <label for="note" class="form-label">
-                                <i class="fa fa-info-circle"></i> ملاحظات
+                                <i class="fa fa-info-circle"></i> السبب
                             </label>
                             <textarea 
                                 name="note" 

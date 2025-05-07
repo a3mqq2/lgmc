@@ -110,6 +110,13 @@ Route::patch('medical-facilities/{facility}/reject',
     Route::resource('emails', EmailController::class);
 
     
+
+    Route::patch('/doctor-transfers/{doctor_transfer}/approve', [DoctorTransferController::class, 'approve'])->name('doctor-transfers.approve');
+    Route::patch('/doctor-transfers/{doctor_transfer}/reject', [DoctorTransferController::class, 'reject'])->name('doctor-transfers.reject');
+    Route::resource('doctor-transfers', DoctorTransferController::class);
+
+
+    
     // =========== DOCTOR MAILS ============= //
 
 });

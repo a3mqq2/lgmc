@@ -77,8 +77,6 @@
 
 
 
-
-
 @if(auth()->user()->permissions()->where('name', 'services-pricing')->count())
 <li class="nav-item">
     <a class="nav-link menu-link" data-bs-target="#pricing_licenses_all" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
@@ -261,7 +259,8 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 <div class="collapse menu-dropdown" id="licences_facilities">
     <ul class="nav nav-sm flex-column">
         <li class="nav-item">
-            <a href="{{route(get_area_name().'.licences.index', ['type' => "facilities", "status" => "under_approve_branch"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الفرع  <br> <span class="badge badge-dark bg-dark">{{$medical_license_under_approve_branch}}</span>    </a>
+            <a href="{{route('admin.licences.create', ['type' => "facilities"])}}" class="nav-link" data-key="t-horizontal">    اضافه  اذن مزاولة      </a>
+            {{-- <a href="{{route(get_area_name().'.licences.index', ['type' => "facilities", "status" => "under_approve_branch"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الفرع  <br> <span class="badge badge-dark bg-dark">{{$medical_license_under_approve_branch}}</span>    </a> --}}
             <a href="{{route(get_area_name().'.licences.index', ['type' => "facilities", "status" => "under_approve_admin"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الادارة     <br> <span class="badge badge-dark bg-dark">{{$medical_license_under_approve_admin}}</span>     </a>
             <a href="{{route(get_area_name().'.licences.index', ['type' => "facilities", "status" => "under_payment"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد المراجعة المالية    <br> <span class="badge badge-dark bg-dark">{{$medical_license_under_payment}}</span>  </a>
             <a href="{{route(get_area_name().'.licences.index', ['type' => "facilities", "status" => "revoked"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - المتوقفه     <br> <span class="badge badge-dark bg-dark">{{$medical_license_revoked}}</span> </a>

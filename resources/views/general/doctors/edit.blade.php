@@ -297,14 +297,14 @@
 
         </div>
 
-        <div class="col-md-12">
+        {{-- <div class="col-md-12">
             <div class="col-md-12">
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-primary text-white text-center"><h4 class="mb-0">📑 المستندات المطلوبة</h4></div>
                     <div class="card-body"><div class="row" id="documents_container"></div></div>
                 </div>
             </div>
-        </div>
+        </div> --}}
         
         
 
@@ -387,13 +387,7 @@
                         <input type="text" name="specialty_2" id="specialty_2" value="{{ old('specialty_2', $doctor->specialty_2) }}" class="form-control" autocomplete="off">
                     </div>                                    
                   
-                    @if ($doctor->type->value != "visitor")
-                    <div class="col-md-4 mt-2">
-                        <label for=""> سنوات الخبره  </label>
-                        <input name="experience"  id="" type="number" class="form-control" value="{{old('experience')}}" />
-                    </div>
-                    @endif
-
+    
 
 
                     </div>

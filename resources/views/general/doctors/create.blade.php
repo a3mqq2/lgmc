@@ -65,7 +65,7 @@
                                         <input type="hidden" name="type" value="{{request('type')}}">
                                     </div>
                                     
-                                    @if (request('type') != "visitor" && request('type') != "foreign")
+                                    @if (request('type') == "libyan")
                                     <div class="col-md-6">
                                         <label for="">الاسم بالكامل باللغه الانجليزيه</label>
                                         <input type="text" required name="name_en" value="{{old('name_en')}}"  id="" class="form-control">
@@ -80,7 +80,7 @@
                                     @endif
                                  
 
-                                    @if (request('type') != "visitor" && request('type') != "foreign")
+                                    @if (request('type') == "libyan")
                                     <div class="col-md-6">
                                         <label for="">الرقم النقابي الأول</label>
                                         <input type="text" name="doctor_number"   value="{{old('doctor_number')}}"  id="" class="form-control">
@@ -88,7 +88,7 @@
                                     @endif
 
 
-                                    @if (request('type') != "visitor" && request('type') != "foreign")
+                                    @if (request('type') == "libyan")
                                     <div class="col-md-6 mt-2">
                                         <label for=""> اسم الام </label>
                                         <input type="text" required name="mother_name" value="{{old('mother_name')}}" id="" class="form-control">
@@ -153,14 +153,14 @@
                                         </select>
                                     </div>
                                     @else 
-                                    @if (request('type') != "visitor" && request('type') != "foreign")
+                                    @if (request('type') == "libyan")
                                     <div class="col-md-6 mt-2">
                                         <label for=""> تاريخ الميلاد </label>
                                         <input type="date" required name="date_of_birth" value="{{old('date_of_birth')}}" id="" class="form-control">
                                     </div>
                                     @endif
                                     @endif
-                                    @if (request('type') != "visitor" && request('type') != "foreign")
+                                    @if (request('type') == "libyan")
                                     <div class="col-md-6 mt-2">
                                         <label for="">  الحالة الاجتماعية  </label>
                                         <select name="marital_status"  required id="" class="form-control">
@@ -438,7 +438,7 @@
                                 
 
 
-                                    @if (request('type') != "visitor" && request('type') != "foreign")
+                                    @if (request('type') != "visitor")
                                     <div class="col-md-12">
                                         <label for=""> تاريخ الانتساب   </label>
                                         <input type="date" name="registered_at" value="{{date('Y-m-d')}}" id="" class="form-control">
@@ -530,7 +530,7 @@
                
 
 
-                @if (request("type") != "visitor" && request('type') != "foreign")
+                @if (request("type") == "libyan")
                 <div class="card">
                     <div class="card-header bg-primary text-light">بيانات العمل السابق</div>
                     <div class="card-body">

@@ -81,14 +81,14 @@
                     <div class="row g-3">
                         <div class="col-md-12">
                             <label for="note" class="form-label">
-                                <i class="fa fa-info-circle"></i> ملاحظات
+                                <i class="fa fa-info-circle"></i> السبب
                             </label>
                             <textarea 
                                 name="note" 
                                 id="note" 
                                 rows="4" 
                                 class="form-control @error('note') is-invalid @enderror"
-                                placeholder="أدخل ملاحظات حول النقل (اختياري)"
+                                placeholder="أدخل السبب حول النقل (اختياري)"
                             >{{ old('note', $doctorTransfer->note) }}</textarea>
                             @error('note')
                                 <div class="invalid-feedback">{{ $message }}</div>
