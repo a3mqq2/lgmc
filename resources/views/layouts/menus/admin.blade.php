@@ -155,7 +155,7 @@
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'pending']) }}" class="nav-link">طلبات الموقع </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'init_approve']) }}" class="nav-link"> اطباء  موافقة مبدئية  </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'init_approve']) }}" class="nav-link">   موافقة مبدئية للاطباء </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'active']) }}" class="nav-link">الاطباء المفعليين</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء المنتهية صلاحيتهم</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'banned']) }}" class="nav-link">الاطباء الموقوفين</a>
@@ -181,7 +181,7 @@
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'pending']) }}" class="nav-link">طلبات الموقع </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'init_approve']) }}" class="nav-link"> اطباء  موافقة مبدئية  </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'init_approve']) }}" class="nav-link">  موافقة مبدئية للاطباء </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'active']) }}" class="nav-link">الاطباء المفعليين</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء المنتهية صلاحيتهم</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'banned']) }}" class="nav-link">الاطباء الموقوفين</a>
