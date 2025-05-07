@@ -273,7 +273,7 @@
                                     @if (request('type') == "visitor")
                                     <div class="col-md-4">
                                         <label for=""> دولة التخرج </label>
-                                        <select name="country_graduation_id" required  id="" class="form-control form-control select2">
+                                        <select name="country_graduation_id"   id="" class="form-control form-control select2">
                                             <option value="">حدد دولة التخرج </option>
                                             @foreach ($countries as $country)
                                                 <option value="{{$country->id}}" {{old('country_graduation_id') == $country->id ? "selected" : ""}}>{{$country->name}}</option>
@@ -283,7 +283,7 @@
                                     @endif
                                     <div class="col-md-6">
                                         <label for=""> جهة التخرج </label>
-                                        <select name="hand_graduation_id"  required id="" class="form-control form-control select2">
+                                        <select name="hand_graduation_id"   id="" class="form-control form-control select2">
                                             <option value="">حدد جهة التخرج </option>
                                             @foreach ($universities as $university)
                                                 <option value="{{$university->id}}" {{old('hand_graduation_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
@@ -294,7 +294,7 @@
 
                                     <div class="col-md-6">
                                         <label for="graduation_certificate">تاريخ الحصول عليها</label>
-                                        <select name="graduation_certificate" id="graduation_certificate" class="form-control select2" required>
+                                        <select name="graduation_certificate" id="graduation_certificate" class="form-control select2" >
                                             @php
                                                 $currentYear = date('Y');
                                                 $selectedYear = old('graduation_certificate', $currentYear);
@@ -321,7 +321,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label for=""> جهة الحصول على الامتياز </label>
-                                        <select name="qualification_university_id"  required id="" class="form-control form-control select2">
+                                        <select name="qualification_university_id"   id="" class="form-control form-control select2">
                                             <option value="">حدد جهة  </option>
                                             @foreach ($universities as $university)
                                                 <option value="{{$university->id}}" {{old('qualification_university_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
@@ -330,7 +330,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label for="certificate_of_excellence_date">تاريخ الحصول عليها</label>
-                                        <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control select2" required>
+                                        <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control select2" >
                                             @php
                                                 $currentYear = date('Y');
                                                 $selectedYear = old('certificate_of_excellence_date', $currentYear);
