@@ -202,7 +202,6 @@
                                 <td class="{{$doctor->type->badgeClass()}}" >
                                     {{ $doctor->type->label() }}
                                 </td>
-                                <td>{{ $doctor->academicDegree->name ?? '-' }}</td>
                      
 
                                 <td>
