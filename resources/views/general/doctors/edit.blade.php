@@ -323,7 +323,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for=""> تاريخ الانتساب   </label>
+                            <label for=""> تاريخ الانتساب للنقابة   </label>
                             <input type="date" name="registered_at" value="{{$doctor->registered_at ?? ''}}" id="" class="form-control">
                         </div>
 

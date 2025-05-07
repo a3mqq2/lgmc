@@ -440,7 +440,7 @@
 
                                     @if (request('type') != "visitor")
                                     <div class="col-md-12">
-                                        <label for=""> تاريخ الانتساب   </label>
+                                        <label for=""> تاريخ الانتساب للنقابة   </label>
                                         <input type="date" name="registered_at" value="{{date('Y-m-d')}}" id="" class="form-control">
                                     </div>
                                     @endif

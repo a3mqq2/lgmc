@@ -55,7 +55,7 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-3">
-                            <label for="registered_at">تاريخ الانتساب</label>
+                            <label for="registered_at">تاريخ الانتساب للنقابة</label>
                             <input type="date" lang="ar" dir="rtl" class="form-control date-picker" id="registered_at" name="registered_at" value="{{ request()->input('registered_at') }}">
                         </div>
 
@@ -138,14 +138,18 @@
                                 @endif
                                 <th class="bg-light text-dark" >نوع الطبيب</th>
                                 
-                                @if (request('type') != "visitor")
-                                <th class="bg-light">تاريخ الانتساب</th>
+                                @if (request('type') != "visitor" && request('type') != "foreign")
+                                <th class="bg-light">تاريخ الانتساب للنقابة</th>
                                 @endif
 
+
+                                <th class="bg-light">حالة العضوية</th>
 
                                 @if (request('init_approve') )
                                     <th class="bg-light"> تاريخ الزيارة</th>
                                 @endif
+
+
                                 @if (get_area_name() == "finance")
                                 <th class="bg-danger text-light">القيمة المستحقة من الطبيب</th>
                                 <th class="bg-success text-light">القيمة المدفوعة الكلية</th>
