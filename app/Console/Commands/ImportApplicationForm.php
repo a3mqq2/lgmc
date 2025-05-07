@@ -39,7 +39,7 @@ class ImportApplicationForm extends Command
 
         foreach ($doctors as $doctor) {
             $fileName = "application_form.jpg";
-            $filePath = "documents/{$fileName}";
+            $filePath = "documents/{$doctor->doctor_number}/{$fileName}";
 
             if (Storage::disk('public')->exists($filePath)) {
 
