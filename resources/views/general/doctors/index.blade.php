@@ -152,10 +152,7 @@
                                 <th class="bg-success text-light">القيمة المدفوعة الكلية</th>
                                 <th class="bg-warning text-light">القيمة المعفى عنه</th>
                                 @endif
-                                
-                                @if (request('type') != "visitor")
-                                    <th class="bg-light">جهة العمل</th>
-                                @endif
+                              
 
                                 <th class="bg-light">الإجراءات</th>
                             </tr>
@@ -233,13 +230,6 @@
                                @endif
                               
 
-                               @if (request('type') != "visitor" )
-                               <td>
-                                    @if ($doctor->institution)
-                                    {{ $doctor->institution->name }}
-                                    @endif
-                                </td>
-                               @endif
 
                                 <td>
 
