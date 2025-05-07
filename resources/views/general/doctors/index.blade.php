@@ -143,7 +143,6 @@
                                 @endif
 
 
-                                <th class="bg-light">الاشتراك السنوي</th>
                                 @if (request('init_approve') )
                                     <th class="bg-light"> تاريخ الزيارة</th>
                                 @endif
@@ -208,9 +207,6 @@
                                 </td>
 
 
-                                <td>
-                                    {{$doctor->membership_expiration_date}}
-                                </td>
 
                                 @if (request('init_approve'))
                                     <td>
