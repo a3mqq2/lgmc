@@ -109,4 +109,6 @@ class MedicalFacilityTypeController extends Controller
         return redirect()->route(get_area_name() . '.medical-facility-types.index')
             ->with('success', 'تم حذف نوع مرفق طبي بنجاح.');
     }
+
+    
 }

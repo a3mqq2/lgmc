@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('vault_id')->constrained();
-            $table->string('desc');
+            $table->text('desc');
             $table->decimal('amount', 11,2);
             $table->decimal('balance', 11,2);
             $table->foreignId('branch_id')->nullable()->constrained()->onDelete('set null');

@@ -19,7 +19,7 @@ class RejectionEmail extends Mailable implements ShouldQueue
     /**
      * Create a new message instance.
      */
-    public function __construct($doctor, $reason)
+    public function __construct($doctor, string $reason)
     {
         $this->doctor = $doctor;
         $this->reason = $reason;

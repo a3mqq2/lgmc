@@ -45,7 +45,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-
         $this->call(PricingSeeder::class);
         $this->call(CountrySeeder::class);
         $this->call(AcademicDegreeSeeder::class);
@@ -54,8 +53,19 @@ class DatabaseSeeder extends Seeder
         $this->call(FileTypeSeeder::class);
         $this->call(ArabUniversitiesSeeder::class);
         $this->call(VaultSeeder::class);
-        $this->call(MedicalFacilityTypeSeeder::class);
+        $this->call(MedicalFacilityTypeSeeder::class); // ← 👈 لازم تجي قبل
+        
+        $this->call(MedicalServiceFilesSeeder::class); // ← ✅ بعدها
+        $this->call(PrivateClinicFilesSeeder::class);  // ← ✅ بعدها
+        
         $this->call(TransactionTypesSeeder::class);
         $this->call(RolesAndPermissionsSeeder::class);
+        $this->call(DoctorMailPermission::class);
+        $this->call(ServicePricingSeeder::class);
+        $this->call(LibyanFiles::class);
+        $this->call(ForeignDoctorFileTypeSeeder::class);
+        $this->call(PalestinianDoctorFileTypeSeeder::class);
+        $this->call(VisitorDoctorFileTypeSeeder::class);
+        $this->call(PermissionForDoctors::class);
     }
 }

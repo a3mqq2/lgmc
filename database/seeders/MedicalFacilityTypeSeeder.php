@@ -13,73 +13,25 @@ class MedicalFacilityTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        // تعريف جميع أنواع المنشآت الطبية مع الأسماء بالعربية والإنجليزية
         $medicalFacilityTypes = [
             [
-                'name' => 'مستشفى',
-                'en_name' => 'Hospital',
+                'name' => 'عيادة فردية - ( Private Clinic )',
+                'en_name' => 'Private Clinic',
             ],
             [
-                'name' => 'عيادة',
-                'en_name' => 'Clinic',
-            ],
-            [
-                'name' => 'مركز الرعاية الصحية الأولية',
-                'en_name' => 'Primary Healthcare Center',
-            ],
-            [
-                'name' => 'مركز تخصصي',
-                'en_name' => 'Specialized Center',
-            ],
-            [
-                'name' => 'مركز التأهيل وإعادة التأهيل',
-                'en_name' => 'Rehabilitation Center',
-            ],
-            [
-                'name' => 'مركز الطوارئ',
-                'en_name' => 'Emergency Center',
-            ],
-            [
-                'name' => 'صيدلية',
-                'en_name' => 'Pharmacy',
-            ],
-            [
-                'name' => 'مركز الأشعة والتصوير الطبي',
-                'en_name' => 'Radiology and Imaging Center',
-            ],
-            [
-                'name' => 'مختبر طبي',
-                'en_name' => 'Medical Laboratory',
-            ],
-            [
-                'name' => 'مركز الصحة النفسية',
-                'en_name' => 'Mental Health Center',
-            ],
-            [
-                'name' => 'مركز البحث الطبي',
-                'en_name' => 'Medical Research Center',
-            ],
-            [
-                'name' => 'مركز الرعاية المنزلية',
-                'en_name' => 'Home Care Center',
-            ],
-            [
-                'name' => 'مركز الصحة المجتمعية',
-                'en_name' => 'Community Health Center',
+                'name' => 'خدمات طبية - ( Medical Services )',
+                'en_name' => 'Medical Services',
             ],
         ];
 
-        // إدراج كل نوع من أنواع المنشآت الطبية في قاعدة البيانات
+
         foreach ($medicalFacilityTypes as $type) {
-            MedicalFacilityType::firstOrCreate(
-                ['en_name' => $type['en_name']], // الشرط للبحث عن السجل الحالي
-                [
-                    'name' => $type['name'],
-                    'en_name' => $type['en_name'],
-                ]
-            );
+            MedicalFacilityType::create([
+                'name' => $type['name'],
+                'en_name' => $type['en_name'],
+            ]);
         }
 
         $this->command->info('تم إضافة أنواع المنشآت الطبية بنجاح!');
-    }
+    }   
 }

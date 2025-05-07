@@ -232,6 +232,12 @@ class Doctor extends Authenticatable
         return $this->belongsTo(MedicalFacility::class);
     }
 
+
+    public function medicalFacilities()
+    {
+        return $this->hasMany(MedicalFacility::class, 'manager_id')->where('branch_id', $this->branch_id);
+    }
+
     public function setSequentialIndex(): void
     {
         $this->index = self::where('branch_id', $this->branch_id)->max('index') + 1;
@@ -239,8 +245,12 @@ class Doctor extends Authenticatable
 
     public function makeCode(): void
     {
-        $this->loadMissing('branch');
-        $this->code = $this->branch->code . '-DR-' . str_pad($this->index, 3, '0', STR_PAD_LEFT);
+        if($this->branch) {
+            $this->loadMissing('branch');
+            $this->code = $this->branch->code . '-DR-' . str_pad($this->index, 3, '0', STR_PAD_LEFT);
+        } else {
+            $this->code = 'DR-' . str_pad($this->index, 3, '0', STR_PAD_LEFT);
+        }
     }
 
     public function regenerateCode(): void

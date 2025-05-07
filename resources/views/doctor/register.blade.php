@@ -419,119 +419,127 @@
                                                 @csrf
                                                 @method('POST')
                                                       <h4 class="card-title"> المعلومات الشخصية </h4>
+                                                 
                                                       <div class="row">
-                                                         <div class="col-md-6">
-                                                             <label for="">الاسم بالكامل</label>
-                                                             <input type="text" required name="name" value="{{old('name')}}"  id="" class="form-control">
-                                                             <input type="hidden" name="type" value="{{request('type')}}">
-                                                         </div>
-                                                         
-                                                         @if (request('type') == "libyan")
-                                                         <div class="col-md-6">
-                                                            <label for="">الاسم بالكامل باللغه الانجليزيه</label>
-                                                            <input type="text" required name="name_en" value="{{old('name_en')}}"  id="name_en" class="form-control">
-                                                        </div>                               
-                                                         @endif
-
-                                                         @if (request('type') == "libyan")
-                                                         <div class="col-md-6 mt-2">
-                                                             <label for="">الرقم الوطني</label>
-                                                             <input type="number" required name="national_number" value="{{old('national_number')}}" id="national_number" class="form-control">
-                                                         </div>
-                                                         @endif
-                                                         
-                                                            @if (request('type') != "foreign" &&  request('type') !="visitor")
-
-                                                            <div class="col-md-6 mt-2">
-                                                                <label for=""> اسم الام </label>
-                                                                <input type="text" required name="mother_name" value="{{old('mother_name')}}" id="" class="form-control">
-                                                            </div>
-
-                                                            @endif
-
-
-                                                         <div class="col-md-6 mt-2">
-                                                             <label for="">  الجنسية  </label>
-                                                             <select name="country_id" required id="country_id" class="form-control" 
-                                                             @if(request('type') == "libyan" || request('type') == "palestinian") disabled @endif>
-                                                             <option value="">حدد دوله من القائمة</option>
-                                                             @foreach ($countries as $country)
-                                                             @if ((request('type') == "visitor" || request('type') == "foreign") && ($country->id == 1 || $country->id == 2))
-                                                                 @continue  
-                                                                 @else 
-                                                                 <option value="{{ $country->id }}"
-                                                                     {{ old('country_id') == $country->id ? 'selected' : '' }}
-                                                                     @if(request('type') == "libyan" && $country->id == 1) selected @endif
-                                                                     @if(request('type') == "palestinian" && $country->id == 2) selected @endif>
-                                                                     {{ $country->name }}
-                                                                 </option>
-                                                             @endif
-                                                         @endforeach
-                     
-                                                             @if (request('type') == "palestinian")
-                                                                 <input type="hidden" name="country_id" value="2" class="form-control">
-                                                             @endif
-                     
-                                                             @if (request('type') == "libyan")
-                                                                 <input type="hidden" name="country_id" value="1" class="form-control">
-                                                             @endif
-                     
-                                                         </select>
-                                                         
-                                                         </div>
+                                                        <div class="col-md-6">
+                                                            <label for="">الاسم بالكامل</label>
+                                                            <input type="text" required name="name" value="{{old('name')}}"  id="" class="form-control">
+                                                            <input type="hidden" name="type" value="{{request('type')}}">
+                                                        </div>
                                                         
-                                                         @if (request('type') == "libyan")
-                                                         @if (request('type') == "libyan")
-                                                         <div class="col-md-2 mt-2">
-                                                             <label for="birth_year">سنة الميلاد</label>
-                                                             <input type="text"  required name="birth_year" value="{{ old('birth_year') }}" id="birth_year" class="form-control" readonly>
-                                                         </div>
+                                                        @if (request('type') != "visitor" && request('type') != "foreign")
+                                                        <div class="col-md-6">
+                                                            <label for="">الاسم بالكامل باللغه الانجليزيه</label>
+                                                            <input type="text" required name="name_en" value="{{old('name_en')}}"  id="" class="form-control">
+                                                        </div>
+                                                        @endif
+                                                        
+                                                        @if (request('type') == "libyan")
+                                                        <div class="col-md-6 mt-2">
+                                                            <label for="">الرقم الوطني</label>
+                                                            <input type="number" required name="national_number" value="{{old('national_number')}}" id="national_number" class="form-control">
+                                                        </div>
+                                                        @endif
                                                      
-                                                         <!-- Month & Day -->
-                                                         <div class="col-md-2 mt-2">
-                                                             <label for="date_of_birth">الشهر </label>
-                                                             <select name="month" required id="" class="form-control">
-                                                                 <option value=""> حدد </option>
-                                                                 @foreach (range(1, 12) as $month)
-                                                                     <option value="{{ $month }}" {{ old('month') == $month ? 'selected' : '' }}>
-                                                                         {{ $month }}
-                                                                     </option>
-                                                                 @endforeach
-                                                             </select>
-                                                         </div>
-                                                         <div class="col-md-2 mt-2">
-                                                             <label for="day"> اليوم </label>
-                                                             <select name="day" required id="" class="form-control">
-                                                                 <option value=""> حدد </option>
-                                                                 @foreach (range(1, 31) as $day)
-                                                                     <option value="{{ $day }}" {{ old('day') == $day ? 'selected' : '' }}>
-                                                                         {{ $day }}
-                                                                     </option>
-                                                                 @endforeach
-                                                             </select>
-                                                         </div>
-                                                         @else 
-                                                         <div class="col-md-6 mt-2">
-                                                             <label for=""> تاريخ الميلاد </label>
-                                                             <input type="date" required name="date_of_birth" value="{{old('date_of_birth')}}" id="" class="form-control">
-                                                         </div>
-                                                         <div class="col-md-6 mt-2">
+                    
+                                                        @if (request('type') != "visitor" && request('type') != "foreign")
+                                                        <div class="col-md-6">
+                                                            <label for="">الرقم النقابي الأول</label>
+                                                            <input type="text" name="doctor_number"   value="{{old('doctor_number')}}"  id="" class="form-control">
+                                                        </div>
+                                                        @endif
+                    
+                    
+                                                        @if (request('type') != "visitor" && request('type') != "foreign")
+                                                        <div class="col-md-6 mt-2">
+                                                            <label for=""> اسم الام </label>
+                                                            <input type="text" required name="mother_name" value="{{old('mother_name')}}" id="" class="form-control">
+                                                        </div>
+                                                        @endif
+                    
+                                                        <div class="col-md-6 mt-2">
+                                                            <label for="">  الجنسية  </label>
+                                                            <select name="country_id" required id="country_id" class="form-control select2" 
+                                                            @if(request('type') == "libyan" || request('type') == "palestinian") disabled @endif>
+                                                            <option value="">حدد دوله من القائمة</option>
+                                                            @foreach ($countries as $country)
+                                                                @if (request('type') == "visitor" && ($country->id == 1 || $country->id == 2))
+                                                                    @continue  
+                                                                    @else 
+                                                                    <option value="{{ $country->id }}"
+                                                                        {{ old('country_id') == $country->id ? 'selected' : '' }}
+                                                                        @if(request('type') == "libyan" && $country->id == 1) selected @endif
+                                                                        @if(request('type') == "palestinian" && $country->id == 2) selected @endif>
+                                                                        {{ $country->name }}
+                                                                    </option>
+                                                                @endif
+                                                            @endforeach
+                    
+                                                            @if (request('type') == "palestinian")
+                                                                <input type="hidden" name="country_id" value="2" class="form-control">
+                                                            @endif
+                    
+                                                            @if (request('type') == "libyan")
+                                                                <input type="hidden" name="country_id" value="1" class="form-control">
+                                                            @endif
+                    
+                                                        </select>
+                                                        </div>
+                                                        @if (request('type') == "libyan")
+                                                        <div class="col-md-2 mt-2">
+                                                            <label for="birth_year">سنة الميلاد</label>
+                                                            <input type="text"  required name="birth_year" value="{{ old('birth_year') }}" id="birth_year" class="form-control" readonly>
+                                                        </div>
+                                                    
+                                                        <!-- Month & Day -->
+                                                        <div class="col-md-2 mt-2">
+                                                            <label for="date_of_birth">الشهر </label>
+                                                            <select name="month" required id="" class="form-control">
+                                                                <option value=""> حدد </option>
+                                                                @foreach (range(1, 12) as $month)
+                                                                    <option value="{{ $month }}" {{ old('month') == $month ? 'selected' : '' }}>
+                                                                        {{ $month }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-2 mt-2">
+                                                            <label for="day"> اليوم </label>
+                                                            <select name="day" required id="" class="form-control">
+                                                                <option value=""> حدد </option>
+                                                                @foreach (range(1, 31) as $day)
+                                                                    <option value="{{ $day }}" {{ old('day') == $day ? 'selected' : '' }}>
+                                                                        {{ $day }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        @else 
+                                                        @if (request('type') != "visitor" && request('type') != "foreign")
+                                                        <div class="col-md-6 mt-2">
+                                                            <label for=""> تاريخ الميلاد </label>
+                                                            <input type="date" required name="date_of_birth" value="{{old('date_of_birth')}}" id="" class="form-control">
+                                                        </div>
+                                                        @endif
+                                                        @endif
+                                                        @if (request('type') != "visitor" && request('type') != "foreign")
+                                                        <div class="col-md-6 mt-2">
                                                             <label for="">  الحالة الاجتماعية  </label>
                                                             <select name="marital_status"  required id="" class="form-control">
                                                                 <option value="single" {{old('marital_status') == "single" ? "selected" : ""}}>اعزب</option>
                                                                 <option value="married" {{old('marital_status') == "married" ? "selected" : ""}}>متزوج</option>
                                                             </select>
                                                         </div>
+                                                        @endif
                                                         <div class="col-md-6 mt-2">
                                                             <label for="">  النوع   </label>
-                                                            <select name="gender" required id="gender" class="form-control" >
+                                                            <select name="gender" required id="gender" required  class="form-control"  >
                                                                 <option value="male" {{old('gender') == "male" ? "selected" : ""}}>ذكر</option>
                                                                 <option value="female" {{old('gender') == "female" ? "selected" : ""}}>انثى</option>
                                                             </select>
-                                   
                                                         </div>
-
-                                                        
+                                                       
+                                                        @if ( request('type') == "libyan")
                                                         <div class="col-md-6 mt-2">
                                                             <label for=""> رقم جواز السفر   </label>
                                                             <input type="text"  name="passport_number" pattern="[A-Z0-9]+"  required value="{{old('passport_number')}}" id="" class="form-control">
@@ -540,112 +548,151 @@
                                                             <label for="">  تاريخ انتهاء صلاحية الجواز     </label>
                                                             <input type="date" required name="passport_expiration" value="{{old('passport_expiration', date('Y-m-d'))}}" id="" class="form-control">
                                                         </div>
-                                                         @endif
-                                                         @endif
-                                                     </div>
-
-
-                                                      <h4 class="card-title mt-3"> بيانات الاتصال والدخول </h4>
-                                                      <div class="row">
-                                                         <div class="col-md-6">
-                                                             <label for="">رقم الهاتف</label>
-                                                             <input type="phone" required name="phone" maxlength="10" value="{{old('phone')}}" id="" class="form-control">
-                                                         </div>
-                                                         <div class="col-md-6">
-                                                             <label for="">رقم الواتساب</label>
-                                                             <input type="phone" name="phone_2" value="{{old('phone_2')}}" id="" maxlength="10" class="form-control">
-                                                         </div>
-                                                         <div class="col-md-6">
-                                                             <label for="">الإقامة</label>
-                                                             <input type="text" name="address" value="{{old('address')}}" id="" class="form-control">
-                                                         </div>
-                                                         <div class="col-md-6">
-                                                             <label for=""> كلمة المرور </label>
-                                                             <input type="password" name="password" value="{{old('password')}}" id="" class="form-control">
-                                                         </div>
-                                                         <div class="col-md-6">
-                                                             <label for=""> تأكيد كلمة المرور  </label>
-                                                             <input type="password" name="password_confirmation" value="{{old('password_confirmation')}}" id="" class="form-control">
-                                                         </div>
-                                                         <div class="col-md-6">
-                                                            <label for="">البريد الالكتروني الشخصي</label>
-                                                            <input type="email" required name="email" value="{{old('email')}}" id="email" class="form-control">
-                                                            <span class="text-info"> <i class="fa fa-info-circle pr-2"></i> يستخدم هذا البريد لتسجيل الدخول على النظام</span>
+                    
+                                                        @endif
+                    
+                                                     
+                                                        @if (request('type') == "visitor")
+                                                        <div class="col-md-6 mt-2">
+                                                            <label for="">  الشركه المستضيفه (المتعاقده)   </label>
+                                                            <select name="medical_facility_id" id="" class="form-control select2" required>
+                                                                    <option value="">-</option>
+                                                                    @foreach ($medicalFacilities as $medical_facility)
+                                                                        <option value="{{$medical_facility->id}}">{{$medical_facility->name}}</option>
+                                                                    @endforeach
+                                                            </select>
                                                         </div>
-                                                     </div>
+                                                        @endif
+                    
+                                                        @if (request('type') == "visitor")
+                                                        <div class="col-md-6 mt-2">
+                                                            <label for=""> تاريخ الزيارة من  </label>
+                                                            <input type="date" required name="visit_from" value="{{old('visit_from', date('Y-m-d'))}}" id="" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-6 mt-2">
+                                                            <label for=""> تاريخ الزيارة الى  </label>
+                                                            <input type="date" required name="visit_to" value="{{old('visit_to', date('Y-m-d'))}}" id="" class="form-control">
+                                                        </div>
+                                                        @endif
+                    
+                    
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label for="">رقم الهاتف
+                    
+                                                                @if (request('type') == "visitor")
+                                                                   - الشركه 
+                                                                @endif
+                                                            </label>
+                                                            <input type="phone" required name="phone" maxlength="10" value="{{old('phone')}}" id="" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for=""> رقم الواتساب </label>
+                                                            <input type="phone" name="phone_2" value="{{old('phone_2')}}" id="" maxlength="10" class="form-control">
+                                                        </div>
+                                                        @if (request('type') != "visitor")
+                                                        <div class="col-md-6">
+                                                            <label for="">الاقامة</label>
+                                                            <input type="text" required name="address" value="{{old('address')}}" id="" class="form-control">
+                                                        </div>
+                                                        @endif
+                                                        <div class="col-md-6">
+                                                            <label for=""> كلمة المرور </label>
+                                                            <input type="password"   name="password" value="{{old('password')}}" id="" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for=""> تأكيد كلمة المرور  </label>
+                                                            <input type="password"  name="password_confirmation" value="{{old('password_confirmation')}}" id="" class="form-control">
+                                                        </div>
+                                                        {{-- email input --}}
+                                                        <div class="col-md-{{request('type')=="visitor"?"6":"12"}}">
+                                                            <label for="">البريد الالكتروني  </label>
+                                                            <input type="email"  name="email" value="{{old('email')}}" id="email" class="form-control">
+                                                        </div>
+                                                    </div> 
 
 
 
 
-                                                   <h4 class="card-title mt-2 mb-2"> بكالوريس    </h4>
+                                                   @if (request('type') != "visitor")
+                                                        <h4 class="card-title mt-2 mb-2"> بكالوريس    </h4>
+                                                        <div class="row mt-2 mb-4">
+                                                            @if (request('type') == "visitor")
+                                                            <div class="col-md-4">
+                                                                <label for=""> دولة التخرج </label>
+                                                                <select name="country_graduation_id" id="" class="form-control select2">
+                                                                    <option value="">حدد دولة التخرج </option>
+                                                                    @foreach ($countries as $country)
+                                                                        <option value="{{$country->id}}" {{old('country_graduation_id') == $country->id ? "selected" : ""}}>{{$country->name}}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            @endif
+                                                            <div class="col-md-4">
+                                                                <label for=""> جهة التخرج </label>
+                                                                <select name="hand_graduation_id" id="" class="form-control">
+                                                                    <option value="">حدد جهة التخرج </option>
+                                                                    @foreach ($universities as $university)
+                                                                        <option value="{{$university->id}}" {{old('hand_graduation_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <label for="graduation_certificate">تاريخ الحصول عليها</label>
+                                                                <select name="graduation_certificate" id="graduation_certificate" class="form-control select2" required>
+                                                                    @php
+                                                                        $currentYear = date('Y');
+                                                                        $selectedYear = old('graduation_certificate', $currentYear);
+                                                                    @endphp
+                                                                    @for($year = $currentYear; $year >= 1950; $year--)
+                                                                        <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                                                    @endfor
+                                                                </select>
+                                                            </div>
+                                                            
+                                                        </div>
+                                                   @endif
+
+
+
+                                                   @if (request('type') != "visitor")
+                                                   <h4 class="card-title mt-2 mb-2"> الامتياز    </h4>
                                                    <div class="row mt-2 mb-4">
-                                                      @if (request('type') == "visitor")
-                                                      <div class="col-md-4">
-                                                          <label for=""> دولة التخرج </label>
-                                                          <select name="country_graduation_id" id="" class="form-control select2">
-                                                              <option value="">حدد دولة التخرج </option>
-                                                              @foreach ($countries as $country)
-                                                                  <option value="{{$country->id}}" {{old('country_graduation_id') == $country->id ? "selected" : ""}}>{{$country->name}}</option>
-                                                              @endforeach
-                                                          </select>
-                                                      </div>
-                                                      @endif
-                                                      <div class="col-md-4">
-                                                          <label for=""> جهة التخرج </label>
-                                                          <select name="hand_graduation_id" id="" class="form-control">
-                                                              <option value="">حدد جهة التخرج </option>
-                                                              @foreach ($universities as $university)
-                                                                  <option value="{{$university->id}}" {{old('hand_graduation_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
-                                                              @endforeach
-                                                          </select>
-                                                      </div>
-                                                      <div class="col-md-8">
-                                                        <label for="graduation_certificate">تاريخ الحصول عليها</label>
-                                                        <select name="graduation_certificate" id="graduation_certificate" class="form-control select2" required>
-                                                            @php
-                                                                $currentYear = date('Y');
-                                                                $selectedYear = old('graduation_certificate', $currentYear);
-                                                            @endphp
-                                                            @for($year = $currentYear; $year >= 1950; $year--)
-                                                                <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
-                                                            @endfor
-                                                        </select>
-                                                      </div>
+                                                     <div class="col-md-6">
+                                                         <label for=""> جهة الحصول على الامتياز </label>
+                                                         <select name="qualification_university_id"  required id="" class="form-control form-control select2">
+                                                             <option value="">حدد جهة  </option>
+                                                             @foreach ($universities as $university)
+                                                                 <option value="{{$university->id}}" {{old('qualification_university_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
+                                                             @endforeach
+                                                         </select>
+                                                     </div>
+                                                     <div class="col-md-6">
+                                                         <label for="certificate_of_excellence_date">تاريخ الحصول عليها</label>
+                                                         <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control select2" required>
+                                                             @php
+                                                                 $currentYear = date('Y');
+                                                                 $selectedYear = old('certificate_of_excellence_date', $currentYear);
+                                                             @endphp
+                                                             @for($year = $currentYear; $year >= 1950; $year--)
+                                                                 <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                                             @endfor
+                                                         </select>
+                                                     </div>
                                                       
                                                   </div>
+ 
+                                                   @endif
+                                               
 
 
-
-                                                  <h4 class="card-title mt-2 mb-2"> الامتياز    </h4>
-                                                  <div class="row mt-2 mb-4">
-                                                    <div class="col-md-6">
-                                                        <label for=""> جهة الحصول على الامتياز </label>
-                                                        <select name="qualification_university_id"  required id="" class="form-control form-control select2">
-                                                            <option value="">حدد جهة  </option>
-                                                            @foreach ($universities as $university)
-                                                                <option value="{{$university->id}}" {{old('qualification_university_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <label for="certificate_of_excellence_date">تاريخ الحصول عليها</label>
-                                                        <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control select2" required>
-                                                            @php
-                                                                $currentYear = date('Y');
-                                                                $selectedYear = old('certificate_of_excellence_date', $currentYear);
-                                                            @endphp
-                                                            @for($year = $currentYear; $year >= 1950; $year--)
-                                                                <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
-                                                            @endfor
-                                                        </select>
-                                                    </div>
-                                                     
-                                                 </div>
-
+                                                   @if (request('type') != "visitor")
 
                                                    <h4 class="card-title mt-3"> الدرجة العلمية   </h4>
                                                    
-                                                   <div class="row">
+                                                   <div class="row mb-3">
                                                       <div class="col-md-6">
                                                           <label for="">الدرجة العلمية</label>
                                                           <select name="academic_degree_id" id="" class="form-control select2">
@@ -671,36 +718,52 @@
                                                   </div>
 
 
+                                                   @endif
+
+
 
 
                                                   <div class=" text-primary mt-2  mb-2">بيانات العمل الحالي</div>
                                                   <div class="row">
-                                                     <div class="col-md-12">
-                                                         <label for="">الصفة</label>
-                                                         <select name="doctor_rank_id" id="doctor_rank_id" class="form-control select2">
-                                                             <option value="">حدد الصفة</option>
-                                                             @foreach ($doctor_ranks as $doctor_rank)
-                                                                 @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
-                                                                     <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
-                                                                     @else 
-                                                                         @if (request('type') != "visitor")
-                                                                                 <option value="{{$doctor_rank->id}}" {{old('doctor_rank_id') == $doctor_rank->id ? "selected" : ""}}>{{$doctor_rank->name}}</option>
-                                                                         @endif
-                                                                     @endif
-                                                             @endforeach
-                                                         </select>
-                                                     </div>
-                                                     <div class="col-md-12 mt-2">
+                                                    <div class="col-md-12">
+                                                        <label for="">الصفة</label>
+                                                        <select name="doctor_rank_id" id="doctor_rank_id" class="form-control select2">
+                                                            <option value="">حدد الصفة</option>
+                                                            @foreach ($doctor_ranks as $doctor_rank)
+                                                                @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
+                                                                    <option value="{{ $doctor_rank->id }}" {{ old('doctor_rank_id') == $doctor_rank->id ? "selected" : "" }}>
+                                                                        @if ($doctor_rank->id == 6 && (request('type') == "visitor" || request('type') == "foreign"))
+                                                                            استشاري تخصص دقيق
+                                                                        @else
+                                                                            {{ $doctor_rank->name }}
+                                                                        @endif
+                                                                    </option>
+                                                                @elseif (request('type') != "visitor")
+                                                                    <option value="{{ $doctor_rank->id }}" {{ old('doctor_rank_id') == $doctor_rank->id ? "selected" : "" }}>
+                                                                        @if ($doctor_rank->id == 6 && (request('type') == "visitor" || request('type') == "foreign"))
+                                                                            استشاري تخصص دقيق
+                                                                        @else
+                                                                            {{ $doctor_rank->name }}
+                                                                        @endif
+                                                                    </option>
+                                                                @endif
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    
+                                                     <div class="col-md-12 mt-2 mb-3">
                                                          <div class="row">
-                                                             <div class="col-md-12 mt-1 mb-2">
-                                                                 <label for="">حدد فرع</label>
-                                                                 <select name="branch_id" id="" class="form-control select2">
-                                                                     <option value="">حدد فرع</option>
-                                                                     @foreach (App\Models\Branch::all() as $branch)
-                                                                     <option value="{{$branch->id}}">{{$branch->name}}</option>
-                                                                     @endforeach
-                                                                 </select>
-                                                             </div>
+                                                      
+                                                            <div class="col-md-12 mt-1 mb-2">
+                                                                <label for="">حدد فرع (الاقرب) </label>
+                                                                <select name="branch_id" id="" class="form-control select2">
+                                                                    <option value="">حدد فرع</option>
+                                                                    @foreach (App\Models\Branch::all() as $branch)
+                                                                    <option value="{{$branch->id}}">{{$branch->name}}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+
                                                              <div class="col-md-6">
                                                                <label for=""> تخصص اول</label>
                                                                <select name="specialty_1_id"  class="form-control">
@@ -710,12 +773,11 @@
                                                                    @endforeach
                                                                </select>
                                                            </div>
-                                                           <div class="col-md-6">
-                                                               <label for=""> تخصص دقيق</label>
-                                                               <select name="specialty_2_id" data-old="{{old('specialty_2_id')}}"  class="form-control">
-                                                                   <option value="">حدد    دقيق</option>
-                                                               </select>
-                                                           </div>
+                                                           <div class="col-md-6" id="specialty_2_container">
+                                                            <label for="specialty_2">تخصص دقيق</label>
+                                                            <input type="text" name="specialty_2" id="specialty_2" value="{{ old('specialty_2') }}" class="form-control" autocomplete="off">
+                                                        </div>                                    
+                                                
                                                          </div>
                                                      </div>
                                                  </div>
@@ -734,8 +796,9 @@
                                                 </div>
 
 
-                                                   <div class="text-primary mt-2 mb-2">بيانات العمل السابق</div>
-                                                      <div class="col-md-12">
+                                                @if (request('type') == "libyan")
+                                                    <div class="text-primary mt-2 mb-2">بيانات العمل السابق</div>
+                                                        <div class="col-md-12">
                                                         <label for="">جهات العمل السابقة</label>
                                                         <select name="ex_medical_facilities[]" multiple id="" class="selectize form-control">
                                                             <option value="-">---</option>
@@ -743,7 +806,9 @@
                                                                 <option value="{{$item->id}}">{{$item->name}}</option>
                                                             @endforeach
                                                         </select>
-                                                  </div>
+                                                    </div>
+                                                @endif
+
                                                   
 
                                                   @if (request('type') == "libyan")
@@ -1298,5 +1363,41 @@
             allowClear: true,
         });
     </script>
+
+<script>
+    $(document).ready(function(){
+        $("#doctor_rank_id").change(function(){
+            var selectedRank = $(this).val();
+            if ([5,6,"5","6"].includes(selectedRank)) {
+                $("select[name='specialty_1_id']").parent().show();
+                $("#specialty_2_container").show();
+            } else {
+
+                if(selectedRank == 1 || selectedRank == '') {
+                    $("select[name='specialty_1_id']").parent().hide();
+                    $("#specialty_2_container").hide();
+                } else {
+                    $("select[name='specialty_1_id']").parent().show();
+                    $("#specialty_2_container").hide();
+                }
+
+               
+            }
+        });
+        $("#doctor_rank_id").trigger("change");
+    });
+    </script>
+
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            width: '100%'
+        });
+    });
+</script>
+
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+
 </body>
 </html>

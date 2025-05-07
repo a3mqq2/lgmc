@@ -8,14 +8,28 @@ use Illuminate\Database\Eloquent\Model;
 class FileType extends Model
 {
     use HasFactory;
-    protected $fillable = ['type', 'name', 'is_required','doctor_type'];
 
-    public function getFileTypeArAttribute()  {
-        $ar_type = $this->type == "doctor" ? "طبيب" : "منشأه طبيه";
+    protected $fillable = [
+        'type',
+        'name',
+        'is_required',
+        'doctor_type',
+        'for_registration',
+        'facility_type',
+    ];
+
+    public function getFileTypeArAttribute()
+    {
+        return $this->type === "doctor" ? "طبيب" : "منشأة طبية";
     }
 
-    public function doctorRank() {
+    public function getIsForRegistrationLabelAttribute()
+    {
+        return $this->for_registration ? '✅' : '❌';
+    }
+
+    public function doctorRank()
+    {
         return $this->belongsTo(DoctorRank::class);
     }
-    
 }

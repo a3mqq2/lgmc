@@ -26,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
     {
         
         Paginator::useBootstrap(); // Enable Bootstrap pagination style
-        // View::share();
+        ini_set('upload_max_filesize', '634M');
+        ini_set('post_max_size', '643M');
     }
 }

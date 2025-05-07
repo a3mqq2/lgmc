@@ -44,10 +44,17 @@
                                 <select name="doctor_rank_id" id="doctor_rank_id" class="form-control">
                                     <option value="">  الكل  </option>
                                     @foreach ($doctor_ranks as $doctor_rank)
-                                        <option value="{{ $doctor_rank->id }}">{{ $doctor_rank->name }}</option>
+                                        <option value="{{ $doctor_rank->id }}">
+                                            @if ($doctor_rank->id == 6 && get_area_name() == 'admin')
+                                                استشاري تخصص دقيق
+                                            @else
+                                                {{ $doctor_rank->name }}
+                                            @endif
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
+                            
 
                             <div class="mb-3">
                                 <label for="doctor_type" class="form-label">نوع الطبيب</label>

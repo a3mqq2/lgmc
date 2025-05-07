@@ -102,7 +102,7 @@
                            <th>الجهة</th>
                            <th>نوع الطبيب</th>
                            <th>القيمة</th>
-                           <th>الإجراءات</th>
+                           {{-- <th>الإجراءات</th> --}}
                         </tr>
                      </thead>
                      <tbody>
@@ -128,14 +128,14 @@
                                  @endif
                               </td>
                               <td>{{ $pricing->amount }} د.ل</td>
-                              <td>
-                                 <a href="{{ route(get_area_name().'.pricings.edit', $pricing->id) }}" class="btn btn-sm btn-primary">تعديل</a>
+                              {{-- <td>
+                                 {{-- <a href="{{ route(get_area_name().'.pricings.edit', $pricing->id) }}" class="btn btn-sm btn-primary">تعديل</a> --}}
                                  {{-- <form action="{{ route(get_area_name().'.pricings.destroy', $pricing->id) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد؟')">حذف</button>
                                  </form> --}}
-                              </td>
+                              {{-- </td>  --}}
                            </tr>
                         @endforeach
                      </tbody>

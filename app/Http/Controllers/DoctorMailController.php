@@ -225,25 +225,45 @@ class DoctorMailController extends Controller
                 }
 
             }else{
-                $doctorMail->update(['status'=>'under_payment']);
+                $doctorMail->update(['status' => 'under_payment']);
 
-                Invoice::create([
-                    'invoice_number'   => 'DM-'.date('Y').'-'.$doctorMail->id . '-'.str_pad($doctorMail->id, 5, '0', STR_PAD_LEFT),
-                    'doctor_mail_id'   => $doctorMail->id,
-                    'invoiceable_type' => Doctor::class,
-                    'invoiceable_id'   => $doctorMail->doctor_id,
-                    'description'      => "فاتورة طلب أوراق خارجية رقم {$doctorMail->id}",
-                    'amount'           => $doctorMail->grand_total,
-                    'status'           => InvoiceStatus::unpaid,
-                    'branch_id'      => $doctorMail->doctor->branch_id,
-                    'user_id' => auth()->user()->id,
-                ]);
+                    // أولًا: البنود العادية (التي ليست بريد إلكتروني)
+                    foreach ($doctorMail->doctorMailItems()->where('status', 'approved')->get() as $item) {
+                        if (!in_array($item->pricing_id, [55, 56, 57])) {
+                            $pricing = \App\Models\Pricing::find($item->pricing_id);
 
-                if($doctorMail->doctor->email)
-                {
-                    Mail::to($doctorMail->doctor->email)->send(new RequestPendingPayment($doctorMail));
-                }
+                            Invoice::create([
+                                'invoice_number'   => 'DM-' . date('Y') . '-' . $doctorMail->id . '-' . $item->id,
+                                'doctor_mail_id'   => $doctorMail->id,
+                                'invoiceable_type' => \App\Models\Doctor::class,
+                                'invoiceable_id'   => $doctorMail->doctor_id,
+                                'description'      => "{$pricing->name} (بند رقم {$item->id})",
+                                'amount'           => $pricing->amount,
+                                'status'           => \App\Enums\InvoiceStatus::unpaid,
+                                'branch_id'        => $doctorMail->doctor->branch_id,
+                                'user_id'          => auth()->id(),
+                            ]);
+                        }
+                    }
 
+                    // ثانيًا: البنود الخاصة بالإيميلات (كل إيميل = فاتورة مستقلة)
+                    $pricingEmail = \App\Models\Pricing::find(55); // أو استخدم شرط حسب نوع الدكتور
+
+                    foreach ($doctorMail->emails as $index => $email) {
+                        Invoice::create([
+                            'invoice_number'   => 'DM-' . date('Y') . '-' . $doctorMail->id . '-EMAIL-' . ($index + 1),
+                            'doctor_mail_id'   => $doctorMail->id,
+                            'invoiceable_type' => \App\Models\Doctor::class,
+                            'invoiceable_id'   => $doctorMail->doctor_id,
+                            'description'      => "بريد إلكتروني رقم " . ($index + 1) . " ({$email})",
+                            'amount'           => $pricingEmail->amount,
+                            'status'           => \App\Enums\InvoiceStatus::unpaid,
+                            'branch_id'        => $doctorMail->doctor->branch_id,
+                            'user_id'          => auth()->id(),
+                        ]);
+                    }
+
+                
             }
 
             DB::commit();

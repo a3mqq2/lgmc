@@ -57,13 +57,20 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
     Route::get('medical-facilities/import', [ MedicalFacilityController::class, 'import'])->middleware('permission:manage-medical-facilities')->name('medical-facilities.import');
     Route::post('medical-facilities/import', [ MedicalFacilityController::class, 'import_store'])->middleware('permission:manage-medical-facilities')->name('medical-facilities.import-store');
     Route::resource('medical-facilities', MedicalFacilityController::class)->middleware('permission:manage-medical-facilities');
+    Route::patch('medical-facilities/{facility}/approve', 
+    [MedicalFacilityController::class,'approve'])
+    ->name('medical-facilities.approve');
+Route::patch('medical-facilities/{facility}/reject', 
+    [MedicalFacilityController::class,'reject'])
+    ->name('medical-facilities.reject');
     Route::resource('doctor_ranks', DoctorRankController::class)->middleware('permission:manage-doctors');
     Route::resource('file-types', FileTypeController::class)->middleware('permission:registration-settings');
     
     Route::resource('doctors.files', DoctorFileController::class)->shallow()->middleware('permission:manage-doctors');
+    Route::resource('medical-facility-files', DoctorFileController::class)->shallow()->middleware('permission:manage-doctors');
     Route::patch('/licences/{licence}/approve', [LicenceController::class, 'approve'])->middleware('permission:manage-medical-licenses,manage-doctor-permits')->name('licences.approve');
     Route::get('/licences/{licence}/print', [LicenceController::class, 'print'])->middleware('permission:manage-medical-licenses,manage-doctor-permits')->name('licences.print');
-    Route::resource('licences', LicenceController::class)->middleware('permission:manage-medical-licenses,manage-doctor-permits')->except(['create','store']);
+    Route::resource('licences', LicenceController::class)->middleware('permission:manage-medical-licenses,manage-doctor-permits');
     Route::resource('pricings', PricingController::class)->middleware('permission:services-pricing');
     Route::resource('blacklists', BlacklistController::class)->middleware('permission:manage-blacklist');
     Route::resource('doctor-requests', DoctorRequestController::class)->middleware('permission:doctor-requests');

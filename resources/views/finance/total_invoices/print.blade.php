@@ -5,21 +5,17 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <h4 class="bg-primary text-light p-2">تفاصيل الفاتورة الكلية</h4>
+            <h4 class="bg-primary text-light p-2">فاتورة رقم #{{$totalInvoice->invoice_number}} </h4>
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
-                            <th class="bg-light">رقم الفاتورة</th>
-                            <td>{{ $totalInvoice->invoice_number }}</td>
+                            <th class="bg-light">رقم النقابي</th>
+                            <td>{{ $totalInvoice->doctor->code}}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">اسم الطبيب</th>
                             <td>{{ $totalInvoice->doctor->name }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">المبلغ الإجمالي</th>
-                            <td>{{ number_format($totalInvoice->total_amount, 2) }} د.ل</td>
                         </tr>
                         <tr>
                             <th class="bg-light">المستخدم</th>
@@ -31,7 +27,7 @@
                         </tr>
                         <tr>
                             <th class="bg-light">تاريخ الإنشاء</th>
-                            <td>{{ $totalInvoice->created_at->format('Y-m-d') }}</td>
+                            <td>{{ $totalInvoice->created_at->format('Y-m-d h:i A') }}  </td>
                         </tr>
                     </tbody>
                 </table>
@@ -41,7 +37,7 @@
 
     <div class="row mt-4">
         <div class="col-md-12">
-            <h4 class="bg-primary text-light p-2">الفواتير المرتبطة</h4>
+            <h4 class="bg-primary text-light p-2"> عناصر الفاتورة </h4>
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>
@@ -68,6 +64,12 @@
                             </tr>
                         @endforelse
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="bg-light" colspan="2">المبلغ الإجمالي</th>
+                            <td colspan="3" >{{ number_format($totalInvoice->total_amount, 2) }} د.ل</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>

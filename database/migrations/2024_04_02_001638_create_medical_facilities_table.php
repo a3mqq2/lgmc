@@ -22,12 +22,12 @@ class CreateMedicalFacilitiesTable extends Migration
             $table->foreign('medical_facility_type_id')->references('id')->on('medical_facility_types')->onDelete('cascade');
             $table->string('address');
             $table->string('phone_number');
-            $table->enum('membership_status', ['active', 'inactive']);
+            $table->enum('membership_status', ['active', 'inactive','pending','rejected']);
             $table->date('membership_expiration_date')->nullable();
             $table->foreignId('user_id')->constrained();
             $table->string('serial_number')->nullable();
             $table->enum('activity_type', ['commercial_record', 'negative_certificate']);
-            $table->foreignId('branch_id')->constrained();
+            $table->foreignId('branch_id')->nullable()->constrained();
             $table->timestamps();
         });
     }

@@ -88,9 +88,9 @@
     <div class="collapse menu-dropdown" id="pricing_licenses_all">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
-                <a href="{{ route(get_area_name().'.pricings.create') }}" class="nav-link" data-key="t-horizontal">
+                {{-- <a href="{{ route(get_area_name().'.pricings.create') }}" class="nav-link" data-key="t-horizontal">
                     إضافة تسعير جديد
-                </a>
+                </a> --}}
                 <a href="{{ route(get_area_name().'.pricings.index') }}" class="nav-link" data-key="t-horizontal">
                     عرض جميع التسعيرات
                 </a>
@@ -110,16 +110,95 @@
     <div class="collapse menu-dropdown" id="doctors">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan"]) }}" class="nav-link">الاطباء الليبيين</a>
+                {{-- <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan"]) }}" class="nav-link">الاطباء الليبيين</a> --}}
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign"]) }}" class="nav-link">الاطباء الأجانب</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor"]) }}" class="nav-link">الاطباء الزوار</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian"]) }}" class="nav-link">الاطباء الفلسطينيين</a>
-                <a href="{{ route(get_area_name().'.doctors.index') }}" class="nav-link">عرض جميع الأطباء</a>
+                {{-- <a href="{{ route(get_area_name().'.doctors.index') }}" class="nav-link">عرض جميع الأطباء</a> --}}
             </li>
+
         </ul>
     </div>
 </li>
 @endif
+
+
+@if (auth()->user()->permissions()->where('name', 'doctor-visitors')->count())
+<li class="nav-item">
+    <a class="nav-link menu-link" data-bs-target="#visitor" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fa fa-user-doctor"></i>
+        <span data-key="t-layouts">الاطباء الزوار</span>
+    </a>
+    <div class="collapse menu-dropdown" id="visitor">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'pending']) }}" class="nav-link">طلبات الموقع </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'init_approve']) }}" class="nav-link"> اعضاء لهم موافقة مبدئية  </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'active']) }}" class="nav-link">الاعضاء المفعليين</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'inactive']) }}" class="nav-link">الاعضاء المنتهية صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'banned']) }}" class="nav-link">الاعضاء الموقوفين</a>
+
+            </li>
+
+        </ul>
+    </div>
+</li>
+@endif
+
+
+
+@if (auth()->user()->permissions()->where('name', 'doctor-palestinian')->count())
+<li class="nav-item">
+    <a class="nav-link menu-link" data-bs-target="#palestinian" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fa fa-user-doctor"></i>
+        <span data-key="t-layouts">الاطباء الفلسطينيين</span>
+    </a>
+    <div class="collapse menu-dropdown" id="palestinian">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'pending']) }}" class="nav-link">طلبات الموقع </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'init_approve']) }}" class="nav-link"> اعضاء لهم موافقة مبدئية  </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'active']) }}" class="nav-link">الاعضاء المفعليين</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'inactive']) }}" class="nav-link">الاعضاء المنتهية صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'banned']) }}" class="nav-link">الاعضاء الموقوفين</a>
+
+            </li>
+
+        </ul>
+    </div>
+</li>
+@endif
+
+
+
+
+
+@if (auth()->user()->permissions()->where('name', 'doctor-foreign')->count())
+<li class="nav-item">
+    <a class="nav-link menu-link" data-bs-target="#doctors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fa fa-user-doctor"></i>
+        <span data-key="t-layouts">الاطباء الاجانب</span>
+    </a>
+    <div class="collapse menu-dropdown" id="doctors">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'pending']) }}" class="nav-link">طلبات الموقع </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'init_approve']) }}" class="nav-link"> اعضاء لهم موافقة مبدئية  </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'active']) }}" class="nav-link">الاعضاء المفعليين</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'inactive']) }}" class="nav-link">الاعضاء المنتهية صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'banned']) }}" class="nav-link">الاعضاء الموقوفين</a>
+
+            </li>
+
+        </ul>
+    </div>
+</li>
+@endif
+
+
+
+
+
 
 {{-- MEDICAL FACILITIES --}}
 
@@ -141,204 +220,6 @@
 </li>
 @endif
 
-{{-- DOCTOR PERMITS (أذونات المزاولة - الأطباء) --}}
-
-@if(auth()->user()->permissions()->where('name', 'manage-doctor-permits')->count())
-
-                <li class="nav-item">
-                <a class="nav-link menu-link" data-bs-target="#licences" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-                    <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - الاطباء   </span>
-                </a>
-                <div class="collapse menu-dropdown" id="licences">
-                    <ul class="nav nav-sm flex-column">
-                        @php
-                        $libyan_doctor_license_under_approve_branch = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'under_approve_branch')->where('doctor_type', 'libyan')->count();
-                    
-                    
-                            $libyan_doctor_license_under_approve_admin = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'under_approve_admin')->where('doctor_type', 'libyan')->count();
-                    
-                    
-                    
-                            $libyan_doctor_license_under_payment = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'under_payment')->where('doctor_type', 'libyan')->count();
-                    
-                    
-                            $libyan_doctor_license_revoked = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'revoked')->where('doctor_type', 'libyan')->count();
-                    
-                    
-                    
-                    
-                    
-                            $libyan_doctor_license_expired = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'expired')->where('doctor_type', 'libyan')->count();
-                    
-                    
-                    
-                            $libyan_doctor_license_active = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'active')->where('doctor_type', 'libyan')->count();
-                    
-                    
-                    
-                    
-                    @endphp
-                    
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" data-bs-target="#libyan" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-                            <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - لليبيين   </span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="libyan">
-                            <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "libyan" , "status" => "under_approve_branch"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الفرع  <br> <span class="badge badge-dark bg-dark">{{$libyan_doctor_license_under_approve_branch}}</span>    </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "libyan" , "status" => "under_approve_admin"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الادارة     <br> <span class="badge badge-dark bg-dark">{{$libyan_doctor_license_under_approve_admin}}</span>     </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "libyan" , "status" => "under_payment"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد المراجعة المالية    <br> <span class="badge badge-dark bg-dark">{{$libyan_doctor_license_under_payment}}</span>  </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "libyan" , "status" => "revoked"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - المتوقفه     <br> <span class="badge badge-dark bg-dark">{{$libyan_doctor_license_revoked}}</span> </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "libyan" , "status" => "expired"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - المنتهي صلاحيتها     <br> <span class="badge badge-dark bg-dark">{{$libyan_doctor_license_expired}}</span> </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "libyan" , "status" => "active"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - السارية      <br> <span class="badge badge-dark bg-dark">{{$libyan_doctor_license_active}}</span> </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "libyan" ])}}" class="nav-link" data-key="t-horizontal">  عرض جميع  اذونات المزاولة      </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                    
-                    
-                    @php
-                        $palestinian_doctor_license_under_approve_branch = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'under_approve_branch')->where('doctor_type', 'palestinian')->count();
-                    
-                    
-                            $palestinian_doctor_license_under_approve_admin = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'under_approve_admin')->where('doctor_type', 'palestinian')->count();
-                    
-                    
-                    
-                            $palestinian_doctor_license_under_payment = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'under_payment')->where('doctor_type', 'palestinian')->count();
-                    
-                    
-                            $palestinian_doctor_license_revoked = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'revoked')->where('doctor_type', 'palestinian')->count();
-                    
-                    
-                            $palestinian_doctor_license_expired = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'expired')->where('doctor_type', 'palestinian')->count();
-                    
-                    
-                    
-                            $palestinian_doctor_license_active = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'active')->where('doctor_type', 'palestinian')->count();
-                    
-                    
-                    
-                    
-                    @endphp
-                    
-                    
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" data-bs-target="#palestinian" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-                            <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - فلسطينيين   </span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="palestinian">
-                            <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "palestinian" , "status" => "under_approve_branch"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الفرع  <br> <span class="badge badge-dark bg-dark">{{$palestinian_doctor_license_under_approve_branch}}</span>    </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "palestinian" , "status" => "under_approve_admin"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الادارة     <br> <span class="badge badge-dark bg-dark">{{$palestinian_doctor_license_under_approve_admin}}</span>     </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "palestinian" , "status" => "under_payment"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد المراجعة المالية    <br> <span class="badge badge-dark bg-dark">{{$palestinian_doctor_license_under_payment}}</span>  </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "palestinian" , "status" => "revoked"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - المتوقفه     <br> <span class="badge badge-dark bg-dark">{{$palestinian_doctor_license_revoked}}</span> </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "palestinian" , "status" => "expired"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - المنتهي صلاحيتها     <br> <span class="badge badge-dark bg-dark">{{$palestinian_doctor_license_expired}}</span> </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "palestinian" , "status" => "active"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - السارية      <br> <span class="badge badge-dark bg-dark">{{$palestinian_doctor_license_active}}</span> </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "palestinian"])}}" class="nav-link" data-key="t-horizontal">  عرض جميع  اذونات المزاولة      </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                    
-                    
-                    
-                    @php
-                        $visitor_doctor_license_under_approve_branch = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'under_approve_branch')->where('doctor_type', 'visitor')->count();
-                    
-                    
-                            $visitor_doctor_license_under_approve_admin = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'under_approve_admin')->where('doctor_type', 'visitor')->count();
-                    
-                    
-                    
-                            $visitor_doctor_license_under_payment = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'under_payment')->where('doctor_type', 'visitor')->count();
-                    
-                    
-                            $visitor_doctor_license_revoked = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'revoked')->where('doctor_type', 'visitor')->count();
-                    
-                    
-                            $visitor_doctor_license_expired = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'expired')->where('doctor_type', 'visitor')->count();
-                    
-                    
-                    
-                            $visitor_doctor_license_active = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'active')->where('doctor_type', 'visitor')->count();
-                    
-                    
-                    @endphp
-                    
-                    
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" data-bs-target="#visitors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-                            <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - زوار   </span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="visitors">
-                            <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "visitor" , "status" => "under_approve_branch"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الفرع  <br> <span class="badge badge-dark bg-dark">{{$visitor_doctor_license_under_approve_branch}}</span>    </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "visitor" , "status" => "under_approve_admin"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الادارة     <br> <span class="badge badge-dark bg-dark">{{$visitor_doctor_license_under_approve_admin}}</span>     </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "visitor" , "status" => "under_payment"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد المراجعة المالية    <br> <span class="badge badge-dark bg-dark">{{$visitor_doctor_license_under_payment}}</span>  </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "visitor" , "status" => "revoked"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - المتوقفه     <br> <span class="badge badge-dark bg-dark">{{$visitor_doctor_license_revoked}}</span> </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "visitor" , "status" => "expired"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - المنتهي صلاحيتها     <br> <span class="badge badge-dark bg-dark">{{$visitor_doctor_license_expired}}</span> </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "visitor" , "status" => "active"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - السارية      <br> <span class="badge badge-dark bg-dark">{{$visitor_doctor_license_active}}</span> </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "visitor" ])}}" class="nav-link" data-key="t-horizontal">  عرض جميع  اذونات المزاولة      </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                    
-                    
-                    @php
-                        $foreign_doctor_license_under_approve_branch = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'under_approve_branch')->where('doctor_type', 'foreign')->count();
-                    
-                    
-                            $foreign_doctor_license_under_approve_admin = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'under_approve_admin')->where('doctor_type', 'foreign')->count();
-                    
-                    
-                    
-                            $foreign_doctor_license_under_payment = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'under_payment')->where('doctor_type', 'foreign')->count();
-                    
-                    
-                            $foreign_doctor_license_revoked = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'revoked')->where('doctor_type', 'foreign')->count();
-                    
-                    
-                            $foreign_doctor_license_expired = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'expired')->where('doctor_type', 'foreign')->count();
-                    
-                    
-                    
-                            $foreign_doctor_license_active = App\Models\Licence::whereHasMorph('licensable', App\Models\Doctor::class)->where('status', 'active')->where('doctor_type', 'foreign')->count();
-                    
-                    
-                    @endphp
-                    
-                    
-                    
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" data-bs-target="#foreign" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-                            <i class="fa fa-id-card"></i><span data-key="t-layouts">    أذونات المزاولة - اجانب   </span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="foreign">
-                            <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "foreign" , "status" => "under_approve_branch"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الفرع  <br> <span class="badge badge-dark bg-dark">{{$foreign_doctor_license_under_approve_branch}}</span>    </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "foreign" , "status" => "under_approve_admin"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الادارة     <br> <span class="badge badge-dark bg-dark">{{$foreign_doctor_license_under_approve_admin}}</span>     </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "foreign" , "status" => "under_payment"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد المراجعة المالية    <br> <span class="badge badge-dark bg-dark">{{$foreign_doctor_license_under_payment}}</span>  </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "foreign" , "status" => "revoked"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - المتوقفه     <br> <span class="badge badge-dark bg-dark">{{$foreign_doctor_license_revoked}}</span> </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "foreign" , "status" => "expired"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - المنتهي صلاحيتها     <br> <span class="badge badge-dark bg-dark">{{$foreign_doctor_license_expired}}</span> </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "foreign" , "status" => "active"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - السارية      <br> <span class="badge badge-dark bg-dark">{{$foreign_doctor_license_active}}</span> </a>
-                                    <a href="{{route(get_area_name().'.licences.index', ['type' => "doctors", "doctor_type" => "foreign" ])}}" class="nav-link" data-key="t-horizontal">  عرض جميع  اذونات المزاولة      </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                    
-                    </ul>
-                </div>
-                </li>
-
-@endif
 
 {{-- MEDICAL LICENSES (تراخيص المنشآت الطبية) --}}
 

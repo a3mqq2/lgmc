@@ -28,7 +28,9 @@
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $doctor->code }}</td>
                 <td>{{ $doctor->name }}</td>
-                <td>{{ $doctor->doctor_rank->name ?? '-' }}</td>
+
+                <td>{{ $doctor->rank_name ?? '-' }}</td>
+
                 <td>{{ $doctor->phone }}</td>
                 <td>{{ $doctor->email }}</td>
             </tr>

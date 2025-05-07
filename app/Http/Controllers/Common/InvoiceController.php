@@ -97,7 +97,8 @@ class InvoiceController extends Controller
             $vaults = Vault::when(auth()->user()->branch_id, function($q) {
                 $q->where('branch_id', auth()->user()->branch_id);
             })->when(!auth()->user()->branch_id, function($q) {
-                $q->whereNull('branch_id');
+                $q->whereNotNull('branch_id')
+                ->orWhere('branch_id', null);
             })->get();
             return view('general.invoices.index', compact('invoices','users','vaults'));
     }
@@ -143,17 +144,11 @@ class InvoiceController extends Controller
      
          if (!$request->type) {
              if ($request->invoiceable_type == "App\Models\Doctor") {
-                 $doctor = Doctor::where('code', $request->invoiceable_id)->first();
+                 $doctor = Doctor::where('code', 'like',  $request->invoiceable_id )->first();
                  if (!$doctor) return back()->withErrors(['الطبيب غير موجود']);
-                 if ($doctor->branch_id != auth()->user()->branch_id) {
-                     return back()->withErrors(['لا يمكن إضافة قيمة فاتورة لطبيب ليس من فرعك']);
-                 }
              } elseif ($request->invoiceable_type == "App\Models\MedicalFacility") {
                  $medical_facility = MedicalFacility::find($request->invoiceable_id);
                  if (!$medical_facility) return back()->withErrors(['المنشأة الطبية غير موجودة']);
-                 if ($medical_facility->branch_id != auth()->user()->branch_id) {
-                     return back()->withErrors(['لا يمكن إضافة قيمة فاتورة لمنشأة طبية ليست من فرعك']);
-                 }
              }
          }
      
@@ -179,7 +174,7 @@ class InvoiceController extends Controller
                  'description' => "قيمة تجديد العضوية للطبيب " . $doctor->name,
                  'amount' => $request->amount,
                  'status' => InvoiceStatus::unpaid,
-                 'branch_id' => $doctor->branch_id,
+                 'branch_id' => $doctor->branch_id ?? 1,
                  'user_id' => auth()->id(),
                  'invoiceable_type' => Doctor::class,
                  'invoiceable_id' => $doctor->id,
@@ -211,7 +206,7 @@ class InvoiceController extends Controller
                  'description' => $description,
                  'amount' => $amount,
                  'status' => InvoiceStatus::unpaid,
-                 'branch_id' => $doctor?->branch_id ?? $medical_facility->branch_id,
+                 'branch_id' => $doctor?->branch_id ?? $medical_facility->branch_id ?? 1,
                  'user_id' => auth()->id(),
                  'invoiceable_type' => $request->invoiceable_type,
                  'invoiceable_id' => $doctor?->id ?? $medical_facility->id,

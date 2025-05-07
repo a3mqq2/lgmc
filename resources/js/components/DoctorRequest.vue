@@ -34,7 +34,7 @@
           <ul class="list-group mt-3" v-if="selectedServices.length">
             <li v-for="(s, i) in selectedServices" :key="i" class="list-group-item">
               <div class="mb-2">{{ s.label }} — {{ s.amount.toFixed(2) }} د.ل</div>
-              <div v-if="[43, 44, 45].includes(s.id)" class="mb-2">
+              <div v-if="[45, 46, 47].includes(s.id)" class="mb-2">
                 <div class="form-check">
                   <input class="form-check-input" type="radio" :name="'work_mention_' + i" value="with" v-model="s.work_mention" />
                   <label class="form-check-label">مع ذكر جهة العمل</label>
@@ -120,7 +120,7 @@
           <textarea v-model="notes" class="form-control" rows="3" placeholder="ملاحظات…"></textarea>
           <div class="form-check mt-3">
             <input class="form-check-input" type="checkbox" v-model="extractedBefore" id="extractedBefore" />
-            <label class="form-check-label" for="extractedBefore">سبق استخراج ملفات؟</label>
+            <label class="form-check-label" for="extractedBefore">سبق استخراج اوراق؟</label>
           </div>
           <div v-if="extractedBefore" class="mt-3">
             <input type="number" v-model="lastExtractYear" class="form-control" placeholder="مثال: 2022" />
@@ -186,7 +186,7 @@ watch(selectedDoctor, async doc => {
   if (!doc?.type) return
 
   // جلب سعر الوحدة
-  const map = { libyan:85, palestinian:86, foreign:87 }
+  const map = { libyan:55, palestinian:56, foreign:57 }
   const unitPricingId = map[doc.type] || null
   if (unitPricingId) {
     const resp = await axios.get(`/api/pricing/${unitPricingId}`)
@@ -198,7 +198,7 @@ watch(selectedDoctor, async doc => {
     params: { type: 'service', doctor_type: doc.type }
   })
   servicesFull.value = srv
-    .filter(p => ![85,86,87].includes(p.id))
+    .filter(p => ![55,56,57].includes(p.id))
     .map(p => ({
       id: p.id,
       label: `${p.name} (${Number(p.amount).toFixed(2)} د.ل)`,

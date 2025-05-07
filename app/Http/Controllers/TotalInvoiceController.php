@@ -35,10 +35,6 @@ class TotalInvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        if (auth()->user()->branch_id === null) {
-            return redirect()->route(get_area_name() . '.total_invoices.index')->with('error', 'لا يمكنك إضافة فاتورة كلية لأنك لم تحدد فرعك بعد.');
-        }
-
         $request->validate([
             'total_amount' => 'required|numeric|min:1',
             'invoices' => 'required|array',
@@ -87,7 +83,7 @@ class TotalInvoiceController extends Controller
         $vault = auth()->user()->branch_id ? auth()->user()->branch->vault : Vault::first();
 
         $transaction = Transaction::create([
-            'desc' => "فاتورة كلية رقم {$totalInvoiceNumber}",
+            'desc' => implode(', ', $invoices->pluck('description')->toArray()),
             'amount' => $request->total_amount,
             'type' => "deposit",
             'branch_id' => auth()->user()->branch_id,

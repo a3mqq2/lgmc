@@ -44,6 +44,7 @@ class FileTypeController extends Controller
              }, function ($q) {                                         // لا يوجد rank
                  $q->whereNull('doctor_rank_id');
              })
+             ->where('for_registration', 1) // فقط المستندات المطلوبة للتسجيل
              ->get(['id', 'name', 'is_required']);
      
          return response()->json($files);

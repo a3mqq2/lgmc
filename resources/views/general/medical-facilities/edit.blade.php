@@ -27,12 +27,6 @@
                                     <input type="text" class="form-control" id="name" name="name" value="{{$medicalFacility->name}}" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="name" class="form-label"> رقم السجل التجاري  </label>
-                                    <input type="text" class="form-control" id="commerical_number" name="commerical_number" value="{{$medicalFacility->commerical_number}}" required>
-                                </div>
-                            </div>
                             @if (get_area_name() == "admin")
                             <div class="col-md-12">
                                 <label for="branch">الفرع</label>
@@ -79,16 +73,6 @@
                                 <div class="mb-3">
                                     <label for="activity_start_date" class="form-label"> تاريخ بدء النشاط  </label>
                                     <input type="activity_start_date" class="form-control" id="activity_start_date"   value="{{date('Y-m-d',strtotime($medicalFacility->activity_start_date))}}"   name="activity_start_date"  required>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="">نوع نشاط الشركة</label>
-                                    <select name="activity_type" id="" class="form-control">
-                                        <option value="">حدد نوع النشاط</option>
-                                        <option value="commercial_record" {{$medicalFacility->activity_type == 'commercial_record' ? 'selected' : ""}} >سجل تجاري</option>
-                                        <option value="negative_certificate" {{$medicalFacility->activity_type == 'negative_certificate' ? 'selected' : ""}} >شهادة سلبية</option>
-                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-4">

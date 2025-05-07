@@ -25,6 +25,12 @@ class PricingController extends Controller
             $query->where('entity_type', request('entity_type'));
         }
 
+
+        if (request('doctor_type')) {
+            $query->where('doctor_type', request('doctor_type'));
+        }
+
+
         $pricings = $query->paginate(50);
         return view('admin.pricings.index', compact('pricings'));
     }

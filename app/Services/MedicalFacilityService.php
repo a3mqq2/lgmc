@@ -64,7 +64,9 @@ class MedicalFacilityService
             $licence->update(['medical_facility_id' => $medicalFacility->id]);
         }
 
-        $file_types = FileType::where('type', 'medical_facility')->get();
+        $file_types = FileType::where('type', 'medical_facility')
+            ->where('for_registration', 1)
+        ->get();
         foreach ($file_types as $file_type) {
             if (isset($data['documents'][$file_type->id])) {
                 $file = $data['documents'][$file_type->id];
@@ -117,7 +119,9 @@ class MedicalFacilityService
 
 
             if (isset($data['documents'])) {
-                $fileTypes = FileType::where('type', 'medical_facility')->get();
+                $fileTypes = FileType::where('type', 'medical_facility')
+                    ->where('for_registration', 1)
+                ->get();
 
                 foreach ($fileTypes as $fileType) {
                     if (isset($data['documents'][$fileType->id])) {
@@ -205,7 +209,7 @@ class MedicalFacilityService
             $query->where('branch_id', auth()->user()->branch_id);
         }
 
-        return $query->paginate($perPage);
+        return $query->orderByDesc('id')->paginate($perPage);
     }
 
     protected function createInvoice($medicalFacility)

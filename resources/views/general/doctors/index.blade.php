@@ -8,6 +8,16 @@
         <a href="{{ route(get_area_name().'.doctors.create', ['type' => request('type')] ) }}" class="btn btn-success mb-2"><i class="fa fa-plus"></i> إنشاء جديد </a>
     </div>
     @endif
+
+
+    @if (get_area_name() == "finance")
+    <div class="col-md-12">
+        <a href="{{ route(get_area_name().'.invoices.create', ['type' => request('type')] ) }}" class="btn btn-success mb-2"><i class="fa fa-plus"></i>  اضافة مستحقات يدوية  </a>
+    </div>
+    @endif
+
+
+
     <div class="col-12">
         <div class="card">
             <div class="card-header bg-primary text-light">
@@ -28,6 +38,9 @@
                             <label for="phone">رقم الهاتف</label>
                             <input type="text" class="form-control" id="phone" name="phone" placeholder="رقم الهاتف" maxlength="10" value="{{ request()->input('phone') }}">
                         </div>
+
+                        <input type="hidden" name="type" value="{{request('type')}}">
+
                         <div class="col-md-3">
                             <label for="email"> صفة الطبيب</label>
                             <select class="form-control" name="doctor_rank_id" id="doctor_rank_id">
@@ -114,10 +127,7 @@
                                 <th class="bg-light">رقم الهاتف</th>
                                 <th class="bg-light"> الصفة / التخصص </th>
 
-                                @if (request('type') != "visitor")
-                                    <th class="bg-light">الإقامة</th>
-                                @endif
-
+                        
                                 @if (request('type') == "visitor")
                                     <th class="bg-light"> تاريخ بدء الزيارة </th>
                                     <th class="bg-light"> تاريخ انتهاء الزيارة </th>
@@ -129,12 +139,10 @@
                                 <th class="bg-light text-dark" >نوع الطبيب</th>
                                 
                                 @if (request('type') != "visitor")
-                                <th class="bg-light">الدرجة العلمية</th>
                                 <th class="bg-light">تاريخ الانتساب</th>
                                 @endif
 
 
-                                <th class="bg-light">المؤهل</th>
                                 <th class="bg-light">حالة العضوية</th>
                                 @if (request('init_approve') )
                                     <th class="bg-light"> تاريخ الزيارة</th>
@@ -171,16 +179,16 @@
                                 <td>{{ $doctor->phone }}</td>
                                 <td>
                                     {{-- rank &  --}}
-                                    @if ($doctor->doctor_rank)
-                                    {{ $doctor->doctor_rank->name }} 
-                                    @endif
+                                    @if ($doctor->type == "foreign" && $doctor->doctor_rank_id == 6)
+                                    <td>استشاري تخصص دقيق</td>
+                                    @else 
+                                    {{ $doctor->rank_name?? '-' }}
+                                @endif
+                
                                    {{ $doctor->specialization  }}
                                 </td>
 
 
-                                @if (request('type') != "visitor")
-                                    <td>{{ $doctor->address }}</td>
-                                @endif
 
                                 @if (request('type') == "visitor")
                                 <td>{{ $doctor->visit_from }}</td>
@@ -195,12 +203,7 @@
                                     {{ $doctor->type->label() }}
                                 </td>
                                 <td>{{ $doctor->academicDegree->name ?? '-' }}</td>
-                                
-
-                                @if (request("type") != "visitor")
-                                <td>{{ $doctor->registered_at?->format('Y-m-d') }}</td>
-                                <td>{{ $doctor->certificate_of_excellence_date }}</td>
-                                @endif
+                     
 
                                 <td>
                                     <span class="badge {{$doctor->membership_status->badgeClass()}} ">

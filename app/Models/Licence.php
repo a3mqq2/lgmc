@@ -85,10 +85,14 @@ class Licence extends Model
 
     public function assignSequence(): void
     {
+        if (!$this->branch_id || !$this->branch) {
+            return; // لا يتم التوليد إذا لم يكن هناك فرع
+        }
+    
         $year   = optional($this->issued_date)->format('Y') ?? now()->year;
         $type   = $this->licensable_type;
         $prefix = $type === Doctor::class ? 'LIC' : 'PERM';
-
+    
         $nextIndex = self::where('branch_id', $this->branch_id)
             ->where('licensable_type', $type)
             ->where(function ($q) use ($year) {
@@ -100,23 +104,24 @@ class Licence extends Model
             })
             ->lockForUpdate()
             ->max('index') + 1;
-
+    
         do {
             $candidate = $this->branch->code
                 . '-' . $prefix . '-'
                 . $year . '-'
                 . str_pad($nextIndex, 3, '0', STR_PAD_LEFT);
-
-            if (! self::where('code', $candidate)->exists()) {
+    
+            if (!self::where('code', $candidate)->exists()) {
                 break;
             }
-
+    
             $nextIndex++;
         } while (true);
-
+    
         $this->index = $nextIndex;
         $this->code  = $candidate;
     }
+    
 
     public function regenerateCode(): void
     {

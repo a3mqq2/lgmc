@@ -61,7 +61,8 @@ class DoctorController extends Controller
     {
         $data = $this->doctorService->getRequirements();
         $data['doctor'] = $doctor;
-        $data['file_types'] = FileType::where('type', 'doctor')->get();
+        $data['file_types'] = FileType::where('type', 'doctor')->where('doctor_type', $doctor->type->value)
+        ->where('for_registration', 1)->get();
         return view('general.doctors.edit', $data);
     }
 
@@ -105,7 +106,7 @@ class DoctorController extends Controller
     {
         try {
             $this->doctorService->approve($doctor);
-            return redirect()->route(get_area_name().'.doctors.index')->with('success', 'تم الموافقة على الطبيب بنجاح');
+            return redirect()->route(get_area_name().'.doctors.index',['type' => $doctor->type->value])->with('success', 'تم الموافقة على الطبيب بنجاح');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني ' . $e->getMessage() ]);
         }
@@ -115,7 +116,7 @@ class DoctorController extends Controller
     {
         try {
             $this->doctorService->reject($doctor);
-            return redirect()->route(get_area_name().'.doctors.index')->with('success', 'تم الرفض على الطبيب بنجاح');
+            return redirect()->route(get_area_name().'.doctors.index', ['type' => $doctor->type->value])->with('success', 'تم الرفض على الطبيب بنجاح');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني ' . $e->getMessage() ]);
         }

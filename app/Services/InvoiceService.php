@@ -72,7 +72,7 @@ class InvoiceService
             'amount' => $invoice->amount,
             'type' => 'deposit',
             'transaction_type_id' => $transaction_type_id,
-            'desc' => ' دفع لقيمة الفاتورة '.$invoice->id,
+            'desc' => ' دفع لقيمة الفاتورة '.$invoice->id . "وذلك عن : " . $invoice->description, 
             'branch_id' => $invoice->branch_id,
             'user_id' => Auth::id(),
          ]); 
@@ -98,6 +98,7 @@ class InvoiceService
         $invoice->save();
         $this->runMembership($invoice);
         return $invoice;
+        
     }
 
     /**

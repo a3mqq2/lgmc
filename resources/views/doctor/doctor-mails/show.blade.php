@@ -28,6 +28,13 @@
                            <i class="ri-list-unordered d-inline-block d-m"></i> <span class="d-md-inline-block">أذونات المزاولة</span>
                        </a>
                    </li>
+
+                   <li class="nav-item">
+                    <a class="nav-link fs-14 {{ request('facilities') ? 'active' : '' }}"  href="{{ route('doctor.dashboard', ['facilities' => 1]) }}" data-bs-toggle="tab" href="#facilities" role="tab">
+                        <i class="fa fa-hospital d-inline-block d-m"></i> <span class="d-md-inline-block">منشآتي الطبية</span>
+                    </a>
+                </li>
+                
                    <li class="nav-item">
                        <a class="nav-link fs-14 active" href="{{ route('doctor.dashboard', ['requests' => 1]) }}" role="tab">
                            <i class="ri-folder-4-line d-inline-block d-m"></i> <span class="d-md-inline-block">اوراق الخارج</span>

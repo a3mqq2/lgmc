@@ -25,7 +25,8 @@ class DoctorFileController extends Controller
      */
     public function create(Doctor $doctor)
     {
-        $fileTypes = FileType::where("type", "doctor")->get();
+        $fileTypes = FileType::where("type", "doctor")
+        ->where('doctor_type', $doctor->type->value)->where('for_registration', 1)->get();
         return view('general.doctor_files.create', compact('doctor', 'fileTypes'));
     }
 

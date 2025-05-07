@@ -49,5 +49,19 @@ class DoctorMail extends Model
         {
             return $this->morphOne(Invoice::class, 'invoiceable');
         }
+
+        public function getEmailsByTypeAttribute()
+        {
+            $types = ['libyan' => 0, 'foreign' => 0, 'palestinian' => 0];
+        
+            foreach ($this->countries as $countryId) {
+                $type = Country::find($countryId)?->email_type; // مثال: ترجع 'libyan' أو 'foreign'
+                if ($type && isset($types[$type])) {
+                    $types[$type]++;
+                }
+            }
+        
+            return $types;
+        }
     
 }

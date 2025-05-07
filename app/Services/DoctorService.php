@@ -77,7 +77,9 @@ class DoctorService
          }
      
          if (request()->filled('last_license_status')) {
-             $query->where('last_license_status', request('last_license_status'));
+             $query->whereHas('licenses', function ($q) {
+                 $q->where('status', request('last_license_status'));
+             });
          }
      
          if (request()->filled('specialization')) {
@@ -93,6 +95,9 @@ class DoctorService
          {
             $query->where('doctor_rank_id', request('doctor_rank_id'));
          }
+
+
+
 
          if (request()->filled('passport_number')) {
              $query->where('passport_number', 'like', '%' . request('passport_number') . '%');
@@ -136,8 +141,17 @@ class DoctorService
          }
      
          // Area-based branch restriction
-         if (in_array(get_area_name(), ['user', 'finance'])) {
+         if (in_array(get_area_name(), ['user'])) {
              $query->where('branch_id', auth()->user()->branch_id);
+         }
+
+         if(get_area_name() == "finance")
+         {
+            $query->whereHas('invoices', function($q) {
+                $q->where('status', 'unpaid');
+            });
+            
+        
          }
      
          // Finance area: order by unpaid invoices count
@@ -262,6 +276,7 @@ class DoctorService
 
             // جلب أنواع الملفات للأطباء
             $file_types = FileType::where('type', 'doctor')
+            ->where('for_registration', 1)
                 ->get();
 
             // التحقق من وجود الملفات المطلوبة
@@ -509,7 +524,9 @@ class DoctorService
           if(isset($data['documents']))
           {
               // جلب أنواع الملفات للأطباء
-              $file_types = FileType::where('type', 'doctor')->get();
+              $file_types = FileType::where('type', 'doctor')
+                ->where('for_registration', 1)
+              ->get();
 
               // التحقق من وجود الملفات المطلوبة إذا لم تكن موجودة بالفعل
               foreach ($file_types as $file_type) {

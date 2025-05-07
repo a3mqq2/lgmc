@@ -59,6 +59,34 @@
             </a>
         </div>
 
+
+        <div class="col-xl-3 col-md-6">
+            <a href="{{ route(get_area_name().'.doctor-mails.index', ['status' => 'under_approve']) }}">
+                <div class="card card-animate">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="fw-medium text-muted mb-0">طلبات قيد الموافقة</p>
+                                <h2 class="mt-4 ff-secondary fw-semibold">
+                                    <span class="counter-value" data-target="{{ \App\Models\DoctorMail::where('status','under_approve')->count() }}">
+                                        {{ \App\Models\DoctorMail::where('status','under_proccess')->count() }}
+                                    </span>
+                                </h2>
+                            </div>
+                            <div>
+                                <div class="avatar-sm flex-shrink-0">
+                                    <span class="avatar-title bg-soft-warning rounded-circle fs-2">
+                                        <i class="fa fa-envelope-open-text text-warning"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+
         <!-- طلبات مكتملة -->
         <div class="col-xl-3 col-md-6">
             <a href="{{ route(get_area_name().'.doctor-mails.index', ['status' => 'done']) }}">
@@ -92,15 +120,15 @@
     @if (auth()->user()->permissions->where('name','manage-doctors')->count())
         <!-- Total Doctors -->
         <div class="col-xl-3 col-md-6">
-            <a href="{{route(get_area_name().'.doctors.index')}}">
+            <a href="{{route(get_area_name().'.doctors.index', ['type' => 'foreign'])}}">
                 <div class="card card-animate">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
-                                <p class="fw-medium text-muted mb-0">إجمالي الأطباء</p>
+                                <p class="fw-medium text-muted mb-0">إجمالي اطباء الاجانب المسجلين في النظام</p>
                                 <h2 class="mt-4 ff-secondary fw-semibold">
-                                    <span class="counter-value" data-target="{{\App\Models\Doctor::count()}}">
-                                        {{\App\Models\Doctor::count()}}
+                                    <span class="counter-value" data-target="{{\App\Models\Doctor::where('type', 'foreign')->count()}}">
+                                        {{\App\Models\Doctor::where('type', 'foreign')->count()}}
                                     </span>
                                 </h2>
                             </div>
@@ -148,10 +176,10 @@
         </div>
     @endif
 
-    @if (auth()->user()->permissions->where('name','manage-doctor-permits')->count())
+    @if (auth()->user()->permissions->where('name','manage-medical-facilities')->count())
         <!-- Doctor Licences Active -->
         <div class="col-xl-3 col-md-6">
-            <a href="{{route(get_area_name().'.licences.index', ['type' => 'doctors', 'status' => 'active'])}}">
+            <a href="{{route(get_area_name().'.licences.index', ['type' => 'facilities', 'status' => 'active'])}}">
                 <div class="card bg-success card-height-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -161,10 +189,10 @@
                                 </span>
                             </div>
                             <div class="flex-grow-1 ms-3">
-                                <p class="text-uppercase fw-medium text-white mb-3">الأذونات السارية للأطباء</p>
+                                <p class="text-uppercase fw-medium text-white mb-3"> المرافق الطبية سارية الاذن </p>
                                 <h4 class="fs-4 mb-3 text-white">
-                                    <span class="counter-value" data-target="{{\App\Models\Licence::where('licensable_type','App\Models\Doctor')->where('status','active')->count()}}">
-                                        {{\App\Models\Licence::where('licensable_type','App\Models\Doctor')->where('status','active')->count()}}
+                                    <span class="counter-value" data-target="{{\App\Models\Licence::where('licensable_type','App\Models\MedicalFacility')->where('status','active')->count()}}">
+                                        {{\App\Models\Licence::where('licensable_type','App\Models\MedicalFacility')->where('status','active')->count()}}
                                     </span>
                                 </h4>
                             </div>
@@ -173,7 +201,6 @@
                 </div>
             </a>
         </div>
-        <!-- ... ويدجات أخرى للأذونات ... -->
     @endif
 
 </div>

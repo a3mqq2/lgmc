@@ -240,7 +240,7 @@ return [
         'hand_graduation_id' => 'تاريخ التخرج.',
         'internership_complete' => 'تاريخ انتهاء الامتياز.',
         'academic_degree_id' => 'الدرجة العلمية.',
-        'doctor_rank_id' => ' الالصفة .',
+        'doctor_rank_id' => ' الصفة .',
         'medical_facilities' => 'المرافق الطبية.',
         'specialty_1_id' => 'التخصص الأول.',
         'specialty_2_id' => 'التخصص الثاني.',

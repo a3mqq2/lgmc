@@ -4,12 +4,16 @@ namespace App\Http\Controllers\Common;
 use App\Models\Branch;
 
 use App\Models\Doctor;
+use App\Models\Invoice;
 use App\Models\FileType;
+use App\Mail\ApprovalEmail;
+use App\Mail\RejectionEmail;
 use Illuminate\Http\Request;
 use App\Models\MedicalFacility;
 use App\Models\MedicalFacilityFile;
 use App\Models\MedicalFacilityType;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ImportMedicalFacilities;
 use App\Services\MedicalFacilityService;
@@ -40,7 +44,7 @@ class MedicalFacilityController extends Controller
     public function create()
     {
         $medicalFacilityTypes = MedicalFacilityType::all();
-        $file_types = FileType::where('type', 'medical_facility')->get();
+        $file_types = FileType::where('type', 'medical_facility')->where('for_registration', 1)->get();
         $doctors = auth()->user()->branch ? auth()->user()->branch->doctors()->whereHas('licenses', function($q) {
             $q->where('status', 'active');
         }) : Doctor::all();
@@ -66,7 +70,7 @@ class MedicalFacilityController extends Controller
     public function edit($id)
     {
         $medicalFacilityTypes = MedicalFacilityType::all();
-        $file_types = FileType::where('type', 'medical_facility')->get();
+        $file_types = FileType::where('type', 'medical_facility')->where('for_registration', 1)->get();
         $doctors = auth()->user()->branch ? auth()->user()->branch->doctors()->whereHas('licenses', function($q) {
             $q->where('status', 'active');
         }) : Doctor::all();
@@ -127,4 +131,38 @@ class MedicalFacilityController extends Controller
 
         return redirect()->back()->with('success', 'تم حذف الملف بنجاح.');
     }
+
+
+
+
+    public function approve(MedicalFacility $facility)
+    {
+        // تحديث الحالة
+        $facility->update(['membership_status'=>'active']);
+
+    
+        // إرسال إيميل القبول
+        Mail::to($facility->manager->email)
+            ->queue(new ApprovalEmail($facility->manager));
+    
+
+        $facility->makeCode();
+        $facility->save();
+
+        return back()->with('success','تم قبول المنشأة بنجاح.');
+    }
+    
+public function reject(Request $request, MedicalFacility $facility)
+{
+    $request->validate(['reason'=>'required|string']);
+    $facility->update([
+        'membership_status'=>'rejected',
+        'reason' =>$request->reason,
+    ]);
+
+    Mail::to($facility->manager->email)
+        ->queue(new RejectionEmail($facility->manager, $request->reason));
+
+    return back()->with('success','تم رفض المنشأة بنجاح.');
+}
 }

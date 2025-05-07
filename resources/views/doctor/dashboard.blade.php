@@ -11,10 +11,16 @@
              <!-- Nav tabs -->
              <ul class="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1" role="tablist">
                  <li class="nav-item">
-                     <a class="nav-link fs-14 active" data-bs-toggle="tab"  href="#overview" role="tab">
+                     <a class="nav-link fs-14  {{!request("facilities")}}  " data-bs-toggle="tab"  href="#overview" role="tab">
                          <i class="ri-airplay-fill d-inline-block d-m"></i> <span class=" d-md-inline-block">بياناتي الآساسية</span>
                      </a>
                  </li>
+                 <li class="nav-item">
+                    <a class="nav-link fs-14" data-bs-toggle="tab" href="#facilities" role="tab">
+                        <i class="fa fa-hospital d-inline-block d-m"></i> <span class="d-md-inline-block">منشآتي الطبية</span>
+                    </a>
+                </li>
+                
                  <li class="nav-item">
                      <a class="nav-link fs-14" data-bs-toggle="tab"  href="#licences" role="tab">
                          <i class="ri-list-unordered d-inline-block d-m"></i> <span class=" d-md-inline-block">أذونات المزاولة</span>
@@ -154,84 +160,68 @@
                              </div>
                          </div>
                      </div>
-                     <div class="tab-pane {{request('tickets') ? "active" : ""}} " id="tickets" role="tabpanel">
-                         <a href="{{route(get_area_name().'.tickets.create')}}" class="btn btn-success btn-sm mb-3"><i class="fa fa-plus"></i>   فتح تذكرة جديدة</a>
-                         <div class="card">
-                             <div class="card-body">
-                                 <div class="tickets-list">
-                                     <div class="list-group">
-                                     <h4 class="font-weight-bold text-primary">
-                                         <i class="fas fa-ticket-alt text-primary"></i> التذاكر
-                                     </h4>
-                                     
-                                         @forelse (auth('doctor')->user()->tickets as $ticket)
-                                             <div class="list-group-item border-4 mb-3">
-                                                 <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
-                                                     <span><i class="fas fa-hashtag text-info"></i> كود التذكرة:</span>
-                                                     <span>{{ $ticket->slug }}</span>
-                                                 </div>
-                                                 <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
-                                                     <span><i class="fas fa-heading text-info"></i> الإقامة:</span>
-                                                     <span>{{ $ticket->title }}</span>
-                                                 </div>
-                                                 <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
-                                                     <span><i class="fas fa-building text-info"></i> القسم:</span>
-                                                     <span class="badge {{ $ticket->department->badgeClass() }}">{{ $ticket->department->label() }}</span>
-                                                 </div>
-                                                 <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
-                                                     <span><i class="fas fa-layer-group text-info"></i> الفئة:</span>
-                                                     <span class="badge {{ $ticket->category->badgeClass() }}">{{ $ticket->category->label() }}</span>
-                                                 </div>
-                                                 <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
-                                                     <span><i class="fas fa-info-circle text-info"></i> الحالة:</span>
-                                                     <span class="badge {{ $ticket->status->badgeClass() }}">{{ $ticket->status->label() }}</span>
-                                                 </div>
-                                                 <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
-                                                     <span><i class="fas fa-exclamation-circle text-info"></i> الأولوية:</span>
-                                                     <span class="badge d-inline-flex align-items-center gap-1 {{ $ticket->priority->badgeClass() }}">
-                                                         @switch($ticket->priority->value)
-                                                             @case('low')
-                                                                 <i class="fa fa-circle text-success"></i>
-                                                                 @break
-                                                             @case('medium')
-                                                                 <i class="fa fa-circle text-warning"></i>
-                                                                 @break
-                                                             @case('high')
-                                                                 <i class="fa fa-circle text-danger"></i>
-                                                                 @break
-                                                         @endswitch
-                                                         {{ $ticket->priority->label() }}
-                                                     </span>
-                                                 </div>
-                                                 <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
-                                                     <span><i class="fas fa-calendar-plus text-info"></i> تاريخ الإنشاء:</span>
-                                                     <span>{{ $ticket->created_at->format('Y-m-d') }}</span>
-                                                 </div>
-                                                 <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
-                                                     <span><i class="fas fa-calendar-check text-info"></i> تاريخ الإغلاق:</span>
-                                                     <span>{{ $ticket->closed_at ? $ticket->closed_at->format('Y-m-d') : 'لم يُغلق بعد' }}</span>
-                                                 </div>
-                                                 <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
-                                                     <span><i class="fas fa-user text-info"></i> المغلق بواسطة:</span>
-                                                     <span>{{ $ticket->closedBy ? $ticket->closedBy->name : '-' }}</span>
-                                                 </div>
-                                                 <div class="d-flex justify-content-end mt-2">
-                                                     <a href="{{ route(get_area_name() . '.tickets.show', $ticket) }}" class="btn btn-primary rounded btn-sm text-light ml-3">
-                                                         عرض <i class="fa fa-eye"></i>
-                                                     </a>
-                                                 </div>
-                                             </div>
-                                         @empty
-                                             <div class="list-group-item text-center">لا توجد تذاكر متاحة.</div>
-                                         @endforelse
-                                     </div>
-                                 </div>
-                                 
-                             </div>
-                         </div>
-                     </div>
- 
- 
+
+                     <div class="tab-pane {{ request('facilities') ? 'active' : '' }}" id="facilities" role="tabpanel">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="font-weight-bold text-primary mb-3">
+                                    <i class="fa fa-hospital text-primary"></i> منشآتي الطبية
+                                </h4>
+                    
+                                <a href="{{ route('doctor.medical-facilities.create') }}" class="btn btn-success btn-sm mb-3">
+                                    <i class="fa fa-plus text-light"></i> تسجيل منشأة جديدة
+                                </a>
+                    
+                                <div class="list-group">
+                                    @forelse(auth('doctor')->user()->medicalFacilities as $facility)
+                                    <div class="list-group-item mb-3 border border-3 rounded">
+                                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-2">
+                                            <span><i class="fa fa-building text-info"></i> اسم المنشأة:</span>
+                                            <span>{{ $facility->name }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-2">
+                                            <span><i class="fa fa-map-marker-alt text-info"></i> العنوان:</span>
+                                            <span>{{ $facility->address }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-2">
+                                            <span><i class="fa fa-phone text-info"></i> رقم الهاتف:</span>
+                                            <span>{{ $facility->phone_number }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 pt-2">
+                                            <span><i class="fa fa-info-circle text-info"></i> الحالة :</span>
+                                            <span class="badge {{ $facility->membership_status->badgeClass() }}">
+                                                {{ $facility->membership_status->label() }}
+                                            </span>
+                                        </div>
+                                
+                                        {{-- عرض الملفات المرتبطة --}}
+                                        <div class="border-top pt-3 mt-3">
+                                            <h6 class="text-primary"><i class="fa fa-paperclip"></i> الملفات المرفقة:</h6>
+                                            @if($facility->files->count())
+                                                <ul class="list-group list-group-flush">
+                                                    @foreach($facility->files as $file)
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                            <span>{{ $file->fileType->name ?? '—' }}</span>
+                                                            <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="btn btn-sm btn-primary">
+                                                                <i class="fa fa-eye"></i> عرض الملف
+                                                            </a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            @else
+                                                <p class="text-muted">لا توجد ملفات مرفقة لهذه المنشأة.</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="text-center p-3 border rounded">لا توجد منشآت مسجلة.</div>
+                                @endforelse
+                                
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
  
  
                      <div class="tab-pane {{ request('change-password') ? "active" : ""}} " id="change-password" role="tabpanel">

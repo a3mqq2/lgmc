@@ -2,23 +2,22 @@
 
 
 
-@if (auth()->user()->permissions->where('name','total_invoices')->count() && auth()->user()->branch_id)
 <li class="nav-item">
     <a class="nav-link menu-link" href="#doctors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-        <i class="fa fa-user-doctor"></i><span data-key="t-layouts">    الفواتير الكلية   </span>
+        <i class="fa fa-user-doctor"></i><span data-key="t-layouts">    الفواتير    </span>
     </a>
     <div class="collapse menu-dropdown" id="doctors">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
                 <a href="{{ route(get_area_name().'.doctors.index') }}" class="nav-link" data-key="t-horizontal">    عرض جميع الآطباء   </a>
-                <a href="{{ route(get_area_name().'.total_invoices.index') }}" class="nav-link" data-key="t-horizontal">    عرض جميع الفواتير   </a>
+                <a href="{{ route(get_area_name().'.total_invoices.index') }}" class="nav-link" data-key="t-horizontal">    عرض فواتير الاطباء     </a>
+                <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'MedicalFaclitiy']) }}" class="nav-link" data-key="t-horizontal">    فواتير المنشآت الطبية  </a>
+                
             </li>
 
         </ul>
     </div>
 </li>
-@endif
-
 
 
 
@@ -47,6 +46,7 @@
 
 
 
+@if (auth()->user()->branch_id)
 <li class="nav-item">
     <a class="nav-link menu-link" href="#invoices" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-file-invoice"></i><span data-key="t-layouts">    الفواتير   </span>
@@ -57,9 +57,6 @@
                 <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'Doctor', 'type' => 'membership'] ) }}" class="nav-link" data-key="t-horizontal">    فواتير تجديد العضويه  </a>
                 <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'Doctor'] ) }}" class="nav-link" data-key="t-horizontal">    فواتير الآطباء  </a>
 
-                @if (auth()->user()->branch_id != 1)
-                  <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'MedicalFaclitiy']) }}" class="nav-link" data-key="t-horizontal">    فواتير المنشآت الطبية  </a>
-                @endif
 
             </li>
 
@@ -68,9 +65,10 @@
 </li>
 
 
+@endif
 
 
-<li class="nav-item">
+{{-- <li class="nav-item">
     <a class="nav-link menu-link" href="#transfers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-exchange-alt"></i><span data-key="t-layouts">    تحويلات الخزائن   </span>
     </a>
@@ -83,10 +81,10 @@
 
         </ul>
     </div>
-</li>
+</li> --}}
 
 
-
+{{-- 
 @if (auth()->user()->permissions->where('name','financial-administration')->count() && !auth()->user()->branch_id)
     
 <li class="nav-item">
@@ -103,7 +101,7 @@
     </div>
 </li>
 
-@endif
+@endif --}}
 
 <li class="nav-item">
     <a class="nav-link menu-link" href="#layer-group" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">

@@ -23,7 +23,11 @@ class SearchController extends Controller
     public function searchFacilities(Request $request)
     {
         $query = $request->input('query');
-        $facilities = MedicalFacility::where('name', 'LIKE', "%{$query}%")->where('branch_id', request('branch_id'))->get(['id', 'name']);
+        $facilities = MedicalFacility::where('name', 'LIKE', "%{$query}%")->when(request('branch_id') != '', function($q) {
+            $q->where('branch_id', request('branch_id'));
+        })->when(request('justactive'), function($q) {
+            $q->where('membership_status', 'active');
+        } )->get(['id', 'name']);
         return response()->json($facilities);
     }
 

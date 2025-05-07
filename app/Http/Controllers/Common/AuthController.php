@@ -23,8 +23,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Cookie;
 use App\Http\Requests\StoreDoctorRequest;
+
 class AuthController extends Controller
 {
     public function login() {
@@ -113,12 +115,11 @@ class AuthController extends Controller
         $countries = Country::all();
         $academicDegrees = AcademicDegree::all();
         $universities = University::all();
-        $file_types = FileType::where('type', 'doctor')->get();
         $doctor_ranks = DoctorRank::all();
         $specialties = Specialty::whereNull('specialty_id')->get();
         $branches = Branch::all();
         $medicalFacilities = MedicalFacility::all();
-        return view('doctor.register', compact('countries','academicDegrees','universities','file_types','doctor_ranks','specialties','branches','medicalFacilities'));
+        return view('doctor.register', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities'));
     }
 
 
@@ -165,22 +166,27 @@ class AuthController extends Controller
                 }
 
 
-                $data['branch_id'] = $data['branch_id'];
-                $doctor = Doctor::create($data);
+                if(isset($data['branch_id']))
+                {
+                    $data['branch_id'] = $data['branch_id'];
+                }
 
-                // ربط المرافق الطبية
+             
+                    $doctor = Doctor::create($data);
 
+                    // ربط المرافق الطبية
+                    $doctor->institutions()->attach($medicalFacilities ?? []);
 
-                $doctor->institutions()->attach($medicalFacilities ?? []);
-                $doctor->membership_status = 'pending';
-                $doctor->membership_expiration_date = null;
-                $doctor->code = null;
-                $doctor->index = null;
-                $doctor->save();
+                    $doctor->membership_status = 'pending';
+                    $doctor->membership_expiration_date = null;
+                    $doctor->code = null;
+                    $doctor->index = null;
+                    $doctor->save();
 
-                // جلب أنواع الملفات للأطباء
+                    // جلب أنواع الملفات للأطباء
                 $file_types = FileType::where('type', 'doctor')
                     ->where('doctor_type', $data['type'])
+                    ->where('for_registration', 1)
                     ->get();
 
                 // التحقق من وجود الملفات المطلوبة

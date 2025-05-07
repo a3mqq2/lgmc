@@ -17,7 +17,7 @@ return new class extends Migration
             $table->decimal('total_amount', 10, 2);
             $table->text('notes')->nullable();
             $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
-            $table->foreignId('branch_id')->constrained()->onDelete('cascade');
+            $table->foreignId('branch_id')->nullable()->constrained()->onDelete('cascade');
             $table->unsignedBigInteger('user_id'); // الشخص الذي قام بالدفع
             $table->timestamps();
     

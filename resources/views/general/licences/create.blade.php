@@ -20,31 +20,65 @@
 
                         <!-- المرخص -->
                         <div class="col-md-12">
+                           
+                            @if (!request('doctor_id'))
                             <div class="mb-3">
                                 <label for="licensable_id" class="form-label">اختر المرخص</label>
                                 <select id="licensable_id" name="licensable_id" class="form-control select2-search">
                                     <option value="">اختر المرخص</option>
                                 </select>
                             </div>
+                            @else 
+                            <label for="licensable_id" class="form-label">اختر المرخص</label>
+                            <select id="licensable_id" name="licensable_id" class="form-control select2-search">
+                                <option value="{{ request('doctor_id') }}">{{ App\Models\Doctor::find(request('doctor_id')) ? App\Models\Doctor::find(request('doctor_id'))->name : "" }}</option>
+                            </select>
+                            @endif
 
+
+                            @php
+                                $doctor =  App\Models\Doctor::find(request('doctor_id'));
+                            @endphp
+
+                        @if ($doctor)
                             @if (request('type') == "doctors")
                             <div class="mb-3">
                                 <label for="medical_facility_id" class="form-label">
-                                    @if (request('doctor_type') == App\Enums\DoctorType::Visitor->value)
+                                    @if ($doctor->type->value == App\Enums\DoctorType::Visitor->value)
                                         الشركة المستضيفه         
                                     @else 
                                         مكان العمل
                                     @endif
                                 </label>
-                                <select name="medical_facility_id" id="medical_facility_id" class="form-control select2-search">
-                                    <option value="">اختر مكان العمل</option>
-                                </select>
+                                
+                                @if ($doctor->type->value == App\Enums\DoctorType::Visitor->value)
+                                        <input type="text" class="form-control" id="medical_facility_id" value="{{ $doctor->medicalFacility->name }}" readonly>
+                                        <input type="hidden" name="medical_facility_id" value="{{$doctor->medicalFacility->id}}" >
+                                        @else 
+                                    <label for="medical_facility_id" class="form-label">اختر مكان العمل</label>
+                                        <select name="medical_facility_id" id="medical_facility_id" class="form-control select2-search">
+                                            <option value="">اختر مكان العمل</option>
+                                        </select> 
+                                    @endif
+                                    @else 
+                                    <label for="medical_facility_id" class="form-label">اختر مكان العمل</label>
+                                    <select name="medical_facility_id" id="medical_facility_id" class="form-control select2-search">
+                                        <option value="">اختر مكان العمل</option>
+                                    </select> 
+                               @endif
+
                             </div>
+                            @else 
+                            <label for="medical_facility_id" class="form-label">اختر مكان العمل</label>
+                            <select name="medical_facility_id" id="medical_facility_id" class="form-control select2-search">
+                                <option value="">اختر مكان العمل</option>
+                            </select> 
                             @endif
                         </div>
 
                         @php
-                            $expiryDate = request('doctor_type') === App\Enums\DoctorType::Visitor->value
+                            $expiryDate = request('doctor_type') === App\Enums\DoctorType::Visitor->value || 
+                        isset($doctor) && $doctor->type->value == App\Enums\DoctorType::Visitor->value
                                 ? Carbon\Carbon::now()->addMonths(6)->subDay()->toDateString() // 6 أشهر - يوم
                                 : Carbon\Carbon::now()->addYear()->subDay()->toDateString(); // سنة - يوم
                         @endphp

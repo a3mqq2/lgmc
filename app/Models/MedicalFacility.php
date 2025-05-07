@@ -92,8 +92,13 @@ class MedicalFacility extends Model
 
         public function makeCode(): void
         {
-            $this->loadMissing('branch');
-            $this->code = $this->branch->code . '-MF-' . str_pad($this->index, 3, '0', STR_PAD_LEFT);
+            if($this->branch)
+            {
+                $this->loadMissing('branch');
+                $this->code = $this->branch->code . '-MF-' . str_pad($this->index, 3, '0', STR_PAD_LEFT);
+            } else {
+                $this->code = 'MF-' . str_pad($this->index, 3, '0', STR_PAD_LEFT);
+            }
         }
 
         public function regenerateCode(): void

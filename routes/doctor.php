@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DoctorHomeController;
+use App\Http\Controllers\Doctor\MedicalFacilityController;
 
 Route::prefix('doctor')->name('doctor.')->middleware('auth:doctor')->group(function () {
     Route::get('/dashboard', [DoctorHomeController::class, 'dashboard'])->name('dashboard');
@@ -22,4 +23,9 @@ Route::prefix('doctor')->name('doctor.')->middleware('auth:doctor')->group(funct
 
     Route::get('profile/change-password', [ProfileController::class, 'change_password'])->name('profile.change-password');
     Route::post('profile/change-password', [ProfileController::class, 'change_password_store'])->name('profile.change-password');
+
+
+    Route::get('medical-facilities', [MedicalFacilityController::class, 'index'])->name('medical-facilities.index');
+    Route::get('medical-facilities/create', [MedicalFacilityController::class, 'create'])->name('medical-facilities.create');
+    Route::post('medical-facilities', [MedicalFacilityController::class, 'store'])->name('medical-facilities.store');
 });

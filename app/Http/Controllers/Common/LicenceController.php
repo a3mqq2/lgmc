@@ -123,16 +123,21 @@ class LicenceController extends Controller
                 $licensable = app($validatedData['licensable_type'])::findOrFail($validatedData['licensable_id']);
            
 
+                
                 // check if duplicate licence
                 $licence = Licence::where('licensable_type', $validatedData['licensable_type'])
                     ->where('licensable_id', $validatedData['licensable_id'])
                     ->where('issued_date', $validatedData['issued_date']) 
                     ->where('expiry_date', $validatedData['expiry_date'])
+                    ->where('medical_facility_id', $validatedData['medical_facility_id'])
                     ->first();
 
                 if ($licence) {
                     return  throw new  \Exception('هذا الترخيص موجود بالفعل');
                 }
+
+
+
 
                 $licence = Licence::create([
                     'licensable_type' => $validatedData['licensable_type'],
@@ -146,6 +151,9 @@ class LicenceController extends Controller
                     // medical_facility_id for doctors 
                     'medical_facility_id' => $validatedData['licensable_type'] === Doctor::class ? $validatedData['medical_facility_id'] : null,
                 ]);
+
+
+
 
                 $pricingMap = [
                     DoctorType::Libyan->value => [1 => 7, 2 => 8, 3 => 9, 4 => 10, 5 => 11, 6 => 12],
@@ -212,9 +220,7 @@ class LicenceController extends Controller
             return redirect()->back()->withErrors([$e->getMessage()]);
         }
 
-        return redirect()->route(get_area_name() . '.licences.index', [
-            'type' => $validatedData['licensable_type'] === Doctor::class ? 'doctors' : 'facilities',
-        ])->with('success', 'تم إضافة إذن مزاولة بنجاح.');
+        return redirect()->back()->with('success', 'تم إضافة إذن مزاولة بنجاح.');
     }
 
     /**
@@ -325,7 +331,7 @@ class LicenceController extends Controller
 
         $type = $request->licensable_type == "App\Models\Doctor" ? 'doctors' : 'facilities';
 
-        return redirect()->route(get_area_name().'.licences.index', ['type' => $type, 'status' => $licence->status])
+        return redirect()->back()
             ->with('success', 'تم تعديل الاذن مزاولة بنجاح.');
     }
 
@@ -440,7 +446,7 @@ class LicenceController extends Controller
     $type = ($licence->licensable_type === Doctor::class) ? 'doctors' : 'facilities';
 
     return redirect()
-        ->route(get_area_name() . '.licences.index', ['type' => $type, 'status' => request('status')])
+        ->back()
         ->with('success', 'تم حذف إذن المزاولة بنجاح وإعادة ترقيم الأكواد.');
 }
     
