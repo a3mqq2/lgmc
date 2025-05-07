@@ -206,6 +206,12 @@
                                                 {{ $doctor->membership_status->label() }}
                                             </span>
                                 </td>
+
+
+                                <td>
+                                    {{$doctor->membership_expiration_date}}
+                                </td>
+
                                 @if (request('init_approve'))
                                     <td>
                                         {{$doctor->visiting_date}}
