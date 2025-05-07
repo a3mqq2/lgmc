@@ -463,33 +463,7 @@
                     <div class="card-body">
                         <div class="row">
                             
-                         
-                            <div class="col-md-12">
-                                <label for="">الصفة المهنية</label>
-                                <select name="doctor_rank_id" id="doctor_rank_id" required class="form-control select2">
-                                    <option value="">حدد الصفة</option>
-                                    @foreach ($doctor_ranks as $doctor_rank)
-                                        @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
-                                            <option value="{{$doctor_rank->id}}" {{ old('doctor_rank_id') == $doctor_rank->id ? "selected" : "" }}>
-                                                @if ($doctor_rank->id == 6 && get_area_name() == "admin")
-                                                    استشاري تخصص دقيق
-                                                @else
-                                                    {{$doctor_rank->name}}
-                                                @endif
-                                            </option>
-                                        @elseif (request('type') != "visitor")
-                                            <option value="{{$doctor_rank->id}}" {{ old('doctor_rank_id') == $doctor_rank->id ? "selected" : "" }}>
-                                                @if ($doctor_rank->id == 6 && get_area_name() == "admin")
-                                                    استشاري تخصص دقيق
-                                                @else
-                                                    {{$doctor_rank->name}}
-                                                @endif
-                                            </option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </div>
-                            
+                        
                                     
 
 
