@@ -131,10 +131,10 @@
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'pending']) }}" class="nav-link">طلبات الموقع </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'init_approve']) }}" class="nav-link"> اعضاء لهم موافقة مبدئية  </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'active']) }}" class="nav-link">الاعضاء المفعليين</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'inactive']) }}" class="nav-link">الاعضاء المنتهية صلاحيتهم</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'banned']) }}" class="nav-link">الاعضاء الموقوفين</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'init_approve']) }}" class="nav-link">   موافقة مبدئية  </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'active']) }}" class="nav-link">الاطباء المفعليين</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء المنتهية صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'banned']) }}" class="nav-link">الاطباء الموقوفين</a>
 
             </li>
 
