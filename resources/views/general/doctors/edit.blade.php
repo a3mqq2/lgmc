@@ -20,7 +20,7 @@
                                     <input type="text" required name="name" value="{{old('name', $doctor->name)}}"  id="" class="form-control">
                                 </div>
                                 
-                                @if ($doctor->type->value != "visitor")
+                                @if ($doctor->type->value == "libyan")
                                 <div class="col-md-6">
                                     <label for="">الاسم بالكامل باللغه الانجليزيه</label>
                                     <input type="text" required name="name_en" value="{{old('name_en', $doctor->name_en)}}"  id="" class="form-control">
@@ -34,7 +34,7 @@
                                 </div>
                                 @endif
                              
-                                @if ($doctor->type->value != "visitor")
+                                @if ($doctor->type->value == "libyan")
                                 <div class="col-md-6 mt-2">
                                     <label for=""> اسم الام </label>
                                     <input type="text" required name="mother_name" value="{{old('mother_name', $doctor->mother_name)}}" id="" class="form-control">
@@ -100,14 +100,14 @@
                                     </select>
                                 </div>
                                 @else 
-                                @if ($doctor->type->value != "visitor")
+                                @if ($doctor->type->value == "libyan")
                                 <div class="col-md-6 mt-2">
                                     <label for=""> تاريخ الميلاد </label>
                                     <input type="date" required name="date_of_birth" value="{{old('date_of_birth', $doctor->date_of_birth )}}" id="" class="form-control">
                                 </div>
                                 @endif
                                 @endif
-                                @if ($doctor->type->value != "visitor")
+                                @if ($doctor->type->value == "libyan")
                                 <div class="col-md-6 mt-2">
                                     <label for="">  الحالة الاجتماعية  </label>
                                     <select name="marital_status"  required id="" class="form-control">
@@ -115,7 +115,6 @@
                                         <option value="married" {{old('marital_status', $doctor->marital_status) == "married" ? "selected" : ""}}>متزوج</option>
                                     </select>
                                 </div>
-                                @endif
                                 <div class="col-md-6 mt-2">
                                     <label for="">  النوع   </label>
                                     <select name="gender" required id="gender" required  class="form-control"  >
@@ -131,6 +130,9 @@
                                     <label for="">  تاريخ انتهاء صلاحية الجواز     </label>
                                     <input type="date" required name="passport_expiration" value="{{ $doctor->passport_expiration ? date('Y-m-d', strtotime($doctor->passport_expiration)) : "" }}" id="" class="form-control">
                                 </div>
+                                @endif
+                               
+                              
 
                              
                                 @if ($doctor->type->value == "visitor")
@@ -178,7 +180,7 @@
                                     <input type="phone" name="phone_2" value="{{old('phone_2', $doctor->phone_2)}}"  maxlength="10" class="form-control">
                                 </div>
                                 
-                                @if ($doctor->type->value != "visitor")
+                                @if ($doctor->type->value == "libyan")
                                 <div class="col-md-6">
                                     <label for="">الاقامة</label>
                                     <input type="text" required name="address" value="{{old('address', $doctor->address)}}"  class="form-control">
@@ -222,7 +224,7 @@
                                     </select>
                                 </div>
                                 @endif
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <label for=""> جهة التخرج </label>
                                     <select name="hand_graduation_id"  required  class="form-control select2">
                                         <option value="">حدد جهة التخرج </option>
@@ -231,9 +233,18 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for=""> تاريخ انتهاء الامتياز   </label>
-                                    <input type="date" name="internership_complete" required value="{{old('internership_complete', $doctor->internership_complete ? date('Y-m-d', strtotime($doctor->internership_complete)) : "")}}"  class="form-control">
+                          
+                                <div class="col-md-6">
+                                    <label for="graduation_certificate">تاريخ الحصول عليها</label>
+                                    <select name="graduation_certificate" id="graduation_certificate" class="form-control select2" required>
+                                        @php
+                                            $currentYear = $doctor->graduation_certificate;
+                                            $selectedYear = old('graduation_certificate', $currentYear);
+                                        @endphp
+                                        @for($year = $currentYear; $year >= 1950; $year--)
+                                            <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                        @endfor
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -241,11 +252,48 @@
                     </div>
                     @endif
 
+
+
+                    @if ($doctor->type->value != "visitor")
+                    <div class="card">
+                        <div class="card-header bg-primary text-light">
+                            <h4 class="card-title"> الامتياز    </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for=""> جهة الحصول على الامتياز </label>
+                                    <select name="qualification_university_id"   id="" class="form-control form-control select2">
+                                        <option value="">حدد جهة  </option>
+                                        @foreach ($universities as $university)
+                                            <option value="{{$university->id}}" {{old('qualification_university_id', $doctor->qualification_university_id) == $university->id ? "selected" : ""}}>{{$university->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="certificate_of_excellence_date">تاريخ الحصول عليها</label>
+                                    <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control select2" >
+                                        @php
+                                            $currentYear = date('Y', strtotime( $doctor->certificate_of_excellence_date));
+                                            $selectedYear = old('certificate_of_excellence_date', $currentYear);
+                                        @endphp
+                                        @for($year = $currentYear; $year >= 1950; $year--)
+                                            <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                
+                    </div>
+                    @endif
+
+
                 </div>
             </div>
            
        
-            @if ($doctor->type->value != "visitor")
+            @if ($doctor->type->value == "libyan")
 
 
             <div class="card">
@@ -297,14 +345,7 @@
 
         </div>
 
-        {{-- <div class="col-md-12">
-            <div class="col-md-12">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white text-center"><h4 class="mb-0">📑 المستندات المطلوبة</h4></div>
-                    <div class="card-body"><div class="row" id="documents_container"></div></div>
-                </div>
-            </div>
-        </div> --}}
+
         
         
 
@@ -316,11 +357,13 @@
                     <div class="row">
                        
 
-                        @if ($doctor->type->value != "visitor")
+                        @if ($doctor->type->value == "libyan")
                         <div class="col-md-6">
                             <label for="">الرقم النقابي الأول</label>
                             <input type="text" name="doctor_number"   value="{{old('doctor_number', $doctor->doctor_number)}}"  id="" class="form-control">
                         </div>
+                        @endif
+
 
                         <div class="col-md-6">
                             <label for=""> تاريخ الانتساب للنقابة   </label>
@@ -337,7 +380,6 @@
                                 @endforeach
                             </select>
                         </div>
-                        @endif
 
 
 
@@ -345,24 +387,11 @@
                             <label for="doctor_rank_id">الصفة</label>
                             <select name="doctor_rank_id" id="doctor_rank_id" required class="form-control select2">
                                 <option value="">حدد الصفة</option>
+                                @php
+                                    $doctor_ranks = App\Models\DoctorRank::where('doctor_type', $doctor->type->value)->get();
+                                @endphp
                                 @foreach ($doctor_ranks as $rank)
-                                    @if($doctor->type->value === 'visitor')
-                                        @if(! in_array($rank->id, [1, 2]))
-                                            <option value="{{ $rank->id }}"
-                                                {{ old('doctor_rank_id', $doctor->doctor_rank_id) == $rank->id ? 'selected' : '' }}>
-                                                {{ ($rank->id === 6 && $doctor->type->value !== 'libyan') 
-                                                    ? 'استشاري تخصص دقيق' 
-                                                    : $rank->name }}
-                                            </option>
-                                        @endif
-                                    @else
-                                        <option value="{{ $rank->id }}"
-                                            {{ old('doctor_rank_id', $doctor->doctor_rank_id) == $rank->id ? 'selected' : '' }}>
-                                            {{ ($rank->id === 6 && $doctor->type->value !== 'libyan') 
-                                                ? 'استشاري تخصص دقيق' 
-                                                : $rank->name }}
-                                        </option>
-                                    @endif
+                                    <option value="{{$rank->id}}" {{old('doctor_rank_id', $doctor->doctor_rank_id) == $rank->id ? "selected" : ""}}>{{$rank->name}}</option>
                                 @endforeach
                             </select>
                         </div>

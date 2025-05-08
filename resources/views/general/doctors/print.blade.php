@@ -4,172 +4,141 @@
 
 @section('content')
     <div class="row">
-        <div class="col-12">
-            <h4 class="bg-primary text-light p-2"> بيانات الطبيب </h4>
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <tbody>
-                        <tr>
-                            <th class="bg-light">كود الطبيب</th>
-                            <td>{{ $doctor->code }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">الاسم</th>
-                            <td>{{ $doctor->name }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">الاسم بالإنجليزية</th>
-                            <td>{{ $doctor->name_en }}</td>
-                        </tr>
-                        @if (request('type') == "libyan")
-                        <tr>
-                            <th class="bg-light">الرقم الوطني</th>
-                            <td>{{ $doctor->national_number }}</td>
-                        </tr>
-                        @endif
-                        <tr>
-                            <th class="bg-light">اسم الأم</th>
-                            <td>{{ $doctor->mother_name }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">الدولة</th>
-                            <td>{{ $doctor->country->name ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">تاريخ الميلاد</th>
-                            <td>{{ $doctor->date_of_birth ? $doctor->date_of_birth->format('Y-m-d') : '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">الحالة الاجتماعية</th>
-                            <td>{{ $doctor->marital_status }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">الجنس</th>
-                            <td>{{ $doctor->gender->label() }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">رقم الجواز</th>
-                            <td>{{ $doctor->passport_number }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">تاريخ انتهاء الجواز</th>
-                            <td>{{ $doctor->passport_expiration ? $doctor->passport_expiration->format('Y-m-d') : '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">الإقامة</th>
-                            <td>{{ $doctor->address }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">رقم الهاتف</th>
-                            <td>{{ $doctor->phone }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">رقم الواتساب</th>
-                            <td>{{ $doctor->phone_2 }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">البريد الالكتروني</th>
-                            <td>{{ $doctor->email }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                
+        <div class="col-md-12 text-center">
+            @php($img=$doctor->files->first())
+            @if($img)
+                <img src="{{ Storage::url($img->file_path) }}" class="img-thumbnail" style="max-width:100%;max-height:300px;">
+                <p class="mt-2 text-muted">{{ $img->file_name }}</p>
+            @else
+                <div class="text-muted">لا توجد صورة</div>
+            @endif
         </div>
+        <div class="col-md-12">
+            <h3 class="text-primary">البيانات الشخصية</h3>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th class="bg-light text-primary">نوع الطبيب</th>
+                        <td class="{{ $doctor->type->badgeClass() }}">{{ $doctor->type->label() }}</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light text-primary">كود الطبيب</th>
+                        <td>{{ $doctor->code }}</td>
+                    </tr>
+                    @if (isset($doctor->doctor_number))
+                    <tr>
+                        <th class="bg-light text-primary">الرقم النقابي الأول</th>
+                        <td>{{ $doctor->doctor_number }}</td>
+                    </tr>
+                    @endif
+                   
+                    @if (get_area_name() == "admin")
+                        <tr>
+                            <th class="bg-light text-primary"> الفرع   </th>
+                            <td>{{ $doctor->branch ? $doctor->branch->name : "" }}</td>
+                        </tr>
+                    @endif
+
+                    <tr>
+                        <th class="bg-light text-primary">الاسم بالكامل</th>
+                        <td>{{ $doctor->name }}</td>
+                    </tr>
+                    @if (!in_array($doctor->type->value, ['visitor', 'foreign']))
+                    <tr>
+                        <th class="bg-light text-primary">الاسم بالإنجليزية</th>
+                        <td>{{ $doctor->name_en }}</td>
+                    </tr>
+                    @endif
+                    @if ($doctor->type->value === 'libyan')
+                    <tr>
+                        <th class="bg-light text-primary">الرقم الوطني</th>
+                        <td>{{ $doctor->national_number }}</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light text-primary">اسم الأم</th>
+                        <td>{{ $doctor->mother_name }}</td>
+                    </tr>
+                    @endif
+              
+                </tbody>
+            </table>
+
+
+            <h3 class="text-primary"> بيانات الاتصال </h3>
+            <table class="table table-bordered">
+                <tbody>
+                  
+
+                    <tr>
+                        <th class="bg-light text-primary">رقم الهاتف</th>
+                        <td>{{ $doctor->phone }}</td>
+                    </tr>
+
+                    @if (isset($doctor->phone_2))
+                    <tr>
+                        <th class="bg-light text-primary">الواتساب </th>
+                        <td>{{ $doctor->phone_2 }}</td>
+                    @endif
+
+                    <tr>
+                        <th class="bg-light text-primary">البريد الإلكتروني</th>
+                        <td>{{ $doctor->email }}</td>
+                    </tr>
+                    @if (isset($doctor->address))
+                    <tr>
+                        <th class="bg-light text-primary">العنوان</th>
+                        <td>{{ $doctor->address }}</td>
+                    </tr>
+                    @endif
+                  
+              
+                </tbody>
+            </table>
+        </div>
+
+
+
+
+
+
+
     </div>
 
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h4 class="bg-primary text-light p-2">بكالوريس</h4>
-            <div class="table-responsive">
+    <div class="row">
+        @if ($doctor->hand_graduation_id)
+            <div class="col-md-6">
+                <h3 class="text-primary">بيانات البكالوريس</h3>
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
-                            <th class="bg-light">جامعة التخرج</th>
-                            <td>{{ $doctor->handGraduation->name ?? '-' }}</td>
+                            <th class="bg-light text-primary"> اسم الجامعة </th>
+                            <td>{{ $doctor->handGraduation->name }}</td>
                         </tr>
                         <tr>
-                            <th class="bg-light">تاريخ إنهاء التدريب</th>
-                            <td>{{ $doctor->internership_complete ? $doctor->internership_complete->format('Y-m-d') : '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">الدرجة العلمية</th>
-                            <td>{{ $doctor->academicDegree->name ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">جامعة التأهيل</th>
-                            <td>{{ $doctor->qualificationUniversity->name ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">تاريخ التأهيل</th>
-                            <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date: '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">شهادة الإمتياز</th>
-                            <td>{{ $doctor->certificate_of_excellence }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">تاريخ شهادة الإمتياز</th>
-                            <td>{{ $doctor->certificate_of_excellence_date ? $doctor->certificate_of_excellence_date: '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">شهادة التخرج</th>
+                            <th class="bg-light text-primary">تاريخ الحصول عليها </th>
                             <td>{{ $doctor->graduation_certificate }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-
-    <div class="row mt-5" style="margin-top: 30px !important;">
-        <div class="col-md-12">
-            <h4 class="bg-primary text-light p-2">العمل الحالي</h4>
-            <div class="table-responsive">
+        @endif
+        @if ($doctor->qualification_university_id || $doctor->certificate_of_excellence_date)
+            <div class="col-md-6">
+                <h3 class="text-primary">بيانات الامتياز</h3>
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
-                            <th class="bg-light">الفرع</th>
-                            <td>{{ $doctor->branch?->name ?? '-' }}</td>
+                            <th class="bg-light text-primary"> اسم الجامعة </th>
+                            <td>{{ $doctor->qualificationUniversity->name }}</td>
                         </tr>
                         <tr>
-                            <th class="bg-light">التخصص الأول</th>
-                            <td>{{ $doctor->specialty1->name ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">التخصص الدقيق</th>
-                            <td>{{ $doctor->specialty2->name ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">تاريخ الإضافة</th>
-                            <td>{{ $doctor->created_at->format('Y-m-d') }}</td>
+                            <th class="bg-light text-primary">تاريخ الحصول عليها </th>
+                            <td>{{ $doctor->certificate_of_excellence_date }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <h4 class="bg-primary text-light p-2">العمل السابق</h4>
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <tbody>
-                        <tr>
-                            <th class="bg-light">الجهات السابقة</th>
-                            <td>{{ $doctor->ex_medical_facilities }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">الخبرة</th>
-                            <td>{{ $doctor->experience }}</td>
-                        </tr>
-                        <tr>
-                            <th class="bg-light">ملاحظات</th>
-                            <td>{{ $doctor->notes }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        @endif
     </div>
 @endsection

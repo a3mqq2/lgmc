@@ -40,29 +40,10 @@ class MedicalFacilityService
 
         $data['membership_status'] = "inactive";
 
-        if (request('manager_id')) {
-            $checkIfManagerHaveFacilityBefore = MedicalFacility::where('manager_id', request('manager_id'))->first();
-            if ($checkIfManagerHaveFacilityBefore) {
-                // trhow error
-                throw new \Exception('هذا المدير لديه منشأة طبية مسجلة بالفعل');
-                // return redirect()->back()->withErrors(['هذا المدير لديه منشأة طبية مسجلة بالفعل']);
-            }
 
-            $manager = Doctor::find(request('manager_id'));
-            if (!$manager->licenses()->where('status', 'active')->first()) {
-            // trhow error
-                 throw new \Exception('هذا المدير ليس لديه ترخيص نشط');
-                // return redirect()->back()->withErrors(['هذا المدير ليس لديه ترخيص نشط']);
-            }
-        }
 
         $medicalFacility = MedicalFacility::create($data);
 
-        if (isset($data['manager_id'])) {
-            $manager = Doctor::find(request('manager_id'));
-            $licence = $manager->licenses()->where('status', 'active')->first();
-            $licence->update(['medical_facility_id' => $medicalFacility->id]);
-        }
 
         $file_types = FileType::where('type', 'medical_facility')
             ->where('for_registration', 1)

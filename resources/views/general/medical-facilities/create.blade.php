@@ -13,13 +13,13 @@
                 <div class="card-body">
                         @csrf
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="serial_number" class="form-label">رقم المنشأة</label>
                                     <input type="text" class="form-control" id="name" name="serial_number" required>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="name" class="form-label">اسم المنشأة</label>
                                     <input type="text" class="form-control" id="name" name="name" required>
@@ -40,7 +40,7 @@
                             @endif
                         </div>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="medical_facility_type_id" class="form-label">نوع المنشأة الطبية</label>
                                     <select class="form-control" id="medical_facility_type_id" name="medical_facility_type_id"
@@ -51,39 +51,19 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="address" class="form-label">الموقع</label>
                                     <input type="text" name="address" class="form-control"  id="">
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="phone_number" class="form-label">رقم الهاتف</label>
                                     <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="10" required>
                                 </div>
                             </div>
-                        </div>
-                        
-                       
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="activity_start_date" class="form-label"> تاريخ بدء النشاط  </label>
-                                    <input type="date" class="form-control" id="activity_start_date" name="activity_start_date"  required>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="">نوع نشاط الشركة</label>
-                                    <select name="activity_type" id="" class="form-control">
-                                        <option value="">حدد نوع النشاط</option>
-                                        <option value="commercial_record">سجل تجاري</option>
-                                        <option value="negative_certificate">شهادة سلبية</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="">مالك النشاط</label>
                                 <select name="manager_id" id="licensable_id" class="form-control" 
                                     @if (get_area_name() == "user")
@@ -97,56 +77,6 @@
                                 </select>
                             </div>
                         </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-12">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white text-center">
-                    <h4 class="mb-0">📑 المستندات المطلوبة</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        @foreach ($file_types as $file_type)
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="document-card shadow-sm border rounded text-center p-3 position-relative">
-                                    <div class="document-icon mb-3">
-                                        <i class="fas fa-file-upload fa-3x text-primary"></i>
-                                    </div>
-                                    <h6 class="document-title mb-2">
-                                        {{ $file_type->name }}
-                                        @if ($file_type->is_required)
-                                            <span class="text-danger">*</span>
-                                        @endif
-                                    </h6>
-                                    <div class="custom-file">
-                                        <input type="file" name="documents[{{ $file_type->id }}]" 
-                                               class="custom-file-input"
-                                               id="file_{{ $file_type->id }}"
-                                               @if($file_type->is_required) required @endif>
-                                        <label class="custom-file-label" for="file_{{ $file_type->id }}">
-                                            اختر ملف
-                                        </label>
-                                    </div>
-                                    <small class="text-muted d-block mt-2">
-                                        الملف يجب أن يكون بصيغة <b>PDF</b> أو صورة
-                                    </small>
-                                    <div id="status_{{ $file_type->id }}" class="mt-2 text-muted">
-                                        🔄 لم يتم الرفع بعد
-                                    </div>
-                                    @if ($file_type->is_required)
-                                        <div class="alert alert-warning mt-3 p-2 text-center rounded-lg shadow-sm"
-                                             style="background: linear-gradient(135deg, #fff8e1, #ffe0b2); 
-                                                    border-left: 5px solid #ff9800;
-                                                    color: #5d4037;">
-                                            <i class="fas fa-exclamation-circle"></i> 
-                                            <strong>ملف إلزامي:</strong> يُرجى التأكد من رفع هذا الملف.
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
                 </div>
             </div>
         </div>

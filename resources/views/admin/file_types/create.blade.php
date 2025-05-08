@@ -45,11 +45,7 @@
                                     <option value="">  الكل  </option>
                                     @foreach ($doctor_ranks as $doctor_rank)
                                         <option value="{{ $doctor_rank->id }}">
-                                            @if ($doctor_rank->id == 6 && get_area_name() == 'admin')
-                                                استشاري تخصص دقيق
-                                            @else
-                                                {{ $doctor_rank->name }}
-                                            @endif
+                                            {{ $doctor_rank->name }}
                                         </option>
                                     @endforeach
                                 </select>

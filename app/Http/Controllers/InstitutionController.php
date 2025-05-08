@@ -16,8 +16,7 @@ class InstitutionController extends Controller
      */
     public function index()
     {
-        $institutions = Institution::where('branch_id', auth()->user()->branch_id)
-            ->paginate(10);
+        $institutions = Institution::latest()->paginate(30);
 
         // Log the access to the institutions list
 
@@ -52,7 +51,7 @@ class InstitutionController extends Controller
 
         $institution = Institution::create([
             'name' => $request->name,
-            'branch_id' => auth()->user()->branch_id, // Automatically assign branch_id
+            'branch_id' => auth()->user()->branch_id ?? 1, // Automatically assign branch_id
         ]);
 
         // Log creation with details
@@ -98,7 +97,7 @@ class InstitutionController extends Controller
      */
     public function edit(Institution $institution)
     {
-        $this->authorizeInstitution($institution); // Authorization check
+
 
         // Log access to edit form
         Log::create([

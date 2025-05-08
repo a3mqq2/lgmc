@@ -5,8 +5,12 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DoctorHomeController;
 use App\Http\Controllers\Doctor\MedicalFacilityController;
 
-Route::prefix('doctor')->name('doctor.')->middleware('auth:doctor')->group(function () {
+Route::prefix('doctor')->name('doctor.')->middleware(['auth:doctor', 'otp.verified', 'docs.completed'])->group(function () {
     Route::get('/dashboard', [DoctorHomeController::class, 'dashboard'])->name('dashboard');
+    Route::get('/licences', [DoctorHomeController::class, 'licences'])->name('licences');
+    Route::get('/facilities', [DoctorHomeController::class, 'facilities'])->name('facilities');
+    Route::get('/licences/create', [DoctorHomeController::class, 'create_license'])->name('licences.create');
+    Route::get('/licences/store', [DoctorHomeController::class, 'store_license'])->name('licences.store');
     Route::get('logout', [DoctorHomeController::class, 'logout'])->name('logout');
     Route::get('/licences/{licence}/print', [DoctorHomeController::class, 'licence_print'])->name('licences.print');
     Route::get('/tickets/create', [DoctorHomeController::class, 'create_ticket'])->name('tickets.create');

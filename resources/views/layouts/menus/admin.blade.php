@@ -98,27 +98,9 @@
 </li>
 @endif
 
-{{-- DOCTORS --}}
-@if(auth()->user()->permissions()->where('name', 'manage-doctors')->count())
-<li class="nav-item">
-    <a class="nav-link menu-link" data-bs-target="#doctors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-        <i class="fa fa-user-doctor"></i>
-        <span data-key="t-layouts">الأطباء</span>
-    </a>
-    <div class="collapse menu-dropdown" id="doctors">
-        <ul class="nav nav-sm flex-column">
-            <li class="nav-item">
-                {{-- <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan"]) }}" class="nav-link">الاطباء الليبيين</a> --}}
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign"]) }}" class="nav-link">الاطباء الأجانب</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor"]) }}" class="nav-link">الاطباء الزوار</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian"]) }}" class="nav-link">الاطباء الفلسطينيين</a>
-                {{-- <a href="{{ route(get_area_name().'.doctors.index') }}" class="nav-link">عرض جميع الأطباء</a> --}}
-            </li>
 
-        </ul>
-    </div>
-</li>
-@endif
+
+
 
 
 @if (auth()->user()->permissions()->where('name', 'doctor-visitors')->count())
@@ -133,7 +115,7 @@
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'pending']) }}" class="nav-link">طلبات الموقع </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'init_approve']) }}" class="nav-link">   موافقة مبدئية  </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'active']) }}" class="nav-link">الاطباء المفعليين</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء المنتهية صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء الغير مفعليينم</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'banned']) }}" class="nav-link">الاطباء الموقوفين</a>
 
             </li>
@@ -205,13 +187,13 @@
 <li class="nav-item">
     <a class="nav-link menu-link" data-bs-target="#medical-facility" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-hospital"></i>
-        <span data-key="t-layouts">المرافق الطبية</span>
+        <span data-key="t-layouts">المنشآت طبية</span>
     </a>
     <div class="collapse menu-dropdown" id="medical-facility">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
                 <a href="{{ route(get_area_name().'.medical-facilities.create') }}" class="nav-link" data-key="t-horizontal">إنشاء مرفق جديد</a>
-                <a href="{{ route(get_area_name().'.medical-facilities.index') }}" class="nav-link" data-key="t-horizontal">عرض جميع المرافق الطبية</a>
+                <a href="{{ route(get_area_name().'.medical-facilities.index') }}" class="nav-link" data-key="t-horizontal">عرض جميع المنشآت طبية</a>
             </li>
         </ul>
     </div>
@@ -348,6 +330,25 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
 
         
 
+
+            <li class="nav-item">
+                <a class="nav-link menu-link" href="#institutions" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                    <i class="fas fa-building"></i><span data-key="t-layouts"> جهات العمل </span>
+                </a>
+                <div class="collapse menu-dropdown" id="institutions">
+                    <ul class="nav nav-sm flex-column">
+                        <li class="nav-item">
+                            <a href="{{ route(get_area_name().'.institutions.create') }}" class="nav-link" data-key="t-horizontal">
+                                 إضافة جهة جديدة
+                            </a>
+                            <a href="{{ route(get_area_name().'.institutions.index') }}" class="nav-link" data-key="t-horizontal">
+                                 عرض جميع الجهات
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
             {{-- Countries --}}
             <li class="nav-item">
                 <a class="nav-link menu-link" data-bs-target="#countries" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
@@ -412,7 +413,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
             {{-- <li class="nav-item">
                 <a class="nav-link menu-link" data-bs-target="#medical-facility-types" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-hospital"></i>
-                    <span data-key="t-layouts">أنواع المرافق الطبية</span>
+                    <span data-key="t-layouts">أنواع المنشآت طبية</span>
                 </a>
                 <div class="collapse menu-dropdown" id="medical-facility-types">
                     <ul class="nav nav-sm flex-column">
@@ -421,7 +422,7 @@ $medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licen
                                 إنشاء نوع جديد
                             </a>
                             <a href="{{ route(get_area_name().'.medical-facility-types.index') }}" class="nav-link" data-key="t-horizontal">
-                                عرض جميع أنواع المرافق الطبية
+                                عرض جميع أنواع المنشآت طبية
                             </a>
                         </li>
                     </ul>

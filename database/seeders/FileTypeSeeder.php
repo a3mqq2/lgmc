@@ -14,7 +14,6 @@ class FileTypeSeeder extends Seeder
     {
         $fileTypes = [
             // أنواع مستندات خاصة بالأطباء
-            ['name' => 'الصورة الشخصية', 'type' => 'doctor', 'doctor_rank_id' => null, 'is_required' => true],
         ];
 
         foreach ($fileTypes as $fileType) {

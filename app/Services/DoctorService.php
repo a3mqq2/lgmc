@@ -122,6 +122,8 @@ class DoctorService
          }
 
 
+
+
          // Type filters
          if (request('type') === 'libyan') {
              $query->where('type', 'libyan');
@@ -140,6 +142,9 @@ class DoctorService
              $query->where('membership_status', 'banned');
          }
      
+
+         $query->whereNotNull('registered_at');
+
          // Area-based branch restriction
          if (in_array(get_area_name(), ['user'])) {
              $query->where('branch_id', auth()->user()->branch_id);
@@ -179,6 +184,7 @@ class DoctorService
         ->groupBy('specialty_2')
         ->pluck('specialty_2')
         ->toArray();
+
         return [
             'branches' => Branch::all(),
             'doctor_ranks' => DoctorRank::all(),
@@ -266,7 +272,7 @@ class DoctorService
 
             $doctor = Doctor::create($data);
 
-            // ربط المرافق الطبية
+            // ربط المنشآت طبية
             $doctor->institutions()->attach($medicalFacilities ?? []);
             // تحديث رمز الطبيب بناءً على الفرع
             $doctor->membership_status = 'inactive';
@@ -278,33 +284,8 @@ class DoctorService
             $file_types = FileType::where('type', 'doctor')
             ->where('for_registration', 1)
                 ->get();
-
-            // التحقق من وجود الملفات المطلوبة
-            foreach ($file_types as $file_type) {
-                if ($file_type->is_required && empty($data['documents'][$file_type->id])) {
-                    return redirect()->back()->withInput()->withErrors(["الملف {$file_type->name} مطلوب ولم يتم تحميله."]);
-                }
-            }
-
-            // معالجة ملفات المستندات
-            foreach ($file_types as $file_type) {
-                if (isset($data['documents'][$file_type->id])) {
-                    $file = $data['documents'][$file_type->id];
-                    $path = $file->store('doctors','public');
-                    $doctor->files()->create([
-                        'file_name' => $file->getClientOriginalName(),
-                        'file_type_id' => $file_type->id,
-                        'file_path' => $path,
-                    ]);
-                }
-            }
-
-            // إنشاء الفاتورة الخاصة بالطبيب
             $this->createInvoice($doctor);
-
-            // initize invoice for issued the id card
-
-            $this->initCardID($doctor);
+            
 
 
             // تسجيل العملية في السجل
@@ -331,101 +312,8 @@ class DoctorService
 
 
 
-
-        
-       if($doctor->type ==  DoctorType::Libyan)
-       {
-            if($doctor->doctor_rank_id == 1)
-            {
-                $price = Pricing::find(1);
-            } else if($doctor->doctor_rank_id == 2) 
-            {
-                $price = Pricing::find(2);
-            } else if($doctor->doctor_rank_id == 3)
-            {
-                $price = Pricing::find(3);
-            } else if($doctor->doctor_rank_id == 4)
-            {
-                $price = Pricing::find(4);
-            } else if($doctor->doctor_rank_id == 5)
-            {
-                $price = Pricing::find(5);  
-            }else if($doctor->doctor_rank_id == 6)
-            {
-                $price = Pricing::find(6);  
-            }
-
-       } else if($doctor->type == DoctorType::Foreign)
-       {
-            if($doctor->doctor_rank_id == 1)
-            {
-                $price = Pricing::find(13);
-            } else if($doctor->doctor_rank_id == 2) 
-            {
-                $price = Pricing::find(14);
-            } else if($doctor->doctor_rank_id == 3)
-            {
-                $price = Pricing::find(15);
-            } else if($doctor->doctor_rank_id == 4)
-            {
-                $price = Pricing::find(16);
-            } else if($doctor->doctor_rank_id == 5)
-            {
-                $price = Pricing::find(17);  
-            }else if($doctor->doctor_rank_id == 6)
-            {
-                $price = Pricing::find(18);  
-            }
-       } else if($doctor->type == DoctorType::Visitor) {
-            if($doctor->doctor_rank_id == 3 || $doctor->doctor_rank_id == 4)
-            {
-                $price = Pricing::find(25);
-            }
-
-
-            if($doctor->doctor_rank_id == 5)
-            {
-                $price = Pricing::find(26);
-            }
-
-
-            if($doctor->doctor_rank_id == 6)
-            {
-                $price = Pricing::find(27);
-            }
-
-
-            if(!$price)
-            {
-                return redirect()->back()->withInput()->withErrors(['لا يمكن اضافة طبيب زائر بدون تحديد الالصفة الصحيحة']);
-            }
-
-            
-       } else if($doctor->type == DoctorType::Palestinian) {
-
-            if($doctor->doctor_rank_id == 1)
-            {
-                $price = Pricing::find(53);
-            } else if($doctor->doctor_rank_id == 2) 
-            {
-                $price = Pricing::find(54);
-            } else if($doctor->doctor_rank_id == 3)
-            {
-                $price = Pricing::find(55);
-            } else if($doctor->doctor_rank_id == 4)
-            {
-                $price = Pricing::find(56);
-            } else if($doctor->doctor_rank_id == 5)
-            {
-                $price = Pricing::find(57);  
-            }else if($doctor->doctor_rank_id == 6)
-            {
-                $price = Pricing::find(58);  
-            }
-
-       } else {
-            FacadesLog::error('Doctor Type is not exists to create an register invoice');
-       }
+        $pricing = Pricing::where('type', 'membership')->where('doctor_rank_id', $doctor->doctor_rank_id)
+        ->where('doctor_type', $doctor->type->value)->first();
 
 
        
@@ -433,10 +321,10 @@ class DoctorService
             'invoice_number' => "RGS-" . Invoice::count() + 1,
             'invoiceable_id' => $doctor->id,
             'invoiceable_type' => 'App\Models\Doctor',
-            'description' => "رسوم العضوية الخاصة بالطبيب",
+            'description' => $pricing->name,
             'user_id' => auth()->id(),
-            'amount' => $price->amount,
-            'pricing_id' => $price->id,
+            'amount' => $pricing->amount,
+            'pricing_id' => $pricing->id,
             'status' => 'unpaid',
             'branch_id' => auth()->user()->branch_id,
             'user_id' => auth()->user()->id,
@@ -444,30 +332,21 @@ class DoctorService
 
 
         $invoice = Invoice::create($data);
-        // $this->invoiceService->markAsPaid($this->getVault(), $invoice, $invoice->description);
 
 
 
-        if($doctor->type == DoctorType::Libyan)
-        {
-            $price = Pricing::find(79);
-        } else if ($doctor->type == DoctorType::Palestinian) 
-        {
-            $price = Pricing::find(80);
-        } else if ($doctor->type == DoctorType::Foreign)  {
-            $price = Pricing::find(81);
-        }
+        $open_file = Pricing::where('category', 'open_file')->where('doctor_type', $doctor->type->value)->first();
 
-        if(isset($price))
+        if(isset($open_file))
         {
             $data = [
                 'invoice_number' => "FIL-" . Invoice::latest()->first()->id + 1,
                 'invoiceable_id' => $doctor->id,
                 'invoiceable_type' => 'App\Models\Doctor',
-                'description' => "رسوم فتح ملف للطبيب",
+                'description' => $open_file->name,
                 'user_id' => auth()->id(),
-                'amount' => $price->amount,
-                'pricing_id' => $price->id,
+                'amount' => $open_file->amount,
+                'pricing_id' => $open_file->id,
                 'status' => 'unpaid',
                 'branch_id' => auth()->user()->branch_id,
                 'user_id' => auth()->user()->id,
@@ -657,6 +536,7 @@ class DoctorService
 
                 $doctor->update([
                     "membership_status" => \App\Enums\MembershipStatus::InActive,
+                    'registered_at' => now(),
                 ]);
 
                 Log::create([

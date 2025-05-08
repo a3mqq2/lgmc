@@ -76,13 +76,36 @@
                                           </div>
                                       
                                           <input type="hidden" name="otp_code" id="otp_code">
-                                          <input type="hidden" name="email" value="{{request('email')}}">
+
+
+                                          <input type="hidden" name="email" value="{{ auth('doctor')->user()->email }}">
                                           <button class="btn btn-primary w-100 mt-3" type="submit" onclick="combineOtp()">تأكيد</button>
                                       </div>
                                       
+
+                                      
+
+                                    
                                     </div>
                                 </div>
                                 </form>
+
+
+                                <form action="{{ route('otp.resend') }}" method="POST" class="mt-3 text-center">
+                                    @csrf
+                                    <input type="hidden" name="email" value="{{ auth('doctor')->user()->email }}">
+                                    <button type="submit" class="btn btn-link">إعادة إرسال رمز التحقق</button>
+                                </form>
+
+
+                                {{-- add logout --}}
+
+                                <form action="{{ route('logout') }}" method="GET" class="mt-3 text-center">
+                                    @csrf
+                                    <button type="submit" class="btn btn-link">تسجيل الخروج</button>
+                                </form>
+
+
                                 <!-- end col -->
                             </div>
                             <!-- end row -->

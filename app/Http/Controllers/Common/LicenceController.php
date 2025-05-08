@@ -112,12 +112,6 @@ class LicenceController extends Controller
  */
 public function store(Request $request)
 {
-    // 1) Gather the file‐types required for this licence
-    //    (for_registration = 0 per your code)
-    $file_types = FileType::where('type', 'medical_facility')
-                          ->where('for_registration', 0)
-                          ->get();
-
     // 2) Build validation rules
     $rules = [
         'licensable_type'     => 'required|in:App\Models\Doctor,App\Models\MedicalFacility',
@@ -127,16 +121,6 @@ public function store(Request $request)
         'medical_facility_id' => 'nullable|integer',
     ];
 
-    // file rules
-    foreach ($file_types as $ft) {
-        $key  = "documents.{$ft->id}";
-        $base = 'file|mimes:pdf,jpeg,png|max:2048';
-        $rules[$key] = $ft->is_required
-            ? "required|{$base}"
-            : "nullable|{$base}";
-    }
-
-    // validate all at once
     $validated = $request->validate($rules);
 
     try {
@@ -200,20 +184,6 @@ public function store(Request $request)
                 ]);
             }
 
-            // 7) Store each uploaded document
-            foreach ($file_types as $ft) {
-                if ($request->hasFile("documents.{$ft->id}")) {
-                    $file = $request->file("documents.{$ft->id}");
-                    $path = $file->store('licence-files', 'public');
-
-                    // assumes Licence model has files() relation
-                    $licence->licensable->files()->create([
-                        'file_name'    => $file->getClientOriginalName(),
-                        'file_type_id' => $ft->id,
-                        'file_path'    => $path,
-                    ]);
-                }
-            }
         });
     } catch (\Exception $e) {
         return redirect()->back()->withErrors($e->getMessage());

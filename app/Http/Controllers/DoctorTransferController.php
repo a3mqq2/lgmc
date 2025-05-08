@@ -59,9 +59,10 @@ class DoctorTransferController extends Controller
             'note' => 'nullable|string',
         ]);
 
+        $doctor = Doctor::findOrFail($request->doctor_id);
         $doctorTransfer = DoctorTransfer::create([
             'doctor_id' => $request->doctor_id,
-            'from_branch_id' => auth()->user()->branch_id,
+            'from_branch_id' => $doctor->branch_id,
             'to_branch_id' => $request->to_branch_id,
             'created_by' => auth()->id(),
             'note' => $request->note,
@@ -76,7 +77,7 @@ class DoctorTransferController extends Controller
             "action" => "create_doctor_transfer",
         ]);
 
-        return redirect()->route('user.doctor-transfers.index')->with('success', 'تم طلب نقل الطبيب بنجاح.');
+        return redirect()->route(get_area_name().'.doctor-transfers.index')->with('success', 'تم طلب نقل الطبيب بنجاح.');
     }
 
     /**
@@ -93,7 +94,7 @@ class DoctorTransferController extends Controller
     public function edit(DoctorTransfer $doctorTransfer)
     {
         if ($doctorTransfer->status !== 'pending') {
-            return redirect()->route('user.doctor-transfers.index')->with('error', 'لا يمكن تعديل الطلب بعد الموافقة أو الرفض.');
+            return redirect()->route(get_area_name().'.doctor-transfers.index')->with('error', 'لا يمكن تعديل الطلب بعد الموافقة أو الرفض.');
         }
 
         return view('user.doctor_transfers.edit', compact('doctorTransfer'));
@@ -105,7 +106,7 @@ class DoctorTransferController extends Controller
     public function update(Request $request, DoctorTransfer $doctorTransfer)
     {
         if ($doctorTransfer->status !== 'pending') {
-            return redirect()->route('user.doctor-transfers.index')->with('error', 'لا يمكن تعديل الطلب بعد الموافقة أو الرفض.');
+            return redirect()->route(get_area_name().'.doctor-transfers.index')->with('error', 'لا يمكن تعديل الطلب بعد الموافقة أو الرفض.');
         }
 
         $request->validate([
@@ -126,7 +127,7 @@ class DoctorTransferController extends Controller
             "action" => "edit_doctor_transfer",
         ]);
 
-        return redirect()->route('user.doctor-transfers.index')->with('success', 'تم تحديث طلب النقل بنجاح.');
+        return redirect()->route(get_area_name().'.doctor-transfers.index')->with('success', 'تم تحديث طلب النقل بنجاح.');
     }
 
     /**
@@ -136,7 +137,7 @@ class DoctorTransferController extends Controller
     {
         if ($doctorTransfer->status !== 'pending') {
             return redirect()
-                ->route('user.doctor-transfers.index')
+                ->route(get_area_name().'.doctor-transfers.index')
                 ->with('error', 'هذا الطلب تم اتخاذ إجراء عليه مسبقًا.');
         }
     
@@ -161,7 +162,7 @@ class DoctorTransferController extends Controller
         });
     
         return redirect()
-            ->route('user.doctor-transfers.index')
+            ->route(get_area_name().'.doctor-transfers.index')
             ->with('success', 'تمت الموافقة على طلب النقل.');
     }
 
@@ -171,7 +172,7 @@ class DoctorTransferController extends Controller
     public function reject(Request $request, DoctorTransfer $doctorTransfer)
     {
         if ($doctorTransfer->status !== 'pending') {
-            return redirect()->route('user.doctor-transfers.index')->with('error', 'هذا الطلب تم اتخاذ إجراء عليه مسبقًا.');
+            return redirect()->route(get_area_name().'.doctor-transfers.index')->with('error', 'هذا الطلب تم اتخاذ إجراء عليه مسبقًا.');
         }
 
         $request->validate([
@@ -193,7 +194,7 @@ class DoctorTransferController extends Controller
             "action" => "reject_doctor_transfer",
         ]);
 
-        return redirect()->route('user.doctor-transfers.index')->with('success', 'تم رفض طلب النقل.');
+        return redirect()->route(get_area_name().'.doctor-transfers.index')->with('success', 'تم رفض طلب النقل.');
     }
 
     /**
@@ -202,7 +203,7 @@ class DoctorTransferController extends Controller
     public function destroy(DoctorTransfer $doctorTransfer)
     {
         if ($doctorTransfer->status !== 'pending') {
-            return redirect()->route('user.doctor-transfers.index')->with('error', 'لا يمكن حذف الطلب بعد الموافقة أو الرفض.');
+            return redirect()->route(get_area_name().'.doctor-transfers.index')->with('error', 'لا يمكن حذف الطلب بعد الموافقة أو الرفض.');
         }
 
         $doctorName = $doctorTransfer->doctor->name;
@@ -216,6 +217,6 @@ class DoctorTransferController extends Controller
             "action" => "delete_doctor_transfer",
         ]);
 
-        return redirect()->route('user.doctor-transfers.index')->with('success', 'تم حذف طلب النقل.');
+        return redirect()->route(get_area_name().'.doctor-transfers.index')->with('success', 'تم حذف طلب النقل.');
     }
 }

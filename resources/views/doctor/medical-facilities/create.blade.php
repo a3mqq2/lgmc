@@ -119,27 +119,7 @@
                   </div>
                 @endif
   
-                @if(request('type'))
-                  <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white text-center">
-                      <h4 class="mb-0">📑 المستندات المطلوبة</h4>
-                    </div>
-                    <div class="card-body">
-                      <div class="row">
-                        @foreach($file_types as $ft)
-                            <div class="mb-3">
-                                <label>{{ $ft->name }} @if($ft->is_required)*@endif</label>
-                                <input type="file"
-                                    name="documents[{{ $ft->id }}]"
-                                    class="form-control"
-                                    {{ $ft->is_required ? 'required' : '' }}
-                                    accept=".pdf,image/*">
-                            </div>
-                            @endforeach
-                      </div>
-                    </div>
-                  </div>
-                @endif
+             
   
                 <div class="d-flex justify-content-end">
                   <button type="submit" class="btn btn-primary">تسجيل المنشأة</button>

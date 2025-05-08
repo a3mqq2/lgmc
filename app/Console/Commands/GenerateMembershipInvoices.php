@@ -46,6 +46,10 @@ class GenerateMembershipInvoices extends Command
 
     private function createInvoice($doctor)
     {
+
+
+
+
         if($doctor->type ==  DoctorType::Libyan)
         {
             if($doctor->doctor_rank_id == 1)

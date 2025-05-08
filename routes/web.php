@@ -35,6 +35,21 @@ Route::get('/search-facilities', [SearchController::class, 'searchFacilities']);
 Route::get('/search-users', [SearchController::class, 'searchUsers']);
 
 
+
+// upload documents
+Route::get('/upload-documents', [WebsiteController::class, 'upload_documents'])->name('upload-documents');
+
+
+// doctor.filepond.process
+Route::post('/doctor/filepond/process', [WebsiteController::class, 'filepond_process'])->name('doctor.filepond.process');
+Route::post('/doctor/filepond/revert', [WebsiteController::class, 'filepond_revert'])->name('doctor.filepond.revert');
+
+
+// doctor.registration.complete
+Route::get('/doctor/registration/{doctor}/complete', [WebsiteController::class, 'complete_registration'])->name('doctor.registration.complete');
+Route::post('/verify-otp/resend', [OtpController::class, 'resendOtp'])
+     ->name('otp.resend');
+     
 Route::get("/login", [AuthController::class, 'login'])->name('login');
 Route::get("/register", [AuthController::class, 'register'])->name('register');
 Route::post("/register", [AuthController::class, 'register_store'])->name('register-store');

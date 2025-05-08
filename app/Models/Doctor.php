@@ -95,6 +95,8 @@ class Doctor extends Authenticatable
         'visiting_date' => 'datetime',
         'registered_at' => 'datetime',
         'code' => 'string',
+        'email_verified_at'    => 'datetime',
+        'documents_completed'  => 'boolean',
     ];
 
     public function country()
@@ -292,4 +294,18 @@ class Doctor extends Authenticatable
             : $this->doctor_rank->name;
     }
 
+
+    public function transfers()
+    {
+        return $this->hasMany(DoctorTransfer::class, 'doctor_id')
+                    ->orderBy('created_at', 'desc');
+    }
+
+    public function getFullBreakAmountAttribute()
+    {
+        $invoices = Invoice::where('invoiceable_id', $this->id)->where('status', 'paid' )->where('invoiceable_type', Doctor::class)->sum('amount');
+        $paid_amount = TotalInvoice::where('doctor_id', $this->id)->sum('total_amount');
+
+        return $invoices - $paid_amount;
+    }
 }

@@ -189,7 +189,7 @@
                                 </span>
                             </div>
                             <div class="flex-grow-1 ms-3">
-                                <p class="text-uppercase fw-medium text-white mb-3"> المرافق الطبية سارية الاذن </p>
+                                <p class="text-uppercase fw-medium text-white mb-3"> المنشآت طبية سارية الاذن </p>
                                 <h4 class="fs-4 mb-3 text-white">
                                     <span class="counter-value" data-target="{{\App\Models\Licence::where('licensable_type','App\Models\MedicalFacility')->where('status','active')->count()}}">
                                         {{\App\Models\Licence::where('licensable_type','App\Models\MedicalFacility')->where('status','active')->count()}}

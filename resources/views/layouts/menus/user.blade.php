@@ -27,13 +27,13 @@
 @if(auth()->user()->permissions->where('name','manage-medical-facilities')->count())
 <li class="nav-item">
     <a class="nav-link menu-link" href="#medical-facility" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-        <i class="fa fa-hospital"></i><span data-key="t-layouts">    المرافق الطبية  </span>
+        <i class="fa fa-hospital"></i><span data-key="t-layouts">    المنشآت طبية  </span>
     </a>
     <div class="collapse menu-dropdown" id="medical-facility">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
                 <a href="{{ route(get_area_name().'.medical-facilities.create') }}" class="nav-link" data-key="t-horizontal">  إنشاء مرفق جديد  </a>
-                <a href="{{ route(get_area_name().'.medical-facilities.index') }}" class="nav-link" data-key="t-horizontal">  عرض جميع  المرافق الطبية  </a>
+                <a href="{{ route(get_area_name().'.medical-facilities.index') }}" class="nav-link" data-key="t-horizontal">  عرض جميع  المنشآت طبية  </a>
             </li>
 
         </ul>
@@ -583,7 +583,7 @@
             {{-- <li class="nav-item">
                 <a class="nav-link menu-link" href="#medical-facility-types" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fa fa-hospital"></i>
-                    <span data-key="t-layouts">أنواع المرافق الطبية</span>
+                    <span data-key="t-layouts">أنواع المنشآت طبية</span>
                 </a>
                 <div class="collapse menu-dropdown" id="medical-facility-types">
                     <ul class="nav nav-sm flex-column">
@@ -592,7 +592,7 @@
                                 إنشاء نوع جديد
                             </a>
                             <a href="{{ route(get_area_name().'.medical-facility-types.index') }}" class="nav-link" data-key="t-horizontal">
-                                عرض جميع أنواع المرافق الطبية
+                                عرض جميع أنواع المنشآت طبية
                             </a>
                         </li>
                     </ul>

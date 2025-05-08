@@ -70,5 +70,7 @@ class Kernel extends HttpKernel
         'role' => \App\Http\Middleware\CheckRole::class,
         'permission' => CheckPermission::class,
         'check.finance.permission' => \App\Http\Middleware\CheckFinancePermission::class,
+        'otp.verified'           => \App\Http\Middleware\EnsureOtpVerified::class,
+        'docs.completed'         => \App\Http\Middleware\EnsureDocumentsCompleted::class,
     ];
 }

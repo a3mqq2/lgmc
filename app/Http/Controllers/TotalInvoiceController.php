@@ -44,6 +44,7 @@ class TotalInvoiceController extends Controller
         $totalInvoiceNumber = 'TINV-' . (TotalInvoice::count() + 1);
         $invoices = Invoice::whereIn('id', $request->invoices)->get();
 
+        
         $totalInvoice = TotalInvoice::create([
             'invoice_number' => $totalInvoiceNumber,
             'doctor_id' => $invoices->first()->invoiceable_id,

@@ -13,6 +13,7 @@ use App\Models\DoctorMailItem;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\MedicalFacility;
 
 class DoctorHomeController extends Controller
 {
@@ -191,5 +192,27 @@ class DoctorHomeController extends Controller
         return redirect()
             ->route('doctor.doctor-mails.show', $doctorMail->id)
             ->with('success', 'تم تحديث الطلب وتحويله إلى قيد الموافقة');
+    }
+
+
+    public function licences()
+    {
+        $licences = auth('doctor')->user()->licences;
+        return view('doctor.licences.index', compact('licences'));
+    }
+
+
+    public function create_license()
+    {
+        $doctor = auth('doctor')->user();
+        $medical_facilities = MedicalFacility::where('branch_id', auth('doctor')->user()->branch_id)->get();
+        return view('doctor.licences.create', compact('medical_facilities'));
+    }
+
+
+    public function facilities()
+    {
+        $medical_facilities = MedicalFacility::where('manager_id', auth('doctor')->user()->id)->get();
+        return view('doctor.medical_facilities.index', compact('medical_facilities'));
     }
 }

@@ -72,16 +72,14 @@
 
                             </div>
                             @endif
-                        </div>
-
-                        @php
+                            @php
                             $expiryDate = request('doctor_type') === App\Enums\DoctorType::Visitor->value || 
                         isset($doctor) && $doctor->type->value == App\Enums\DoctorType::Visitor->value
                                 ? Carbon\Carbon::now()->addMonths(6)->subDay()->toDateString() // 6 أشهر - يوم
                                 : Carbon\Carbon::now()->addYear()->subDay()->toDateString(); // سنة - يوم
                         @endphp
                         
-                       
+
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="issued_date" class="form-label">تاريخ الإصدار</label>
@@ -94,34 +92,17 @@
                                 <input type="date" class="form-control" id="expiry_date" value="{{ $expiryDate }}" name="expiry_date" required>
                             </div>
                         </div>
+    
+    
+
+
+                        <button type="submit" class="btn btn-primary">إنشاء</button>
+                        </div>
+
+                      
+                       
+              
                     </div>
-
-
-                    @if (request('type') == 'facilities')
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header bg-primary text-white text-center">
-                          <h4 class="mb-0">📑 المستندات المطلوبة</h4>
-                        </div>
-                        <div class="card-body">
-                          <div class="row">
-                            @foreach($file_types as $ft)
-                                <div class="mb-3">
-                                    <label>{{ $ft->name }} @if($ft->is_required)*@endif</label>
-                                    <input type="file"
-                                        name="documents[{{ $ft->id }}]"
-                                        class="form-control"
-                                        {{ $ft->is_required ? 'required' : '' }}
-                                        accept=".pdf,image/*">
-                                </div>
-                                @endforeach
-                          </div>
-                        </div>
-                      </div>
-                    @endif
-                
-
-
-                    <button type="submit" class="btn btn-primary">إنشاء</button>
                 </form>
             </div>
         </div>

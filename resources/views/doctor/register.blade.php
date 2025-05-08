@@ -552,28 +552,7 @@
                                                         @endif
                     
                                                      
-                                                        @if (request('type') == "visitor")
-                                                        <div class="col-md-6 mt-2">
-                                                            <label for="">  الشركه المستضيفه (المتعاقده)   </label>
-                                                            <select name="medical_facility_id" id="" class="form-control select2" required>
-                                                                    <option value="">-</option>
-                                                                    @foreach ($medicalFacilities as $medical_facility)
-                                                                        <option value="{{$medical_facility->id}}">{{$medical_facility->name}}</option>
-                                                                    @endforeach
-                                                            </select>
-                                                        </div>
-                                                        @endif
-                    
-                                                        @if (request('type') == "visitor")
-                                                        <div class="col-md-6 mt-2">
-                                                            <label for=""> تاريخ الزيارة من  </label>
-                                                            <input type="date" required name="visit_from" value="{{old('visit_from', date('Y-m-d'))}}" id="" class="form-control">
-                                                        </div>
-                                                        <div class="col-md-6 mt-2">
-                                                            <label for=""> تاريخ الزيارة الى  </label>
-                                                            <input type="date" required name="visit_to" value="{{old('visit_to', date('Y-m-d'))}}" id="" class="form-control">
-                                                        </div>
-                                                        @endif
+                                                     
                     
                     
                                                     </div>
@@ -784,17 +763,6 @@
                                                  </div>
 
                                                  
-
-                                                  <div class="col-md-12">
-                                                    <div class="card shadow-sm mb-4">
-                                                        <div class="card-header bg-primary text-white text-center">
-                                                            <h4 class="mb-0">📑 المستندات المطلوبة</h4>
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <div class="row" id="documents_container"></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
 
 
                                                 @if (request('type') == "libyan")

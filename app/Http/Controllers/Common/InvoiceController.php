@@ -78,10 +78,10 @@ class InvoiceController extends Controller
             } 
 
 
-            if(auth()->user()->branch_id)
-            {
-                $query->where('branch_id', auth()->user()->branch_id);
-            }
+            // if(auth()->user()->branch_id)
+            // {
+            //     $query->where('branch_id', auth()->user()->branch_id);
+            // }
     
             // Search by invoice_number or description
             if ($request->filled('search')) {
@@ -96,10 +96,8 @@ class InvoiceController extends Controller
             $users = User::orderByDesc('id')->get();
             $vaults = Vault::when(auth()->user()->branch_id, function($q) {
                 $q->where('branch_id', auth()->user()->branch_id);
-            })->when(!auth()->user()->branch_id, function($q) {
-                $q->whereNotNull('branch_id')
-                ->orWhere('branch_id', null);
             })->get();
+
             return view('general.invoices.index', compact('invoices','users','vaults'));
     }
     

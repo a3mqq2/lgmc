@@ -36,12 +36,25 @@ class DatabaseSeeder extends Seeder
 
         
         DB::table('doctor_ranks')->insert([
-            ['name' => 'ممارس عام'],
-            ['name' => 'طبيب ممارس '],  
-            ['name' => 'أخصائي ثاني'],      
-            ['name' => 'أخصائي اول'],       
-            ['name' => 'استشاري ثاني'],        
-            ['name' => 'استشاري اول'],   
+            ['name' => 'ممارس عام', 'doctor_type' => "libyan"],  
+            ['name' => 'طبيب ممارس ', 'doctor_type' => "libyan"],      
+            ['name' => 'أخصائي ', 'doctor_type' => "libyan"],      
+            ['name' => 'استشاري ', 'doctor_type' => "libyan"],        
+
+
+            ['name' => 'طبيب ممارس ', 'doctor_type' => "foreign"],      
+            ['name' => 'أخصائي ', 'doctor_type' => "foreign"],      
+            ['name' => 'استشاري ', 'doctor_type' => "foreign"],        
+
+
+            ['name' => 'أخصائي ', 'doctor_type' => "visitor"],      
+            ['name' => 'استشاري ', 'doctor_type' => "visitor"],        
+
+
+            ['name' => 'طبيب ممارس ', 'doctor_type' => 'palestinian'],      
+            ['name' => 'أخصائي ', 'doctor_type' => 'palestinian'],      
+            ['name' => 'استشاري ', 'doctor_type' => 'palestinian'],          
+
         ]);
 
 

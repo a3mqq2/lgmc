@@ -61,7 +61,7 @@ Route::get('/pricing/{id}', function ($id) {
 });
 
 Route::get('/pricings', function (Request $request) {
-    return Pricing::where('type', $request->get('type'))
+    return Pricing::where('type', 'mail')
         ->where('doctor_type', $request->get('doctor_type'))
         ->select('id', 'name', 'amount')
         ->get();

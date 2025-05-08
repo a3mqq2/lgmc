@@ -1,14 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\DoctorMailController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\EmailController;
 use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Common\VaultController;
 use App\Http\Controllers\Admin\CountryController;
@@ -92,6 +93,8 @@ Route::patch('medical-facilities/{facility}/reject',
     Route::get('profile/change-password', [ProfileController::class, 'change_password'])->name('profile.change-password');
     Route::post('profile/change-password', [ProfileController::class, 'change_password_store'])->name('profile.change-password');
 
+
+    Route::resource('institutions', InstitutionController::class);
 
     Route::post('/doctors/{doctor}/approve', [DoctorController::class, 'approve'])->name('doctors.approve');
     Route::post('/doctors/{doctor}/reject', [DoctorController::class, 'reject'])->name('doctors.reject');

@@ -1,5 +1,5 @@
 @extends('layouts.'.get_area_name())
-@section('title', 'عرض أنواع المرافق الطبية')
+@section('title', 'عرض أنواع المنشآت طبية')
 
 @section('content')
 
@@ -8,7 +8,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header text-light">
-                    <h5 class="card-title text-light">قائمة أنواع المرافق الطبية</h5>
+                    <h5 class="card-title text-light">قائمة أنواع المنشآت طبية</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

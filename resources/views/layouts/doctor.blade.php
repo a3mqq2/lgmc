@@ -23,6 +23,7 @@
     <!-- Icons Css -->
     <link href="{{asset('assets/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
     <!-- App Css-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.5/css/selectize.bootstrap5.min.css" integrity="sha512-w4sRMMxzHUVAyYk5ozDG+OAyOJqWAA+9sySOBWxiltj63A8co6YMESLeucKwQ5Sv7G4wycDPOmlHxkOhPW7LRg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="{{asset('assets/css/app.min.css')}}" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
     <link href="{{asset('assets/css/custom.min.css')}}" rel="stylesheet" type="text/css" />
@@ -409,7 +410,61 @@
                      </div>
                      <!--end row-->
                  </div>
-                 @yield('content')
+
+
+                 <div>
+                    <div class="d-flex">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link fs-14  {{Route::currentRouteName() == "doctor.dashboard" ? "active" : "" }}  "   href="{{route('doctor.dashboard')}}" role="tab">
+                                    <i class="ri-airplay-fill d-inline-block d-m"></i> <span class=" d-md-inline-block">بياناتي الآساسية</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                               <a class="nav-link fs-14"  href="{{route('doctor.facilities')}}" role="tab">
+                                   <i class="fa fa-hospital d-inline-block d-m"></i> <span class="d-md-inline-block">منشآتي الطبية</span>
+                               </a>
+                           </li>
+                           
+                            <li class="nav-item">
+                                <a class="nav-link fs-14 {{Route::currentRouteName() == "doctor.licences" ? "active" : "" }} " href="{{route('doctor.licences')}}"  href="#licences" role="tab">
+                                    <i class="ri-list-unordered d-inline-block d-m"></i> <span class=" d-md-inline-block">أذونات المزاولة</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fs-14" data-bs-toggle="tab"   href="#requests" role="tab">
+                                    <i class="ri-folder-4-line d-inline-block d-m"></i> <span class=" d-md-inline-block">اوراق الخارج</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#invoices"  role="tab">
+                                       <i class="fa fa-file d-inline-block d-m"></i> <span class=" d-md-inline-block">الفواتير</span>
+                                   </a>
+                               </li>
+            
+                               
+            
+            
+                               <li class="nav-item">
+                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#change-password"  role="tab">
+                                       <i class="ri-lock-password-line d-inline-block d-m"></i> <span class=" d-md-inline-block">تغيير كلمة المرور</span>
+                                   </a>
+                               </li>
+            
+                               
+            
+                            <li class="nav-item">
+                                <a class="nav-link fs-14" href="{{route('doctor.logout')}}"  role="tab">
+                                       <i class="ri-logout-box-line d-inline-block d-m"></i> <span class=" d-md-inline-block">تسجيل خروج</span>
+                                   </a>
+                               </li>
+            
+            
+                        </ul>
+                    </div>
+
+                    @yield('content')
 
 
                </div>
@@ -481,6 +536,23 @@
             });
         });
         </script>
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.5/js/standalone/selectize.min.js" integrity="sha512-JFjt3Gb92wFay5Pu6b0UCH9JIOkOGEfjIi7yykNWUwj55DBBp79VIJ9EPUzNimZ6FvX41jlTHpWFUQjog8P/sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+
+    $(".selectize").selectize({
+        dir: "rtl",
+        width: "100%",
+        placeholder: "اختر",
+        allowClear: true,
+    });
+</script>
         
 @yield('scripts')
 </body>

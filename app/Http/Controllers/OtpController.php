@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Models\Otp;
 use App\Models\Doctor;
-use Carbon\Carbon;
+use App\Mail\VerifyOtp;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 
 class OtpController extends Controller
 {
@@ -49,6 +52,36 @@ class OtpController extends Controller
             $doctor->save();
         }
 
-        return redirect()->route('doctor-login')->with('success', 'تم التحقق من البريد الإلكتروني بنجاح، يمكنك الآن تسجيل الدخول.');
+        // redirect to upload documents page
+        return redirect()->route('upload-documents', ['email' => $request->email])->with('success', 'تم التحقق من رمز OTP بنجاح.');
+    }
+
+
+    public function resendOtp(Request $request)
+    {
+        $data = $request->validate([
+            'email' => 'required|email|exists:doctors,email',
+        ]);
+
+        Otp::where('email', $data['email'])
+           ->where('is_verified', false)
+           ->delete();
+
+        $otpCode = rand(100000, 999999);
+        Otp::create([
+            'email'      => $data['email'],
+            'otp_code'   => $otpCode,
+            'is_verified'=> false,
+            'expires_at' => Carbon::now()->addMinutes(30),
+        ]);
+        try {
+            Mail::to($data['email'])
+                ->send(new VerifyOtp($otpCode, $data['email']));
+        } catch (\Exception $e) {
+            Log::error('Error resending OTP: ' . $e->getMessage());
+            return back()->withErrors('حدث خطأ أثناء إعادة الإرسال.');
+        }
+
+        return back()->with('success', 'تم إعادة إرسال رمز التحقق إلى بريدك.');
     }
 }

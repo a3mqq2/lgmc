@@ -110,15 +110,38 @@ class AuthController extends Controller
 
 
 
-    public function register()
+    public function register(Request $request)
     {
         $countries = Country::all();
         $academicDegrees = AcademicDegree::all();
         $universities = University::all();
-        $doctor_ranks = DoctorRank::all();
+        $doctor_ranks = DoctorRank::where('doctor_type', $request->type)->get();
         $specialties = Specialty::whereNull('specialty_id')->get();
         $branches = Branch::all();
         $medicalFacilities = MedicalFacility::all();
+
+        if($request->type)
+        {
+            if($request->type == "foreign")
+            {
+                return view('doctor.register_foreign', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities'));
+            }
+
+            if($request->type == "visitor")
+            {
+                return view('doctor.register_visitor', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities'));
+            }
+
+
+            if($request->type == "palestinian")
+            {
+                return view('doctor.register_palestinian', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities'));
+            }
+
+
+        }
+
+
         return view('doctor.register', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities'));
     }
 
@@ -174,7 +197,6 @@ class AuthController extends Controller
              
                     $doctor = Doctor::create($data);
 
-                    // ربط المرافق الطبية
                     $doctor->institutions()->attach($medicalFacilities ?? []);
 
                     $doctor->membership_status = 'pending';
@@ -183,31 +205,28 @@ class AuthController extends Controller
                     $doctor->index = null;
                     $doctor->save();
 
-                    // جلب أنواع الملفات للأطباء
                 $file_types = FileType::where('type', 'doctor')
                     ->where('doctor_type', $data['type'])
                     ->where('for_registration', 1)
                     ->get();
 
-                // التحقق من وجود الملفات المطلوبة
-                foreach ($file_types as $file_type) {
-                    if ($file_type->is_required && empty($data['documents'][$file_type->id])) {
-                        return redirect()->back()->withInput()->withErrors(["الملف {$file_type->name} مطلوب ولم يتم تحميله."]);
-                    }
-                }
+                // foreach ($file_types as $file_type) {
+                //     if ($file_type->is_required && empty($data['documents'][$file_type->id])) {
+                //         return redirect()->back()->withInput()->withErrors(["الملف {$file_type->name} مطلوب ولم يتم تحميله."]);
+                //     }
+                // }
 
-                // معالجة ملفات المستندات
-                foreach ($file_types as $file_type) {
-                    if (isset($data['documents'][$file_type->id])) {
-                        $file = $data['documents'][$file_type->id];
-                        $path = $file->store('doctors');
-                        $doctor->files()->create([
-                            'file_name' => $file->getClientOriginalName(),
-                            'file_type_id' => $file_type->id,
-                            'file_path' => $path,
-                        ]);
-                    }
-                }
+                // foreach ($file_types as $file_type) {
+                //     if (isset($data['documents'][$file_type->id])) {
+                //         $file = $data['documents'][$file_type->id];
+                //         $path = $file->store('doctors');
+                //         $doctor->files()->create([
+                //             'file_name' => $file->getClientOriginalName(),
+                //             'file_type_id' => $file_type->id,
+                //             'file_path' => $path,
+                //         ]);
+                //     }
+                // }
 
                 // إنشاء الفاتورة الخاصة بالطبيب
                 // $this->createInvoice($doctor);
@@ -215,10 +234,9 @@ class AuthController extends Controller
 
                 DB::commit();
 
-                // sending email to confirm his email
                 $this->sendEmailVerificationNotification($doctor);
+                Auth::guard('doctor')->login($doctor);
                 return redirect()->route('otp.verify', ['email' => $doctor->email]);
-                // return redirect()->route('doctor-login')->with('success', 'تم تسجيل عضويتك بنجاح يرجى التوجه للفرع الذي قمت بالتسجيل به لإكمال الاجراءات نشكرك على التسجيل ');
             } catch (\Exception $e) {
                 DB::rollback();
                 throw $e; // إعادة إلقاء الاستثناء بعد التراجع عن العملية
