@@ -24,13 +24,14 @@
         <div class="card-body">
           <label class="form-label">اختر خدمة</label>
           <Select
-          v-model="selectedService"
-          :options="servicesFull"
-          label="label"
-          :reduce="s => s"
-          placeholder="اختر خدمة…"
-        />
-        
+            v-model="selectedService"
+            :options="filteredServices"
+            label="label"
+            :reduce="s => s"
+            placeholder="اختر خدمة…"
+            @search="fetchServices"
+          />
+
           <ul class="list-group mt-3" v-if="selectedServices.length">
             <li v-for="(s, i) in selectedServices" :key="i" class="list-group-item">
               <div class="mb-2">{{ s.label }} — {{ s.amount.toFixed(2) }} د.ل</div>
@@ -59,13 +60,12 @@
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">البريد الإلكتروني</div>
         <div class="card-body">
-          <label class="form-label">اختر أو أدخل بريد إلكتروني</label>
+          <label class="form-label">اختر بريد إلكتروني</label>
           <Select
             v-model="selectedEmail"
             :options="availableEmails"
             label="label"
             placeholder="اختر بريد…"
-            @search="fetchEmails"
           />
           <div class="input-group mt-2">
             <input type="email" v-model="newEmail" class="form-control" placeholder="بريد جديد…" />
@@ -120,7 +120,7 @@
           <textarea v-model="notes" class="form-control" rows="3" placeholder="ملاحظات…"></textarea>
           <div class="form-check mt-3">
             <input class="form-check-input" type="checkbox" v-model="extractedBefore" id="extractedBefore" />
-            <label class="form-check-label" for="extractedBefore">سبق استخراج اوراق؟</label>
+            <label class="form-check-label" for="extractedBefore">سبق استخراج أوراق؟</label>
           </div>
           <div v-if="extractedBefore" class="mt-3">
             <input type="number" v-model="lastExtractYear" class="form-control" placeholder="مثال: 2022" />
@@ -185,31 +185,30 @@ onMounted(async () => {
 watch(selectedDoctor, async doc => {
   if (!doc?.type) return
 
-  // جلب سعر الوحدة
-  const map = { libyan:55, palestinian:56, foreign:57 }
-  const unitPricingId = map[doc.type] || null
-  if (unitPricingId) {
-    const resp = await axios.get(`/api/pricing/${unitPricingId}`)
-    unitPrice.value = Number(resp.data.amount)
-  }
-
-  // جلب قائمة الخدمات من السيرفر وحطّيها في servicesFull
-  const { data: srv } = await axios.get('/api/pricings', {
-    params: { type: 'service', doctor_type: doc.type }
+  // جلب سعر البريد الإلكتروني
+  const { data: emailPricing } = await axios.get('/api/pricings', {
+    params: { type: 'email', doctor_type: doc.type }
   })
-  servicesFull.value = srv
-    .filter(p => ![55,56,57].includes(p.id))
-    .map(p => ({
-      id: p.id,
-      label: `${p.name} (${Number(p.amount).toFixed(2)} د.ل)`,
-      amount: Number(p.amount),
-      file: null,
-      work_mention: null
-    }))
+  unitPrice.value = emailPricing.length ? Number(emailPricing[0].amount) : 0
+
+  // جلب قائمة الخدمات (mail)
+  const { data: mailPricings } = await axios.get('/api/pricings', {
+    params: { type: 'mail', doctor_type: doc.type }
+  })
+  servicesFull.value = mailPricings.map(p => ({
+    id: p.id,
+    label: `${p.name} (${Number(p.amount).toFixed(2)} د.ل)`,
+    amount: Number(p.amount),
+    file: null,
+    work_mention: null
+  }))
+  filteredServices.value = servicesFull.value
+
+  // جلب قائمة الإيميلات دفعة واحدة
+  const { data: emails } = await axios.get('/api/emails')
+  availableEmails.value = emails.map(e => ({ label: e.email, value: e.email }))
 })
 
-
-// تنقية وعرض الخدمات حسب البحث
 function fetchServices(search) {
   const q = (search || '').toLowerCase()
   filteredServices.value = servicesFull.value.filter(s =>
@@ -217,15 +216,11 @@ function fetchServices(search) {
   )
 }
 
-// إضافة الخدمة المحددة للقائمة
 watch(selectedService, svc => {
-  if (svc) {
-    selectedServices.value.push({ ...svc })
-  }
+  if (svc) selectedServices.value.push({ ...svc })
   selectedService.value = null
 })
 
-// جلب الأطباء
 function fetchDoctors(q) {
   axios.get('/api/doctors', { params: { search: q } })
     .then(r => {
@@ -233,80 +228,49 @@ function fetchDoctors(q) {
     })
 }
 
-// البريد الإلكتروني
-function fetchEmails(q) {
-  axios.get('/api/emails', { params: { search: q } })
-    .then(r => {
-      availableEmails.value = r.data.map(e => ({ email: e.email, label: e.email }))
-    })
-}
-watch(selectedEmail, em => {
-  if (em && !addedEmails.value.includes(em.email)) {
-    addedEmails.value.push(em.email)
-  }
-  selectedEmail.value = null
-})
+function removeService(i) { selectedServices.value.splice(i, 1) }
+function removeEmail(i)   { addedEmails.value.splice(i, 1) }
+function removeCountry(i) { selectedCountries.value.splice(i, 1) }
+
 function addNewEmail() {
   const email = newEmail.value.trim()
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!re.test(email)) {
-    return Swal.fire('خطأ', 'البريد غير صالح', 'error')
-  }
-  if (!addedEmails.value.includes(email)) {
-    addedEmails.value.push(email)
-  }
+  const re = /^[^\s@]+@[^\s@]+\\.[^\\s@]+$/
+  if (!re.test(email)) return Swal.fire('خطأ', 'البريد غير صالح', 'error')
+  if (!addedEmails.value.includes(email)) addedEmails.value.push(email)
   newEmail.value = ''
 }
 
-// الدول
 function fetchCountries(q) {
   axios.get('/api/countries', { params: { search: q } })
     .then(r => {
       availableCountries.value = r.data.map(c => ({ id: c.id, label: c.name }))
     })
 }
+
 watch(selectedCountry, c => {
-  if (c && !selectedCountries.value.find(x => x.id === c.id)) {
-    selectedCountries.value.push(c)
-  }
+  if (c && !selectedCountries.value.find(x => x.id === c.id)) selectedCountries.value.push(c)
   selectedCountry.value = null
 })
+
 function addNewCountry() {
   const name = newCountry.value.trim()
-  if (!name) {
-    return Swal.fire('خطأ', 'يرجى إدخال اسم الدولة', 'error')
-  }
-  if (selectedCountries.value.some(c => c.label === name)) {
-    return Swal.fire('خطأ', 'هذه الدولة موجودة مسبقاً', 'error')
-  }
+  if (!name) return Swal.fire('خطأ', 'يرجى إدخال اسم الدولة', 'error')
+  if (selectedCountries.value.some(c => c.label === name)) return Swal.fire('خطأ', 'هذه الدولة موجودة مسبقاً', 'error')
   const newItem = { id: `new_${name}`, label: name }
   availableCountries.value.push(newItem)
   selectedCountries.value.push(newItem)
   newCountry.value = ''
 }
 
-// الحذف
-function removeService(i) { selectedServices.value.splice(i,1) }
-function removeEmail(i)   { addedEmails.value.splice(i,1) }
-function removeCountry(i) { selectedCountries.value.splice(i,1) }
+const totalAmount         = computed(() => unitPrice.value * addedEmails.value.length)
+const totalServicesAmount = computed(() => selectedServices.value.reduce((sum, s) => sum + s.amount, 0))
+const grandTotal          = computed(() => totalAmount.value + totalServicesAmount.value)
 
-// حساب الإجماليات
-const totalAmount        = computed(() => unitPrice.value * addedEmails.value.length)
-const totalServicesAmount= computed(() => selectedServices.value.reduce((sum,s)=> sum + s.amount,0))
-const grandTotal         = computed(()=> totalAmount.value + totalServicesAmount.value)
-
-// إرسال النموذج
 async function handleSubmit() {
-  if (!addedEmails.value.length) {
-    return Swal.fire('تنبيه','أضف بريداً واحداً على الأقل','warning')
-  }
-  if (!selectedServices.value.length) {
-    return Swal.fire('تنبيه','اختر خدمة واحدة على الأقل','warning')
-  }
+  if (!addedEmails.value.length) return Swal.fire('تنبيه','أضف بريداً واحداً على الأقل','warning')
+  if (!selectedServices.value.length) return Swal.fire('تنبيه','اختر خدمة واحدة على الأقل','warning')
   for (let s of selectedServices.value) {
-    if ([43,44,45].includes(s.id) && !s.work_mention) {
-      return Swal.fire('تنبيه','يرجى اختيار جهة العمل للخدمة','warning')
-    }
+    if ([45,46,47].includes(s.id) && !s.work_mention) return Swal.fire('تنبيه','يرجى اختيار جهة العمل للخدمة','warning')
   }
 
   submitting.value = true
@@ -316,9 +280,7 @@ async function handleSubmit() {
   selectedCountries.value.forEach(c => form.append('countries[]', c.id))
   form.append('notes', notes.value)
   form.append('extracted_before', extractedBefore.value ? '1' : '0')
-  if (extractedBefore.value && lastExtractYear.value) {
-    form.append('last_extract_year', lastExtractYear.value)
-  }
+  if (extractedBefore.value && lastExtractYear.value) form.append('last_extract_year', lastExtractYear.value)
   selectedServices.value.forEach((s,i) => {
     form.append(`services[${i}][id]`, s.id)
     form.append(`services[${i}][amount]`, s.amount)

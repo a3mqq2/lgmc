@@ -215,4 +215,18 @@ class DoctorHomeController extends Controller
         $medical_facilities = MedicalFacility::where('manager_id', auth('doctor')->user()->id)->get();
         return view('doctor.medical_facilities.index', compact('medical_facilities'));
     }
+
+
+    public function doctor_mails()
+    {
+        $doctorMails = DoctorMail::where('doctor_id', auth('doctor')->id())->get();
+        return view('doctor.doctor-mails.index', compact('doctorMails'));
+    }
+
+
+    public function doctor_mails_create()
+    {
+        $doctorMails = DoctorMail::where('doctor_id', auth('doctor')->id())->get();
+        return view('doctor.doctor-mails.create', compact('doctorMails'));
+    }
 }

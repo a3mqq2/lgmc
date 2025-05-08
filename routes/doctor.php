@@ -8,6 +8,8 @@ use App\Http\Controllers\Doctor\MedicalFacilityController;
 Route::prefix('doctor')->name('doctor.')->middleware(['auth:doctor', 'otp.verified', 'docs.completed'])->group(function () {
     Route::get('/dashboard', [DoctorHomeController::class, 'dashboard'])->name('dashboard');
     Route::get('/licences', [DoctorHomeController::class, 'licences'])->name('licences');
+    Route::get('/doctor-mails', [DoctorHomeController::class, 'doctor_mails'])->name('doctor-mails');
+    Route::get('/doctor-mails/create', [DoctorHomeController::class, 'doctor_mails_create'])->name('doctor-mails.create');
     Route::get('/facilities', [DoctorHomeController::class, 'facilities'])->name('facilities');
     Route::get('/licences/create', [DoctorHomeController::class, 'create_license'])->name('licences.create');
     Route::get('/licences/store', [DoctorHomeController::class, 'store_license'])->name('licences.store');

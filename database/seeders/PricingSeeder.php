@@ -193,7 +193,7 @@ class PricingSeeder extends Seeder
                     "name" => "بريد الكتروني / اجنبي مقيم",
                     "doctor_type" => "foreign",
                     "amount" => 100,
-                    "type" => "mail",
+                    "type" => "email",
                     "doctor_rank_id" => 6,
                 ],
             ];
@@ -290,7 +290,7 @@ class PricingSeeder extends Seeder
                     'name' => 'بريد الكتروني / ليبي',
                     'doctor_type' => 'libyan',
                     'amount' => 50,
-                    'type' => 'mail',
+                    'type' => 'email',
                 ],
             ];
 
@@ -376,7 +376,7 @@ class PricingSeeder extends Seeder
                     'name' => 'بريد الكتروني / فلسطيني',
                     'doctor_type' => 'palestinian',
                     'amount' => 50,
-                    'type' => 'mail',
+                    'type' => 'email',
                 ],
             ];
 

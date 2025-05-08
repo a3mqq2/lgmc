@@ -430,10 +430,10 @@
                             <li class="nav-item">
                                 <a class="nav-link fs-14 {{Route::currentRouteName() == "doctor.licences" ? "active" : "" }} " href="{{route('doctor.licences')}}"  href="#licences" role="tab">
                                     <i class="ri-list-unordered d-inline-block d-m"></i> <span class=" d-md-inline-block">أذونات المزاولة</span>
-                                </a>
+                                </a>t
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab"   href="#requests" role="tab">
+                                <a class="nav-link fs-14"   href="{{route('doctor.doctor-mails')}}" >
                                     <i class="ri-folder-4-line d-inline-block d-m"></i> <span class=" d-md-inline-block">اوراق الخارج</span>
                                 </a>
                             </li>

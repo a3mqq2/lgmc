@@ -49,6 +49,7 @@ class DatabaseSeeder extends Seeder
 
             ['name' => 'أخصائي ', 'doctor_type' => "visitor"],      
             ['name' => 'استشاري ', 'doctor_type' => "visitor"],        
+            ['name' => 'استشاري دقيق ', 'doctor_type' => "visitor"],        
 
 
             ['name' => 'طبيب ممارس ', 'doctor_type' => 'palestinian'],      
