@@ -9,6 +9,7 @@ enum PricingType: string
     case Service = 'service';
     case Penalty = 'penalty';
     case Mail = 'mail';
+    case Email = 'email';
 
     /**
      * Get a human-readable label for each type.
@@ -21,6 +22,7 @@ enum PricingType: string
             self::Service => 'خدمة',
             self::Penalty => 'غرامة',
             self::Mail => 'بريد',
+            self::Email => 'بريد الكتروني',
         };
     }
 
@@ -35,6 +37,7 @@ enum PricingType: string
             self::Service => 'badge bg-info',
             self::Penalty => 'badge bg-danger',
             self::Mail => 'badge bg-warning',
+            self::Email => 'badge bg-secondary',
         };
     }
 }
