@@ -385,7 +385,9 @@ class PricingSeeder extends Seeder
 
 
 
-            foreach(array_merge($list_of_pricings_foreign, $list_of_pricings_foreign_mails) as $pricing)
+
+
+            foreach(array_merge($list_of_pricings_foreign, $list_of_pricings_foreign_mails,$list_of_pricings_libyan,$list_of_pricings_libyan_mails,$list_of_pricings_palestinian,$list_of_pricings_palestinian_mails) as $pricing)
             {
                 $pricing['is_local'] = 0;
                 $pricing['need_file'] = 0;
