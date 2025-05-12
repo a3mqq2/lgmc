@@ -338,6 +338,16 @@
 }
 
 
+
+
+.info-section
+{
+    border: 2px dashed #9d1414;
+    padding: 20px;
+    border-radius: 0px;
+    margin: 20px 0;
+}
+
 </style>
 
 </head>
@@ -378,11 +388,12 @@
                                                 @csrf
                                                 @method('POST')
 
-                                                   <div class="col-md-12 text-primary">
-                                                      <h4 class="text-primary mb-3">البيانات الشخصية   </h4>
-                                                   </div>
-                                                   
-                                                      <div class="row">
+                                                  
+                                                   <div class="personal-information info-section">
+                                                    <div class="row">
+                                                        <div class="col-md-12 text-primary">
+                                                            <h4 class="text-primary mb-3 title-scope">البيانات الشخصية   </h4>
+                                                         </div>
                                                         <div class="col-md-6">
                                                             <label for="">الاسم بالكامل</label>
                                                             <input type="text" required name="name" value="{{old('name')}}"  id="" class="form-control">
@@ -412,96 +423,76 @@
                     
                                                         </select>
                                                         </div>
-                    
-                    
+                                                    </div>
+                                                   </div>
+
+                                                    <div class="info-section">
+                                                        <div class="row mb-4">
+
+
+                                                            <div class="col-md-12 text-primary">
+                                                               <h4 class="text-primary mb-3 title-scope">بيانات الاتصال </h4>
+                                                            </div>
+                                                            
+                                                              <div class="col-md-12">
+                                                                  <label for="">رقم الهاتف
+                          
+                                                                      @if (request('type') == "visitor")
+                                                                         - الشركه 
+                                                                      @endif
+                                                                  </label>
+                                                                  <input type="phone" required name="phone" maxlength="10" value="{{old('phone')}}" id="" class="form-control">
+                                                              </div>
+                                                              <div class="col-md-6">
+                                                                  <label for=""> رقم الواتساب </label>
+                                                                  <input type="phone" name="phone_2" value="{{old('phone_2')}}" id="" maxlength="10" class="form-control">
+                                                              </div>
+      
+                                                                {{-- email input --}}
+                                                                <div class="col-md-6">
+                                                                  <label for="">البريد الالكتروني  </label>
+                                                                  <input type="email"  name="email" value="{{old('email')}}" id="email" class="form-control">
+                                                              </div>
+      
+                                                              <div class="col-md-6">
+                                                                  <label for=""> كلمة المرور </label>
+                                                                  <input type="password"   name="password" value="{{old('password')}}" required class="form-control">
+                                                              </div>
+                                                              <div class="col-md-6">
+                                                                  <label for=""> تأكيد كلمة المرور  </label>
+                                                                  <input type="password"  name="password_confirmation" required value="{{old('password_confirmation')}}" id="" class="form-control">
+                                                              </div>
+                                                            
+                                                          </div> 
                                                     </div>
 
 
-                                                    <hr>
-
-                                                    <div class="row mb-4">
 
 
-                                                      <div class="col-md-12 text-primary">
-                                                         <h4 class="text-primary mb-3">بيانات الاتصال </h4>
-                                                      </div>
-                                                      
-                                                        <div class="col-md-12">
-                                                            <label for="">رقم الهاتف
-                    
-                                                                @if (request('type') == "visitor")
-                                                                   - الشركه 
-                                                                @endif
-                                                            </label>
-                                                            <input type="phone" required name="phone" maxlength="10" value="{{old('phone')}}" id="" class="form-control">
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <label for=""> رقم الواتساب </label>
-                                                            <input type="phone" name="phone_2" value="{{old('phone_2')}}" id="" maxlength="10" class="form-control">
-                                                        </div>
-
-                                                          {{-- email input --}}
-                                                          <div class="col-md-6">
-                                                            <label for="">البريد الالكتروني  </label>
-                                                            <input type="email"  name="email" value="{{old('email')}}" id="email" class="form-control">
-                                                        </div>
-
-                                                        <div class="col-md-6">
-                                                            <label for=""> كلمة المرور </label>
-                                                            <input type="password"   name="password" value="{{old('password')}}" required class="form-control">
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <label for=""> تأكيد كلمة المرور  </label>
-                                                            <input type="password"  name="password_confirmation" required value="{{old('password_confirmation')}}" id="" class="form-control">
-                                                        </div>
-                                                      
-                                                    </div> 
-
-
-                                                    <hr> 
-
-
-
-                                                        <h4 class="card-title mt-2 mb-3 "> <h4 class="text-primary">بكالوريس</h4>    </h4>
+                                                    <div class="info-section">
                                                         <div class="row mt-2 mb-4">
-                                                            @if (request('type') == "visitor")
-                                                            <div class="col-md-4">
-                                                                <label for=""> دولة التخرج </label>
-                                                                <select name="country_graduation_id" id="" class="form-control select2">
-                                                                    <option value="">حدد دولة التخرج </option>
-                                                                    @foreach ($countries as $country)
-                                                                        <option value="{{$country->id}}" {{old('country_graduation_id') == $country->id ? "selected" : ""}}>{{$country->name}}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                            @endif
-                                                            <div class="col-md-6">
-                                                                <label for=""> جهة التخرج </label>
-                                                                <select name="hand_graduation_id" id="" class="form-control selectize">
-                                                                    <option value="">حدد جهة التخرج </option>
-                                                                    @foreach ($universities as $university)
-                                                                        <option value="{{$university->id}}" {{old('hand_graduation_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <label for="graduation_certificate">تاريخ الحصول عليها</label>
-                                                                <select name="graduation_certificate" id="graduation_certificate" class="form-control select2" required>
-                                                                    @php
-                                                                        $currentYear = date('Y');
-                                                                        $selectedYear = old('graduation_certificate', $currentYear);
-                                                                    @endphp
-                                                                    @for($year = $currentYear; $year >= 1950; $year--)
-                                                                        <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
-                                                                    @endfor
-                                                                </select>
-                                                            </div>
-                                                            
-                                                        </div>
+                                                            <h4 class="card-title mt-2 mb-3  "> <h4 class="text-primary title-scope">بكالوريس</h4>    </h4>
+                                                           <div class="col-md-6">
+                                                               <label for=""> جهة التخرج </label>
+                                                               <select name="hand_graduation_id" id="" class="form-control selectize">
+                                                                   <option value="">حدد جهة التخرج </option>
+                                                                   @foreach ($universities as $university)
+                                                                       <option value="{{$university->id}}" {{old('hand_graduation_id') == $university->id ? "selected" : ""}}>{{$university->name}}</option>
+                                                                   @endforeach
+                                                               </select>
+                                                           </div>
+                                                           <div class="col-md-6">
+                                                               <label for="graduation_date">تاريخ التخرج</label>
+                                                               <input type="date" name="graduation_date" id="" class="form-control">
+                                                           </div>
+                                                           
+                                                       </div>
+                                                    </div>
+                                                       
 
-                                                        <hr>
 
-                                                        <h4 class="text-primary">الامتياز</h4>
+                                                    <div class="info-section">
+                                                        <h4 class="text-primary title-scope">الامتياز</h4>
                                                         <div class="row mt-2 mb-4">
                                                           <div class="col-md-6">
                                                               <label for=""> جهة الحصول على الامتياز </label>
@@ -526,98 +517,69 @@
                                                           </div>
                                                            
                                                        </div>
-      
-                                                       <hr>
-
-
-    
-
-                                                      <hr>
-
-
-
-                                                      <h4 class="text-primary">
-                                                        بيانات العمل الحالي
-                                                      </h4>
-                                                  <div class="row">
-                                                    <div class="col-md-12">
-                                                        <label for="">الصفة</label>
-                                                        <select name="doctor_rank_id" id="doctor_rank_id" class="form-control select2">
-                                                            <option value="">حدد الصفة</option>
-                                                            @foreach ($doctor_ranks as $doctor_rank)
-                                                                @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
-                                                                    <option value="{{ $doctor_rank->id }}" {{ old('doctor_rank_id') == $doctor_rank->id ? "selected" : "" }}>
-                                                                        {{ $doctor_rank->name }}
-                                                                    </option>
-                                                                @elseif (request('type') != "visitor")
-                                                                    <option value="{{ $doctor_rank->id }}" {{ old('doctor_rank_id') == $doctor_rank->id ? "selected" : "" }}>
-                                                                        {{ $doctor_rank->name }}
-                                                                    </option>
-                                                                @endif
-                                                            @endforeach
-                                                        </select>
                                                     </div>
-                                                    
-                                                     <div class="col-md-12 mt-2 mb-3">
-                                                         <div class="row">
-                                                      
-                                                            <div class="col-md-12 mt-1 mb-2">
-                                                                <label for="">حدد فرع (الاقرب) </label>
-                                                                <select name="branch_id" id="" class="form-control select2">
-                                                                    <option value="">حدد فرع</option>
-                                                                    @foreach (App\Models\Branch::all() as $branch)
-                                                                     @if ($branch->id == 1)
-                                                                        <option value="{{$branch->id}}">{{$branch->name}} (العامة) </option>
-                                                                        @else 
-                                                                        <option value="{{$branch->id}}">{{$branch->name}}</option>
-                                                                     @endif
+
+
+
+                                                <div class="info-section">
+                                                    <h4 class="text-primary">
+                                                        بيانات العمل الحالي
+                                                        </h4>
+                                                          <div class="row">
+                                                            <div class="col-md-12">
+                                                                <label for="">الصفة</label>
+                                                                <select name="doctor_rank_id" id="doctor_rank_id" class="form-control select2">
+                                                                    <option value="">حدد الصفة</option>
+                                                                    @foreach ($doctor_ranks as $doctor_rank)
+                                                                        @if (request('type') == "visitor" && ($doctor_rank->id != 1 && $doctor_rank->id != 2))
+                                                                            <option value="{{ $doctor_rank->id }}" {{ old('doctor_rank_id') == $doctor_rank->id ? "selected" : "" }}>
+                                                                                {{ $doctor_rank->name }}
+                                                                            </option>
+                                                                        @elseif (request('type') != "visitor")
+                                                                            <option value="{{ $doctor_rank->id }}" {{ old('doctor_rank_id') == $doctor_rank->id ? "selected" : "" }}>
+                                                                                {{ $doctor_rank->name }}
+                                                                            </option>
+                                                                        @endif
                                                                     @endforeach
                                                                 </select>
                                                             </div>
-
-                                                             <div class="col-md-6">
-                                                               <label for=""> تخصص اول (ان وجد) </label>
-                                                               <select name="specialty_1_id"  class="form-control selectize">
-                                                                   <option value="">حدد تخصص اول</option>
-                                                                   @foreach ($specialties as $specialty)
-                                                                       <option value="{{$specialty->id}}" {{old('specialty_1_id') == $specialty->id ? "selected" : ""}}>{{$specialty->name}}</option>
-                                                                   @endforeach
-                                                               </select>
-                                                           </div>
-                                                           <div class="col-md-6" id="specialty_2_container">
-                                                            <label for="specialty_2">تخصص ثاني (إن وجد) </label>
-                                                            <input type="text" name="specialty_2" id="specialty_2" value="{{ old('specialty_2') }}" class="form-control" autocomplete="off">
-                                                        </div>                                    
-                                                
+                                                            
+                                                             <div class="col-md-12 mt-2 mb-3">
+                                                                 <div class="row">
+                                                              
+                                                                    <div class="col-md-12 mt-1 mb-2">
+                                                                        <label for="">حدد فرع (الاقرب) </label>
+                                                                        <select name="branch_id" id="" class="form-control select2">
+                                                                            <option value="">حدد فرع</option>
+                                                                            @foreach (App\Models\Branch::all() as $branch)
+                                                                             @if ($branch->id == 1)
+                                                                                <option value="{{$branch->id}}">{{$branch->name}} (العامة) </option>
+                                                                                @else 
+                                                                                <option value="{{$branch->id}}">{{$branch->name}}</option>
+                                                                             @endif
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </div>
+        
+                                                                     <div class="col-md-6">
+                                                                       <label for=""> تخصص اول (ان وجد) </label>
+                                                                       <select name="specialty_1_id"  class="form-control selectize">
+                                                                           <option value="">حدد تخصص اول</option>
+                                                                           @foreach ($specialties as $specialty)
+                                                                               <option value="{{$specialty->id}}" {{old('specialty_1_id') == $specialty->id ? "selected" : ""}}>{{$specialty->name}}</option>
+                                                                           @endforeach
+                                                                       </select>
+                                                                   </div>
+                                                                   <div class="col-md-6" id="specialty_2_container">
+                                                                    <label for="specialty_2">تخصص ثاني (إن وجد) </label>
+                                                                    <input type="text" name="specialty_2" id="specialty_2" value="{{ old('specialty_2') }}" class="form-control" autocomplete="off">
+                                                                </div>                                    
+                                                        
+                                                                 </div>
+                                                             </div>
                                                          </div>
-                                                     </div>
-                                                 </div>
-
-
-
-                                                @if (request('type') == "libyan")
-                                                    <div class="text-primary mt-2 mb-2">بيانات العمل السابق</div>
-                                                        <div class="col-md-12">
-                                                        <label for="">جهات العمل السابقة</label>
-                                                        <select name="ex_medical_facilities[]" multiple id="" class="selectize form-control">
-                                                            <option value="-">---</option>
-                                                            @foreach ($medicalFacilities as $item)
-                                                                <option value="{{$item->id}}">{{$item->name}}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                @endif
-
-                                                  
-
-                                                  @if (request('type') == "libyan")
-                                                  <div class="col-md-12 mt-2">
-                                                    <label for=""> سنوات الخبره  </label>
-                                                    <input name="experience" id="" type="number" class="form-control"></textarea>
+        
                                                 </div>
-
-                                                  @endif
-
 
 
 {{-- 

@@ -38,7 +38,7 @@ class Doctor extends Authenticatable
         'academic_degree_id',
         'qualification_university_id',
         'certificate_of_excellence',
-        'graduation_certificate',
+        'graduation_date',
         'passport',
         'id_card',
         'employeer_message',
@@ -74,6 +74,11 @@ class Doctor extends Authenticatable
         'visit_to',
     ];
 
+
+
+    // ملاحظات حول حقول الشهادة : 
+    //  ١- internership_complete انتهاء الجامعه
+    //  ٢- certificate_of_excellence_date مش معروف
 
 
 

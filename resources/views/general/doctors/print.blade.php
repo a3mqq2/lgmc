@@ -117,13 +117,13 @@
                         </tr>
                         <tr>
                             <th class="bg-light text-primary">تاريخ الحصول عليها </th>
-                            <td>{{ $doctor->graduation_certificate }}</td>
+                            <td>{{ $doctor->graduation_date }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         @endif
-        @if ($doctor->qualification_university_id || $doctor->certificate_of_excellence_date)
+        @if ($doctor->qualification_university_id || $doctor->internership_complete)
             <div class="col-md-6">
                 <h3 class="text-primary">بيانات الامتياز</h3>
                 <table class="table table-bordered">
@@ -134,7 +134,7 @@
                         </tr>
                         <tr>
                             <th class="bg-light text-primary">تاريخ الحصول عليها </th>
-                            <td>{{ $doctor->certificate_of_excellence_date }}</td>
+                            <td>{{ $doctor->internership_complete }}</td>
                         </tr>
                     </tbody>
                 </table>

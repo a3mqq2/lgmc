@@ -50,7 +50,7 @@ class StoreDoctorRequest extends FormRequest
             'gender' => 'nullable|string|in:male,female',
             'passport_number' => 'nullable|string|max:20',
             'passport_expiration' => 'nullable|date',
-            'graduation_certificate' => 'nullable',
+            'graduation_date' => 'nullable',
             'phone' => ['required'],
             'phone_2' => ['nullable'],
             'address' => 'nullable|string|max:255',

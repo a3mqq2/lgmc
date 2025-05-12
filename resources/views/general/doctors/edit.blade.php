@@ -235,11 +235,11 @@
                                 </div>
                           
                                 <div class="col-md-6">
-                                    <label for="graduation_certificate">تاريخ الحصول عليها</label>
-                                    <select name="graduation_certificate" id="graduation_certificate" class="form-control select2" required>
+                                    <label for="graduation_date">تاريخ الحصول عليها</label>
+                                    <select name="graduation_date" id="graduation_date" class="form-control select2" required>
                                         @php
-                                            $currentYear = $doctor->graduation_certificate;
-                                            $selectedYear = old('graduation_certificate', $currentYear);
+                                            $currentYear = $doctor->graduation_date;
+                                            $selectedYear = old('graduation_date', $currentYear);
                                         @endphp
                                         @for($year = $currentYear; $year >= 1950; $year--)
                                             <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
@@ -274,7 +274,7 @@
                                     <label for="certificate_of_excellence_date">تاريخ الحصول عليها</label>
                                     <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control select2" >
                                         @php
-                                            $currentYear = date('Y', strtotime( $doctor->certificate_of_excellence_date));
+                                            $currentYear = date('Y', strtotime( $doctor->internership_complete));
                                             $selectedYear = old('certificate_of_excellence_date', $currentYear);
                                         @endphp
                                         @for($year = $currentYear; $year >= 1950; $year--)
@@ -317,7 +317,7 @@
                             <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control select2" required>
                                 @php
                                     $currentYear = now()->year; // Get the current year
-                                    $selectedYear = old('certificate_of_excellence_date', optional($doctor->certificate_of_excellence_date)->format('Y') ?? $currentYear);
+                                    $selectedYear = old('certificate_of_excellence_date', optional($doctor->internership_complete)->format('Y') ?? $currentYear);
                                 @endphp
                                 @for ($year = $currentYear; $year >= 1950; $year--)
                                     <option value="{{ $year }}" {{ (int)$year === (int)$selectedYear ? 'selected' : '' }}>{{ $year }}</option>
