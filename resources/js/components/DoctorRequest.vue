@@ -1,7 +1,5 @@
-<!-- resources/js/components/DoctorRequest.vue -->
 <template>
   <form @submit.prevent="handleSubmit">
-    <!-- الطبيب -->
     <div v-if="!doctorId" class="card mb-4">
       <div class="card-header bg-primary text-white">البيانات الأساسية</div>
       <div class="card-body">
@@ -18,7 +16,6 @@
     </div>
 
     <template v-if="selectedDoctor">
-      <!-- الخدمات -->
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">الطلبات</div>
         <div class="card-body">
@@ -56,7 +53,6 @@
         </div>
       </div>
 
-      <!-- البريد الإلكتروني -->
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">البريد الإلكتروني</div>
         <div class="card-body">
@@ -65,6 +61,7 @@
             v-model="selectedEmail"
             :options="availableEmails"
             label="label"
+            :reduce="e => e"
             placeholder="اختر بريد…"
           />
           <div class="input-group mt-2">
@@ -75,7 +72,7 @@
             <thead><tr><th>البريد</th><th>تحكم</th></tr></thead>
             <tbody>
               <tr v-for="(email, i) in addedEmails" :key="i">
-                <td>{{ email }}</td>
+                <td>{{ email.value }}</td>
                 <td><button class="btn btn-sm btn-danger" @click="removeEmail(i)">حذف</button></td>
               </tr>
             </tbody>
@@ -84,7 +81,6 @@
         </div>
       </div>
 
-      <!-- الدول المستهدفة -->
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">الدول المستهدفة</div>
         <div class="card-body">
@@ -113,7 +109,6 @@
         </div>
       </div>
 
-      <!-- ملاحظات -->
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">ملاحظات</div>
         <div class="card-body">
@@ -128,7 +123,6 @@
         </div>
       </div>
 
-      <!-- إرسال -->
       <div class="card mb-4">
         <div class="card-body text-end">
           <div class="alert alert-primary">الإجمالي الكلي: {{ grandTotal.toFixed(2) }} د.ل</div>
@@ -175,7 +169,6 @@ const unitPrice         = ref(0)
 const submitting        = ref(false)
 
 onMounted(async () => {
-  // إذا جُلب doctorId كـ prop
   if (props.doctorId) {
     const { data } = await axios.get(`/api/doctors/${props.doctorId}`)
     selectedDoctor.value = { ...data, label: `${data.name} (${data.code})` }
@@ -185,13 +178,12 @@ onMounted(async () => {
 watch(selectedDoctor, async doc => {
   if (!doc?.type) return
 
-  // جلب سعر البريد الإلكتروني
   const { data: emailPricing } = await axios.get('/api/pricings', {
     params: { type: 'email', doctor_type: doc.type }
   })
   unitPrice.value = emailPricing.length ? Number(emailPricing[0].amount) : 0
-
-  // جلب قائمة الخدمات (mail)
+  console.log(unitPrice);
+  console.log(unitPrice )
   const { data: mailPricings } = await axios.get('/api/pricings', {
     params: { type: 'mail', doctor_type: doc.type }
   })
@@ -204,7 +196,6 @@ watch(selectedDoctor, async doc => {
   }))
   filteredServices.value = servicesFull.value
 
-  // جلب قائمة الإيميلات دفعة واحدة
   const { data: emails } = await axios.get('/api/emails')
   availableEmails.value = emails.map(e => ({ label: e.email, value: e.email }))
 })
@@ -221,6 +212,11 @@ watch(selectedService, svc => {
   selectedService.value = null
 })
 
+watch(selectedEmail, em => {
+  if (em && !addedEmails.value.includes(em)) addedEmails.value.push(em)
+  selectedEmail.value = null
+})
+
 function fetchDoctors(q) {
   axios.get('/api/doctors', { params: { search: q } })
     .then(r => {
@@ -228,39 +224,16 @@ function fetchDoctors(q) {
     })
 }
 
-function removeService(i) { selectedServices.value.splice(i, 1) }
-function removeEmail(i)   { addedEmails.value.splice(i, 1) }
-function removeCountry(i) { selectedCountries.value.splice(i, 1) }
-
 function addNewEmail() {
-  const email = newEmail.value.trim()
-  const re = /^[^\s@]+@[^\s@]+\\.[^\\s@]+$/
-  if (!re.test(email)) return Swal.fire('خطأ', 'البريد غير صالح', 'error')
-  if (!addedEmails.value.includes(email)) addedEmails.value.push(email)
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!re.test(newEmail.value)) return Swal.fire('خطأ', 'البريد غير صالح', 'error')
+  if (!addedEmails.value.includes(newEmail.value)) addedEmails.value.push(newEmail.value)
   newEmail.value = ''
 }
 
-function fetchCountries(q) {
-  axios.get('/api/countries', { params: { search: q } })
-    .then(r => {
-      availableCountries.value = r.data.map(c => ({ id: c.id, label: c.name }))
-    })
-}
-
-watch(selectedCountry, c => {
-  if (c && !selectedCountries.value.find(x => x.id === c.id)) selectedCountries.value.push(c)
-  selectedCountry.value = null
-})
-
-function addNewCountry() {
-  const name = newCountry.value.trim()
-  if (!name) return Swal.fire('خطأ', 'يرجى إدخال اسم الدولة', 'error')
-  if (selectedCountries.value.some(c => c.label === name)) return Swal.fire('خطأ', 'هذه الدولة موجودة مسبقاً', 'error')
-  const newItem = { id: `new_${name}`, label: name }
-  availableCountries.value.push(newItem)
-  selectedCountries.value.push(newItem)
-  newCountry.value = ''
-}
+function removeService(i) { selectedServices.value.splice(i, 1) }
+function removeEmail(i)   { addedEmails.value.splice(i, 1) }
+function removeCountry(i) { selectedCountries.value.splice(i, 1) }
 
 const totalAmount         = computed(() => unitPrice.value * addedEmails.value.length)
 const totalServicesAmount = computed(() => selectedServices.value.reduce((sum, s) => sum + s.amount, 0))
@@ -281,7 +254,7 @@ async function handleSubmit() {
   form.append('notes', notes.value)
   form.append('extracted_before', extractedBefore.value ? '1' : '0')
   if (extractedBefore.value && lastExtractYear.value) form.append('last_extract_year', lastExtractYear.value)
-  selectedServices.value.forEach((s,i) => {
+  selectedServices.value.forEach((s, i) => {
     form.append(`services[${i}][id]`, s.id)
     form.append(`services[${i}][amount]`, s.amount)
     if (s.file) form.append(`services[${i}][file]`, s.file)

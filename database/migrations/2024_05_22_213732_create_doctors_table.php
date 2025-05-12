@@ -45,8 +45,15 @@ return new class extends Migration
             $table->unsignedBigInteger('specialty_3_id')->nullable();
             $table->foreign('specialty_1_id')->references('id')->on('specialties')->nullOnDelete();
             $table->foreign('specialty_2_id')->references('id')->on('specialties')->nullOnDelete();
-            $table->foreign('specialty_3_id')->references('id')->on('specialties')->nullOnDelete();
-            $table->enum('membership_status', ['active', 'inactive','pending']);
+            $table->enum('membership_status', [
+                'under_approve',
+                'under_edit',
+                'under_payment',
+                'active',
+                'expired',
+                'banned',
+            ])->default('under_approve');
+
             $table->date('membership_expiration_date')->nullable();
             $table->timestamps();
         });

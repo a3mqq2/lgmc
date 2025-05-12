@@ -138,13 +138,13 @@
     <div class="warpper" style="margin-top: 140px">
       <div class="container pt-7  pb-8" id="about">
           <div class="row gy-10 gy-sm-13 gx-lg-3 align-items-center">
-            <div class="col-md-8 col-lg-6 offset-lg-1 order-lg-2 position-relative">
+            {{-- <div class="col-md-8 col-lg-6 offset-lg-1 order-lg-2 position-relative">
               <div class="shape rounded-circle bg-line primary rellax w-18 h-18" data-rellax-speed="1" style="top: -2rem; right: -1.9rem;"></div>
               <div class="shape rounded bg-soft-primary rellax d-md-block" data-rellax-speed="0" style="bottom: -1.8rem; left: -1.5rem; width: 85%; height: 90%; "></div>
               <figure class="rounded"><img src="{{ asset('assets/images/img1.jpg') }}" srcset="{{ asset('assets/images/img1.jpg') }} 2x" alt=""></figure>
-            </div>
+            </div> --}}
             <!--/column -->
-            <div class="col-lg-5" style="text-align: right !important;">
+            <div class="col-lg-12" style="text-align: right !important;">
               <h2 class="fs-16 text-uppercase text-line text-primary mb-3">عن النقابة</h2>
               <h3 class="display-4 mb-7">أعرف عن النقابة اكثر</h3>
               <div class="accordion accordion-wrapper" id="accordionExample">
@@ -201,14 +201,14 @@
             </div>
             <!--/column -->
           </div>
-          <div class="row gy-10 gy-sm-13 gx-lg-3 mb-16 mb-md-18 align-items-center" style="margin-top: 50px;">
+          {{-- <div class="row gy-10 gy-sm-13 gx-lg-3 mb-16 mb-md-18 align-items-center" style="margin-top: 50px;">
             <div class="col-md-8 col-lg-6 position-relative" id="goals">
               <div class="shape bg-dot primary rellax w-17 h-21" data-rellax-speed="1" style="top: -2rem; left: -1.9rem;"></div>
               <div class="shape rounded bg-soft-primary rellax d-md-block" data-rellax-speed="0" style="bottom: -1.8rem; right: -1.5rem; width: 85%; height: 90%; "></div>
               <figure class="rounded"><img src="{{ asset('assets/images/img2.jpg') }}" srcset="{{ asset('assets/images/img2.jpg') }} 2x" alt="" /></figure>
-            </div>
+            </div> --}}
             <!--/column -->
-            <div class="col-lg-5 col-xl-4 text-right offset-lg-1" dir="rtl">
+            <div class="col-lg-12 col-xl-12 text-right mt-3" dir="rtl">
               <h2 class="fs-16 text-uppercase text-line text-primary mb-3" style="text-align: right!important;">أهداف النقابة</h2>
               <p class="mb-7 text-right" style="text-align: right!important;">تسعى النقابة العامة للأطباء في ليبيا إلى تحقيق مجموعة من الأهداف التي تهدف إلى تعزيز مهنة الطب والارتقاء بها، وتشمل:
 
@@ -374,7 +374,7 @@
     </section>
     
     <!-- /section -->
-    <section class="wrapper image-wrapper bg-image bg-overlay"  data-image-src="{{ asset('assets/images/img3.jpg') }}">
+    <section class="wrapper image-wrapper" style="background: #cc0100;">
       <div class="container py-18">
         
         <div class="row">
