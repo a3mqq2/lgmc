@@ -2,132 +2,60 @@
 
 namespace App\Models;
 
-use App\Enums\DoctorType;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
 
 class Licence extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'licensable_id',
-        'licensable_type',
+        'doctor_id',
+        'medical_facility_id',
+        'index',
+        'code',
         'issued_date',
         'expiry_date',
         'status',
-        'doctor_id',
-        'branch_id',
+        'doctor_type',
+        'doctor_rank_id',
         'created_by',
         'amount',
-        'doctor_type',
-        'medical_facility_id',
     ];
 
     protected $casts = [
-        'doctor_type' => DoctorType::class,
+        'issued_date' => 'date',
+        'expiry_date' => 'date',
+        'amount'      => 'decimal:2',
     ];
 
-    public function doctor()
+    protected static function booted()
+    {
+        static::creating(function (Licence $licence) {
+            $year = Carbon::now()->year;
+            $lastIndex = self::whereYear('issued_date', $year)->max('index') ?? 0;
+            $licence->index = $lastIndex + 1;
+            $short = !$licence->doctor_type ? 'MF' : strtoupper(substr($licence->doctor_type, 0, 3));
+            $licence->code = "LIC-{$short}-{$year}-{$licence->index}";
+        });
+    }
+
+    public function doctor(): BelongsTo
     {
         return $this->belongsTo(Doctor::class);
     }
 
-    public function getStatusBadgeAttribute()
+    public function medicalFacility(): BelongsTo
     {
-        return match ($this->status) {
-            'under_approve_branch' => "<span class='badge badge-primary bg-primary text-light'>قيد موافقة الفرع</span>",
-            'under_approve_admin'  => "<span class='badge badge-primary bg-primary text-light'>قيد موافقة الادارة</span>",
-            'under_payment'        => "<span class='badge badge-info bg-info text-light'>قيد المراجعة المالية </span>",
-            'revoked'              => "<span class='badge badge-danger bg-danger text-light'> تم ايقافه    </span>",
-            'expired'              => "<span class='badge badge-danger bg-danger text-light'>  منتهي الصلاحية     </span>",
-            'active'               => "<span class='badge badge-success bg-success text-light'> ساري    </span>",
-            default                => "<span class='badge badge-secondary text-light'> غير معروف    </span>",
-        };
+        return $this->belongsTo(MedicalFacility::class);
     }
 
-    public function createdBy()
+    public function doctorRank(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(DoctorRank::class);
     }
 
-    public function logs()
+    public function creator(): BelongsTo
     {
-        return $this->hasMany(LicenceLog::class, 'licence_id');
-    }
-
-    public function medicalFacility()
-    {
-        return $this->belongsTo(MedicalFacility::class, 'medical_facility_id');
-    }
-
-    public function branch()
-    {
-        return $this->belongsTo(Branch::class);
-    }
-
-    public function licensable()
-    {
-        return $this->morphTo();
-    }
-
-    protected static function booted(): void
-    {
-        static::creating(function (Licence $licence) {
-            DB::transaction(function () use ($licence) {
-                if (! $licence->code) {
-                    $licence->assignSequence();
-                }
-            });
-        });
-    }
-
-    public function assignSequence(): void
-    {
-        if (!$this->branch_id || !$this->branch) {
-            return; // لا يتم التوليد إذا لم يكن هناك فرع
-        }
-    
-        $year   = optional($this->issued_date)->format('Y') ?? now()->year;
-        $type   = $this->licensable_type;
-        $prefix = $type === Doctor::class ? 'LIC' : 'PERM';
-    
-        $nextIndex = self::where('branch_id', $this->branch_id)
-            ->where('licensable_type', $type)
-            ->where(function ($q) use ($year) {
-                $q->whereYear('issued_date', $year)
-                  ->orWhere(function ($q2) use ($year) {
-                      $q2->whereNull('issued_date')
-                         ->whereYear('created_at', $year);
-                  });
-            })
-            ->lockForUpdate()
-            ->max('index') + 1;
-    
-        do {
-            $candidate = $this->branch->code
-                . '-' . $prefix . '-'
-                . $year . '-'
-                . str_pad($nextIndex, 3, '0', STR_PAD_LEFT);
-    
-            if (!self::where('code', $candidate)->exists()) {
-                break;
-            }
-    
-            $nextIndex++;
-        } while (true);
-    
-        $this->index = $nextIndex;
-        $this->code  = $candidate;
-    }
-    
-
-    public function regenerateCode(): void
-    {
-        DB::transaction(function () {
-            $this->assignSequence();
-            $this->saveQuietly();
-        });
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

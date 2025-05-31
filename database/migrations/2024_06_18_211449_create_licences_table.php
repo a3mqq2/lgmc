@@ -13,16 +13,17 @@ return new class extends Migration
     {
         Schema::create('licences', function (Blueprint $table) {
             $table->id();
-            $table->morphs('licensable');
+            $table->foreignId('doctor_id')->nullable()->constrained('doctors')->onDelete('cascade');
+            $table->foreignId('medical_facility_id')->nullable()->constrained('medical_facilities')->onDelete('cascade');
+            $table->unsignedInteger('index')->nullable();
+            $table->string('code', 50)->nullable()->unique();
             $table->date('issued_date');
             $table->date('expiry_date');
-            $table->enum('status', ['active', 'expired', 'revoked', 'under_payment', 'under_approve_admin', 'under_approve_branch']);
-            $table->foreignId('doctor_id')->nullable()->constrained();
-            $table->foreignId('branch_id')->nullable()->constrained()->onDelete('cascade');
+            $table->string('status');
+            $table->string('doctor_type')->nullable();
+            $table->foreignId('doctor_rank_id')->nullable()->constrained('doctor_ranks')->onDelete('cascade');
             $table->unsignedBigInteger('created_by');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
-            $table->dateTime('approved_at')->nullable();
-            $table->dateTime('revoked_at')->nullable();
             $table->decimal('amount',11,2)->nullable();
             $table->timestamps();
         });

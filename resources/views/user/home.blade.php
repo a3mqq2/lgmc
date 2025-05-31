@@ -1,259 +1,102 @@
 @extends('layouts.'.get_area_name())
 @section('title','الصفحه الرئيسيه')
+@section('styles')
+<style>
+    /* ---------- Page Background ---------- */
+    body {
+        background: radial-gradient(circle at top left, #f5f7ff 0%, #ffffff 70%);
+    }
+
+    /* ---------- Cards ---------- */
+    .card-animate {
+        transition: transform .35s ease, box-shadow .35s ease;
+    }
+    .card-animate:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, .15);
+    }
+
+    .card-gradient-primary {
+        background: linear-gradient(135deg, #7467F0, #5E9FF2);
+        color: #fff;
+    }
+    .card-gradient-secondary {
+        background: linear-gradient(135deg, #4A5568, #8E9AAF);
+        color: #fff;
+    }
+
+    .card-gradient-basic
+    {
+      background: linear-gradient(135deg, #c11e12, #bc1d1a);
+      color:#fff;
+    }
+
+    /* ---------- Typography ---------- */
+    .section-heading {
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: .5px;
+    }
+    .stat-count {
+        font-size: 2.3rem;
+        font-weight: 700;
+    }
+
+    /* ---------- Icons ---------- */
+    .avatar-title {
+        background: rgba(255,255,255,.20);
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    /* ---------- Tables ---------- */
+    .table thead th {
+        vertical-align: middle;
+        background: #f0f3ff;
+    }
+</style>
+@endsection
 @section('content')
 
 
+<div class="row g-3 mb-4">
+   @php
+       $libyanStatuses = [
+           ['key'=>'under_approve', 'label'=>'طلبات الموقع'],
+           ['key'=>'under_edit', 'label'=>'أطباء قيد التعديل'],
+           ['key'=>'under_payment', 'label'=>'أطباء قيد الدفع'],
+           ['key'=>'active', 'label'=>'أطباء  مفعليين'],
+       ];
+   @endphp
 
-<div class="row">
-    @if(auth()->user()->permissions('manage-doctors')->count())
-    
-    <div class="col-xl-6 col-md-6">
-        <a href="{{route(get_area_name().'.doctors.index')}}">
-            <div class="card card-animate">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <p class="fw-medium text-muted mb-0">الاطباء</p>
-                            <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value" data-target="{{App\Models\Doctor::where('branch_id', auth()->user()->branch_id)->count()}}">{{App\Models\Doctor::where('branch_id', auth()->user()->branch_id)->count()}}</span></h2>
-                        </div>
-                        <div>
-                            <div class="avatar-sm flex-shrink-0">
-                                <span class="avatar-title bg-soft-danger rounded-circle fs-2">
-                                    <i class="fa fa-user-doctor text-danger"></i>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div> 
-            </div> 
-        </a>
-    </div>
-    @endif
-
-@if(auth()->user()->permissions('manage-medical-facilities')->count())
-
-@if (auth()->user()->branch_id != 1)
-<div class="col-xl-6 col-md-6">
-    <a href="{{route(get_area_name().'.medical-facilities.index')}}">
-        <div class="card card-animate">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <p class="fw-medium text-muted mb-0">المنشآت الطبية</p>
-                        <h2 class="mt-4 ff-secondary fw-semibold"><span class="counter-value" data-target="{{App\Models\MedicalFacility::where('branch_id', auth()->user()->branch_id)->count()}}">{{App\Models\MedicalFacility::where('branch_id', auth()->user()->branch_id)->count()}}</span></h2>
-                    </div>
-                    <div>
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-soft-warning rounded-circle fs-2">
-                                <i class="fa fa-hospital text-warning"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div><!-- end card body -->
-        </div> 
-    </a>
+   @foreach($libyanStatuses as $stat)
+       <div class="col-xl-3 col-md-6">
+           <a href="{{ route(get_area_name().'.doctors.index', ['type'=>'libyan','membership_status'=>$stat['key']]) }}">
+               <div class="card card-animate card-gradient-basic h-100">
+                   <div class="card-body">
+                       <div class="d-flex justify-content-between align-items-center">
+                           <div>
+                               <p class="mb-0" style="font-size: 17px!important;">{{ $stat['label'] }}</p>
+                               <h2 class="stat-count mt-3">
+                                   {{ \App\Models\Doctor::where('membership_status',$stat['key'])->where('type','libyan')->count() }}
+                               </h2>
+                           </div>
+                           <span class="avatar-title fs-3"><i class="fa fa-user-doctor text-light"></i></span>
+                       </div>
+                   </div>
+               </div>
+           </a>
+       </div>
+   @endforeach
 </div>
-@endif
-
-@endif
-
-</div>
-
-
-
-@if(auth()->user()->permissions('manage-doctor-permits')->count())
-<div class="row">
-    <div class="col-xl-3 col-md-6">
-        <a href="{{route(get_area_name().'.licences.index', ['type' => 'doctors', 'status' => 'active'])}}">
-            <div class="card bg-success card-height-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-soft-light text-white rounded-2 fs-2">
-                                <i class="bx bx-file"></i>
-                            </span>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-uppercase fw-medium text-white mb-3"> الاذونات السارية للاطباء </p>
-                            <h4 class="fs-4 mb-3 text-white"><span class="counter-value" data-target="{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\Doctor')->where('status','active')->count()}}">{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\Doctor')->where('status','active')->count()}}</span></h4>
-                        </div>
-                        <div class="flex-shrink-0 align-self-center">
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div>
-        </a>
-    </div>
-
-    <div class="col-xl-3  col-md-6">
-        <a href="{{route(get_area_name().'.licences.index', ['type' => 'doctors', 'status' => 'under_approve_branch'])}}">
-            <div class="card bg-primary card-height-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-soft-light text-white rounded-2 fs-2">
-                                <i class="bx bx-file"></i>
-                            </span>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-uppercase fw-medium text-white mb-3"> اذونات قيد مراجعة الفرع  للاطباء </p>
-                            <h4 class="fs-4 mb-3 text-white"><span class="counter-value" data-target="{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\Doctor')->where('status','under_approve_branch')->count()}}">{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\Doctor')->where('status','under_approve_branch')->count()}}</span></h4>
-                        </div>
-                        <div class="flex-shrink-0 align-self-center">
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div>
-        </a>
-    </div>
-
-    <div class="col-xl-3  col-md-6">
-        <a href="{{route(get_area_name().'.licences.index', ['type' => 'doctors', 'status' => 'under_approve_admin'])}}">
-            <div class="card bg-secondary card-height-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-soft-light text-white rounded-2 fs-2">
-                                <i class="bx bx-file"></i>
-                            </span>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-uppercase fw-medium text-white mb-3"> اذونات قيد مراجعة الادارة  للاطباء </p>
-                            <h4 class="fs-4 mb-3 text-white"><span class="counter-value" data-target="{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\Doctor')->where('status','under_approve_admin')->count()}}">{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\Doctor')->where('status','under_approve_admin')->count()}}</span></h4>
-                        </div>
-                        <div class="flex-shrink-0 align-self-center">
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div>
-        </a>
-    </div>
-
-    <div class="col-xl-3  col-md-6">
-        <a href="{{route(get_area_name().'.licences.index', ['type' => 'doctors', 'status' => 'under_payment'])}}">
-            <div class="card bg-danger card-height-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-soft-light text-white rounded-2 fs-2">
-                                <i class="bx bx-file"></i>
-                            </span>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-uppercase fw-medium text-white mb-3"> اذونات قيد مراجعة المالية  للاطباء </p>
-                            <h4 class="fs-4 mb-3 text-white"><span class="counter-value" data-target="{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\Doctor')->where('status','under_payment')->count()}}">{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\Doctor')->where('status','under_payment')->count()}}</span></h4>
-                        </div>
-                        <div class="flex-shrink-0 align-self-center">
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div>
-        </a>
-    </div>
-
-
-</div>
-@endif
-
-@if (auth()->user()->branch_id != 1)
-
-@if(auth()->user()->permissions('manage-medical-licenses')->count())
-<div class="row">
-    <div class="col-xl-3 col-md-6">
-        <a href="{{route(get_area_name().'.licences.index', ['type' => 'facilities', 'status' => 'active'])}}">
-            <div class="card bg-primary card-height-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-soft-light text-white rounded-2 fs-2">
-                                <i class="bx bx-file"></i>
-                            </span>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-uppercase fw-medium text-white mb-3"> الاذونات السارية للمنشات الطبية </p>
-                            <h4 class="fs-4 mb-3 text-white"><span class="counter-value" data-target="{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\MedicalFacility')->where('status','active')->count()}}">{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\MedicalFacility')->where('status','active')->count()}}</span></h4>
-                        </div>
-                        <div class="flex-shrink-0 align-self-center">
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div>
-        </a>
-    </div>
-
-    <div class="col-xl-3  col-md-6">
-        <a href="{{route(get_area_name().'.licences.index', ['type' => 'facilities', 'status' => 'under_approve_branch'])}}">
-            <div class="card bg-info card-height-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-soft-light text-white rounded-2 fs-2">
-                                <i class="bx bx-file"></i>
-                            </span>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-uppercase fw-medium text-white mb-3"> اذونات قيد مراجعة الفرع  للمنشات الطبية </p>
-                            <h4 class="fs-4 mb-3 text-white"><span class="counter-value" data-target="{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\MedicalFacility')->where('status','under_approve_branch')->count()}}">{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\MedicalFacility')->where('status','under_approve_branch')->count()}}</span></h4>
-                        </div>
-                        <div class="flex-shrink-0 align-self-center">
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div>
-        </a>
-    </div>
-
-    <div class="col-xl-3  col-md-6">
-        <a href="{{route(get_area_name().'.licences.index', ['type' => 'facilities', 'status' => 'under_approve_admin'])}}">
-            <div class="card bg-success card-height-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-soft-light text-white rounded-2 fs-2">
-                                <i class="bx bx-file"></i>
-                            </span>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-uppercase fw-medium text-white mb-3"> اذونات قيد مراجعة الادارة  للمنشات الطبية </p>
-                            <h4 class="fs-4 mb-3 text-white"><span class="counter-value" data-target="{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\MedicalFacility')->where('status','under_approve_admin')->count()}}">{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\MedicalFacility')->where('status','under_approve_admin')->count()}}</span></h4>
-                        </div>
-                        <div class="flex-shrink-0 align-self-center">
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div>
-        </a>
-    </div>
-
-    <div class="col-xl-3  col-md-6">
-        <a href="{{route(get_area_name().'.licences.index', ['type' => 'facilities', 'status' => 'under_payment'])}}">
-            <div class="card bg-warning card-height-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-soft-light text-white rounded-2 fs-2">
-                                <i class="bx bx-file"></i>
-                            </span>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-uppercase fw-medium text-white mb-3"> اذونات قيد مراجعة المالية  للمنشات الطبية </p>
-                            <h4 class="fs-4 mb-3 text-white"><span class="counter-value" data-target="{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\MedicalFacility')->where('status','under_payment')->count()}}">{{App\Models\Licence::where('branch_id', auth()->user()->branch_id)->where('licensable_type', 'App\Models\MedicalFacility')->where('status','under_payment')->count()}}</span></h4>
-                        </div>
-                        <div class="flex-shrink-0 align-self-center">
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div>
-        </a>
-    </div>
-
-
-</div>
-@endif
-@endif
 
 @endsection
+
+
 
 @section('scripts')
 <!-- apexcharts -->

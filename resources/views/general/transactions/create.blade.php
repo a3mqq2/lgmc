@@ -11,15 +11,22 @@
                 <div class="card-body">
                     <form action="{{ route(get_area_name().'.transactions.store') }}" method="POST">
                         @csrf
+                       
+                        @if (auth()->id() == 1)
                         <div class="mb-3">
-                            <label for="vault_id" class="form-label">الخزينة</label>
+                            <label for="vault_id" class="form-label">الحساب</label>
                             <select class="form-control" id="vault_id" name="vault_id" required>
-                                <option value="">حدد خزينة</option>
+                                <option value="">حدد حساب</option>
                                 @foreach ($vaults as $vault)
                                     <option value="{{$vault->id}}">{{$vault->name}}</option>
                                 @endforeach
                             </select>
                         </div>
+                        @else 
+                        <input type="hidden" name="vault_id" value="{{auth()->user()->vault_id}}">
+                        @endif
+
+
 
                         <div class="mb-3">
                             <label for="desc" class="form-label">الوصف</label>
@@ -36,15 +43,7 @@
                                 <option value="withdrawal">سحب</option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="transaction_type_id" class="form-label">نوع المعاملة المالية</label>
-                            <select class="form-control" id="transaction_type_id" name="transaction_type_id" required>
-                                <option value="">حدد نوع الحركة</option>
-                                @foreach ($transaction_types as $transaction_type)
-                                    <option value="{{$transaction_type->id}}">{{$transaction_type->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                       
                         <button type="submit" class="btn btn-primary">إنشاء</button>
                     </form>
                 </div>

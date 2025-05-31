@@ -3,23 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ticket;
+use App\Models\Country;
 use App\Models\Licence;
 use App\Enums\ReplyType;
+use App\Models\FileType;
 use App\Models\DoctorMail;
+use App\Models\DoctorRank;
+use App\Models\University;
 use App\Models\TicketReply;
 use Illuminate\Http\Request;
 use App\Models\DoctorRequest;
+use App\Models\AcademicDegree;
 use App\Models\DoctorMailItem;
+use App\Models\MedicalFacility;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\MedicalFacility;
+use Illuminate\Support\Facades\Storage;
 
 class DoctorHomeController extends Controller
 {
     public function dashboard()
     {
-        return view('doctor.dashboard');
+        $countries = Country::all();
+        $universities = University::all();
+        $doctor_ranks = DoctorRank::where('doctor_type', auth('doctor')->user()->type)->get();
+        $academicDegrees = AcademicDegree::all();
+        return view('doctor.dashboard', compact('countries', 'universities', 'doctor_ranks','academicDegrees'));
     }
 
 
@@ -228,5 +238,150 @@ class DoctorHomeController extends Controller
     {
         $doctorMails = DoctorMail::where('doctor_id', auth('doctor')->id())->get();
         return view('doctor.doctor-mails.create', compact('doctorMails'));
+    }
+
+    public function my_facility()
+    {
+
+        if(auth('doctor')->user()->type->value != "libyan")
+        {
+            return redirect()->route('doctor.dashboard')->withErrors(['هذه الصفحة متاحة فقط للأطباء الليبيين']);
+        }
+
+        if(!in_array(auth('doctor')->user()->doctor_rank_id, [3,4,5,6]))
+        {
+            return redirect()->route('doctor.dashboard')->withErrors(['هذه الصفحة متاحة فقط للأطباء من رتبة اخصائي ثاني فما فوق']);
+        }
+
+        return view('doctor.medical-facility.index');
+    }
+
+
+    public function my_facility_create()
+    {
+        if(auth('doctor')->user()->type->value != "libyan")
+        {
+            return redirect()->route('doctor.dashboard')->with('error', 'هذه الصفحة متاحة فقط للأطباء الليبيين');
+        }
+
+        if(!in_array(auth('doctor')->user()->doctor_rank_id, [3,4,5,6]))
+        {
+            return redirect()->route('doctor.dashboard')->with('error', 'هذه الصفحة متاحة فقط للأطباء من رتبة اخصائي ثاني فما فوق');
+        }
+        return view('doctor.medical-facility.create');
+    }
+
+
+    public function my_facility_store(Request $request)
+    {
+
+
+        if(auth('doctor')->user()->type->value != "libyan")
+        {
+            return redirect()->route('doctor.dashboard')->with('error', 'هذه الصفحة متاحة فقط للأطباء الليبيين');
+        }
+
+        if(!in_array(auth('doctor')->user()->doctor_rank_id, [3,4,5,6]))
+        {
+            return redirect()->route('doctor.dashboard')->with('error', 'هذه الصفحة متاحة فقط للأطباء من رتبة اخصائي ثاني فما فوق');
+        }
+
+        $request->validate([
+            'type' => "required|in:private_clinic,medical_services",
+            'name' => "required|max:255",
+            "phone" => "required",
+            "city" => "required",
+            "address" => "required|max:255",
+        ]);
+
+        $medical_facility = new MedicalFacility();
+        $medical_facility->type = $request->type;
+        $medical_facility->name = $request->name;
+        $medical_facility->phone_number = $request->phone;
+        $medical_facility->city = $request->city;
+        $medical_facility->address = $request->address;
+        $medical_facility->manager_id = auth('doctor')->id();
+        $medical_facility->branch_id = auth('doctor')->user()->branch_id;
+        $medical_facility->membership_status = "under_complete";
+        $medical_facility->save();
+
+        return redirect()->route('doctor.my-facility')->with('success', 'تم إنشاء المنشأة الطبية بنجاح');
+    }
+
+    public function my_facility_upload_documents()
+    {
+
+        if(auth('doctor')->user()->type->value != "libyan")
+        {
+            return redirect()->route('doctor.dashboard')->withErrors(['هذه الصفحة متاحة فقط للأطباء الليبيين']);
+        }
+
+        if(!in_array(auth('doctor')->user()->doctor_rank_id, [3,4,5,6]))
+        {
+            return redirect()->route('doctor.dashboard')->withErrors([ 'هذه الصفحة متاحة فقط للأطباء من رتبة اخصائي ثاني فما فوق']);
+        }
+
+        $medical_facility = MedicalFacility::where('manager_id', auth('doctor')->id())
+            ->where('branch_id', auth('doctor')->user()->branch_id)
+            ->first();
+            
+            
+        if (!$medical_facility) {
+            return redirect()->route('doctor.dashboard')->withErrors(['لا يوجد لديك منشأة طبية مسجلة']);
+        }
+
+
+        if($medical_facility->membership_status->value != "under_complete")
+        {
+            return redirect()->route('doctor.dashboard')->withErrors(['لا يمكنك رفع المستندات في هذه المرحلة']);
+        }
+
+        $fileTypes = FileType::where('type', 'medical_facility')->where('facility_type','single')->where('for_registration', 1)->get();
+        $uploadedFiles = $medical_facility->files()->pluck('file_type_id')->toArray();
+        $requiredFileTypes = $fileTypes->whereNotIn('id', $uploadedFiles);
+        if ($requiredFileTypes->isEmpty()) {
+            return redirect()->route('doctor.dashboard')->with('success', 'جميع المستندات المطلوبة تم رفعها بالفعل');
+        }
+
+
+        return view('doctor.medical-facility.upload-documents', compact('medical_facility', 'requiredFileTypes'));
+    }
+
+
+    public function my_facility_update(Request $request)
+    {
+
+      
+        $facility = MedicalFacility::where('manager_id', auth('doctor')->id())
+            ->where('branch_id', auth('doctor')->user()->branch_id)
+            ->first();
+        $isPending = in_array($facility->membership_status->value, ['under_approve', 'under_edit']);
+
+        $validated = $request->validate([
+            'name'         => 'required|string|max:255',
+            'address'      => 'required|string|max:500',
+            'phone_number' => 'required|string|max:20',
+        ]);
+
+        if ($isPending) {
+            $facility->update($validated);
+            $facility->membership_status = "under_approve";
+            $facility->save();
+
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $docId => $file) {
+                    if (!$file) continue;
+
+                    $doc = $facility->files()->where('id', $docId)->first();
+                    if ($doc) {
+                        Storage::delete($doc->file_path);
+                        $path = $file->store("facilities/{$facility->id}", 'public');
+                        $doc->update(['file_path' => $path]);
+                    }
+                }
+            }
+        }
+
+        return back()->with('success', 'تم تحديث البيانات بنجاح');
     }
 }

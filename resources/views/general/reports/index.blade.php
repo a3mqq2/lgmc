@@ -6,14 +6,14 @@
 <div class="row">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header bg-primary text-light">كشف حساب خزينة</div>
+            <div class="card-header bg-primary text-light">كشف حساب حساب</div>
             <div class="card-body">
                 <form action="{{route(get_area_name().'.reports.transactions')}}" method="GET">
                     <div class="row">
                         <div class="col-12">
-                            <label for="">الخزينة</label>
+                            <label for="">الحساب</label>
                             <select name="vault_id" class="form-control">
-                                <option value="">حدد خزينة</option>
+                                <option value="">حدد حساب</option>
                                 @foreach ($vaults as $vault)
                                     <option value="{{$vault->id}}" {{ request('vault_id') == $vault->id ? 'selected' : '' }}>{{$vault->name}}</option>
                                 @endforeach

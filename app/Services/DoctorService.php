@@ -110,19 +110,6 @@ class DoctorService
       
 
 
-         if(request('regestration'))
-         {
-            $query->where('code', null);
-            $query->where('membership_status', 'pending');
-         }
-
-         if(request('init_approve'))
-         {
-            $query->where('membership_status', 'init_approve');
-         }
-
-
-
 
          // Type filters
          if (request('type') === 'libyan') {
@@ -143,7 +130,6 @@ class DoctorService
          }
      
 
-         $query->whereNotNull('registered_at');
 
          // Area-based branch restriction
          if (in_array(get_area_name(), ['user'])) {
@@ -185,9 +171,11 @@ class DoctorService
         ->pluck('specialty_2')
         ->toArray();
 
+
+
         return [
             'branches' => Branch::all(),
-            'doctor_ranks' => DoctorRank::all(),
+            'doctor_ranks' => DoctorRank::where('doctor_type', request('type'))->get(),
             'institutions' => Institution::all(),
             'countries' => Country::all(),
             'universities' => University::all(),
@@ -196,7 +184,7 @@ class DoctorService
             'specialties' => $specialties,
             'file_types' => $query->get(),
             'specialties2' => $specialties2,
-            'doctorRanks' => DoctorRank::all(),
+            'doctorRanks' => DoctorRank::where('doctor_type', request('type'))->get(),
         ];
     }
 
@@ -207,24 +195,7 @@ class DoctorService
         // استخراج نوع الطبيب من البيانات
         $doctorType = $data['type'];
 
-        // بناء استعلام التحقق من البلاك ليست بناءً على نوع الطبيب
-        $blacklistQuery = Blacklist::where('doctor_type', $doctorType)
-            ->where(function ($query) use ($data, $doctorType) {
-                $query->where('name', $data['name'])
-                      ->orWhere('number_phone', $data['phone']);
-                
-                if ($doctorType === 'libyan') {
-                    // تحقق من رقم الهوية الوطنية لليبيا
-                    $query->orWhere('id_number', $data['national_number']);
-                } else {
-                }
-            });
-
-        // إذا كان الطبيب موجودًا في البلاك ليست، إلقاء استثناء
-        if ($blacklistQuery->exists()) {
-            return redirect()->back()->withInput()->withErrors(['هذا الطبيب موجود في البلاك ليست ولا يمكن إضافته.']);
-        }
-
+      
 
         // check the doctor is exists before
         $doctor = Doctor::where('name', $data['name'])
@@ -243,16 +214,7 @@ class DoctorService
 
         try {
             
-            // توليد رمز الطبيب
-            $data['branch_id'] = get_area_name() == "admin" ? $data['branch_id'] : auth()->user()->branch_id;
-            $data['date_of_birth'] = isset($data['birth_year'], $data['month'], $data['day']) 
-            ? "{$data['birth_year']}-".str_pad($data['month'], 2, '0', STR_PAD_LEFT)."-".str_pad($data['day'], 2, '0', STR_PAD_LEFT)
-            : null;
-
-            if(!isset($data['branch_id']))
-            {
-                return redirect()->back()->withInput()->withErrors(['يجب تحديد الفرع']);
-            }
+            $data['branch_id'] = auth()->user()->branch_id;
 
 
             if(isset($data['ex_medical_facilities']))
@@ -265,42 +227,34 @@ class DoctorService
             } 
 
 
-            // إنشاء السجل الجديد للطبيب
-            $data['password'] = Hash::make($data['password']);
-
-            // 
-
             $doctor = Doctor::create($data);
-
-            // ربط المنشآت طبية
+            $doctor->code = null;
+            $doctor->index = null;
             $doctor->institutions()->attach($medicalFacilities ?? []);
-            // تحديث رمز الطبيب بناءً على الفرع
-            $doctor->membership_status = 'inactive';
+            $doctor->membership_status = 'under_approve';
             $doctor->membership_expiration_date = null;
+
+
+            if(!$doctor->password)
+            {
+                $doctor->password = Hash::make($doctor->phone);
+            }
+            
+
+            if($doctor->type->value == "libyan")
+            {
+                $doctor->branch_id = auth()->user()->branch_id;
+            }
             $doctor->save();
 
 
-            // جلب أنواع الملفات للأطباء
-            $file_types = FileType::where('type', 'doctor')
-            ->where('for_registration', 1)
-                ->get();
-            $this->createInvoice($doctor);
-            
 
-
-            // تسجيل العملية في السجل
-            Log::create([
-                'user_id' => auth()->user()->id,
-                'details' => 'تم إنشاء طبيب جديد: ' . $doctor->name,
-                'loggable_id' => $doctor->id,
-                'loggable_type' => Doctor::class,
-                'action' => 'create_doctor',
-            ]);
-
+   
             DB::commit();
 
             return $doctor;
         } catch (\Exception $e) {
+            dd($e->getMessage());
             DB::rollback();
             throw $e; // إعادة إلقاء الاستثناء بعد التراجع عن العملية
         }
@@ -661,7 +615,7 @@ class DoctorService
 
         public function initCardID($doctor)
         {
-            $doctorType = $doctor->type;
+            $doctorType = $doctor->type->value;
             if($doctorType == \App\Enums\DoctorType::Libyan)
             {
                 $price = Pricing::find(82);

@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers\Common;
+
+use App\Enums\MembershipStatus;
 use Carbon\Carbon;
 
 use App\Models\Otp;
@@ -138,6 +140,11 @@ class AuthController extends Controller
                 return view('doctor.register_palestinian', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities'));
             }
 
+            if($request->type == "libyan")
+            {
+                return view('doctor.register_libyan', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities'));
+            }
+
 
         }
 
@@ -152,7 +159,15 @@ class AuthController extends Controller
 
 
 
+
         $data = $request->validated();
+
+        if(isset($data['date_of_birth']))
+        {
+            $data['date_of_birth'] =  date('Y-m-d', strtotime($data['date_of_birth']));
+        }
+
+
 
             // استخراج نوع الطبيب من البيانات
             $doctorType = $data['type'];
@@ -199,38 +214,18 @@ class AuthController extends Controller
 
                     $doctor->institutions()->attach($medicalFacilities ?? []);
 
-                    $doctor->membership_status = 'pending';
+
+                    $doctor->membership_status = 'under_approve';
                     $doctor->membership_expiration_date = null;
                     $doctor->code = null;
                     $doctor->index = null;
                     $doctor->save();
-
                 $file_types = FileType::where('type', 'doctor')
                     ->where('doctor_type', $data['type'])
                     ->where('for_registration', 1)
                     ->get();
 
-                // foreach ($file_types as $file_type) {
-                //     if ($file_type->is_required && empty($data['documents'][$file_type->id])) {
-                //         return redirect()->back()->withInput()->withErrors(["الملف {$file_type->name} مطلوب ولم يتم تحميله."]);
-                //     }
-                // }
-
-                // foreach ($file_types as $file_type) {
-                //     if (isset($data['documents'][$file_type->id])) {
-                //         $file = $data['documents'][$file_type->id];
-                //         $path = $file->store('doctors');
-                //         $doctor->files()->create([
-                //             'file_name' => $file->getClientOriginalName(),
-                //             'file_type_id' => $file_type->id,
-                //             'file_path' => $path,
-                //         ]);
-                //     }
-                // }
-
-                // إنشاء الفاتورة الخاصة بالطبيب
-                // $this->createInvoice($doctor);
-
+       
 
                 DB::commit();
 

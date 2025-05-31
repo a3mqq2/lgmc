@@ -51,7 +51,7 @@ class ImportOldDoctors extends Command
 
                 $type = 'foreign';
                 if ($newCountry) {
-                    $countryName = strtolower(trim($newCountry->name));
+                    $countryName = strtolower(trim($newcountry->nationality_name_ar));
                     $countryEnName = strtolower(trim($newCountry->en_name));
                 
                     if ($countryName === 'ليبيا' || $countryEnName === 'libya') {

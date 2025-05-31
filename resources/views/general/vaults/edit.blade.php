@@ -1,19 +1,19 @@
 @extends('layouts.' . get_area_name())
-@section('title', 'تعديل خزينة')
+@section('title', 'تعديل حساب')
 
 @section('content')
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header bg-primary text-light">
-                    <h4 class="card-title">تعديل خزينة</h4>
+                    <h4 class="card-title">تعديل حساب</h4>
                 </div>
                 <div class="card-body">
                     <form action="{{ route(get_area_name().'.vaults.update', $vault->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="mb-3">
-                            <label for="name" class="form-label">اسم الخزينة</label>
+                            <label for="name" class="form-label">اسم الحساب</label>
                             <input type="text" class="form-control" id="name" name="name" value="{{ $vault->name }}" required>
                         </div>
 

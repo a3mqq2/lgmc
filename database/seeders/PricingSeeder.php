@@ -114,36 +114,35 @@ class PricingSeeder extends Seeder
 
 
         $list_of_pricings_foreign = [
-                [
-                    "name" => "فتح ملف اجنبي مقيم",
-                    "doctor_type" => "foreign",
-                    "amount" => 50,
-                    "type" => "service",
-                    "entity_type" => "doctor",
-                    'category' => "open_file",
-                ],
-                [
-                    "name" => "اشتراك سنوي اجنبي ممارس مقيم",
-                    "doctor_type" => "foreign",
-                    "amount" => 50,
-                    "type" => "membership",
-                    "doctor_rank_id" => 5,
-                ],
-                [
-                    "name" => "اشتراك سنوي اجنبي اخصائي مقيم",
-                    "doctor_type" => "foreign",
-                    "amount" => 100,
-                    "type" => "membership",
-                    "doctor_rank_id" => 6,
-                ],
-                [
-                    "name" => "اشتراك سنوي اجنبي استشاري مقيم",
-                    "doctor_type" => "foreign",
-                    "amount" => 120,
-                    "type" => "membership",
-                    "doctor_rank_id" => 7,
-                ]
-            ];
+            [
+                "name" => "فتح ملف اجنبي مقيم",
+                "doctor_type" => "foreign",
+                "amount" => 50,
+                "type" => "open_file",
+                "entity_type" => "doctor",
+            ],
+            [
+                "name" => "اشتراك سنوي اجنبي ممارس مقيم",
+                "doctor_type" => "foreign",
+                "amount" => 50,
+                "type" => "membership",
+                "doctor_rank_id" => 5,
+            ],
+            [
+                "name" => "اشتراك سنوي اجنبي اخصائي مقيم",
+                "doctor_type" => "foreign",
+                "amount" => 100,
+                "type" => "membership",
+                "doctor_rank_id" => 6,
+            ],
+            [
+                "name" => "اشتراك سنوي اجنبي استشاري مقيم",
+                "doctor_type" => "foreign",
+                "amount" => 120,
+                "type" => "membership",
+                "doctor_rank_id" => 7,
+            ]
+        ];
 
 
             $list_of_pricings_foreign_mails = [
@@ -208,37 +207,50 @@ class PricingSeeder extends Seeder
                     "name" => "فتح ملف ليبي",
                     "doctor_type" => "libyan",
                     "amount" => 25,
-                    "type" => "service",
+                    "type" => "open_file",
                     "entity_type" => "doctor",
-                    'category' => "open_file",
                 ],
                 [
-                    "name" => "اشتراك سنوي ليبي ممارس",
+                    "name" => "اشتراك سنوي ليبي ممارس عام",
                     "doctor_type" => "libyan",
                     "amount" => 25,
                     "type" => "membership",
                     "doctor_rank_id" => 1,
                 ],
                 [
-                    "name" => "اشتراك سنوي ليبي ممارس",
+                    "name" => "اشتراك سنوي ليبي طبيب ممارس",
                     "doctor_type" => "libyan",
                     "amount" => 25,
                     "type" => "membership",
                     "doctor_rank_id" => 2,
                 ],
                 [
-                    "name" => "اشتراك سنوي ليبي اخصائي",
+                    "name" => "اشتراك سنوي ليبي اخصائي ثاني",
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "membership",
                     "doctor_rank_id" => 3,
                 ],
                 [
-                    "name" => "اشتراك سنوي ليبي استشاري",
+                    "name" => "اشتراك سنوي ليبي اخصائي اول",
+                    "doctor_type" => "libyan",
+                    "amount" => 50,
+                    "type" => "membership",
+                    "doctor_rank_id" => 4,
+                ],
+                [
+                    "name" => "اشتراك سنوي ليبي استشاري ثاني",
                     "doctor_type" => "libyan",
                     "amount" => 60,
                     "type" => "membership",
-                    "doctor_rank_id" => 4,
+                    "doctor_rank_id" => 5,
+                ],
+                [
+                    "name" => "اشتراك سنوي ليبي استشاري اول",
+                    "doctor_type" => "libyan",
+                    "amount" => 60,
+                    "type" => "membership",
+                    "doctor_rank_id" => 6,
                 ]
             ];
 
@@ -249,42 +261,36 @@ class PricingSeeder extends Seeder
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "mail",
-                    "doctor_rank_id" => 1,
                 ],
                 [
                     "name" => "تعريف - Certificate / ليبي",
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "mail",
-                    "doctor_rank_id" => 1,
                 ],
                 [
                     "name" => "حسن سيرة وسلوك / ليبي",
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "mail",
-                    "doctor_rank_id" => 1,
                 ],
                 [
                     "name" => "رسالة تحقق بخصوص عمل (تتضمن فترة تدريب) / ليبي",
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "mail",
-                    "doctor_rank_id" => 1,
                 ],
                 [
                     "name" => "رسائل الجامعة - University Letters / ليبي",
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "mail",
-                    "doctor_rank_id" => 1,
                 ],
                 [
                     "name" => "رسالة تحقق من تسجيل اخصائي او استشاري / ليبي",
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "mail",
-                    'doctor_rank_id' => 1,
                 ],
                 [
                     'name' => 'بريد الكتروني / ليبي',
@@ -303,30 +309,29 @@ class PricingSeeder extends Seeder
                     "name" => "فتح ملف فلسطيني",
                     "doctor_type" => "palestinian",
                     "amount" => 25,
-                    "type" => "service",
+                    "type" => "open_file",
                     "entity_type" => "doctor",
-                    'category' => "open_file",
                 ],
                 [
                     "name" => "اشتراك سنوي فلسطيني ممارس",
                     "doctor_type" => "palestinian",
                     "amount" => 25,
                     "type" => "membership",
-                    "doctor_rank_id" => 10,
+                    "doctor_rank_id" => 12,
                 ],
                 [
                     "name" => "اشتراك سنوي فلسطيني اخصائي",
                     "doctor_type" => "palestinian",
                     "amount" => 25,
                     "type" => "membership",
-                    'doctor_rank_id' => 11,
+                    'doctor_rank_id' => 13,
                 ],
                 [
                     'name' => 'اشتراك سنوي فلسطيني استشاري',
                     'doctor_type' => 'palestinian',
                     'amount' => 60,
                     'type' => 'membership',
-                    'doctor_rank_id' => 12,
+                    'doctor_rank_id' => 14,
                 ]
             ];
 
@@ -381,13 +386,177 @@ class PricingSeeder extends Seeder
             ];
 
 
+            
+            $cards = [
+                [
+                    "name" => "رسوم اصدار بطاقة / ليبي",
+                    "doctor_type" => "libyan",
+                    "amount" => 10,
+                    "type" => "card",
+                ],
+                [
+                    "name" => "رسوم اصدار بطاقة / فلسطيني",
+                    "doctor_type" => "palestinian",
+                    "amount" => 10,
+                    "type" => "card",
+                ],
+                [
+                    "name" => "رسوم اصدار بطاقة / اجنبي",
+                    "doctor_type" => "foreign",
+                    "amount" => 20,
+                    "type" => "card",
+                ]
+            ];
 
 
 
 
+            $licenses = [
+
+                // =========== FOREIGN ============= // 
+
+                [
+                    "name" => "رسوم اصدار اذن مزاولة  ممارس عام اجنبي",
+                    "doctor_type" => "foreign",
+                    "amount" => 120,
+                    "type" => "license",
+                    "doctor_rank_id" => 7
+                ],
+                [
+                    "name" => "رسوم اصدار اذن مزاولة طبيب ممارس اجنبي",
+                    "doctor_type" => "foreign",
+                    "amount" => 120,
+                    "type" => "license",
+                    "doctor_rank_id" => 8
+                ],
+                [
+                    "name" => "رسوم اصدار اذن مزاولة اخصائي  اجنبي",
+                    "doctor_type" => "foreign",
+                    "amount" => 150,
+                    "type" => "license",
+                    "doctor_rank_id" => 9,
+                ],
+                [
+                    "name" => "رسوم اصدار اذن مزاولة استشاري  اجنبي",
+                    "doctor_type" => "foreign",
+                    "amount" => 200,
+                    "type" => "license",
+                    'doctor_rank_id' => 10
+                ],
 
 
-            foreach(array_merge($list_of_pricings_foreign, $list_of_pricings_foreign_mails,$list_of_pricings_libyan,$list_of_pricings_libyan_mails,$list_of_pricings_palestinian,$list_of_pricings_palestinian_mails) as $pricing)
+                // =========== FOREIGN ============= // 
+
+                // =========== LIBYAN ============= // 
+
+                [
+                    "name" => "رسوم اصدار اذن مزاولة ممارس عام  ليبي",
+                    "doctor_type" => "libyan",
+                    "amount" => 60,
+                    "type" => "license",
+                    "doctor_rank_id" => 1,
+                ],
+                [
+                    "name" => "رسوم اصدار اذن مزاولة طبيب ممارس ليبي",
+                    "doctor_type" => "libyan",
+                    "amount" => 60,
+                    "type" => "license",
+                    "doctor_rank_id" => 2,
+                ],
+                [
+                    "name" => "رسوم اصدار اذن مزاولة اخصائي ثاني  ليبي",
+                    "doctor_type" => "libyan",
+                    "amount" => 75,
+                    "type" => "license",
+                    "doctor_rank_id" => 3,
+                ],
+                [
+                    "name" => "رسوم اصدار اذن مزاولة اخصائي اول  ليبي",
+                    "doctor_type" => "libyan",
+                    "amount" => 75,
+                    "type" => "license",
+                    "doctor_rank_id" => 4,
+                ],
+                [
+                    "name" => "رسوم اصدار اذن مزاولة استشاري ثاني  ليبي",
+                    "doctor_type" => "libyan",
+                    "amount" => 100,
+                    "type" => "license",
+                    "doctor_rank_id" => 5,
+                ],
+                [
+                    "name" => "رسوم اصدار اذن مزاولة استشاري اول  ليبي",
+                    "doctor_type" => "libyan",
+                    "amount" => 100,
+                    "type" => "license",
+                    "doctor_rank_id" => 6,
+                ],
+                // =========== LIBYAN ============= // 
+
+
+                // =========== PALESTINIAN ============= // 
+
+                [
+                    "name" => "رسوم اصدار اذن مزاولة ممارس عام  فلسطيني",
+                    "doctor_type" => "palestinian",
+                    "amount" => 60,
+                    "type" => "license",
+                    "doctor_rank_id" => 14,
+                ],
+                [
+                    "name" => "رسوم اصدار اذن مزاولة طبيب ممارس فلسطيني",
+                    "doctor_type" => "palestinian",
+                    "amount" => 60,
+                    "type" => "license",
+                    "doctor_rank_id" => 15,
+                ],
+                [
+                    "name" => "رسوم اصدار اذن مزاولة اخصائي  فلسطيني",
+                    "doctor_type" => "palestinian",
+                    "amount" => 75,
+                    "type" => "license",
+                    "doctor_rank_id" => 16,
+                ],
+                [
+                    "name" => "رسوم اصدار اذن مزاولة استشاري  فلسطيني",
+                    "doctor_type" => "palestinian",
+                    "amount" => 100,
+                    "type" => "license",
+                    'doctor_rank_id' => 17
+                ],
+
+
+                // =========== PALESTINIAN ============= //
+
+
+                // ========== FACILITIES ============= //
+                [
+                    "name" => "رسوم اشتراك منشأة طبية لأول مرة",
+                    "amount" => 2000,
+                    "type" => "membership",
+                    "entity_type" => "medical_facility",
+                ],
+                [
+                    "name" => "رسوم تجديد اشتراك منشأة طبية  ",
+                    "amount" => 500,
+                    "type" => "renew",
+                    "entity_type" => "medical_facility",
+                ],
+                // ========== FACILITIES ============= //
+                
+            ];
+
+
+
+            foreach(array_merge($list_of_pricings_foreign,
+             $list_of_pricings_foreign_mails,
+             $list_of_pricings_libyan,
+             $list_of_pricings_libyan_mails,
+             $list_of_pricings_palestinian,
+             $list_of_pricings_palestinian_mails,
+             $licenses,
+             $cards
+             ) as $pricing)
             {
                 $pricing['is_local'] = 0;
                 $pricing['need_file'] = 0;

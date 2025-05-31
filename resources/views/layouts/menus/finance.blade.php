@@ -9,10 +9,8 @@
     <div class="collapse menu-dropdown" id="doctors">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
-                <a href="{{ route(get_area_name().'.doctors.index') }}" class="nav-link" data-key="t-horizontal">    عرض جميع الآطباء   </a>
-                <a href="{{ route(get_area_name().'.total_invoices.index') }}" class="nav-link" data-key="t-horizontal">    عرض فواتير الاطباء     </a>
-                <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'MedicalFaclitiy']) }}" class="nav-link" data-key="t-horizontal">    فواتير المنشآت الطبية  </a>
-                
+                <a href="{{ route(get_area_name().'.invoices.index', ['status' => 'unpaid']) }}" class="nav-link" data-key="t-horizontal">    عرض الفواتير المستحقة    </a>
+                <a href="{{ route(get_area_name().'.invoices.index', ['status' => 'paid']) }}" class="nav-link" data-key="t-horizontal">    عرض الفواتير المدفوعة    </a>
             </li>
 
         </ul>
@@ -46,31 +44,10 @@
 
 
 
-@if (auth()->user()->branch_id)
-<li class="nav-item">
-    <a class="nav-link menu-link" href="#invoices" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-        <i class="fa fa-file-invoice"></i><span data-key="t-layouts">    الفواتير   </span>
-    </a>
-    <div class="collapse menu-dropdown" id="invoices">
-        <ul class="nav nav-sm flex-column">
-            <li class="nav-item">
-                <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'Doctor', 'type' => 'membership'] ) }}" class="nav-link" data-key="t-horizontal">    فواتير تجديد العضويه  </a>
-                <a href="{{ route(get_area_name().'.invoices.index', ['invoiceable' => 'Doctor'] ) }}" class="nav-link" data-key="t-horizontal">    فواتير الآطباء  </a>
-
-
-            </li>
-
-        </ul>
-    </div>
-</li>
-
-
-@endif
-
 
 {{-- <li class="nav-item">
     <a class="nav-link menu-link" href="#transfers" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-        <i class="fa fa-exchange-alt"></i><span data-key="t-layouts">    تحويلات الخزائن   </span>
+        <i class="fa fa-exchange-alt"></i><span data-key="t-layouts">    تحويلات الحسابات   </span>
     </a>
     <div class="collapse menu-dropdown" id="transfers">
         <ul class="nav nav-sm flex-column">
@@ -84,41 +61,24 @@
 </li> --}}
 
 
-{{-- 
+
 @if (auth()->user()->permissions->where('name','financial-administration')->count() && !auth()->user()->branch_id)
     
 <li class="nav-item">
     <a class="nav-link menu-link" href="#vaults" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-        <i class="fa fa-vault"></i><span data-key="t-layouts">   الخزائن المالية  </span>
+        <i class="fa fa-vault"></i><span data-key="t-layouts"> قائمة الحسابات  </span>
     </a>
     <div class="collapse menu-dropdown" id="vaults">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
-                <a href="{{route(get_area_name().'.vaults.create')}}" class="nav-link" data-key="t-horizontal">    اضافه خزينة جديد     </a>
-                <a href="{{route(get_area_name().'.vaults.index')}}" class="nav-link" data-key="t-horizontal">  عرض جميع الخزائن      </a>
+                <a href="{{route(get_area_name().'.vaults.create')}}" class="nav-link" data-key="t-horizontal">    اضافه حساب جديد     </a>
+                <a href="{{route(get_area_name().'.vaults.index')}}" class="nav-link" data-key="t-horizontal">  عرض جميع الحسابات      </a>
             </li>
         </ul>
     </div>
 </li>
 
-@endif --}}
-
-<li class="nav-item">
-    <a class="nav-link menu-link" href="#layer-group" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-        <i class="fa fa-layer-group"></i><span data-key="t-layouts">   تصنيفات الحركات المالية  </span>
-    </a>
-    <div class="collapse menu-dropdown" id="layer-group">
-        <ul class="nav nav-sm flex-column">
-            <li class="nav-item">
-                <a href="{{route(get_area_name().'.transaction-types.create')}}" class="nav-link" data-key="t-horizontal">    اضافه تصنيف جديد     </a>
-                <a href="{{route(get_area_name().'.transaction-types.index')}}" class="nav-link" data-key="t-horizontal">  عرض جميع التصنيفات      </a>
-            </li>
-        </ul>
-    </div>
-</li>
-
-
-
+@endif
 
 
 

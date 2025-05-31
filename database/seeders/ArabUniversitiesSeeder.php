@@ -3,40 +3,59 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Http;
+use Stichoza\GoogleTranslate\GoogleTranslate;
+use App\Models\Country;
 use App\Models\University;
 
 class ArabUniversitiesSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        $universities = [
-            'جامعة القاهرة',
-            'جامعة الملك سعود',
-            'جامعة الأزهر',
-            'جامعة عين شمس',
-            'جامعة الخرطوم',
-            'جامعة تونس',
-            'جامعة الجزائر',
-            'جامعة بغداد',
-            'جامعة الكويت',
-            'جامعة الشارقة',
-            'جامعة الملك عبد العزيز',
-            'جامعة السلطان قابوس',
-            'جامعة قطر',
-            'جامعة بيروت العربية',
-            'جامعة الإمارات العربية المتحدة',
-            'جامعة الأردن',
-            'جامعة اليرموك',
-            'جامعة نواكشوط',
-            'جامعة طرابلس',
-            'جامعة بنغازي',
-        ];
+        $translator = new GoogleTranslate('ar');
 
-        foreach ($universities as $name) {
-            University::create(['name' => $name]);
+        $countries = Country::all();
+
+        foreach ($countries as $country) {
+            try {
+                $response = Http::timeout(20)->retry(3, 1000)->get('http://universities.hipolabs.com/search', [
+                    'country' => $country->country_name_en,
+                ]);
+            } catch (\Exception $e) {
+                $this->command->error("Request failed for {$country->country_name_en}: " . $e->getMessage());
+                continue;
+            }
+
+            if (! $response->successful()) {
+                $this->command->error("Failed to fetch universities for {$country->en_name}");
+                continue;
+            }
+
+            $universities = $response->json();
+
+            foreach ($universities as $uni) {
+                if (empty($uni['name'])) {
+                    continue;
+                }
+
+                try {
+                    $nameAr = $translator->translate($uni['name']);
+                } catch (\Exception $e) {
+                    $nameAr = $uni['name'];
+                }
+
+                University::firstOrCreate(
+                    [
+                        'en_name'    => $uni['name'],
+                        'country_id' => $country->id,
+                    ],
+                    [
+                        'name' => $nameAr,
+                    ]
+                );
+            }
+
+            $this->command->info("Seeded universities for {$country->en_name}");
         }
     }
 }

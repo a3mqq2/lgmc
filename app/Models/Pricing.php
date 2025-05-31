@@ -23,7 +23,6 @@ class Pricing extends Model
     ];
 
     protected $casts = [
-        'type' => PricingType::class,
         'entity_type' => EntityType::class,
         'doctor_type' => DoctorType::class,
     ];
@@ -56,7 +55,7 @@ class Pricing extends Model
     public function scopeMembershipForDoctor($query, \App\Models\Doctor $doctor)
     {
         // نستدعي الـ accessor اللي أنشأناه للصفة النهائية
-        $displayRank = $doctor->rank_name; 
+        $displayRank = $doctor->doctor_rank->name; 
 
         return $query
             ->where('type', 'membership')

@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->unsignedBigInteger('hand_graduation_id');
             $table->foreign('hand_graduation_id')->references('id')->on('universities')->onDelete('cascade');
-            $table->dateTime('internership_complete');
+            $table->date('internership_complete');
             $table->foreignId('academic_degree_id')->nullable()->constrained();
             $table->unsignedBigInteger('qualification_university_id');
             $table->foreign('qualification_university_id')->references('id')->on('universities')->onDelete('cascade');

@@ -9,7 +9,7 @@ use App\Services\InvoiceService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\{Auth, DB};
 use PhpOffice\PhpSpreadsheet\Calculation\Financial\Securities\Price;
-use App\Models\{Doctor, Invoice, Licence, LicenceLog, Log, MedicalFacility, Pricing, Transaction, Vault};
+use App\Models\{Doctor, Invoice, Licence, Log, MedicalFacility, Pricing, Transaction, Vault};
 
 class LicenceController extends Controller
 {
@@ -148,7 +148,7 @@ public function store(Request $request)
                 'branch_id'           => $licensable->branch_id,
                 'status'              => 'under_payment',
                 'created_by'          => Auth::id(),
-                'doctor_type'         => $licensable instanceof Doctor ? $licensable->type->value : null,
+                'doctor_type'         => $licensable instanceof Doctor ? $licensable->type : null,
                 'medical_facility_id' => $licensable instanceof Doctor ? $validated['medical_facility_id'] : null,
             ]);
 
@@ -161,7 +161,7 @@ public function store(Request $request)
             ];
 
             if ($licensable instanceof Doctor) {
-                $typeVal   = $licensable->type->value;
+                $typeVal   = $licensable->type;
                 $rankId    = $licensable->doctor_rank_id;
                 $pricingId = $pricingMap[$typeVal][$rankId] ?? null;
             } else {
@@ -324,7 +324,7 @@ public function store(Request $request)
         $invoice = \App\Models\Invoice::where('licence_id', $licence->id)->first();
 
         if ($invoice) {
-            $vault = Auth::user()->branch->vault;   // خزنة فرع المستخدم
+            $vault = Auth::user()->branch->vault;   // حساب فرع المستخدم
 
             // إذا كانت الفاتورة مدفوعة – استرد المبلغ
             if ($invoice->status->value === 'paid') {
@@ -343,7 +343,6 @@ public function store(Request $request)
                             'desc'                => $refundDesc,
                             'amount'              => $invoice->amount,
                             'branch_id'           => Auth::user()->branch_id,
-                            'transaction_type_id' => 1,   // استبدل بالمعرّف الصحيح
                             'type'                => 'withdrawal',
                             'vault_id'            => $vault->id,
                             'balance'             => $vault->balance,
@@ -363,7 +362,6 @@ public function store(Request $request)
                         'desc'                => $refundDesc,
                         'amount'              => $invoice->amount,
                         'branch_id'           => Auth::user()->branch_id,
-                        'transaction_type_id' => 1,
                         'type'                => 'withdrawal',
                         'vault_id'            => $vault->id,
                         'balance'             => $vault->balance,
@@ -473,13 +471,6 @@ public function store(Request $request)
         ]);
 
 
-        LicenceLog::create([
-            "user_id" => auth()->id(),
-            "details" => "تمت طباعة اذن المزاولة",
-            "licence_id" => $licence->id,
-
-        ]);
-
 
         if($licence->licensable_type == "App\Models\Doctor") {
 
@@ -524,12 +515,7 @@ public function store(Request $request)
 
 
 
-            LicenceLog::create([
-                "user_id" => auth()->id(),
-                "licence_id" => $licence->id,
-                "details" => "تم دفع  الاذن  " . ' وذلك بقيمة  ' . $licence->amount . 'دينار ليبي ',
-            ]);
-
+      
 
 
             $vault->increment('balance', $request->amount);
@@ -538,7 +524,6 @@ public function store(Request $request)
             $transaction->desc = "دفع رسوم تجديد العقد  " . $licence->id;
             $transaction->amount = $request->amount;
             $transaction->branch_id = auth()->user()->branch_id;
-            $transaction->transaction_type_id = 4;
             $transaction->type = "deposit";
             $transaction->balance = $vault->balance;
             $transaction->vault_id = $vault->id;

@@ -24,26 +24,6 @@
                                 <label for="desc" class="form-label">الوصف</label>
                                 <input type="text" class="form-control" id="desc" name="desc" value="{{ request('desc') }}">
                             </div>
-                            <div class="col-md-3">
-                                <label for="transaction_type_id" class="form-label">نوع المعاملة</label>
-                                <select class="form-control" id="transaction_type_id" name="transaction_type_id">
-                                    <option value="">الكل</option>
-                                    @foreach ($transactionTypes as $type)
-                                        <option value="{{ $type->id }}" {{ request('transaction_type_id') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-3">
-                                <label for="transaction_type_id" class="form-label"> الخزينة </label>
-                                <select class="form-control" id="transaction_type_id" name="transaction_type_id">
-                                    <option value="">الكل</option>
-                                    @foreach ($vaults as $vault)
-                                        <option value="{{ $vault->id }}" {{ request('vault_id') == $vault->id ? 'selected' : '' }}>{{ $vault->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
 
                             <div class="col-md-3">
                                 <label for="type" class="form-label">نوع العملية</label>
@@ -53,6 +33,18 @@
                                     <option value="withdrawal" {{ request('type') == 'withdrawal' ? 'selected' : '' }}>سحب</option>
                                 </select>
                             </div>
+
+                            {{-- from date to date --}}
+
+                            <div class="col-md-3">
+                                <label for="from_date" class="form-label">من تاريخ</label>
+                                <input type="date" class="form-control" id="from_date" name="from_date" value="{{ request('from_date') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="to_date" class="form-label">إلى تاريخ</label>
+                                <input type="date" class="form-control" id="to_date" name="to_date" value="{{ request('to_date') }}">
+                            </div>
+
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-12">

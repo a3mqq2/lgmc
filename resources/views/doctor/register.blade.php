@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <title>دخول الأطباء | بوابة النظام</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="نقابة الأطباء الليبية - بوابة النظام" name="description" />
-    <meta content="نقابة الأطباء الليبية" name="author" />
+    <meta content="النقابة العامة للاطباء - ليبيا - بوابة النظام" name="description" />
+    <meta content="النقابة العامة للاطباء - ليبيا" name="author" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="assets/images/logo-primary.png">
     <!-- Layout config Js -->
@@ -13,6 +13,9 @@
     <!-- Bootstrap Css -->
     <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <!-- Icons Css -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <!-- App Css-->
     <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
@@ -381,13 +384,20 @@
                                                </div>
                                                <div class="row">
                                                 <div class="row mt-3" dir="rtl">
-                                                   <div class="col-md-6">
+                                                   {{-- <div class="col-md-6">
                                                        <a href="{{route('register', ['type' => 'libyan' ])}}">
                                                            <div class="card {{App\Enums\DoctorType::Libyan->badgeClass()}} text-light text-center p-3 d-flex justify-content-center align-items-center" style="height: 100px;">
                                                                <h5 class="text-center text-light">طبيب ليبي</h5>
                                                            </div>
                                                        </a>
-                                                   </div>
+                                                   </div> --}}
+                                                   <div class="col-md-12">
+                                                    <a href="{{route('register', ['type' => 'libyan' ])}}">
+                                                        <div class="card {{App\Enums\DoctorType::Libyan->badgeClass()}} text-light text-center p-3 d-flex justify-content-center align-items-center" style="height: 100px;">
+                                                            <h5 class="text-center text-light">طبيب ليبي</h5>
+                                                        </div>
+                                                    </a>
+                                                </div> 
                                                    <div class="col-md-6">
                                                        <a href="{{route('register', ['type' => 'palestinian' ])}}">
                                                            <div class="card {{App\Enums\DoctorType::Palestinian->badgeClass()}} text-light text-center p-3 d-flex justify-content-center align-items-center" style="height: 100px;">
@@ -402,13 +412,14 @@
                                                            </div>
                                                        </a>
                                                    </div>
-                                                   <div class="col-md-6">
+                                              
+                                                   {{-- <div class="col-md-6">
                                                        <a href="{{route('register', ['type' => 'visitor' ])}}">
                                                            <div class="card  {{App\Enums\DoctorType::Visitor->badgeClass()}} text-light text-center p-3 d-flex justify-content-center align-items-center" style="height: 100px;">
                                                                <h5 class="text-center text-light">طبيب زائر</h5>
                                                            </div>
                                                        </a>
-                                                   </div>
+                                                   </div> --}}
                                                </div>
                                              </div>
 
@@ -470,7 +481,7 @@
                                                                         {{ old('country_id') == $country->id ? 'selected' : '' }}
                                                                         @if(request('type') == "libyan" && $country->id == 1) selected @endif
                                                                         @if(request('type') == "palestinian" && $country->id == 2) selected @endif>
-                                                                        {{ $country->name }}
+                                                                        {{ $country->nationality_name_ar }}
                                                                     </option>
                                                                 @endif
                                                             @endforeach
@@ -516,10 +527,7 @@
                                                         </div>
                                                         @else 
                                                         @if (request('type') != "visitor" && request('type') != "foreign")
-                                                        <div class="col-md-6 mt-2">
-                                                            <label for=""> تاريخ الميلاد </label>
-                                                            <input type="date" required name="date_of_birth" value="{{old('date_of_birth')}}" id="" class="form-control">
-                                                        </div>
+                                                        
                                                         @endif
                                                         @endif
                                                         @if (request('type') != "visitor" && request('type') != "foreign")
@@ -606,7 +614,7 @@
                                                                 <select name="country_graduation_id" id="" class="form-control select2">
                                                                     <option value="">حدد دولة التخرج </option>
                                                                     @foreach ($countries as $country)
-                                                                        <option value="{{$country->id}}" {{old('country_graduation_id') == $country->id ? "selected" : ""}}>{{$country->name}}</option>
+                                                                        <option value="{{$country->id}}" {{old('country_graduation_id') == $country->id ? "selected" : ""}}>{{$country->nationality_name_ar}}</option>
                                                                     @endforeach
                                                                 </select>
                                                             </div>
@@ -838,7 +846,7 @@
                     <div class="col-lg-12">
                         <div class="text-center">
                             <p class="mb-0">&copy;
-                                <script>document.write(new Date().getFullYear())</script> نقابة الأطباء الليبية. جميع الحقوق محفوظة.
+                                <script>document.write(new Date().getFullYear())</script> النقابة العامة للاطباء - ليبيا. جميع الحقوق محفوظة.
                             </p>
                         </div>
                     </div>

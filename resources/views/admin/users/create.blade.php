@@ -217,7 +217,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <button type="submit" class="btn btn-primary mt-3">إنشاء</button>
                 </form>
             </div>
@@ -227,7 +226,6 @@
 @endsection
 
 @section('scripts')
-<!-- <script src="PATH/TO/selectize.min.js"></script> -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         $('select').selectize();

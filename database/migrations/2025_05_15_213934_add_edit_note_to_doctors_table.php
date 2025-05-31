@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('licences', function (Blueprint $table) {
-            $table->foreignId('medical_facility_id')->nullable()->constrained();
+        Schema::table('doctors', function (Blueprint $table) {
+            $table->text('edit_note')->nullable();
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('licences', function (Blueprint $table) {
-            //
+        Schema::table('doctors', function (Blueprint $table) {
+            $table->dropColumn('edit_note');
         });
     }
 };

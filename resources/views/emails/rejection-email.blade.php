@@ -61,7 +61,7 @@
             <a href="mailto:support@example.com">support@example.com</a>
         </p>
 
-        <p class="footer">© {{ date('Y') }} جميع الحقوق محفوظة - نقابة الأطباء الليبية</p>
+        <p class="footer">© {{ date('Y') }} جميع الحقوق محفوظة - النقابة العامة للاطباء - ليبيا</p>
     </div>
 </body>
 </html>

@@ -112,10 +112,9 @@
     <div class="collapse menu-dropdown" id="visitor">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'pending']) }}" class="nav-link">طلبات الموقع </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'init_approve']) }}" class="nav-link">   موافقة مبدئية  </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'under_approve']) }}" class="nav-link">طلبات الموقع </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'active']) }}" class="nav-link">الاطباء المفعليين</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء الغير مفعليينم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء منتهي اشتراكهم</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'banned']) }}" class="nav-link">الاطباء الموقوفين</a>
 
             </li>
@@ -136,10 +135,9 @@
     <div class="collapse menu-dropdown" id="palestinian">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'pending']) }}" class="nav-link">طلبات الموقع </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'init_approve']) }}" class="nav-link">   موافقة مبدئية للاطباء </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'under_approve']) }}" class="nav-link">طلبات الموقع </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'active']) }}" class="nav-link">الاطباء المفعليين</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء المنتهية صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء المنتهية اشتراكاتهم</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'banned']) }}" class="nav-link">الاطباء الموقوفين</a>
 
             </li>
@@ -162,8 +160,7 @@
     <div class="collapse menu-dropdown" id="doctors">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'pending']) }}" class="nav-link">طلبات الموقع </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'init_approve']) }}" class="nav-link">  موافقة مبدئية للاطباء </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'under_approve']) }}" class="nav-link">طلبات الموقع </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'active']) }}" class="nav-link">الاطباء المفعليين</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء المنتهية صلاحيتهم</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'banned']) }}" class="nav-link">الاطباء الموقوفين</a>
@@ -182,8 +179,6 @@
 
 {{-- MEDICAL FACILITIES --}}
 
-@if(auth()->user()->permissions()->where('name', 'manage-medical-facilities')->count())
-
 <li class="nav-item">
     <a class="nav-link menu-link" data-bs-target="#medical-facility" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-hospital"></i>
@@ -198,64 +193,7 @@
         </ul>
     </div>
 </li>
-@endif
 
-
-{{-- MEDICAL LICENSES (تراخيص المنشآت الطبية) --}}
-
-
-@if(auth()->user()->permissions()->where('name', 'manage-medical-licenses')->count())
-
-
-@php
-$medical_license_under_approve_branch = App\Models\Licence::whereHasMorph('licensable', App\Models\MedicalFacility::class)->where('status', 'under_approve_branch')->count();
-
-
-    $medical_license_under_approve_admin = App\Models\Licence::whereHasMorph('licensable', App\Models\MedicalFacility::class)->where('status', 'under_approve_admin')->count();
-
-
-
-    $medical_license_under_payment = App\Models\Licence::whereHasMorph('licensable', App\Models\MedicalFacility::class)->where('status', 'under_payment')->count();
-
-
-    $medical_license_revoked = App\Models\Licence::whereHasMorph('licensable', App\Models\MedicalFacility::class)->where('status', 'revoked')->count();
-
-
-
-
-
-    $medical_license_expired = App\Models\Licence::whereHasMorph('licensable', App\Models\MedicalFacility::class)->where('status', 'expired')->count();
-
-
-
-    $medical_license_active = App\Models\Licence::whereHasMorph('licensable', App\Models\MedicalFacility::class)->where('status', 'active')->count();
-
-
-
-
-@endphp
-<li class="nav-item">
-<a class="nav-link menu-link" data-bs-target="#licences_facilities" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-    <i class="fa-solid fa-house-medical"></i> <span data-key="t-layouts">     تراخيص المنشآت الطبية  </span>
-</a>
-<div class="collapse menu-dropdown" id="licences_facilities">
-    <ul class="nav nav-sm flex-column">
-        <li class="nav-item">
-            <a href="{{route('admin.licences.create', ['type' => "facilities"])}}" class="nav-link" data-key="t-horizontal">    اضافه  اذن مزاولة      </a>
-            {{-- <a href="{{route(get_area_name().'.licences.index', ['type' => "facilities", "status" => "under_approve_branch"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الفرع  <br> <span class="badge badge-dark bg-dark">{{$medical_license_under_approve_branch}}</span>    </a> --}}
-            <a href="{{route(get_area_name().'.licences.index', ['type' => "facilities", "status" => "under_approve_admin"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد موافقة الادارة     <br> <span class="badge badge-dark bg-dark">{{$medical_license_under_approve_admin}}</span>     </a>
-            <a href="{{route(get_area_name().'.licences.index', ['type' => "facilities", "status" => "under_payment"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - قيد المراجعة المالية    <br> <span class="badge badge-dark bg-dark">{{$medical_license_under_payment}}</span>  </a>
-            <a href="{{route(get_area_name().'.licences.index', ['type' => "facilities", "status" => "revoked"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - المتوقفه     <br> <span class="badge badge-dark bg-dark">{{$medical_license_revoked}}</span> </a>
-            <a href="{{route(get_area_name().'.licences.index', ['type' => "facilities", "status" => "expired"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - المنتهي صلاحيتها     <br> <span class="badge badge-dark bg-dark">{{$medical_license_expired}}</span> </a>
-            <a href="{{route(get_area_name().'.licences.index', ['type' => "facilities", "status" => "active"])}}" class="nav-link" data-key="t-horizontal">    اذونات المزاولة - السارية      <br> <span class="badge badge-dark bg-dark">{{$medical_license_active}}</span> </a>
-            <a href="{{route(get_area_name().'.licences.index', ['type' => "facilities"])}}" class="nav-link" data-key="t-horizontal">  عرض جميع  اذونات المزاولة      </a>
-        </li>
-    </ul>
-</div>
-</li>
-
-
-@endif
 
 {{-- BRANCHES (managing branches & reports) --}}
 @if(auth()->user()->permissions()->where('name','manage-branches')->count())

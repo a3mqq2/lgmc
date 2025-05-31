@@ -97,7 +97,13 @@ class DoctorTransferController extends Controller
             return redirect()->route(get_area_name().'.doctor-transfers.index')->with('error', 'لا يمكن تعديل الطلب بعد الموافقة أو الرفض.');
         }
 
-        return view('user.doctor_transfers.edit', compact('doctorTransfer'));
+        $doctors = Doctor::where('branch_id', auth()->user()->branch_id)
+            ->select('id', 'name')
+            ->get();
+
+            $branches = Branch::where('id', '!=', auth()->user()->branch_id)->get();
+
+        return view('user.doctor_transfers.edit', compact('doctorTransfer','doctors','branches'));
     }
 
     /**

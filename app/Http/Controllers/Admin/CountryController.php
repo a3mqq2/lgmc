@@ -41,7 +41,7 @@ class CountryController extends Controller
 
         Log::create([
             'user_id' => auth()->id(),
-            'details' => "تم إنشاء دولة جديدة: {$country->name}",
+            'details' => "تم إنشاء دولة جديدة: {$country->nationality_name_ar}",
             'loggable_id' => $country->id,
             'loggable_type' => Country::class,
             'action' => 'create_country',
@@ -75,7 +75,7 @@ class CountryController extends Controller
 
         Log::create([
             'user_id' => auth()->id(),
-            'details' => "تم تعديل بيانات الدولة: {$country->name}",
+            'details' => "تم تعديل بيانات الدولة: {$country->nationality_name_ar}",
             'loggable_id' => $country->id,
             'loggable_type' => Country::class,
             'action' => 'update_country',
@@ -91,7 +91,7 @@ class CountryController extends Controller
     public function destroy($id)
     {
         $country = Country::findOrFail($id);
-        $countryName = $country->name;
+        $countryName = $country->nationality_name_ar;
         $countryId = $country->id;
         $country->delete();
 

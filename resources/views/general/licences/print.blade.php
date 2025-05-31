@@ -28,25 +28,25 @@
 
         $file_type = "";
         if($licence->licensable_type == "App\Models\Doctor") {
-            if($licence->licensable->type->value == \App\Enums\DoctorType::Libyan->value)
+            if($licence->licensable->type == \App\Enums\DoctorType::Libyan->value)
             {
                 $file_type = "libyan";
             }
 
 
-            if($licence->licensable->type->value == \App\Enums\DoctorType::Foreign->value)
+            if($licence->licensable->type == \App\Enums\DoctorType::Foreign->value)
             {
                 $file_type = "foreign";
             }
 
 
-            if($licence->licensable->type->value == \App\Enums\DoctorType::Visitor->value)
+            if($licence->licensable->type == \App\Enums\DoctorType::Visitor->value)
             {
                 $file_type = "visitor";
             }
 
 
-            if($licence->licensable->type->value == \App\Enums\DoctorType::Palestinian->value)
+            if($licence->licensable->type == \App\Enums\DoctorType::Palestinian->value)
             {
                 $file_type = "foreign";
             }
@@ -86,7 +86,7 @@
                 </div>
 
                 <div id="id"
-                    @if ($licence->licensable->type->value == \App\Enums\DoctorType::Foreign->value)
+                    @if ($licence->licensable->type == \App\Enums\DoctorType::Foreign->value)
 
                     style="top:233px!important;left:-67px!important"
                         
@@ -153,7 +153,7 @@
 
                 <div class="work-box card  p-3">
                     <h4 class="font-weight-bold">
-                        <strong>{{$licence->licensable->rank_name}}
+                        <strong>{{$licence->licensable->doctor_rank->name}}
                             @if ($licence->licensable->specialty_1_id)
                                 -   {{$licence->licensable->specialization}}  
                             @endif

@@ -4,9 +4,14 @@
     <meta charset="utf-8" />
     <title>رفع المستندات | بوابة النظام</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="نقابة الأطباء الليبية - بوابة النظام" name="description" />
-    <meta content="نقابة الأطباء الليبية" name="author" />
+    <meta content="النقابة العامة للاطباء - ليبيا - بوابة النظام" name="description" />
+    <meta content="النقابة العامة للاطباء - ليبيا" name="author" />
     <!-- App favicon -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    
     <link rel="shortcut icon" href="assets/images/logo-primary.png">
     <!-- Layout config Js -->
     <script src="assets/js/layout.js"></script>
@@ -92,7 +97,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="text-center">
-                            <p class="mb-0">&copy; <script>document.write(new Date().getFullYear())</script> نقابة الأطباء الليبية. جميع الحقوق محفوظة.</p>
+                            <p class="mb-0">&copy; <script>document.write(new Date().getFullYear())</script> النقابة العامة للاطباء - ليبيا. جميع الحقوق محفوظة.</p>
                         </div>
                     </div>
                 </div>

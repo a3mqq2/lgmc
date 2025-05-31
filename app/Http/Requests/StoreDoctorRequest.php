@@ -26,26 +26,25 @@ class StoreDoctorRequest extends FormRequest
             'name_en' => 'nullable|string|max:255',
             'national_number' => [
                 'required_if:type,libyan',
-                'digits:12',
                 'unique:doctors,national_number',
-                function ($attribute, $value, $fail) {
-                    $gender = $this->input('gender');
-                    $first_digit = substr($value, 0, 1);
-                    if ($gender == 'male' && $first_digit != '1') {
-                        $fail('الرقم الوطني للذكور يجب أن يبدأ بالرقم 1.');
-                    } elseif ($gender == 'female' && $first_digit != '2') {
-                        $fail('الرقم الوطني للإناث يجب أن يبدأ بالرقم 2.');
-                    }
-                },
+                // function ($attribute, $value, $fail) {
+                //     $gender = $this->input('gender');
+                //     $first_digit = substr($value, 0, 1);
+                //     if ($gender == 'male' && $first_digit != '1') {
+                //         $fail('الرقم الوطني للذكور يجب أن يبدأ بالرقم 1.');
+                //     } elseif ($gender == 'female' && $first_digit != '2') {
+                //         $fail('الرقم الوطني للإناث يجب أن يبدأ بالرقم 2.');
+                //     }
+                // },
             ],
             'mother_name' => 'nullable|string|max:255',
             'country_id' => 'required_if:type,foreign|required_if:type,visitor',
-            'date_of_birth' => 'nullable|date',
+            'date_of_birth' => 'nullable',
             'doctor_number' => 'nullable|string|max:255',
             'day' => 'nullable|numeric|min:1|max:31',
             'month' => 'nullable|numeric|min:1|max:12',
             'birth_year' => 'nullable|numeric|min:1900|max:2100',
-            'email' => "nullable|email:rfc,dns,spoof|unique:doctors,email",
+            'email' => "nullable|unique:doctors,email",
             'marital_status' => 'nullable|string|in:single,married',
             'gender' => 'nullable|string|in:male,female',
             'passport_number' => 'nullable|string|max:20',
@@ -55,11 +54,13 @@ class StoreDoctorRequest extends FormRequest
             'phone_2' => ['nullable'],
             'address' => 'nullable|string|max:255',
             'hand_graduation_id' => 'nullable|numeric',
-            'internership_complete' => 'nullable|date',
+            'internership_complete' => 'nullable',
             'academic_degree_id' => 'nullable|numeric',
             'certificate_of_excellence_date' => 'nullable|string',
-            'doctor_rank_id' => 'required|numeric',
+            'doctor_rank_id' => 'nullable|numeric',
             'medical_facilities' => 'nullable|array',
+            'academic_degree_univeristy_id' => "required_if:type,libyan|nullable|numeric",
+            'institution' => "nullable",
             'specialty_1_id' => 'nullable',
             'specialty_2' => 'nullable',
             'ex_medical_facilities' => 'nullable|array',
@@ -77,29 +78,6 @@ class StoreDoctorRequest extends FormRequest
             'visit_from' => 'nullable',
             'visit_to' => 'nullable',
             // 'g-recaptcha-response' => ($routeName === 'register-store' && !$isLocalEnv) ? 'required|captcha' : '',
-
-            
-            // قواعد التحقق المخصصة للتحقق من البلاك ليست
-            'blacklist_check' => [
-                function ($attribute, $value, $fail) {
-                    $name = $this->input('name');
-                    $number_phone = $this->input('phone');
-                    $passport_number = $this->input('passport_number');
-                    $id_number = $this->input('national_number');
-
-                    $blacklisted = Blacklist::where(function ($query) use ($name, $number_phone, $passport_number, $id_number) {
-                        $query->where('name', $name)
-                              ->orWhere('number_phone', $number_phone)
-                              ->orWhere('passport_number', $passport_number)
-                              ->orWhere('id_number', $id_number);
-                    })->exists();
-
-
-                    if ($blacklisted) {
-                        $fail('هذا الطبيب موجود في البلاك ليست ولا يمكن إضافته.');
-                    }
-                }
-            ],
         ];
     }
 
@@ -164,7 +142,6 @@ class StoreDoctorRequest extends FormRequest
             'documents.required' => 'حقل المستندات مطلوب.',
             'type.required' => 'حقل نوع الطبيب مطلوب.',
             'type.in' => 'حقل نوع الطبيب غير صالح.',
-            'blacklist_check' => 'هذا الطبيب موجود في البلاك ليست ولا يمكن إضافته.',
             'password.required' => 'حقل كلمة المرور مطلوب.',
         ];
     }

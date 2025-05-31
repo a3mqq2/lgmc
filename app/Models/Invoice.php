@@ -26,8 +26,6 @@ class Invoice extends Model
      */
     protected $fillable = [
         'invoice_number',
-        'invoiceable_type',
-        'invoiceable_id',
         'description',
         'licence_id',
         'pricing_id',
@@ -41,7 +39,7 @@ class Invoice extends Model
         'relief_by',
         'relief_reason',
         'branch_id',
-        'transaction_type_id',
+        'doctor_id',
     ];
 
     /**
@@ -173,5 +171,10 @@ class Invoice extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class);
     }
 }

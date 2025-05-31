@@ -1,11 +1,14 @@
 <?php
 
+use App\Models\Country;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WebsiteController;
+use Stichoza\GoogleTranslate\GoogleTranslate;
 use App\Http\Controllers\Common\AuthController;
-use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +67,17 @@ Route::middleware('auth')->group(function() {
 // send testing email
 Route::get('/send-email', function() {
     Mail::to('aishaaltery89@gmail.com', 'Test')->send(new \App\Mail\TestingEmail());
+});
+
+
+Route::get('/set-uni', function() {
+
+    $country = Country::first();
+    $response = Http::get('http://universities.hipolabs.com/search?country=' . $country->en_name);
+
+
+     $universities = $response->json();
+     return $universities;
 });
 
 require __DIR__.'/admin.php';

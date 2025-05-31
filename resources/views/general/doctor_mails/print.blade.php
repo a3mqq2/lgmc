@@ -44,7 +44,7 @@
                 <tbody>
                     @php
                         $index = 1;
-                        $unit = match($doctorMail->doctor->type) {
+                        $unit = match($doctorMail->doctor->type->value) {
                             'libyan' => 50,
                             'foreign' => 100,
                             default => 0,

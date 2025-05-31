@@ -28,25 +28,25 @@
 
         $file_type = "";
         if($licence->licensable_type == "App\Models\Doctor") {
-            if($licence->licensable->type->value == \App\Enums\DoctorType::Libyan->value)
+            if($licence->licensable->type == \App\Enums\DoctorType::Libyan->value)
             {
                 $file_type = "libyan";
             }
 
 
-            if($licence->licensable->type->value == \App\Enums\DoctorType::Foreign->value)
+            if($licence->licensable->type == \App\Enums\DoctorType::Foreign->value)
             {
                 $file_type = "foreign";
             }
 
 
-            if($licence->licensable->type->value == \App\Enums\DoctorType::Visitor->value)
+            if($licence->licensable->type == \App\Enums\DoctorType::Visitor->value)
             {
                 $file_type = "visitor";
             }
 
 
-            if($licence->licensable->type->value == \App\Enums\DoctorType::Palestinian->value)
+            if($licence->licensable->type == \App\Enums\DoctorType::Palestinian->value)
             {
                 $file_type = "foreign";
             }
@@ -64,6 +64,8 @@
     <body class="A4">
         <section class="sheet zima bill {{$file_type}} ">
 
+
+            <div class="card-permissions"></div>
 
             <div class="issued-licence-date text-muted">
                 {{-- humman readable --}}
@@ -146,7 +148,7 @@
               padding: 5px !important;
               font-size: 2px;">
                   <h6 class="font-weight-bold">
-                     <strong>{{$licence->licensable->country->name}}</strong>
+                     <strong>{{$licence->licensable->country->nationality_name_ar}}</strong>
                   </h6>
             </div>
             
@@ -197,7 +199,7 @@
 
                 <div class="work-box card  p-3">
                     <h4 class="font-weight-bold">
-                        <strong>{{$licence->licensable->rank_name}}
+                        <strong>{{$licence->licensable->doctor_rank->name}}
                             @if ($licence->licensable->specialty_1_id)
                                 -   {{$licence->licensable->specialization}}  
                             @endif

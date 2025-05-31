@@ -17,35 +17,14 @@
         <div class="card-body">
             <form method="GET" action="{{ route(get_area_name().'.invoices.index') }}">
                 <div class="row">
-                    <div class="col-md-3">
-                        <label for="invoiceable">نوع الفاتورة</label>
-                        <select name="invoiceable" id="invoiceable" class="form-control">
-                            <option value="">الكل</option>
-                            <option value="Doctor" {{ request('invoiceable') == 'Doctor' ? 'selected' : '' }}>طبيب</option>
-                            <option value="MedicalFacility" {{ request('invoiceable') == 'MedicalFacility' ? 'selected' : '' }}>منشأة طبية</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label for="status">حالة الدفع</label>
-                        <select name="status" class="form-control">
-                            <option value="">الكل</option>
-                            <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }}>مدفوعة</option>
-                            <option value="unpaid" {{ request('status') == 'unpaid' ? 'selected' : '' }}>غير مدفوعة</option>
-                            <option value="partial" {{ request('status') == 'partial' ? 'selected' : '' }}>مدفوعة جزئيًا</option>
-                        </select>
-                    </div>
-                   
-                    <div class="col-md-3">
-                        <label for="license_id">رقم الإذن</label>
-                        <input type="text" name="license_id" id="license_id" value="{{ request('license_id') }}" class="form-control" placeholder="معرف رقم الإذن">
-                    </div>
-                </div>
-
-                <div class="row mt-3">
                     <div class="col-md-6">
-                        <label for="search">بحث</label>
-                        <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control" placeholder="رقم الفاتورة أو الوصف">
+                        <label for="search">رقم الفاتورة</label>
+                        <input type="text" name="search" id="search" value="{{ request('search') }}" class="form-control" placeholder="ادخل رقم الفاتورة كاملا او جزء منها للبحث">
                     </div>
+
+
+                    <input type="hidden" name="status" value="{{request('status')}}">
+
                     <div class="col-md-6 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary me-2">  بحث</button>
                         <a href="{{ route(get_area_name().'.invoices.index') }}" class="btn btn-secondary">  إعادة تعيين</a>
@@ -70,7 +49,6 @@
                             <th>رقم الإذن</th>
                             <th>المبلغ</th>
                             <th>الحالة</th>
-                            <th>سبب الاعفاء</th>
                             <th>تاريخ الإنشاء</th>
                             <th>الإجراءات</th>
                         </tr>
@@ -79,7 +57,7 @@
                         @forelse($invoices as $invoice)
                             <tr>
                                 <td>{{ $invoice->id }}</td>
-                                <td>{{ $invoice->invoice_number }}</td>
+                                <td>{{ $invoice->id }}</td>
                                 <td>{{ $invoice->invoiceable?->name }}</td>
                                 <td>{{ $invoice->description }}</td>
                                 <td>{{ $invoice->user?->name ?? '-' }}</td>
@@ -90,7 +68,6 @@
                                         {{$invoice->status->label()}}
                                    </span>
                                 </td>
-                                <td>{{ $invoice->relief_reason??'-' }}</td>
                                 <td>{{ $invoice->created_at->format('Y-m-d') }}</td>
                                 <td>
                                     

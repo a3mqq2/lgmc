@@ -43,9 +43,9 @@ class DoctorMailController extends Controller
             /* grand_total مُسجَّل مسبقًا؟ */
             if ($mail->grand_total > 0) continue;
 
-            $type = $mail->doctor->type instanceof DoctorType
+            $type = $mail->doctor->type->value instanceof DoctorType
                     ? $mail->doctor->type->value
-                    : (string) $mail->doctor->type;
+                    : (string) $mail->doctor->type->value;
 
             /* جلب أو كاش السعر */
             if (! isset($unitCash[$type])) {
@@ -114,9 +114,9 @@ class DoctorMailController extends Controller
         DB::beginTransaction();
         try {
             $doctor = Doctor::findOrFail($data['doctor_id']);
-            $typeKey = $doctor->type instanceof DoctorType
+            $typeKey = $doctor->type->value instanceof DoctorType
                      ? $doctor->type->value
-                     : (string) $doctor->type;
+                     : (string) $doctor->type->value;
             $unitMap   = ['libyan'=>85,'palestinian'=>86,'foreign'=>87];
             $unitPrice = $unitMap[$typeKey] ?? 0;
             $unitPrice = $unitPrice

@@ -10,8 +10,10 @@ class Country extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
+        'country_name_ar',
         'en_name',
+        'location',
+        'country_id',
     ];
 
     // Enable timestamps

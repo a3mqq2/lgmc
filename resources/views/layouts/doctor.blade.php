@@ -11,6 +11,11 @@
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
     <!-- App favicon -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    
     <link rel="shortcut icon" href="{{asset('assets/images/favicon.ico')}}">
 
     <!-- swiper css -->
@@ -31,6 +36,8 @@
     {{-- fontawesome import --}}
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
+        @yield('styles')
+
       {{-- import vite --}}
         @vite(['resources/js/app.js'])
     
@@ -38,7 +45,19 @@
 
       <style>
          /* Extended Background Colors */
-      
+      /* اجعل كلّ صناديق التنبيه فوق أى محتوى تالٍ */
+            .status-note,
+            .alert{          /* فى حال استعملت alert-bootstrap العادى */
+                position: relative;
+                z-index: 1055;        /* أعلى من أى عنصر بدون z-index */
+            }
+
+            /* أو بدلاً من ذلك قلِّل z-index للهيدر */
+            .card-fancy .card-header{
+                position: relative;
+                z-index: 1;           /* أى رقم أقلّ من 1055 كافٍ */
+            }
+
          .bg-secondary {
              background-color: #6c757d !important; /* Gray */
          }
@@ -351,8 +370,15 @@
  }
  
  
+
+
  </style>
- 
+ <style>
+    .selectize-dropdown {
+        z-index: 2000 !important;
+    }
+    </style>
+    
 </head>
 
 
@@ -421,17 +447,15 @@
                                     <i class="ri-airplay-fill d-inline-block d-m"></i> <span class=" d-md-inline-block">بياناتي الآساسية</span>
                                 </a>
                             </li>
+                            
+                            @if (auth('doctor')->user()->membership_status->value == "active")
+                            @if(in_array(auth('doctor')->user()->doctor_rank_id, [3,4,5,6]))
                             <li class="nav-item">
-                               <a class="nav-link fs-14"  href="{{route('doctor.facilities')}}" role="tab">
-                                   <i class="fa fa-hospital d-inline-block d-m"></i> <span class="d-md-inline-block">منشآتي الطبية</span>
-                               </a>
-                           </li>
-                           
-                            <li class="nav-item">
-                                <a class="nav-link fs-14 {{Route::currentRouteName() == "doctor.licences" ? "active" : "" }} " href="{{route('doctor.licences')}}"  href="#licences" role="tab">
-                                    <i class="ri-list-unordered d-inline-block d-m"></i> <span class=" d-md-inline-block">أذونات المزاولة</span>
-                                </a>t
+                                <a class="nav-link fs-14  {{Route::currentRouteName() == "doctor.my-facility" || Route::currentRouteName() == "doctor.my-facility.create" ? "active" : "" }}  "  href="{{route('doctor.my-facility')}}" role="tab">
+                                    <i class="fa fa-hospital d-inline-block d-m"></i> <span class="d-md-inline-block"> منشأتي الطبية </span>
+                                </a>
                             </li>
+                            @endif
                             <li class="nav-item">
                                 <a class="nav-link fs-14"   href="{{route('doctor.doctor-mails')}}" >
                                     <i class="ri-folder-4-line d-inline-block d-m"></i> <span class=" d-md-inline-block">اوراق الخارج</span>
@@ -460,6 +484,7 @@
                                    </a>
                                </li>
             
+                            @endif
             
                         </ul>
                     </div>
@@ -543,16 +568,44 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.5/js/standalone/selectize.min.js" integrity="sha512-JFjt3Gb92wFay5Pu6b0UCH9JIOkOGEfjIi7yykNWUwj55DBBp79VIJ9EPUzNimZ6FvX41jlTHpWFUQjog8P/sw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
 <script>
-
-    $(".selectize").selectize({
-        dir: "rtl",
-        width: "100%",
-        placeholder: "اختر",
-        allowClear: true,
+    document.addEventListener('DOMContentLoaded', () => {
+      // find all forms on the page
+      document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', e => {
+          // prevent double submits
+          if (form.dataset.submitted) {
+            e.preventDefault();
+            return;
+          }
+          form.dataset.submitted = 'true';
+  
+          // find the first submit button inside this form
+          const btn = form.querySelector('[type="submit"]');
+          if (btn) {
+            // disable it
+            btn.disabled = true;
+            // replace its contents with spinner + text
+            btn.innerHTML = `
+              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              يرجى الانتظار
+            `;
+          }
+        });
+      });
     });
-</script>
+  </script>
+  
+<script>
+    $(document).ready(function(){
+        $('select.selectize').selectize({
+            dir: 'rtl',
+            dropdownParent: 'body',
+            placeholder: 'اختر',
+            sortField: 'text'
+        });
+    });
+    </script>
         
 @yield('scripts')
 </body>

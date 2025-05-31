@@ -1,6 +1,6 @@
 @extends('layouts.' . get_area_name())
 
-@section('title', 'إنشاء تحويل خزينة جديد')
+@section('title', 'إنشاء تحويل حساب جديد')
 
 @section('content')
 <div class="row">
@@ -8,7 +8,7 @@
         <div class="card">
             <div class="card-header bg-primary text-light">
                 <h4 class="card-title">
-                    <i class="fa fa-exchange-alt"></i> إنشاء تحويل خزينة جديد
+                    <i class="fa fa-exchange-alt"></i> إنشاء تحويل حساب جديد
                 </h4>
             </div>
             <div class="card-body">
@@ -20,7 +20,7 @@
                         {{-- From Vault --}}
                         <div class="col-md-6">
                             <label for="from_vault_id" class="form-label">
-                                <i class="fa fa-arrow-left"></i> من الخزينة
+                                <i class="fa fa-arrow-left"></i> من الحساب
                             </label>
                             <select 
                                 name="from_vault_id" 
@@ -28,7 +28,7 @@
                                 class="form-control @error('from_vault_id') is-invalid @enderror"
                                 required
                             >
-                                <option value="">-- اختر الخزينة --</option>
+                                <option value="">-- اختر الحساب --</option>
                                 @foreach($from_vaults as $vault)
                                     <option 
                                         value="{{ $vault->id }}" 
@@ -46,7 +46,7 @@
                         {{-- To Vault --}}
                         <div class="col-md-6">
                             <label for="to_vault_id" class="form-label">
-                                <i class="fa fa-arrow-right"></i> إلى الخزينة
+                                <i class="fa fa-arrow-right"></i> إلى الحساب
                             </label>
                             <select 
                                 name="to_vault_id" 
@@ -54,7 +54,7 @@
                                 class="form-control @error('to_vault_id') is-invalid @enderror"
                                 required
                             >
-                                <option value="">-- اختر الخزينة --</option>
+                                <option value="">-- اختر الحساب --</option>
                                 @foreach($to_vaults as $vault)
                                     <option 
                                         value="{{ $vault->id }}" 

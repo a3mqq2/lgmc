@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <title>دخول الأطباء | بوابة النظام</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="نقابة الأطباء الليبية - بوابة النظام" name="description" />
-    <meta content="نقابة الأطباء الليبية" name="author" />
+    <meta content="النقابة العامة للاطباء - ليبيا - بوابة النظام" name="description" />
+    <meta content="النقابة العامة للاطباء - ليبيا" name="author" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="assets/images/logo-primary.png">
     <!-- Layout config Js -->
@@ -398,7 +398,7 @@
                                                             <option value="">حدد دوله من القائمة</option>
                                                             @foreach ($countries as $country)
                                                                   @if ($country->id != 1 && $country->id != 2)
-                                                                      <option value="{{$country->id}}" {{old('country_id') == $country->id ? "selected" : ""}}>{{$country->name}}</option>
+                                                                      <option value="{{$country->id}}" {{old('country_id') == $country->id ? "selected" : ""}}>{{$country->nationality_name_ar}}</option>
                                                                   @endif
                                                             @endforeach
                     
@@ -674,7 +674,7 @@
                     <div class="col-lg-12">
                         <div class="text-center">
                             <p class="mb-0">&copy;
-                                <script>document.write(new Date().getFullYear())</script> نقابة الأطباء الليبية. جميع الحقوق محفوظة.
+                                <script>document.write(new Date().getFullYear())</script> النقابة العامة للاطباء - ليبيا. جميع الحقوق محفوظة.
                             </p>
                         </div>
                     </div>

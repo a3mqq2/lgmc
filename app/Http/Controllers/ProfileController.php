@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Log;
+use App\Models\FileType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Log;
+use App\Http\Requests\UpdateDoctorRequest;
+use App\Models\DoctorFile;
 
 class ProfileController extends Controller
 {
@@ -46,4 +49,37 @@ class ProfileController extends Controller
 
         return redirect()->to(url()->previous() . '?change-password=1')->with('success', 'تم تغيير كلمة المرور بنجاح');
     }
+
+
+    public function update(UpdateDoctorRequest $request)
+    {
+        $doctor = auth('doctor')->user();
+    
+        $doctor->update($request->validated());
+    
+
+        $doctor->membership_status = "under_approve";
+        $doctor->save();
+
+        if ($request->hasFile('reupload_files')) {
+            $reuploads = $request->file('reupload_files');
+    
+            foreach ($reuploads as $fileTypeId => $file) {
+                if (! $file) {
+                    continue;
+                }
+    
+                $path = $file->store("documents/{$doctor->id}", 'public');
+                $doctorFile = DoctorFile::find($fileTypeId);
+                $doctorFile->file_path = $path;
+                $doctorFile->file_name = $file->getClientOriginalName();
+                $doctorFile->save();
+            }
+        }
+    
+        return redirect()
+            ->route('doctor.dashboard')
+            ->with('success', 'تم تحديث البيانات والمستندات بنجاح');
+    }
+    
 }

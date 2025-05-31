@@ -42,6 +42,8 @@ return [
     |
     */
 
+    'url' => 'https://lgmc.org.ly/doc-login',
+
     'debug' => (bool) env('APP_DEBUG', false),
 
     /*

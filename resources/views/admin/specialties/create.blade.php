@@ -25,21 +25,6 @@
                             @enderror
                         </div>
 
-                     
-                        <div class="mb-3">
-                            <label for="specialty_id" class="form-label">التخصص الفرعي لـ</label>
-                            <select class="form-select @error('specialty_id') is-invalid @enderror" id="specialty_id" name="specialty_id">
-                                <option value="">لا يوجد</option>
-                                @foreach ($specialties as $specialty)
-                                    <option value="{{$specialty->id}}">{{$specialty->name}}</option>
-                                @endforeach
-                            </select>
-                            @error('specialty_id')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
 
                         <button type="submit" class="btn btn-primary">إنشاء</button>
                     </form>

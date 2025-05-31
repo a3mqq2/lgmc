@@ -11,6 +11,7 @@ use App\Http\Controllers\Common\DoctorController;
 use App\Http\Controllers\Common\ReportController;
 use App\Http\Controllers\Common\TicketController;
 use App\Http\Controllers\Admin\FileTypeController;
+use App\Http\Controllers\Common\InvoiceController;
 use App\Http\Controllers\Common\LicenceController;
 use App\Http\Controllers\DoctorTransferController;
 use App\Http\Controllers\Admin\SpecialtyController;
@@ -34,21 +35,14 @@ Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations'
     Route::post('/doctors/{doctor}/ban', [DoctorController::class, 'ban'])->name('doctors.toggle-ban');
     Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->name('doctors.print');
     Route::get('/doctors/{doctor}/print-id', [DoctorController::class, 'print_id'])->name('doctors.print-id');
-    Route::post('/doctors/{doctor}/approve', [DoctorController::class, 'approve'])->name('doctors.approve');
-    Route::post('/doctors/{doctor}/reject', [DoctorController::class, 'reject'])->name('doctors.reject');
+    Route::post('/doctors/{doctor}/change-status', [DoctorController::class, 'change_status'])->name('doctors.change-status');
+    // Route::post('/doctors/{doctor}/reject', [DoctorController::class, 'reject'])->name('doctors.reject');
     Route::resource('doctors', DoctorController::class);
     Route::resource('doctors.files', DoctorFileController::class)->shallow();
     Route::delete('medical-facility-files/{file}/destroy', [MedicalFacilityController::class, 'file_destroy'])->name('medical-facility-files.destroy');
     Route::resource('medical-facilities', MedicalFacilityController::class);
     Route::resource('doctors.files', DoctorFileController::class)->shallow();
-    Route::patch('/licences/{licence}/approve', [LicenceController::class, 'approve'])->name('licences.approve');
-    Route::patch('/licences/{licence}/payment', [LicenceController::class, 'payment'])->name('licences.payment');
-    Route::get('/licences/{licence}/print', [LicenceController::class, 'print'])->name('licences.print');
-    Route::resource('licences', LicenceController::class);
-    Route::get('/doctor-requests/{doctor_request}/print', [DoctorRequestController::class, 'print'])->name('doctor-requests.print');
-    Route::put('/doctor-requests/{doctor_request}/approve', [DoctorRequestController::class, 'approve'])->name('doctor-requests.approve');
-    Route::put('/doctor-requests/{doctor_request}/reject', [DoctorRequestController::class, 'reject'])->name('doctor-requests.reject');
-    Route::put('/doctor-requests/{doctor_request}/done', [DoctorRequestController::class, 'done'])->name('doctor-requests.done');
+
     Route::resource('doctor-requests', DoctorRequestController::class);
     Route::post('/tickets/{ticket}/reply', [TicketController::class, 'reply'])->name('tickets.reply');
     Route::resource('tickets', TicketController::class);
@@ -68,15 +62,17 @@ Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations'
 
 
     // ============ SETTINGS ============ //
-    Route::resource('universities', UniversityController::class)->middleware('permission:branch-manager');
-    Route::resource('doctor_ranks', DoctorRankController::class)->middleware('permission:branch-manager');
-    Route::resource('academic-degrees', AcademicDegreeController::class)->middleware('permission:branch-manager');
-    Route::resource('countries', CountryController::class)->middleware('permission:branch-manager');
-    Route::resource('specialties', SpecialtyController::class)->middleware('permission:branch-manager');
-    Route::resource('file-types', FileTypeController::class)->middleware('permission:branch-manager');
-    Route::resource('medical-facility-types', MedicalFacilityTypeController::class)->middleware('permission:branch-manager');
+    Route::resource('universities', UniversityController::class);
+    Route::resource('doctor_ranks', DoctorRankController::class);
+    Route::resource('academic-degrees', AcademicDegreeController::class);
+    Route::resource('countries', CountryController::class);
+    Route::resource('specialties', SpecialtyController::class);
+    Route::resource('file-types', FileTypeController::class);
+    Route::resource('medical-facility-types', MedicalFacilityTypeController::class);
     // =========== SETTINGS ============= //
-
+    Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
+    Route::post('/invoices/{invoice}/received', [InvoiceController::class, 'received'])->name('invoices.received');
+    Route::get('/doctors/{doctor}/print-license', [DoctorController::class, 'print_license'])->name('doctors.print-license');
 
     // =========== DOCTOR MAILS ============= //
     Route::resource('doctor-mails', DoctorMailController::class);

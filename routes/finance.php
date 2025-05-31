@@ -18,6 +18,7 @@ Route::prefix('finance')->name('finance.')->middleware('auth', 'check.finance.pe
    Route::resource("vaults", VaultController::class)->middleware('permission:financial-administration');
     Route::resource("transaction-types", TransactionTypeController::class);
     Route::resource("transactions", TransactionController::class);
+    Route::post('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::post('/invoices/{invoice}/received', [InvoiceController::class, 'received'])->name('invoices.received');
     Route::post('invoices/{invoice}/relief', [InvoiceController::class, 'relief'])->name('invoices.relief');
     Route::get('/doctors/print-list', [DoctorController::class, 'printList'])->name('doctors.print_list');

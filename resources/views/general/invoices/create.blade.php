@@ -75,15 +75,6 @@
                         <label for="amount" class="form-label">قيمة الفاتورة</label>
                         <input type="number" step="0.01" name="amount" id="amount" class="form-control" required readonly>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">نوع الحركة</label>
-                        <select name="transaction_type_id" class="form-control select2">
-                            <option value="">حدد نوع الحركة</option>
-                            @foreach(App\Models\TransactionType::all() as $type)
-                                <option value="{{ $type->id }}">{{ $type->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
                 </div>
                 @endif
 

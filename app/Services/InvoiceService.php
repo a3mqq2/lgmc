@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
-use App\Enums\MembershipStatus;
-use App\Enums\PricingType;
+use Carbon\Carbon;
+use App\Models\Vault;
 use App\Models\Invoice;
 use App\Models\Licence;
-use App\Models\Vault;
+use App\Enums\PricingType;
+use App\Models\Transaction;
+use App\Enums\MembershipStatus;
 use Illuminate\Support\Facades\Auth;
 
 class InvoiceService
@@ -33,50 +35,79 @@ class InvoiceService
         $invoice->received_by = Auth::id();
         $invoice->save();
 
-      //   create transaction in the vault
 
-        $transaction_type_id = $invoice->transaction_type_id ? $invoice->transaction_type_id : null;
-        if($invoice->pricing)
+        
+        if($invoice->category == "registration")
         {
+            $invoice->doctor->membership_status = "active";
+            $invoice->doctor->membership_expiration_date = $invoice->doctor->type->value == "foreign" ?   Carbon::now()->addMonths(6) : Carbon::now()->addMonths(12);
+            $invoice->doctor->setSequentialIndex();
+            $invoice->doctor->makeCode();
+            $invoice->doctor->save();
 
-            
+
+            $vault->balance += $invoice->amount;
+            $vault->save();
+    
+
+            $transaction = new Transaction();
+            $transaction->amount = $invoice->amount;
+            $transaction->user_id = auth()->id();
+            $transaction->vault_id = $vault->id;
+            $transaction->type = "deposit";
+            $transaction->desc = " فاتورة عضوية طبيب جديد  " . $invoice->doctor->name . " رقم الفاتورة  " . $invoice->invoice_number;
+            $transaction->branch_id = auth()->user()->branch_id;
+            $transaction->balance = $vault->balance;
+            $transaction->save();
 
 
-            if($invoice->pricing->type == PricingType::Membership)
-            {
-                $this->runMembership($invoice);
-                $transaction_type_id = 1;
-            } else if($invoice->pricing->type == PricingType::License)
-            {
-                $transaction_type_id = 2;
-
-                if($invoice->licence && ($invoice->licence->status == "under_approve_admin" || $invoice->licence->status == "under_payment"))
-                {   
-                    $invoice->licence->status = "active";
-                    $invoice->licence->save();
-                }
-          
-            } else if($invoice->pricing->type == PricingType::Service)
-            {
-                $transaction_type_id = 4;
-            } else if($invoice->pricing->type == PricingType::Penalty)
-            {
-                $transaction_type_id = 4;
-            }
+            $licence = new Licence();
+            $licence->doctor_id = $invoice->doctor->id;
+            $licence->doctor_type = $invoice->doctor->type->value;
+            $licence->issued_date = now();
+            $licence->expiry_date = $invoice->doctor->type->value == "foreign" ? now()->addMonths(6) : now()->addMonths(12);
+            $licence->status = "active";
+            $licence->doctor_rank_id = $invoice->doctor->doctor_rank_id;
+            $licence->created_by = auth()->id();
+            $licence->amount = 0;
+            $licence->save();
         }
-      
 
-      $this->vaultService->incrementBalance($vault, $invoice->amount);
-      $this->vaultService->createTransaction([
-            'vault_id' => $vault->id,
-            'amount' => $invoice->amount,
-            'type' => 'deposit',
-            'transaction_type_id' => $transaction_type_id,
-            'desc' => ' دفع لقيمة الفاتورة '.$invoice->id . "وذلك عن : " . $invoice->description, 
-            'branch_id' => auth()->user()->branch_id,
-            'user_id' => Auth::id(),
-         ]); 
 
+        if($invoice->category == "medical_facility_registration" )
+        {
+            $medicalFacility = $invoice->doctor->medicalFacility;
+            $medicalFacility->membership_status = "active";
+            $medicalFacility->membership_expiration_date = now()->addYear();
+            $medicalFacility->save();
+
+
+            // create license
+            $license = new Licence();
+            $license->medical_facility_id = $medicalFacility->id;
+            $license->issued_date = now();
+            $license->expiry_date = now()->addYear();
+            $license->status = "active";
+            $license->created_by = auth()->id();
+            $license->amount = 0; 
+            $license->save();
+
+            // Create a transaction for the payment
+            $vault = auth()->user()->vault ?? Vault::first();
+            $vault->balance += $invoice->amount;
+            $vault->save();
+
+            $transaction = new Transaction();
+            $transaction->amount = $invoice->amount;
+            $transaction->user_id = auth()->id();
+            $transaction->vault_id = $vault->id;
+            $transaction->type = "deposit";
+            $transaction->desc = " فاتورة عضوية منشأة طبية جديدة  " . $medicalFacility->name;
+            $transaction->branch_id = auth()->user()->branch_id;
+            $transaction->balance = $vault->balance;
+            $transaction->save();
+        }
+ 
         return $invoice;
     }
 

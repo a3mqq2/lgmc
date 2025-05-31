@@ -79,10 +79,10 @@ class MedicalFacility extends Model
         ---------------------------*/
         protected static function booted(): void
         {
-            static::creating(function (MedicalFacility $facility) {
-                $facility->setSequentialIndex();
-                $facility->makeCode();
-            });
+            // static::creating(function (MedicalFacility $facility) {
+            //     $facility->setSequentialIndex();
+            //     $facility->makeCode();
+            // });
         }
 
         public function setSequentialIndex(): void

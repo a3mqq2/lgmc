@@ -47,23 +47,15 @@
                                 <tr>
                                     <td>{{ $facility->code }}</td>
                                     <td>{{ $facility->name }}</td>
-                                    <td>{{ $facility->type->name }}</td>
+                                    <td>{{ $facility->type == "private_clinic" ? "عيادة خاصة" : "خدمات طبية" }}</td>
                                     <td>{{ $facility->address }}</td>
                                     <td>{{ $facility->phone_number }}</td>
                                     <td>{{ $facility->manager?->name ?? '—' }}</td>
                                     <td>{{ $facility->created_at->format('Y-m-d') }}</td>
                                     <td>
-                                        @switch($facility->membership_status->value)
-                                            @case('active')
-                                                <span class="badge bg-success">مفعل</span>
-                                                @break
-                                            @case('inactive')
-                                                <span class="badge bg-danger">غير مفعل</span>
-                                                @break
-                                            @case('pending')
-                                                <span class="badge bg-warning text-dark">قيد المراجعة</span>
-                                                @break
-                                        @endswitch
+                                      <span class="badge {{ $facility->membership_status->badgeClass() }}">
+                                        {{ $facility->membership_status->label() }}
+                                    </span>
                                     </td>
                                     <td class="text-nowrap">
                                         <a href="{{ route(get_area_name().'.medical-facilities.show', $facility) }}"
@@ -83,18 +75,7 @@
                                             </button>
                                         </form>
 
-                                        @if($facility->membership_status->value === 'pending')
-                                            <button class="btn btn-sm btn-success"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#approveModal{{ $facility->id }}">
-                                                <i class="fa fa-check"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-danger"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#rejectModal{{ $facility->id }}">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        @endif
+                                 
                                     </td>
                                 </tr>
                             @endforeach
@@ -108,56 +89,4 @@
     </div>
 </div>
 
-{{-- Modals --}}
-@foreach ($medicalFacilities as $facility)
-    {{-- موافقة --}}
-    <div class="modal fade" id="approveModal{{ $facility->id }}" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <form action="{{ route(get_area_name() . '.medical-facilities.approve', $facility) }}" method="POST">
-            @csrf
-            @method('PATCH')
-            <div class="modal-header">
-              <h5 class="modal-title">تأكيد الموافقة</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-              هل أنت متأكد من تفعيل المنشأة: <strong>{{ $facility->name }}</strong>؟
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-              <button type="submit" class="btn btn-success">نعم، تفعيل</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    {{-- رفض --}}
-    <div class="modal fade" id="rejectModal{{ $facility->id }}" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <form action="{{ route(get_area_name() . '.medical-facilities.reject', $facility) }}" method="POST">
-            @csrf
-            @method('PATCH')
-            <div class="modal-header bg-danger text-light">
-              <h5 class="modal-title">تأكيد الرفض</h5>
-              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-              <div class="mb-3">
-                <label for="reason{{ $facility->id }}" class="form-label">سبب الرفض</label>
-                <textarea name="reason" id="reason{{ $facility->id }}" rows="3"
-                          class="form-control" required></textarea>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
-              <button type="submit" class="btn btn-danger">رفض المنشأة</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-@endforeach
 @endsection

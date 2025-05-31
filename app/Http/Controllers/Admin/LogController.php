@@ -91,14 +91,14 @@ class LogController extends Controller
                 'print_transaction' => 'طباعة إيصال معاملة',
     
                 // 🏦 Vault Management
-                'create_vault' => 'إنشاء خزنة',
-                'update_vault' => 'تعديل خزنة',
-                'delete_vault' => 'حذف خزنة',
-                'open_vault' => 'فتح خزنة',
-                'close_vault' => 'إغلاق خزنة',
+                'create_vault' => 'إنشاء حساب',
+                'update_vault' => 'تعديل حساب',
+                'delete_vault' => 'حذف حساب',
+                'open_vault' => 'فتح حساب',
+                'close_vault' => 'إغلاق حساب',
                 'vault_transfer' => 'تحويل بين الخزنات',
-                'approve_vault_transfer' => 'الموافقة على تحويل خزنة',
-                'reject_vault_transfer' => 'رفض تحويل خزنة',
+                'approve_vault_transfer' => 'الموافقة على تحويل حساب',
+                'reject_vault_transfer' => 'رفض تحويل حساب',
     
                 // 📄 File Management
                 'upload_file' => 'رفع ملف',

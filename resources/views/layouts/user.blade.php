@@ -11,6 +11,11 @@
     <meta content="Libyan General Medical Council " name="description" />
 
     <!-- App favicon -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    {{-- ast --}}
+
     <link rel="shortcut icon" href="{{asset('/assets/images/lgmc-dark.png')}}">
 
     <!-- Layout config Js -->
@@ -416,6 +421,18 @@
 
                     <div class="d-flex align-items-center">
 
+                        @if (auth()->user()->vault)
+                        <div class="dropdown ms-sm-3 header-item topbar-user bg-success text-light">
+                         
+                            <button type="button" class="btn bg-success text-light" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="d-flex align-items-center">
+                                        عهدتي الحالية <i class="fa fa-money-bill px-3"></i>
+                                </span>
+                                <h4 class="text-center text-white mt-1">{{number_format(auth()->user()->vault->balance,2)}} د.ل </h4>
+                            </button>
+                        </div>
+                        @endif
+                            
                         <div class="dropdown d-md-none topbar-head-dropdown header-item">
                             <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-search-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="bx bx-search fs-22"></i>
@@ -733,6 +750,33 @@
         });
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // find all forms on the page
+      document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', e => {
+          // prevent double submits
+          if (form.dataset.submitted) {
+            e.preventDefault();
+            return;
+          }
+          form.dataset.submitted = 'true';
+  
+          // find the first submit button inside this form
+          const btn = form.querySelector('[type="submit"]');
+          if (btn) {
+            // disable it
+            btn.disabled = true;
+            // replace its contents with spinner + text
+            btn.innerHTML = `
+              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              يرجى الانتظار
+            `;
+          }
+        });
+      });
+    });
+  </script>  
 </body>
 
 

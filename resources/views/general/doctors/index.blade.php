@@ -58,30 +58,6 @@
                             <label for="registered_at">تاريخ الانتساب للنقابة</label>
                             <input type="date" lang="ar" dir="rtl" class="form-control date-picker" id="registered_at" name="registered_at" value="{{ request()->input('registered_at') }}">
                         </div>
-
-                        <div class="col-md-3">
-                            <label for="registered_at"> الاشتراك السنوي </label>
-                            <select class="form-control" name="membership_status" id="membership_status">
-                                <option value="">اختر الاشتراك السنوي</option>
-                                @foreach (\App\Enums\MembershipStatus::cases() as $status)
-                                    <option value="{{ $status->value }}" {{ request()->input('membership_status') == $status->value ? 'selected' : '' }}>
-                                        {{ $status->label() }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label for="">حالة اخر اذن</label>
-                            <select class="form-control" name="last_license_status" id="last_license_status">
-                                <option value="">الكل</option>
-                                <option value="under_payment">قيد المراجعة المالية</option>
-                                <option value="active">ساري</option>
-                                <option value="expired">منتهي الصلاحية</option>
-                                <option value="revoked">متوقف</option>
-                            </select>
-                        </div>
-
                         <div class="col-md-3">
                             <label for="">التخصص</label>
                             <select class="form-control select2" name="specialization" id="specialization">
@@ -174,7 +150,7 @@
                                 <td>{{ $doctor->name }}</td>
                                 <td>{{ $doctor->phone }}</td>
                                 <td>
-                                    {{ $doctor->rank_name?? '-' }}
+                                    {{ $doctor->doctor_rank->name?? '-' }}
 
                                    {{ $doctor->specialization  }}
                                 </td>

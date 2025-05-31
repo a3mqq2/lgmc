@@ -17,7 +17,7 @@ class Vault extends Model
         'name', // Name of the vault
         'opening_balance', // Opening balance of the vault
         'branch_id', // ID of the branch to which the vault belongs
-        // Add other fillable attributes here as needed
+        'user_id'
     ];
 
     // Relationships

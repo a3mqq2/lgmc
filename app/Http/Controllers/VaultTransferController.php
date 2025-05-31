@@ -62,11 +62,11 @@ class VaultTransferController extends Controller
         $from_vault = Vault::find($request->from_vault_id);
 
         if (auth()->user()->branch_id && $from_vault->branch_id != auth()->user()->branch_id) {
-            return redirect()->back()->withErrors(['لا يمكنك التحويل من خزينة ليست مخصصة لفرعك.']);
+            return redirect()->back()->withErrors(['لا يمكنك التحويل من حساب ليست مخصصة لفرعك.']);
         }
 
         if ($from_vault->balance < $request->amount) {
-            return redirect()->back()->withErrors(['رصيد الخزينة غير كافٍ لإجراء هذا التحويل.']);
+            return redirect()->back()->withErrors(['رصيد الحساب غير كافٍ لإجراء هذا التحويل.']);
         }
 
         $transfer = VaultTransfer::create([
@@ -85,7 +85,6 @@ class VaultTransferController extends Controller
             'desc' => "قيمة التحويل رقم #{$transfer->id}",
             'amount' => $request->amount,
             'branch_id' => auth()->user()->branch_id,
-            'transaction_type_id' => 6,
             'type' => "withdrawal",
             'vault_id' => $from_vault->id,
             'balance' => $from_vault->balance,
@@ -94,7 +93,7 @@ class VaultTransferController extends Controller
         // Log transfer creation
         Log::create([
             'user_id' => auth()->id(),
-            'details' => "تم إنشاء تحويل من خزينة رقم {$from_vault->id} إلى خزينة رقم {$request->to_vault_id} بمبلغ {$request->amount}",
+            'details' => "تم إنشاء تحويل من حساب رقم {$from_vault->id} إلى حساب رقم {$request->to_vault_id} بمبلغ {$request->amount}",
             'loggable_id' => $transfer->id,
             'loggable_type' => VaultTransfer::class,
             "action" => "create_vault_transfer",

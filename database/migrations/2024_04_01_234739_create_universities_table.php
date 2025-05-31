@@ -17,6 +17,8 @@ class CreateUniversitiesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('en_name')->nullable();
+            $table->string('location')->nullable();
+            $table->string('country_id')->nullable();
             $table->timestamps();
         });
     }

@@ -12,11 +12,11 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
-            $table->foreignId('pricing_id')->constrained('pricings')->onDelete('cascade');
-
-            $table->unsignedInteger('from_year');
-            $table->unsignedInteger('to_year');
+            $table->foreignId('pricing_id')->nullable()->constrained('pricings')->onDelete('cascade');
+            $table->unsignedInteger('from_year')->nullable();
+            $table->unsignedInteger('to_year')->nullable();
             $table->decimal('amount', 10, 2);
+            $table->text('description');
 
             $table->timestamps();
         });

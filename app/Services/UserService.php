@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Log;
 use App\Models\User;
+use App\Models\Vault;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
@@ -33,6 +34,19 @@ class UserService
         if (isset($data['branches']) && is_array($data['branches'])) {
             $user->branches()->attach($data['branches']);
         }
+
+
+        // create vault 
+        $vault = new Vault();
+        $vault->user_id = $user->id;
+        $vault->openning_balance = 0;
+        $vault->balance = 0;
+        $vault->name = "حساب الموظف " . $user->name;
+        $vault->save();
+
+        $user->vault_id = $vault->id;
+        $user->save();
+
 
         if (!empty($data['roles']) && is_array($data['roles'])) {
             $user->syncRoles($data['roles']);

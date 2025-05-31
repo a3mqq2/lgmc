@@ -15,9 +15,9 @@ class PermissionForDoctors extends Seeder
         // permission for doctors ( libyan - foreign  - visitors - palestinian )
 
         $permissions = [
-           'اطباء اجانب' =>  'doctor-foreign',
-           'اطباء زوار' =>  'doctor-visitors',
-            'اطباء فلسطينيين' =>  'doctor-palestinian',
+        //    'اطباء اجانب' =>  'doctor-foreign',
+        //    'اطباء زوار' =>  'doctor-visitors',
+            // 'اطباء فلسطينيين' =>  'doctor-palestinian',
         ];
 
         foreach ($permissions as $key=>$permission) {

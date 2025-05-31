@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Common;
 
-use App\Http\Controllers\Controller;
 use App\Models\Log;
+use App\Models\User;
 use App\Models\Vault;
 use App\Models\Branch;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class VaultController extends Controller
 {
@@ -30,8 +31,8 @@ class VaultController extends Controller
      */
     public function create()
     {
-        $branches = Branch::all();
-        return view('general.vaults.create', compact('branches'));
+        $users = User::all();
+        return view('general.vaults.create', compact('users'));
     }
 
     /**
@@ -40,27 +41,33 @@ class VaultController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            "branch_id" => "nullable",
             "name" => "required",
             "openning_balance" => "required",
+            'user_id' => "required",
         ]);
+
+
+
+        $user = User::find($request->user_id);
 
         $vault = new Vault();
         $vault->name = $request->name;
         $vault->openning_balance = $request->openning_balance;
         $vault->balance = $vault->openning_balance;
+        $vault->user_id = $user->id;
+        $vault->branch_id = $user->branch_id;
         $vault->branch_id = $request->branch_id;
         $vault->save();
 
         Log::create([
             'user_id' => auth()->id(),
-            'details' => "تم انشاء الخزينة: " . $request->name,
+            'details' => "تم انشاء الحساب: " . $request->name,
             'loggable_id' => $vault->id,
             'loggable_type' => Vault::class,
             'action' => 'create_vault',
         ]);
 
-        return redirect()->route(get_area_name() . ".vaults.index")->with('success', 'تمت إضافة خزينة جديدة بنجاح');
+        return redirect()->route(get_area_name() . ".vaults.index")->with('success', 'تمت إضافة حساب جديدة بنجاح');
     }
 
     /**
@@ -68,7 +75,7 @@ class VaultController extends Controller
      */
     public function show(Vault $vault)
     {
-        // عرض المعاملات المتعلقة بالخزينة
+        // عرض المعاملات المتعلقة بالحساب
     }
 
     /**
@@ -76,8 +83,8 @@ class VaultController extends Controller
      */
     public function edit(Vault $vault)
     {
-        $branches = Branch::all();
-        return view('general.vaults.edit', compact('vault', 'branches'));
+        $users = User::all();
+        return view('general.vaults.edit', compact('vault','users'));
     }
 
     /**
@@ -87,23 +94,29 @@ class VaultController extends Controller
     {
         $request->validate([
             "name" => "required",
-            "branch_id" => "nullable",
+            "user_id" => "required",
         ]);
+
+
+
+        $user = User::find($request->user_id);
 
         $vault->update([
             'name' => $request->name,
             'branch_id' => $request->branch_id,
+            'user_id' => $request->user_id,
+            "branch_id" => $user->branch_id,
         ]);
 
         Log::create([
             'user_id' => auth()->id(),
-            'details' => "تم تحديث اسم الخزينة إلى: " . $request->name,
+            'details' => "تم تحديث اسم الحساب إلى: " . $request->name,
             'loggable_id' => $vault->id,
             'loggable_type' => Vault::class,
             'action' => 'update_vault',
         ]);
 
-        return redirect()->route(get_area_name() . '.vaults.index')->with('success', "تم تحديث الخزينة بنجاح");
+        return redirect()->route(get_area_name() . '.vaults.index')->with('success', "تم تحديث الحساب بنجاح");
     }
 
     /**
@@ -112,19 +125,19 @@ class VaultController extends Controller
     public function destroy(Vault $vault)
     {
         if ($vault->transactions->count()) {
-            return redirect()->back()->withErrors(['لا يمكن حذف هذه الخزينة نظرًا لوجود معاملات مرتبطة بها']);
+            return redirect()->back()->withErrors(['لا يمكن حذف هذه الحساب نظرًا لوجود معاملات مرتبطة بها']);
         }
 
         $vault->delete();
 
         Log::create([
             'user_id' => auth()->id(),
-            'details' => "تم حذف الخزينة: " . $vault->name,
+            'details' => "تم حذف الحساب: " . $vault->name,
             'loggable_id' => $vault->id,
             'loggable_type' => Vault::class,
             'action' => 'delete_vault',
         ]);
 
-        return redirect()->route(get_area_name() . '.vaults.index')->with('success', 'تم حذف الخزينة بنجاح');
+        return redirect()->route(get_area_name() . '.vaults.index')->with('success', 'تم حذف الحساب بنجاح');
     }
 }

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\AcademicDegree;
+use App\Models\University;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -26,22 +27,19 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-        $walaa = \App\Models\User::factory()->create([
-            'name' => 'ولاء',
-            'email' => 'walaa@lgmc.ly',
-            'password' => '123123123',
-        ]);
-
 
 
         
         DB::table('doctor_ranks')->insert([
             ['name' => 'ممارس عام', 'doctor_type' => "libyan"],  
             ['name' => 'طبيب ممارس ', 'doctor_type' => "libyan"],      
-            ['name' => 'أخصائي ', 'doctor_type' => "libyan"],      
-            ['name' => 'استشاري ', 'doctor_type' => "libyan"],        
+            ['name' => 'أخصائي ثاني ', 'doctor_type' => "libyan"],      
+            ['name' => 'أخصائي اول ', 'doctor_type' => "libyan"],      
+            ['name' => 'استشاري ثاني', 'doctor_type' => "libyan"],        
+            ['name' => 'استشاري اول ', 'doctor_type' => "libyan"],        
 
 
+            ['name' => 'ممارس عام', 'doctor_type' => "foreign"],      
             ['name' => 'طبيب ممارس ', 'doctor_type' => "foreign"],      
             ['name' => 'أخصائي ', 'doctor_type' => "foreign"],      
             ['name' => 'استشاري ', 'doctor_type' => "foreign"],        
@@ -52,6 +50,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'استشاري دقيق ', 'doctor_type' => "visitor"],        
 
 
+            ['name' => ' ممارس عام', 'doctor_type' => 'palestinian'],      
             ['name' => 'طبيب ممارس ', 'doctor_type' => 'palestinian'],      
             ['name' => 'أخصائي ', 'doctor_type' => 'palestinian'],      
             ['name' => 'استشاري ', 'doctor_type' => 'palestinian'],          
@@ -65,13 +64,14 @@ class DatabaseSeeder extends Seeder
         $this->call(BranchSeeder::class);
         $this->call(SpecialtySeeder::class);
         $this->call(FileTypeSeeder::class);
-        $this->call(ArabUniversitiesSeeder::class);
+        $this->call(UniversitySeeder::class);
+        // $this->call(ArabUniversitiesSeeder::class);
         $this->call(VaultSeeder::class);
         $this->call(MedicalFacilityTypeSeeder::class); // ← 👈 لازم تجي قبل
         
         $this->call(MedicalServiceFilesSeeder::class); // ← ✅ بعدها
         $this->call(PrivateClinicFilesSeeder::class);  // ← ✅ بعدها
-        
+        $this->call(SignatureSeeder::class);
         $this->call(TransactionTypesSeeder::class);
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(DoctorMailPermission::class);

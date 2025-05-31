@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->decimal('amount', 10, 2);
-            $table->enum('type', ['membership', 'license','service','penalty','mail','email']);
+            $table->string('type');
             $table->enum('entity_type',['doctor','medical_facility']);
             $table->enum('doctor_type',['libyan','foreign','palestinian','visitor'])->nullable();
             $table->timestamps();

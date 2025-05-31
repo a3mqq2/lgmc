@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('licences', function (Blueprint $table) {
-            $table->enum('doctor_type',['libyan','foreign','palestinian','visitor'])->nullable();
+        Schema::table('medical_facilities', function (Blueprint $table) {
+            $table->string('city')->nullable()->after('address');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('licences', function (Blueprint $table) {
-            //
+        Schema::table('medical_facilities', function (Blueprint $table) {
+            $table->dropColumn('city');
         });
     }
 };

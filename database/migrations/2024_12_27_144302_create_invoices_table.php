@@ -14,23 +14,23 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->string('invoice_number')->unique();
-            $table->morphs('invoiceable'); 
             $table->string('description');
-            $table->foreignId('licence_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('pricing_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('doctor_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('branch_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->decimal('amount', 15, 2);
-            $table->enum('status', ['paid', 'unpaid','relief'])->default('unpaid');
-            $table->date('received_at')->nullable();
-            $table->date('relief_at')->nullable();
-            $table->unsignedBigInteger('received_by')->nullable();
-            $table->foreign('received_by')->references('id')->on('users')->nullOnDelete();
-            $table->unsignedBigInteger('relief_by')->nullable();
-            $table->foreign('relief_by')->references('id')->on('users')->nullOnDelete();
-            $table->text('relief_reason')->nullable();
-            $table->foreignId('branch_id')->nullable()->constrained()->nullOnDelete();
-            
+            $table->enum('status', ['paid', 'unpaid'])->default('unpaid');
+            $table->foreignId('received_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+            $table->dateTime('received_at')->nullable();
+            $table->foreignId('relief_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             $table->softDeletes();
+            $table->string('category')->nullable();
             $table->timestamps();
         });
     }

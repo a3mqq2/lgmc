@@ -9,14 +9,14 @@
         <h2>{{$doctor->name}}</h2>
     </div>
 
-    @if ((get_area_name() == "user" && $doctor->type->value == "libyan" ) || get_area_name() == "admin" && $doctor->type->value != "libyan")
+    
+    @if ($doctor->membership_status->value != "under_approve" && $doctor->membership_status->value != "under_edit")
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
                 <h4 class="main-content-label">الإجراءات</h4>
 
            
-                {{-- if have transfer pending  || doctor not have branch id --}}
 
                 @if ($doctor->transfers->where('status','pending')->count() == 0 && $doctor->branch_id != null)
                        
@@ -71,10 +71,14 @@
 
 
                 @if (get_area_name() == "admin")
+                
+                    @if (auth()->user()->id == 1)
                     <button type="button" class="btn {{ $doctor->membership_status->value === 'banned' ? 'btn-success' : 'btn-danger' }}" data-bs-toggle="modal" data-bs-target="#toggleBanDoctorModal">
                         <i class="fa {{ $doctor->membership_status->value === 'banned' ? 'fa-lock-open' : 'fa-lock' }}"></i>
                         {{ $doctor->membership_status->value === 'banned' ? 'رفع الحظر' : 'حظر الطبيب' }}
                     </button>
+                    @endif
+
                     <div class="modal fade" id="toggleBanDoctorModal" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -180,31 +184,14 @@
 
 
                     <a href="{{ route(get_area_name().'.doctors.edit',$doctor) }}" class="btn btn-info text-light">تعديل <i class="fa fa-edit"></i></a>
-                    <a href="{{ route(get_area_name().'.doctors.print',$doctor) }}" class="btn btn-secondary text-light">طباعة <i class="fa fa-print"></i></a>
+                    <a href="{{ route(get_area_name().'.doctors.print',$doctor) }}" class="btn btn-secondary text-light">طباعة بيانات الطبيب <i class="fa fa-print"></i></a>
+                    @if ($doctor->membership_status->value == "active")
+                    <a href="{{ route(get_area_name().'.doctors.print-license',$doctor) }}" class="btn btn-primary text-light"> طباعة اذن المزاولة  <i class="fa fa-print"></i></a>
+                    <a href="{{ route(get_area_name().'.doctors.print-id',$doctor) }}" class="btn btn-primary text-light"> طباعة  البطاقة  <i class="fa fa-code"></i></a>
+                    @endif
                     
 
-{{-- 
-                    <button type="button" class="btn btn-danger text-light" data-bs-toggle="modal" data-bs-target="#deleteDoctorModal">حذف <i class="fa fa-trash"></i></button>
-                    <div class="modal fade" id="deleteDoctorModal" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <form action="{{ route(get_area_name().'.doctors.destroy',$doctor->id) }}" method="POST">
-                                    @csrf @method('DELETE')
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">تأكيد الحذف</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        هل أنت متأكد أنك تريد حذف الطبيب: <strong>{{ $doctor->name }}</strong>؟
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-danger">حذف</button>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div> --}}
+
 
                 @if(get_area_name()=='finance')
                     <a href="{{ route('finance.total_invoices.create',$doctor) }}" class="btn btn-primary text-light">دفع الفواتير</a>
@@ -213,6 +200,7 @@
             </div>
         </div>
     </div>
+        
     @endif
 
     <div class="col-12">
@@ -222,10 +210,13 @@
                 <ul class="nav nav-tabs" id="doctorTab" role="tablist">
                     <li class="nav-item"><button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button">البيانات الشخصية</button></li>
                     <li class="nav-item"><button class="nav-link" id="docs-tab" data-bs-toggle="tab" data-bs-target="#docs" type="button">مستندات الطبيب</button></li>
-                    <li class="nav-item"><button class="nav-link" id="licenses-tab" data-bs-toggle="tab" data-bs-target="#licenses" type="button">اذونات المزاولة</button></li>
+                    <li class="nav-item"><button class="nav-link" id="finance-tab" data-bs-toggle="tab" data-bs-target="#finance" type="button"> الملف المالي </button></li>
+                    @if ($doctor->membership_status->value != "under_approve")
                     @if(auth()->user()->permissions()->where('name','doctor-mail')->count())
                         <li class="nav-item"><button class="nav-link" id="external-tab" data-bs-toggle="tab" data-bs-target="#external" type="button">طلبات الأوراق الخارجية</button></li>
                     @endif
+                    @endif
+                    
                 </ul>
 
                 <div class="tab-content pt-3">
@@ -250,7 +241,7 @@
                                         </tr>
                                         @endif
                                        
-                                        @if (get_area_name() == "admin")
+                                        @if (get_area_name() == "admin" && $doctor->branch)
                                             <tr>
                                                 <th class="bg-light text-primary"> الفرع   </th>
                                                 <td>{{ $doctor->branch ? $doctor->branch->name : "" }}</td>
@@ -267,6 +258,51 @@
                                             <td>{{ $doctor->name_en }}</td>
                                         </tr>
                                         @endif
+
+                                        @if ($doctor->date_of_birth)
+                                        <tr>
+                                            <th class="bg-light text-primary">تاريخ الميلاد</th>
+                                            <td>{{ date('Y-m-d', strtotime($doctor->date_of_birth)) }}</td>
+                                        </tr>
+                                        @endif
+
+                                        @if ($doctor->marital_status)
+                                        <tr>
+                                            <th class="bg-light text-primary">  الحالة الاجتماعية </th>
+                                            <td>
+                                                {{$doctor->marital_status == "signle" ? 'اعزب' : 'متزوج'}}
+                                            </td>
+                                        </tr>
+                                        @endif
+
+                                        @if ($doctor->gender)
+                                        <tr>
+                                            <th class="bg-light text-primary">  الجنس   </th>
+                                            <td>
+                                                {{$doctor->gender == "male" ? 'ذكر' : 'انثى'}}
+                                            </td>
+                                        </tr>
+                                        @endif
+
+                                        @if ($doctor->passport_number)
+                                        <tr>
+                                            <th class="bg-light text-primary">  رقم جواز السفر   </th>
+                                            <td>
+                                                {{$doctor->passport_number}}
+                                            </td>
+                                        </tr>
+                                        @endif
+
+                                        @if ($doctor->passport_expiration)
+                                        <tr>
+                                            <th class="bg-light text-primary">  تاريخ انتهاء صلاحية الجواز </th>
+                                            <td>
+                                                {{date('Y-m-d', strtotime($doctor->passport_expiration))}}
+                                            </td>
+                                        </tr>
+                                        @endif
+
+
                                         @if ($doctor->type->value === 'libyan')
                                         <tr>
                                             <th class="bg-light text-primary">الرقم الوطني</th>
@@ -279,13 +315,22 @@
                                         @endif
                                         <tr>
                                             <th class="bg-light text-primary"> حالة الاشتراك </th>
-                                            <td class="{{ $doctor->membership_status->badgeClass() }}">{{ $doctor->membership_status->label() }}</td>
+                                            <td class="{{ $doctor->membership_status->badgeClass() }} text-light">{{ $doctor->membership_status->label() }}</td>
                                         </tr>
+
+
+                                        @if ($doctor->edit_note)
+                                        <tr>
+                                            <th class="bg-light text-primary">  ملاحظات التعديل  </th>
+                                            <td> {{ $doctor->edit_note }} </td>
+                                        </tr>
+                                        @endif
+
 
                                         <tr>
                                             <th class="bg-light text-primary">صلاحية الاشتراك السنوي</th>
                                             <td class="text-center">
-                                                {{$doctor->membership_expiry_date ?? '—'}}
+                                                {{ $doctor->membership_expiration_date ? date('Y-m-d', strtotime($doctor->membership_expiration_date)) :  '—'}}
                                             </td>
                                         </tr>
 
@@ -298,6 +343,13 @@
                                 <table class="table table-bordered">
                                     <tbody>
                                       
+
+                                        @if ($doctor->address)
+                                        <tr>
+                                            <th class="bg-light text-primary"> العنوان </th>
+                                            <td>{{ $doctor->address }}</td>
+                                        </tr>
+                                        @endif
 
                                         <tr>
                                             <th class="bg-light text-primary">رقم الهاتف</th>
@@ -368,7 +420,7 @@
                                         <tbody>
                                             <tr>
                                                 <th class="bg-light text-primary"> اسم الجامعة </th>
-                                                <td>{{ $doctor->qualificationUniversity->name }}</td>
+                                                <td>{{ $doctor->qualificationUniversity?->name }}</td>
                                             </tr>
                                             <tr>
                                                 <th class="bg-light text-primary">تاريخ الحصول عليها </th>
@@ -378,8 +430,76 @@
                                     </table>
                                 </div>
                             @endif
+
+
+                            @if ($doctor->academic_degree_id)
+                                <div class="col-md-12">
+                                    <h3 class="text-primary"> الدرجة العلمية الحالية  </h3>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <th class="bg-light text-primary">اسم الدرجة</th>
+                                                <td>
+                                                    {{ $doctor->academicDegree?->name }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light text-primary"> الجهة  </th>
+                                                <td>
+                                                    {{ $doctor->academicDegreeUniversity?->name }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light text-primary"> بتاريخ   </th>
+                                                <td>
+                                                    {{ $doctor->certificate_of_excellence_date }}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            @endif
+
                         </div>
 
+
+                        @if (($doctor->membership_status->value != "under_approve" && $doctor->membership_status->value != "under_edit") || $doctor->type->value == "libyan")
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3 class="text-primary">بيانات العمل الحالي</h3>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th class="bg-light text-right">الصفة</th>
+                                                <td>{{$doctor->doctor_rank ? $doctor->doctor_rank->name : "لم يحدد"}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light text-right">التخصص</th>
+                                                <td>{{$doctor->specialization}}</td>
+                                            </tr>
+                                           @if ($doctor->branch)
+                                            <tr>
+                                                    <th class="bg-light text-right">الفرع </th>
+                                                    <td>{{$doctor->branch ? $doctor->branch->name : "لم يحدد"}}</td>
+                                                </tr>
+                                           @endif
+                                            <tr>
+                                                <th class="bg-light text-right">المنشات الطبية </th>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="bg-light text-right"> جهة العمل / المستشفى </th>
+                                                <td> {{ $doctor->institution ?? '-' }} </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        @endif
+                       
                     </div>
                     
 
@@ -387,14 +507,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="mb-0">مستندات الطبيب</h5>
 
-                            @if (get_area_name() == "user" && $doctor->type->value == "libyan")
-                                <a href="{{ route(get_area_name().'.doctors.files.create',$doctor) }}" class="btn btn-primary"><i class="fa fa-plus"></i> إضافة مستند للطبيب</a>
-                            @endif
-
-                            @if (get_area_name() == "admin" && $doctor->type->value  != "libyan")
-                                <a href="{{ route(get_area_name().'.doctors.files.create',$doctor) }}" class="btn btn-primary"><i class="fa fa-plus"></i> إضافة مستند للطبيب</a>
-                            @endif
-
+                            <a href="{{ route(get_area_name().'.doctors.files.create',$doctor) }}" class="btn btn-primary"><i class="fa fa-plus"></i> إضافة مستند للطبيب</a>
 
                         </div>
                         <div class="table-responsive">
@@ -422,6 +535,7 @@
                                             </td>
 
 
+                                        @if ($doctor->membership_status->value != "under_approve" && $doctor->membership_status->value != "under_edit")
                                             @if (get_area_name() == "admin" && $doctor->type->value != "libyan" || get_area_name() == "user" && $doctor->type->value == "libyan")
                                             <td>
                                               
@@ -431,42 +545,95 @@
                                                 </form>
                                             </td>
                                             @endif
-
-                                         
+                                        @endif
                                         </tr>
                                     @endforeach
+
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    <div class="tab-pane fade" id="licenses" role="tabpanel">
-                      
-             
+
+
+                    <div class="tab-pane fade" id="finance" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0"> الملف المالي للطبيب</h5>
+                        </div>
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover mb-0">
+                            <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th>#</th><th>المرخص له</th><th>تاريخ الإصدار</th><th>تاريخ الانتهاء</th>
-                                        <th>المنشأة</th><th>الحالة</th><th>إجراءات</th>
+                                        <th>#</th>
+                                        <th>رقم الفاتورة</th>
+                                        <th>الاسم</th>
+                                        <th>الوصف</th>
+                                        <th>المستخدم</th>
+                                        <th>المبلغ</th>
+                                        <th>الحالة</th>
+                                        <th>تاريخ الإنشاء</th>
+                                        <th>دفع</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($doctor->licenses as $licence)
+                                    @forelse($doctor->invoices as $invoice)
                                         <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $licence->licensable->name }}</td>
-                                            <td>{{ $licence->issued_date }}</td>
-                                            <td>{{ $licence->expiry_date }}</td>
-                                            <td>{{ $licence->medicalFacility?->name }}</td>
-                                            <td>{!! $licence->status_badge !!}</td>
-                                            <td><a href="{{ route(get_area_name().'.licences.show',$licence) }}" class="btn btn-primary text-light"><i class="fa fa-eye"></i></a></td>
+                                            <td>{{ $invoice->id }}</td>
+                                            <td>{{ $invoice->id }}</td>
+                                            <td>{{ $invoice->doctor->name }}</td>
+                                            <td>{{ $invoice->description }}</td>
+                                            <td>{{ $invoice->user?->name ?? '-' }}</td>
+                                            <td>{{ number_format($invoice->amount, 2) }} د.ل</td>
+                                            <td>
+                                               <span class="badge {{$invoice->status->badgeClass()}}">
+                                                    {{$invoice->status->label()}}
+                                               </span>
+                                            </td>
+                                            <td>{{ $invoice->created_at->format('Y-m-d') }}</td>
+                                            <td>
+                                                @if ($invoice->status->value == "unpaid")
+                                                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#received_{{$invoice->id}}">
+                                                    استلام القيمة <i class="fa fa-check"></i>
+                                                </button>
+                                                <div class="modal fade" id="received_{{$invoice->id}}" tabindex="-1" aria-labelledby="received_{{$invoice->id}}Label" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <form method="POST" action="{{ route(get_area_name() . '.invoices.received', ['invoice' => $invoice->id]) }}">
+                                                                @csrf
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="received_{{$invoice->id}}Label">تآكيد إستلام القيمة</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <div class="mb-3">
+                                                                        <label for="notes" class="form-label">ملاحظات - اختياري</label>
+                                                                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                                                                    <button type="submit" class="btn btn-primary">موافقة</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @endif
+                                            </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="11" class="text-center">لا توجد فواتير متاحة.</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
+
+
+
 
                     @if(auth()->user()->permissions()->where('name','doctor-mail')->count())
                         <div class="tab-pane fade" id="external" role="tabpanel">
@@ -509,6 +676,112 @@
                 </div>
             </div>
         </div>
+        @if($doctor->membership_status->value === 'under_approve')
+        <div class="col-md-12 mb-4">
+            <form action="{{ route(get_area_name().'.doctors.change-status', $doctor) }}"  method="POST">
+                @csrf
+                <div class="card">
+                    <div class="card-header">الموافقة</div>
+                    <div class="card-body">
+
+    
+                        {{-- اختيار الحالة --}}
+                        <div class="mb-3">
+                            <label class="form-label">حدد الحالة</label>
+                            <select name="final_status" id="final_status" class="form-control" required>
+                                <option value="">اختر الحالة</option>
+                                <option value="under_edit">تحويل إلى قيد التعديل</option>
+                                <option value="approved">موافقة على العضوية</option>
+                            </select>
+                        </div>
+    
+                        {{-- حقل السبب --}}
+                        <div id="edit_note_container" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label">السبب</label>
+                                <textarea name="edit_note" class="form-control" rows="2" placeholder="اكتب السبب..."></textarea>
+                            </div>
+                        </div>
+    
+                        {{-- حقول الموافقة (تظهر عند اختيار "موافقة") --}}
+                        <div id="approve_fields_container" style="display: none;">
+                        <div class="alert alert-info">يجب عليك التأكد من هذه البيانات</div>
+                            <div class="mb-3">
+                                <label class="form-label">حدد الصفة</label>
+                                <select name="doctor_rank_id" class="form-control">
+                                    @foreach ($doctor_ranks as $doctor_rank)
+                                        <option value="{{ $doctor_rank->id }}" {{$doctor->doctor_rank_id == $doctor_rank->id ? "selected" : ""}} >{{ $doctor_rank->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+    
+                            <div class="mb-3">
+                                <label class="form-label">حدد تخصص (ان وجد) </label>
+                                <select name="specialty_1_id" class="form-control">
+                                    <option value="">اختر تخصص </option>
+                                    @foreach ($specialties as $item)
+                                        <option value="{{ $item->id }}" {{$doctor->specialty_1_id == $item->id  ? "selected" : ""}} >{{ $item->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+    
+                            <div class="mb-3">
+                                <label class="form-label">اسم الجهة التي يعمل فيها (إن وجدت)</label>
+                                <input type="text" name="institution" value="{{$doctor->institution}}" class="form-control">
+                            </div>
+    
+                            <div class="mb-3">
+                                <label class="form-label">المنشآت الطبية</label>
+                                <select name="medical_facilities[]" multiple class="form-control select2">
+                                    {{-- @foreach ($medicalFacilities as $mf)
+                                        <option value="{{ $mf->id }}">{{ $mf->name }}</option>
+                                    @endforeach --}}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <input type="checkbox" name="is_paid" id="is_paid">
+                                <label for="is_paid" class="mr-3" value="1" style="margin-right: 10px!important;">   اعتبار الفاتورة مدفوعة </label>
+                            </div>
+                        </div>
+    
+
+                        
+
+                        {{-- زر الحفظ --}}
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">حفظ</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    @endif
     </div>
+
 </div>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect     = document.getElementById('final_status');
+    const noteContainer    = document.getElementById('edit_note_container');
+    const fieldsContainer  = document.getElementById('approve_fields_container');
+
+    if (!statusSelect) return;
+
+    statusSelect.addEventListener('change', function() {
+        if (this.value === 'approved') {
+            fieldsContainer.style.display = '';
+            noteContainer.style.display   = 'none';
+        } else if (this.value === 'under_edit') {
+            fieldsContainer.style.display = 'none';
+            noteContainer.style.display   = '';
+        } else {
+            fieldsContainer.style.display = 'none';
+            noteContainer.style.display   = 'none';
+        }
+    });
+});
+</script>
 @endsection

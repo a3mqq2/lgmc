@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Doctor;
 use App\Models\Licence;
+use App\Models\FileType;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\MedicalFacility;
 use App\Http\Controllers\Controller;
-use App\Models\FileType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
@@ -25,50 +26,61 @@ class WebsiteController extends Controller
     }
 
     public function doctor_auth(Request $request)
-{
-    // Validate the request
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|min:6',
-    ]);
+    {
+        // Validate the request: allow email or phone
+        $request->validate([
+            'login'    => 'required|string',
+            'password' => 'required|string|min:6',
+        ]);
 
-    // Rate limiter key
-    $throttleKey = Str::lower($request->input('email')) . '|' . $request->ip();
+        $login = $request->input('login');
 
-    if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
-        throw ValidationException::withMessages([
-            'email' => 'عدد المحاولات الفاشلة لتسجيل الدخول تجاوز الحد المسموح. الرجاء المحاولة لاحقاً.',
-        ])->status(429);
-    }
+        // Determine whether login is email or phone
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
 
-    // Credentials
-    $credentials = $request->only('email', 'password');
-    if (Auth::guard('doctor')->attempt($credentials, $request->boolean('remember'))) {
-        if(!Auth::guard('doctor')->user()->email_verified_at)
-        {
-          return  redirect()->route('otp.verify', ['email' => $request->email]);
+        // Rate limiter key uses the login value
+        $throttleKey = Str::lower($login) . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            throw ValidationException::withMessages([
+                'login' => 'عدد المحاولات الفاشلة لتسجيل الدخول تجاوز الحد المسموح. الرجاء المحاولة لاحقاً.',
+            ])->status(429);
         }
 
-        // check files
+        // Build credentials dynamically
+        $credentials = [
+            $field    => $login,
+            'password' => $request->input('password'),
+        ];
 
-        if(!Auth::guard('doctor')->user()->documents_completed)
-        {
-            return redirect()->route('upload-documents', ['email' => $request->email]);
+        if (Auth::guard('doctor')->attempt($credentials, $request->boolean('remember'))) {
+            // Clear the rate limiter on successful login
+            RateLimiter::clear($throttleKey);
+
+            $doctor = Auth::guard('doctor')->user();
+
+            // Redirect to OTP verify if email not verified
+            if (! $doctor->email_verified_at) {
+                return redirect()->route('otp.verify', ['email' => $doctor->email]);
+            }
+
+            // Redirect to documents upload if incomplete
+            if (! $doctor->documents_completed) {
+                return redirect()->route('upload-documents', ['email' => $doctor->email]);
+            }
+
+            // Successful login
+            return redirect()->route('doctor.dashboard')
+                             ->with('success', 'تم تسجيل الدخول بنجاح.');
         }
 
+        // Increment the rate limiter for failed attempt
+        RateLimiter::hit($throttleKey);
 
-        return redirect()->route('doctor.dashboard')
-                         ->with('success', 'تم تسجيل الدخول بنجاح.');
-
-
-        
-    } else {
         return redirect()->back()->withErrors([
-            'email' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+            'login' => 'البريد الإلكتروني أو رقم الهاتف أو كلمة المرور غير صحيحة.',
         ]);
     }
-
-}
 
 
     public function checker()
@@ -81,9 +93,9 @@ class WebsiteController extends Controller
 
         public function upload_documents(Request $request)
         {
-            $doctor = Doctor::where('membership_status', 'pending')
-                            ->where('email', $request->email)
+            $doctor = Doctor::where('email', $request->email)
                             ->first();
+
 
             if (! $doctor) {
                 return redirect()->back()->withErrors([
@@ -119,24 +131,54 @@ class WebsiteController extends Controller
 
         public function filepond_process(Request $request)
         {
+            // 1) تأكد أنه ثمة ملف
             $allFiles = $request->allFiles();
             if (empty($allFiles)) {
                 return response('No file uploaded', 400);
             }
             $file = array_shift($allFiles);
     
-            $request->validate([
-                'doctor_id'    => 'required|integer|exists:doctors,id',
-                'file_type_id' => 'required|integer|exists:file_types,id',
-            ]);
+            // 2) نحدد نوع الرفع: طبيب أم منشأة؟
+            if ($request->has('doctor_id')) {
+                $request->validate([
+                    'doctor_id'    => 'required|integer|exists:doctors,id',
+                    'file_type_id' => 'required|integer|exists:file_types,id',
+                ]);
+                $owner       = Doctor::findOrFail($request->doctor_id);
+                $ownerKey    = 'doctor_id';
+                $ownerId     = $owner->id;
+                $relation    = $owner->files();
+                $typeQuery   = FileType::where('doctor_type', $owner->type->value);
+                $completeCol = 'documents_completed';
+            }
+            elseif ($request->has('medical_facility_id')) {
+                $request->validate([
+                    'medical_facility_id' => 'required|integer|exists:medical_facilities,id',
+                    'file_type_id'        => 'required|integer|exists:file_types,id',
+                ]);
+                $owner       = MedicalFacility::findOrFail($request->medical_facility_id);
+                $ownerKey    = 'medical_facility_id';
+                $ownerId     = $owner->id;
+                $relation    = $owner->files();
+                $typeQuery   = FileType::where('type', 'medical_facility')
+                                       ->where('facility_type','single');
+                $completeCol = 'membership_status';
+            }
+            else {
+                return response('Missing owner identifier', 400);
+            }
     
-            $doctor     = Doctor::findOrFail($request->doctor_id);
             $fileTypeId = $request->file_type_id;
-            $path       = $file->store("documents/{$doctor->id}", 'public');
+            // 3) خزّن الملف
+            $path = $file->store(
+                ($request->has('doctor_id') ? "doctors/{$ownerId}" : "facilities/{$ownerId}"),
+                'public'
+            );
     
-            $doctor->files()->updateOrCreate(
+            // 4) اربط أو حدّث السجل
+            $relation->updateOrCreate(
                 [
-                    'doctor_id'    => $doctor->id,
+                    $ownerKey    => $ownerId,
                     'file_type_id' => $fileTypeId,
                 ],
                 [
@@ -145,20 +187,30 @@ class WebsiteController extends Controller
                 ]
             );
     
-            $requiredTypeIds = FileType::where('doctor_type', $doctor->type->value)
-                ->where('is_required', true)
+            // 5) احسب المرفوعات المطلوبة
+            $requiredTypeIds = $typeQuery
+                ->where('for_registration', 1)
+                ->where('is_required',    true)
                 ->pluck('id')
                 ->toArray();
     
-            $uploadedCount = $doctor->files()
+            $uploadedCount = $relation
                 ->whereIn('file_type_id', $requiredTypeIds)
                 ->distinct()
                 ->count('file_type_id');
     
+            // 6) إذا اكتمل الرفع، حدّث العمود المناسب
             if ($uploadedCount === count($requiredTypeIds)) {
-                $doctor->documents_completed = true;
-                $doctor->registered_at = now();
-                $doctor->save();
+                if ($request->has('doctor_id')) {
+                    $owner->$completeCol = true;
+                    $owner->registered_at = now();
+                } else {
+                    // المنشأة الطبية: بعد الرفع الكامل نضعها قيد المراجعة مثلاً
+                    $owner->$completeCol = 'under_approve';
+                    // أو لو تريد اعتمادًا مباشرًا:
+                    // $owner->$completeCol = 'active';
+                }
+                $owner->save();
             }
     
             return response($path, 200);

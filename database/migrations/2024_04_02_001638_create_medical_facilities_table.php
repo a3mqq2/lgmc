@@ -16,18 +16,16 @@ class CreateMedicalFacilitiesTable extends Migration
         Schema::create('medical_facilities', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('ownership', ['private', 'public']);
-            $table->unsignedBigInteger('medical_facility_type_id');
-            $table->date('activity_start_date')->nullable();
-            $table->foreign('medical_facility_type_id')->references('id')->on('medical_facility_types')->onDelete('cascade');
+            $table->string('code')->nullable();
+            $table->string('index')->nullable();
+            $table->string('type');
             $table->string('address');
             $table->string('phone_number');
-            $table->enum('membership_status', ['active', 'inactive','pending','rejected']);
+            $table->enum('membership_status', ['under_approve','under_complete','under_payment','under_edit','active', 'expired', 'banned']);
             $table->date('membership_expiration_date')->nullable();
-            $table->foreignId('user_id')->constrained();
-            $table->string('serial_number')->nullable();
-            $table->enum('activity_type', ['commercial_record', 'negative_certificate']);
+            $table->string('edit_reason')->nullable();
             $table->foreignId('branch_id')->nullable()->constrained();
+            $table->integer('manager_id');
             $table->timestamps();
         });
     }

@@ -48,7 +48,7 @@
 
 body {
   background: #fff !important;
-  font-family: 'Almarai', sans-serif;
+  font-family: "IBM Plex Sans Arabic", sans-serif !important;
 }
 
 
@@ -72,7 +72,7 @@ body {
 
 
 .text-primary {
-  color: #0067ff !important;
+  color: #cc0100 !important;
   font-weight: bold;
 }
 
@@ -91,7 +91,7 @@ body {
 
 .printable-table th {
   background-color: #f7f7f7 !important;
-  color: #0067ff !important;
+  color: #cc0100 !important;
 }
 
 .printable-table td,
@@ -170,7 +170,7 @@ ul {
 }
 
 .printable-table .bg-primary {
-  background-color: #0067ff !important;
+  background-color: #cc0100 !important;
   color: #fff !important;
 }
 

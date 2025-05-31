@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('doctors', function (Blueprint $table) {
-            $table->decimal('due', 10, 2)->default(0);
-        });
-
-        Schema::table('medical_facilities', function (Blueprint $table) {
-            $table->decimal('due', 10, 2)->default(0);
+            $table->unsignedBigInteger('academic_degree_univeristy_id')->nullable();
+            $table->foreign('academic_degree_univeristy_id')
+                  ->references('id')
+                  ->on('universities')
+                  ->onDelete('cascade');
         });
     }
 
@@ -26,11 +26,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('doctors', function (Blueprint $table) {
-            $table->dropColumn('due');
-        });
-
-        Schema::table('medical_facilities', function (Blueprint $table) {
-            $table->dropColumn('due');
+            $table->dropForeign(['academic_degree_univeristy_id']);
+            $table->dropColumn('academic_degree_univeristy_id');
         });
     }
 };

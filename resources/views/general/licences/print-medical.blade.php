@@ -28,25 +28,25 @@
 
         $file_type = "";
         if($licence->licensable_type == "App\Models\Doctor") {
-            if($licence->licensable->type->value == \App\Enums\DoctorType::Libyan->value)
+            if($licence->licensable->type == \App\Enums\DoctorType::Libyan->value)
             {
                 $file_type = "libyan";
             }
 
 
-            if($licence->licensable->type->value == \App\Enums\DoctorType::Foreign->value)
+            if($licence->licensable->type == \App\Enums\DoctorType::Foreign->value)
             {
                 $file_type = "foreign";
             }
 
 
-            if($licence->licensable->type->value == \App\Enums\DoctorType::Visitor->value)
+            if($licence->licensable->type == \App\Enums\DoctorType::Visitor->value)
             {
                 $file_type = "visitor";
             }
 
 
-            if($licence->licensable->type->value == \App\Enums\DoctorType::Palestinian->value)
+            if($licence->licensable->type == \App\Enums\DoctorType::Palestinian->value)
             {
                 $file_type = "foreign";
             }

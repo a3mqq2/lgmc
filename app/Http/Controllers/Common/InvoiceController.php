@@ -33,36 +33,22 @@ class InvoiceController extends Controller
 
         public function index(Request $request)
         {
-            // Start the query
             $query = Invoice::query();
     
-            // Filter by invoiceable type (Doctor or MedicalFacility)
-            if ($request->filled('invoiceable')) {
-                $invoiceableType = $request->invoiceable === 'Doctor' ? 'App\Models\Doctor' : 'App\Models\MedicalFacility';
-                $query->where('invoiceable_type', $invoiceableType);
-            }
     
-            // Filter by status (paid, unpaid, partial)
             if ($request->filled('status')) {
                 $query->where('status', $request->status);
             }
     
-            // Filter by user_id (who created the invoice)
             if ($request->filled('user_id')) {
                 $query->where('user_id', $request->user_id);
             }
+ 
     
-            // Filter by license_id
-            if ($request->filled('license_id')) {
-                $query->where('license_id', $request->license_id);
-            }
-    
-            // Filter by date range
             if ($request->filled('start_date') && $request->filled('end_date')) {
                 $query->whereBetween('created_at', [$request->start_date, $request->end_date]);
             }
     
-            // Filter by amount range
             if ($request->filled('min_amount')) {
                 $query->where('amount', '>=', $request->min_amount);
             }
@@ -70,28 +56,13 @@ class InvoiceController extends Controller
                 $query->where('amount', '<=', $request->max_amount);
             }
 
-
-
-            if($request->filled('type'))
+            if($request->search)
             {
-                $query->where('invoiceable_type', $request->type);
-            } 
-
-
-            // if(auth()->user()->branch_id)
-            // {
-            //     $query->where('branch_id', auth()->user()->branch_id);
-            // }
-    
-            // Search by invoice_number or description
-            if ($request->filled('search')) {
-                $query->where(function ($subQuery) use ($request) {
-                    $subQuery->where('invoice_number', 'like', '%' . $request->search . '%')
-                             ->orWhere('description', 'like', '%' . $request->search . '%');
-                });
+                $query->where('invoice_number', 'like', '%' . $request->search .'%');
             }
+
+     
     
-            // Paginate results
             $invoices = $query->orderBy('created_at', 'desc')->paginate(15)->appends($request->query());
             $users = User::orderByDesc('id')->get();
             $vaults = Vault::when(auth()->user()->branch_id, function($q) {
@@ -127,7 +98,6 @@ class InvoiceController extends Controller
              'amount' => 'nullable|numeric|min:0',
              'invoiceable_type' => 'nullable|string|in:App\\Models\\Doctor,App\\Models\\MedicalFacility',
              'invoiceable_id' => 'nullable|string',
-             'transaction_type_id' => 'nullable|numeric',
              'ranks' => 'array',
              'from_years' => 'array',
              'to_years' => 'array',
@@ -158,10 +128,10 @@ class InvoiceController extends Controller
                  return back()->withInput()->withErrors(['لا يمكن إضافة قيمة فاتورة لطبيب محظور']);
              if ($doctor->membership_status == MembershipStatus::Active)
                  return back()->withInput()->withErrors(['لا يمكن إضافة قيمة فاتورة لطبيب مفعل']);
-             if (!$doctor->type || !$doctor->doctor_rank_id)
+             if (!$doctor->type->value || !$doctor->doctor_rank_id)
                  return back()->withInput()->withErrors(['الصفة غير موجودة']);
      
-             $price = Pricing::where('doctor_type', $doctor->type)
+             $price = Pricing::where('doctor_type', $doctor->type->value)
                              ->where('rank_id', $doctor->doctor_rank_id)
                              ->first();
      
@@ -177,7 +147,6 @@ class InvoiceController extends Controller
                  'invoiceable_type' => Doctor::class,
                  'invoiceable_id' => $doctor->id,
                  'pricing_id' => $price->id,
-                 'transaction_type_id' => 1,
              ];
          } else {
              $amount = $request->amount;
@@ -208,7 +177,6 @@ class InvoiceController extends Controller
                  'user_id' => auth()->id(),
                  'invoiceable_type' => $request->invoiceable_type,
                  'invoiceable_id' => $doctor?->id ?? $medical_facility->id,
-                 'transaction_type_id' => $request->transaction_type_id,
              ];
          }
      
@@ -312,31 +280,8 @@ class InvoiceController extends Controller
     
          
     
-            $vault = auth()->user()->branch_id ? auth()->user()->branch->vault : Vault::first();
+            $vault = auth()->user()->vault ?? Vault::first();
             $this->invoiceService->markAsPaid($vault, $invoice, $request->notes);
-    
-            $currentYear = now()->year;
-            $hasCurrentYear = $invoice->items()->where(function ($query) use ($currentYear) {
-                $query->where('from_year', '<=', $currentYear)
-                      ->where('to_year', '>=', $currentYear);
-            })->exists();
-    
-            if ($hasCurrentYear && $invoice->invoiceable_type === Doctor::class) {
-                $doctor = $invoice->invoiceable;
-                $doctor->membership_status = MembershipStatus::Active;
-                $doctor->membership_expiration_date = now()->addYear()->format('Y-m-d');
-                $doctor->save();
-            }
-    
-            if ($invoice->doctorMail) {
-                $mail = $invoice->doctorMail;
-                $mail->status = 'under_proccess';
-                $mail->save();
-    
-                if ($invoice->invoiceable->email) {
-                    Mail::to($invoice->invoiceable->email)->send(new PaymentSuccess($mail));
-                }
-            }
     
             DB::commit();
         } catch (\Exception $e) {
@@ -344,8 +289,7 @@ class InvoiceController extends Controller
             return redirect()->back()->withErrors([$e->getMessage()]);
         }
     
-        return redirect()->route(get_area_name() . '.invoices.index')
-            ->with('success', 'تم تحديث حالة الفاتورة إلى مدفوعة.');
+        return redirect()->back()->with('success', 'تم تحديث حالة الفاتورة إلى مدفوعة.');
     }
     
 

@@ -5,8 +5,12 @@ use App\Models\Branch;
 
 use App\Models\Doctor;
 use App\Models\Invoice;
+use App\Models\Licence;
+use App\Models\Pricing;
 use App\Models\FileType;
 use App\Mail\ApprovalEmail;
+use App\Models\InvoiceItem;
+use App\Models\Transaction;
 use App\Mail\RejectionEmail;
 use Illuminate\Http\Request;
 use App\Models\MedicalFacility;
@@ -15,9 +19,11 @@ use App\Models\MedicalFacilityType;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Mail\MedicalFacilityRejectMail;
 use App\Imports\ImportMedicalFacilities;
 use App\Services\MedicalFacilityService;
 use App\Http\Requests\StoreMedicalFacilityRequest;
+use App\Models\Vault;
 
 class MedicalFacilityController extends Controller
 {
@@ -135,34 +141,107 @@ class MedicalFacilityController extends Controller
 
 
 
-    public function approve(MedicalFacility $facility)
+    public function change_status(Request $request, MedicalFacility $medicalFacility)
     {
-        // تحديث الحالة
-        $facility->update(['membership_status'=>'active']);
+        $request->validate([
+            'status' => 'required|in:active,under_edit',
+            'edit_reason' => 'required_if:status,==,under_edit|max:255',
+        ]);
 
-    
-        // إرسال إيميل القبول
-        Mail::to($facility->manager->email)
-            ->queue(new ApprovalEmail($facility->manager));
-    
 
-        $facility->makeCode();
-        $facility->save();
+        if($request->status == "under_edit")
+        {
+            $medicalFacility->membership_status = "under_edit"; 
+            $medicalFacility->edit_reason = $request->edit_reason;
+            $medicalFacility->save();
 
-        return back()->with('success','تم قبول المنشأة بنجاح.');
+            Mail::to($medicalFacility->manager->email)->send(new MedicalFacilityRejectMail($medicalFacility, $request->edit_reason));
+        }
+
+
+        if($request->status == "active")
+        {
+            $medicalFacility->edit_reason = null;
+            $medicalFacility->membership_status = "under_payment"; 
+            $medicalFacility->setSequentialIndex();
+            $medicalFacility->makeCode();
+            $medicalFacility->save();
+            $this->createMedicalFacilityInvoice($medicalFacility, $request->is_paid);
+        }
+
+        return redirect()->back()->with('success', 'تم تغيير حالة المنشأة الطبية بنجاح.');
     }
-    
-public function reject(Request $request, MedicalFacility $facility)
-{
-    $request->validate(['reason'=>'required|string']);
-    $facility->update([
-        'membership_status'=>'rejected',
-        'reason' =>$request->reason,
-    ]);
 
-    Mail::to($facility->manager->email)
-        ->queue(new RejectionEmail($facility->manager, $request->reason));
+    public function createMedicalFacilityInvoice(MedicalFacility $medicalFacility, $is_paid)
+    {
+       
+        $pricing = Pricing::where('entity_type', 'medical_facility')
+        ->where('type', 'membership')
+        ->first();
+        if (!$pricing) {
+            return redirect()->back()->withErrors(['error' => 'لا يوجد تسعير للمنشآت الطبية']);
+        }
 
-    return back()->with('success','تم رفض المنشأة بنجاح.');
-}
+
+        $invoice = new Invoice();
+        $invoice->invoice_number = rand(0,999999999);
+        $invoice->description = " فاتورة منشأة طبية جديدة    " . $medicalFacility->name;
+        $invoice->user_id = auth()->id();
+        $invoice->amount = 0;
+        $invoice->status = "unpaid";
+        $invoice->doctor_id = $medicalFacility->manager->id;
+        $invoice->category = "medical_facility_registration";
+        $invoice->save();
+
+        $invoice_item = new InvoiceItem();
+        $invoice_item->invoice_id = $invoice->id;
+        $invoice_item->description = $pricing->name;
+        $invoice_item->amount = $pricing->amount;
+        $invoice_item->pricing_id = $pricing->id;
+        $invoice_item->save();
+        $invoice->update([
+            'amount' => $invoice->items()->sum('amount'),
+        ]);
+
+        if ($is_paid) {
+            $invoice->status = 'paid';
+            $invoice->received_at = now();
+            $invoice->received_by = auth()->id();
+            $invoice->save();
+
+            // Update medical facility status to active
+            $medicalFacility->membership_status = "active";
+            $medicalFacility->membership_expiration_date = now()->addYear();
+            $medicalFacility->save();
+
+
+              // create license
+              $license = new Licence();
+              $license->medical_facility_id = $medicalFacility->id;
+              $license->issued_date = now();
+              $license->expiry_date = now()->addYear();
+              $license->status = "active";
+              $license->created_by = auth()->id();
+              $license->amount = 0; // Assuming amount is 0 for now, adjust as needed
+              $license->save();
+
+            // Create a transaction for the payment
+            $vault = auth()->user()->vault ?? Vault::first();
+            $vault->balance += $invoice->amount;
+            $vault->save();
+
+            $transaction = new Transaction();
+            $transaction->amount = $invoice->amount;
+            $transaction->user_id = auth()->id();
+            $transaction->vault_id = $vault->id;
+            $transaction->type = "deposit";
+            $transaction->desc = " فاتورة عضوية منشأة طبية جديدة  " . $medicalFacility->name;
+            $transaction->branch_id = auth()->user()->branch_id;
+            $transaction->balance = $vault->balance;
+            $transaction->save();
+            
+        }
+
+        return $invoice;
+    }
 }

@@ -42,10 +42,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
     Route::get('/doctors/print-list', [DoctorController::class, 'printList'])->name('doctors.print_list');
     Route::get('/reports', [ReportController::class, 'index'])->middleware('permission:manage-branches-reports')->name('reports.index');
     Route::get('/doctors/{doctor}/print-id', [DoctorController::class, 'print_id'])->name('doctors.print-id');
-    Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->middleware('permission:manage-doctors')->name('doctors.print');
-    Route::post('/doctors/import-store', [DoctorController::class, 'import_store'])->middleware('permission:manage-doctors')->name('doctors.import-store');
-    Route::get('/doctors/import', [DoctorController::class, 'import'])->middleware('permission:manage-doctors')->name('doctors.import');
-    Route::resource('doctors', DoctorController::class)->middleware('permission:manage-doctors');
+    Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->middleware('permission:doctor-foreign')->name('doctors.print');
+    Route::get('/doctors/{doctor}/print-license', [DoctorController::class, 'print_license'])->middleware('permission:doctor-foreign')->name('doctors.print-license');
+    Route::post('/doctors/import-store', [DoctorController::class, 'import_store'])->middleware('permission:doctor-foreign')->name('doctors.import-store');
+    Route::get('/doctors/import', [DoctorController::class, 'import'])->middleware('permission:doctor-foreign')->name('doctors.import');
+    Route::resource('doctors', DoctorController::class)->middleware('permission:doctor-foreign');
     Route::resource('specialties', SpecialtyController::class)->middleware('permission:registration-settings');
     Route::resource('countries', CountryController::class)->middleware('permission:registration-settings');
     Route::resource('branches', BranchController::class)->middleware('permission:manage-branches');
@@ -58,17 +59,15 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
     Route::get('medical-facilities/import', [ MedicalFacilityController::class, 'import'])->middleware('permission:manage-medical-facilities')->name('medical-facilities.import');
     Route::post('medical-facilities/import', [ MedicalFacilityController::class, 'import_store'])->middleware('permission:manage-medical-facilities')->name('medical-facilities.import-store');
     Route::resource('medical-facilities', MedicalFacilityController::class)->middleware('permission:manage-medical-facilities');
-    Route::patch('medical-facilities/{facility}/approve', 
-    [MedicalFacilityController::class,'approve'])
-    ->name('medical-facilities.approve');
-Route::patch('medical-facilities/{facility}/reject', 
-    [MedicalFacilityController::class,'reject'])
-    ->name('medical-facilities.reject');
-    Route::resource('doctor_ranks', DoctorRankController::class)->middleware('permission:manage-doctors');
+
+    Route::post('/medical-facilities/{medicalFacility}/change-status', [MedicalFacilityController::class, 'change_status'])->name('medical-facilities.change-status');
+
+
+    Route::resource('doctor_ranks', DoctorRankController::class)->middleware('permission:doctor-foreign');
     Route::resource('file-types', FileTypeController::class)->middleware('permission:registration-settings');
     
-    Route::resource('doctors.files', DoctorFileController::class)->shallow()->middleware('permission:manage-doctors');
-    Route::resource('medical-facility-files', DoctorFileController::class)->shallow()->middleware('permission:manage-doctors');
+    Route::resource('doctors.files', DoctorFileController::class)->shallow()->middleware('permission:doctor-foreign');
+    Route::resource('medical-facility-files', DoctorFileController::class)->shallow()->middleware('permission:doctor-foreign');
     Route::patch('/licences/{licence}/approve', [LicenceController::class, 'approve'])->middleware('permission:manage-medical-licenses,manage-doctor-permits')->name('licences.approve');
     Route::get('/licences/{licence}/print', [LicenceController::class, 'print'])->name('licences.print');
     Route::resource('licences', LicenceController::class)->middleware('permission:manage-medical-licenses,manage-doctor-permits');
@@ -94,10 +93,14 @@ Route::patch('medical-facilities/{facility}/reject',
     Route::post('profile/change-password', [ProfileController::class, 'change_password_store'])->name('profile.change-password');
 
 
+    Route::post('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
+    Route::post('/invoices/{invoice}/received', [InvoiceController::class, 'received'])->name('invoices.received');
     Route::resource('institutions', InstitutionController::class);
 
-    Route::post('/doctors/{doctor}/approve', [DoctorController::class, 'approve'])->name('doctors.approve');
-    Route::post('/doctors/{doctor}/reject', [DoctorController::class, 'reject'])->name('doctors.reject');
+    // Route::post('/doctors/{doctor}/approve', [DoctorController::class, 'approve'])->name('doctors.approve');
+    // Route::post('/doctors/{doctor}/reject', [DoctorController::class, 'reject'])->name('doctors.reject');
+    Route::post('/doctors/{doctor}/change-status', [DoctorController::class, 'change_status'])->name('doctors.change-status');
 
     // =========== DOCTOR MAILS ============= //
     Route::resource('doctor-mails', DoctorMailController::class);

@@ -1,5 +1,5 @@
 @extends('layouts.a4')
-@section('title', 'كشف حساب الخزينة')
+@section('title', 'كشف حساب الحساب')
 @section('content')
 
 @php
@@ -10,14 +10,14 @@
 <div class="row">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header bg-primary text-light mb-3">كشف حساب الخزينة</div>
+            <div class="card-header bg-primary text-light mb-3">كشف حساب الحساب</div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered">
                         <thead>
                             <tr class="bg-light">
                                 <th>اشاري المعاملة</th>
-                                <th>الخزينة</th>
+                                <th>الحساب</th>
                                 <th>المستخدم</th>
                                 <th>الوصف</th>
                                 <th class="bg-danger text-light">سحب</th>

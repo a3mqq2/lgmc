@@ -53,7 +53,7 @@
                         @forelse($totalInvoice->invoices as $invoice)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $invoice->invoice_number }}</td>
+                                <td>{{ $invoice->id }}</td>
                                 <td>{{ $invoice->description }}</td>
                                 <td>{{ number_format($invoice->amount, 2) }} د.ل</td>
                                 <td>{{ $invoice->created_at->format('Y-m-d') }}</td>

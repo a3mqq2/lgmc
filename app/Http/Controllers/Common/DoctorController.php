@@ -5,15 +5,27 @@ use Carbon\Carbon;
 
 use App\Models\Log;
 use App\Models\User;
+use App\Models\Vault;
 use App\Models\Doctor;
 use App\Models\Invoice;
+use App\Models\Licence;
+use App\Models\Pricing;
 use App\Models\FileType;
+use App\Models\Signature;
+use App\Models\Specialty;
+use App\Models\DoctorRank;
 use PhpParser\Comment\Doc;
+use App\Mail\FinalApproval;
+use App\Models\InvoiceItem;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Imports\DoctorsImport;
 use App\Services\DoctorService;
+use Illuminate\Support\Facades\DB;
 use App\Imports\DoctorsSheetImport;
+use App\Mail\RegisterUnderEditMail;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorRequest;
@@ -49,7 +61,7 @@ class DoctorController extends Controller
         try {
             $validatedData = $request->validated();
             $this->doctorService->create($validatedData);
-            return redirect()->route(get_area_name().'.doctors.index', ['type' => request('type') ] )->with('success', 'تم إضافة الطبيب بنجاح');
+            return redirect()->route(get_area_name().'.doctors.index', ['type' => request('type'), 'membership_status' => "under_approve" ] )->with('success', 'تم إضافة الطبيب بنجاح');
         } catch (\Exception $e )  {
 
             return redirect()->back()->withInput()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني' . $e->getMessage()]);
@@ -70,6 +82,8 @@ class DoctorController extends Controller
     public function show(Doctor $doctor)
     {
         $data['doctor'] = $doctor;
+        $data['specialties'] = Specialty::all();
+        $data['doctor_ranks'] = DoctorRank::where('doctor_type', $doctor->type->value)->get();
         return view('general.doctors.show', $data);
     }
 
@@ -124,7 +138,7 @@ class DoctorController extends Controller
 
     public function print_id(Doctor $doctor)
     {
-        return view('general.doctors.print_id', ['doctor' => $doctor]);
+        return view('general.doctors.print-id', ['doctor' => $doctor]);
     }
 
     public function import(Request $request)
@@ -244,6 +258,198 @@ class DoctorController extends Controller
         $doctors = $query->get();
     
         return view('general.doctors.print_list', compact('doctors'));
+    }
+
+
+    public function change_status(Request $request, Doctor $doctor)
+    {
+        $request->validate([
+            "final_status" => "required|in:under_edit,approved",
+            'edit_note' => "required_if:final_status,==,under_edit"
+        ]);
+
+
+        try {
+            DB::beginTransaction();
+            if($request->final_status == "under_edit")
+            {
+                $doctor->membership_status = "under_edit";
+                $doctor->edit_note = $request->edit_note;
+                $doctor->save();
+
+                Mail::to($doctor->email)->send(new RegisterUnderEditMail($doctor));
+
+
+
+            } else if($request->final_status == "approved")
+            {
+                $doctor->membership_status = "under_payment";
+
+                if($request->is_paid)
+                {
+                    $doctor->membership_status = "active";
+
+                    // create licence for the doctor
+
+                    $licence = new Licence();
+                    $licence->doctor_id = $doctor->id;
+                    $licence->doctor_type = $doctor->type->value;
+                    $licence->issued_date = now();
+                    $licence->expiry_date = $doctor->type->value == "foreign" ? now()->addMonths(6) : now()->addMonths(12);
+                    $licence->status = "active";
+                    $licence->doctor_rank_id = $doctor->doctor_rank_id;
+                    $licence->created_by = auth()->id();
+                    $licence->amount = 0;
+                    $licence->save();
+
+                }
+                $doctor->specialty_1_id = $request->specialty_1_id;
+                $doctor->doctor_rank_id = $request->doctor_rank_id;
+                $doctor->institution = $request->institution;
+                $doctor->registered_at = now();
+                $doctor->edit_note = null;
+                $doctor->setSequentialIndex();
+                $doctor->makeCode();
+                $doctor->save();
+
+
+                $this->createApproveDoctorInvoices($doctor, $request->is_paid);
+                Mail::to($doctor->email)
+                ->send(new FinalApproval($doctor));
+
+            }
+            DB::commit();
+
+            if($request->is_paid)
+            {
+                $invoice = Invoice::where('doctor_id', $doctor->id)->where('status', 'paid')->first(); 
+                if($invoice)
+                {
+                    return redirect()->route(get_area_name().'.invoices.print', $invoice->id);
+                }
+            }
+
+            return redirect()->back()
+            ->with('success', 'تمت تغيير الحالة بنجاح');
+        } catch(\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withErrors(['حدث خطأ ما يرجى التواصل مع الدعم الفني رمز الخطأ : ' . $e->getMessage() ]);
+        }
+    }
+
+
+    public function createApproveDoctorInvoices($doctor, $is_paid)
+    {
+        // create membership_invoice
+        $invoice = new Invoice();
+        $invoice->invoice_number = rand(0,999999999);
+        $invoice->description = " فاتورة عضوية طبيب جديد  " . $doctor->name;
+        $invoice->user_id = auth()->id();
+        $invoice->amount = 0;
+        $invoice->status = "unpaid";
+        $invoice->doctor_id = $doctor->id;
+        $invoice->category = "registration";
+        $invoice->save();
+
+
+        // registeration invoice 
+        $pricing_membership = Pricing::where('doctor_type', $doctor->type->value)->where('type','membership')
+        ->where('doctor_rank_id', $doctor->doctor_rank_id)->first();
+        
+        $invoice_item = new InvoiceItem();
+        $invoice_item->invoice_id = $invoice->id;
+        $invoice_item->description = $pricing_membership->name;
+        $invoice_item->amount = $pricing_membership->amount;
+        $invoice_item->pricing_id = $pricing_membership->id;
+
+        $invoice_item->save();
+
+
+        $pricing_licence = Pricing::where("doctor_type", $doctor->type->value)
+        ->where('doctor_rank_id', $doctor->doctor_rank_id)->where('type', 'license')
+        ->first();
+
+        $invoice_item = new InvoiceItem();
+        $invoice_item->invoice_id = $invoice->id;
+        $invoice_item->description = $pricing_licence->name;
+        $invoice_item->amount = $pricing_licence->amount;
+        $invoice_item->pricing_id = $pricing_licence->id;
+        $invoice_item->save();
+
+        
+        $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
+
+        $invoice_item = new InvoiceItem();
+        $invoice_item->invoice_id = $invoice->id;
+        $invoice_item->description = $pricing_card_id->name;
+        $invoice_item->amount = $pricing_card_id->amount;
+        $invoice_item->pricing_id = $pricing_card_id->id;
+        $invoice_item->save();
+
+
+        
+        $invoice->update([
+            'amount' => $invoice->items()->sum('amount'),
+        ]);
+
+        if($is_paid)
+        {
+            $invoice->status = "paid";
+            $invoice->received_by = auth()->id();
+            $invoice->received_at = now();
+            $invoice->save();
+
+            $vault = auth()->user()->vault ?? Vault::first();
+            $vault->balance += $invoice->amount;
+            $vault->save();
+    
+            // create transaction 
+            $transaction = new Transaction();
+            $transaction->amount = $invoice->amount;
+            $transaction->user_id = auth()->id();
+            $transaction->vault_id = $vault->id;
+            $transaction->type = "deposit";
+            $transaction->desc = " فاتورة عضوية طبيب جديد  " . $doctor->name . " رقم الفاتورة  " . $invoice->invoice_number;
+            $transaction->branch_id = auth()->user()->branch_id;
+            $transaction->balance = $vault->balance;
+            $transaction->save();
+
+            $doctor->membership_status = "active";
+            $doctor->membership_expiration_date = $doctor->type->value == "foreign" ?   Carbon::now()->addMonths(6) : Carbon::now()->addMonths(12);
+            $doctor->setSequentialIndex();
+            $doctor->makeCode();
+            $doctor->save();
+            
+
+        }
+
+    }
+
+
+    public function print_license(Doctor $doctor)
+    {
+        $data['doctor'] = $doctor;
+        $data['signature'] = Signature::where('is_selected', 1)->when($doctor->branch_id, function($q) use($doctor) {
+            $q->where("branch_id", $doctor->branch_id);
+        })->first();
+        if($doctor->type->value == "foreign")
+        {
+            return view('general.doctors.print_license_foreign', $data);
+        }
+
+        if($doctor->type->value == "palestinian")
+        {
+            return view('general.doctors.print_license_palestinian', $data);
+        }
+
+
+        if($doctor->type->value == "libyan")
+        {
+            return view('general.doctors.print_license_libyan', $data);
+        }
+
+
+        return view('general.doctors.print_license', $data);
     }
     
 }

@@ -4,9 +4,14 @@
     <meta charset="utf-8" />
     <title>دخول الأطباء | بوابة النظام</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="نقابة الأطباء الليبية - بوابة النظام" name="description" />
-    <meta content="نقابة الأطباء الليبية" name="author" />
+    <meta content="النقابة العامة للاطباء - ليبيا - بوابة النظام" name="description" />
+    <meta content="النقابة العامة للاطباء - ليبيا" name="author" />
     <!-- App favicon -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+
     <link rel="shortcut icon" href="assets/images/logo-primary.png">
     <!-- Layout config Js -->
     <script src="assets/js/layout.js"></script>
@@ -18,6 +23,8 @@
     <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
     <link href="assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+
+    
 </head>
 <body>
     <!-- auth-page wrapper -->
@@ -78,9 +85,9 @@
                                               @csrf
                                               @method('POST')
                                               <div class="mb-3">
-                                                  <label for="email" class="form-label">بريدك الآلكتروني</label>
-                                                  <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" id="email" placeholder="ادخل بريدك الالكتروني" value="{{ old('email') }}">
-                                                  @error('email')
+                                                  <label for="login" class="form-label">بريدك الآلكتروني او رقم الهاتف</label>
+                                                  <input type="login" name="login" class="form-control @error('login') is-invalid @enderror" id="login" placeholder="ادخل بريدك الالكتروني" value="{{ old('login') }}">
+                                                  @error('login')
                                                   <div class="invalid-feedback text-danger">
                                                       {{ $message }}
                                                   </div>
@@ -134,7 +141,7 @@
                     <div class="col-lg-12">
                         <div class="text-center">
                             <p class="mb-0">&copy;
-                                <script>document.write(new Date().getFullYear())</script> نقابة الأطباء الليبية. جميع الحقوق محفوظة.
+                                <script>document.write(new Date().getFullYear())</script> النقابة العامة للاطباء - ليبيا. جميع الحقوق محفوظة.
                             </p>
                         </div>
                     </div>

@@ -90,7 +90,6 @@ class TotalInvoiceController extends Controller
             'branch_id' => auth()->user()->branch_id,
             'user_id' => auth()->id(),
             'vault_id' => $vault->id,
-            'transaction_type_id' => 7, // Updated to the correct type
         ]);
 
         $vault->increment('balance', $request->total_amount);

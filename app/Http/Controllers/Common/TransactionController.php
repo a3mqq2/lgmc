@@ -31,9 +31,7 @@ class TransactionController extends Controller
             $query->where('desc', 'like', '%' . $request->desc . '%');
         }
 
-        if ($request->filled('transaction_type_id')) {
-            $query->where('transaction_type_id', $request->transaction_type_id);
-        }
+      
 
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -80,7 +78,6 @@ class TransactionController extends Controller
         $validatedData = $request->validate([
             'desc' => 'required|string|max:255',
             'amount' => 'required|numeric',
-            'transaction_type_id' => 'required|exists:transaction_types,id',
             'type' => 'required|in:deposit,withdrawal',
             'vault_id' => 'required|exists:vaults,id',
         ]);
@@ -88,7 +85,7 @@ class TransactionController extends Controller
         $vault = Vault::findOrFail($request->vault_id);
 
         if ($request->type == "withdrawal" && $vault->balance < $request->amount) {
-            return redirect()->back()->withErrors(["لا يوجد رصيد كافي في الخزينة المحددة"]);
+            return redirect()->back()->withErrors(["لا يوجد رصيد كافي في الحساب المحددة"]);
         }
 
         $validatedData['user_id'] = auth()->id();

@@ -9,7 +9,7 @@ section.sheet {
   
   body {
     background: #fff !important;
-    font-family: 'Almarai', sans-serif;
+    font-family: "IBM Plex Sans Arabic", sans-serif !important;
   }
   
   
@@ -33,7 +33,7 @@ section.sheet {
   
   
   .text-primary {
-    color: #0067ff !important;
+    color: #cc0100 !important;
     font-weight: bold;
   }
   
@@ -52,7 +52,7 @@ section.sheet {
   
   .printable-table th {
     background-color: #f7f7f7 !important;
-    color: #0067ff !important;
+    color: #cc0100 !important;
   }
   
   .printable-table td,
@@ -131,7 +131,7 @@ section.sheet {
   }
   
   .printable-table .bg-primary {
-    background-color: #0067ff !important;
+    background-color: #cc0100 !important;
     color: #fff !important;
   }
   

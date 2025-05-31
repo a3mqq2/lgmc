@@ -21,9 +21,9 @@ class PalestinianDoctorFileTypeSeeder extends Seeder
             'رسالة من جهة العمل',
             'جواز سفر ساري المفعول',
             'إقامة سارية المفعول فقط',
-            'صورة من إذن مزاولة  سابق للطبيب ',
             'ورقة  من السفارة الفلسطينية - لإثبات عضوية في الاتحاد الفلسطيني',
         ];
+        
 
         foreach ($items as $name) {
             FileType::create([
@@ -35,5 +35,16 @@ class PalestinianDoctorFileTypeSeeder extends Seeder
                 'facility_type' => null,
             ]);
         }
+
+
+
+        FileType::create([
+            'type' => 'doctor',
+            'name' => 'صورة من إذن مزاولة  سابق للطبيب (ان وجد)  ',
+            'is_required' => false,
+            'doctor_type' => 'palestinian',
+            'for_registration' => true,
+            'facility_type' => null,
+        ]);
     }
 }

@@ -81,4 +81,10 @@ class User extends Authenticatable
         return $query;
     }
 
+
+    public function vault()
+    {
+        return $this->hasOne(Vault::class, 'user_id');
+    }
+
 }

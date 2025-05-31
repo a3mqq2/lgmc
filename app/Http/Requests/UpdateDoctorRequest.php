@@ -14,26 +14,12 @@ class UpdateDoctorRequest extends FormRequest
 
     public function rules(): array
     {
-        $doctorId = $this->route('doctor');  // الحصول على معرف الطبيب من المسار
-
+        $doctorId = $this->route('doctor') ?? auth('doctor')->id();  // الحصول على معرف الطبيب من المسار
         return [
             'name' => 'required|string|max:255',
             'name_en' => 'nullable|string|max:255',
             "medical_facility_id" => "nullable|numeric",
-            'national_number' => [
-                'required_if:type,libyan',
-                'digits:12',
-                'unique:doctors,national_number,' . $doctorId,
-                function ($attribute, $value, $fail) {
-                    $gender = $this->input('gender');
-                    $first_digit = substr($value, 0, 1);
-                    if ($gender == 'male' && $first_digit != '1') {
-                        $fail('الرقم الوطني للذكور يجب أن يبدأ بالرقم 1.');
-                    } elseif ($gender == 'female' && $first_digit != '2') {
-                        $fail('الرقم الوطني للإناث يجب أن يبدأ بالرقم 2.');
-                    }
-                },
-            ],
+            'national_number' => "nullable",
             'mother_name' => 'nullable|string|max:255',
             'country_id' => 'required_if:type,foreign|required_if:type,visitor',
             'date_of_birth' => 'nullable',
@@ -44,9 +30,10 @@ class UpdateDoctorRequest extends FormRequest
             'marital_status' => 'nullable|string|in:single,married',
             'gender' => 'nullable|string|in:male,female',
             'passport_number' => 'required|string|max:20',
-            'passport_expiration' => 'required|date',
+            'passport_expiration' => 'nullable|date',
             'password' => 'nullable|min:6|confirmed',
             'country_graduation_id' => 'nullable|numeric',
+            "graduation_date" => "required",
             'phone' => [
                 'required',
                 'regex:/^09[1-9][0-9]{7}$/',
@@ -63,7 +50,8 @@ class UpdateDoctorRequest extends FormRequest
             'internership_complete' => 'nullable',
             'academic_degree_id' => 'nullable|numeric',
             'certificate_of_excellence_date' => 'nullable',
-            'doctor_rank_id' => 'required|numeric',
+            'academic_degree_univeristy_id' => "nullable",
+            'doctor_rank_id' => 'nullable|numeric',
             'medical_facilities' => 'nullable|array',
             'specialty_1_id' => 'nullable',
             'specialty_2' => 'nullable',
@@ -78,27 +66,6 @@ class UpdateDoctorRequest extends FormRequest
             'documents' => 'nullable',
             'registered_at' => "nullable",
             'type' => 'nullable|in:libyan,palestinian,foreign,visitor',
-
-            // قواعد التحقق المخصصة للتحقق من البلاك ليست
-            'blacklist_check' => [
-                function ($attribute, $value, $fail) use ($doctorId) {
-                    $name = $this->input('name');
-                    $number_phone = $this->input('phone');
-                    $passport_number = $this->input('passport_number');
-                    $id_number = $this->input('national_number');
-
-                    $blacklisted = Blacklist::where(function ($query) use ($name, $number_phone, $passport_number, $id_number) {
-                        $query->where('name', $name)
-                              ->orWhere('number_phone', $number_phone)
-                              ->orWhere('passport_number', $passport_number)
-                              ->orWhere('id_number', $id_number);
-                    })->exists();
-
-                    if ($blacklisted) {
-                        $fail('هذا الطبيب موجود في البلاك ليست ولا يمكن تعديله.');
-                    }
-                }
-            ],
         ];
     }
 

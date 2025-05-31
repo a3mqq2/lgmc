@@ -28,31 +28,23 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $generalAdministrationPermissions = [
             'manage-staff'              => 'الموظفين',
-            'services-pricing'          => 'تسعير الخدمات',
-            'manage-doctors'            => 'الاطباء',
-            'manage-medical-facilities' => 'المرافق الطبيه',
-            'manage-doctor-permits'     => 'اذونات الاطباء',
-            'manage-medical-licenses'   => 'تراخيص المنشآت الطبيه',
-            'manage-branches-reports'   => 'الفروع تقارير الاداره',
-            'manage-blacklist'          => 'البلاك ليست',
-            'registration-settings'     => 'اعدادات التسجيل',
-            'financial-administration'  => 'الاداره المالية',
-            'manage-branches'           => 'اداره الفروع',
-            'logs'                      => 'السجلات',
-            'approve-licences-admin'          => 'الموافقه علي التراخيص الاداريه',
+            'manage-medical-facilities'  => 'المنشات  الطبيه',
+            // DOCTORS PERMISSONS
+            'doctor-foreign'         => 'اطباء اجانب',
+            'doctor-palestinian'         => 'اطباء فلسطينيين',
+            'financial-administration' => 'الاداره الماليه',
         ];
 
         $branchOperationsPermissions = [
-            'branch-manager'             => "مدير الفرع - نقيب",
-            'doctor-requests'            => 'طلبات الاطباء',
-            'manage-medical-facilities'  => 'المرافق الطبيه',
+            // 'branch-manager'             => "مدير الفرع - نقيب",
+            // 'doctor-requests'            => 'طلبات الاطباء',
             'manage-doctors'             => 'الاطباء',
-            'doctor-practice-permits'    => 'اذونات المزاوله',
-            'manage-medical-licenses'    => 'تراخيص المنشات الطبيه',
-            'branch-reports'             => 'التقارير',
+            // 'doctor-practice-permits'    => 'اذونات المزاوله',
+            // 'manage-medical-licenses'    => 'تراخيص المنشات الطبيه',
+            // 'branch-reports'             => 'التقارير',
             'financial-branch'    => 'الاداره المالية',
-            'approve-licences-branch'    => 'الموافقه علي التراخيص الفرعيه',
-            'total_invoices'             => 'الفواتير الكليه',
+            // 'approve-licences-branch'    => 'الموافقه علي التراخيص الفرعيه',
+            // 'total_invoices'             => 'الفواتير الكليه',
             'manage-doctor-transfers'   => 'نقل الاطباء'
         ];
 

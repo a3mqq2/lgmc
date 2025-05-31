@@ -28,7 +28,7 @@
                                 @foreach($countries as $country)
                                 <tr>
                                     <th scope="row">{{ $country->id }}</th>
-                                    <td>{{ $country->name }}</td>
+                                    <td>{{ $country->nationality_name_ar }}</td>
                                     <td>{{ $country->en_name }}</td>
                                     <td>
                                         <a href="{{ route(get_area_name().'.countries.edit', $country->id) }}" class="btn btn-primary btn-sm">تعديل</a>

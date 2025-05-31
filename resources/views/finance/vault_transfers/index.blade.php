@@ -1,6 +1,6 @@
 @extends('layouts.' . get_area_name())
 
-@section('title', 'قائمة تحويلات الخزينة')
+@section('title', 'قائمة تحويلات الحساب')
 
 @section('content')
 <div class="row">
@@ -8,7 +8,7 @@
         <div class="card">
             <div class="card-header bg-primary text-light d-flex justify-content-between align-items-center">
                 <h4 class="card-title mb-0">
-                    <i class="fa fa-exchange-alt"></i> تحويلات الخزينة
+                    <i class="fa fa-exchange-alt"></i> تحويلات الحساب
                 </h4>
                 <a href="{{ route(get_area_name() . '.vault-transfers.create') }}" class="btn btn-success">
                     <i class="fa fa-plus"></i> إضافة تحويل جديد
@@ -27,8 +27,8 @@
                         <thead class="bg-light">
                             <tr>
                                 <th>#</th>
-                                <th>من الخزينة</th>
-                                <th>إلى الخزينة</th>
+                                <th>من الحساب</th>
+                                <th>إلى الحساب</th>
                                 <th>القيمة</th>
                                 <th>الوصف</th>
                                 <th>المستخدم</th>
@@ -131,7 +131,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center">لا توجد تحويلات خزينة مسجلة.</td>
+                                    <td colspan="9" class="text-center">لا توجد تحويلات حساب مسجلة.</td>
                                 </tr>
                             @endforelse
                         </tbody>
