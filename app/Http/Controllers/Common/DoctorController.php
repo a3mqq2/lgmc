@@ -61,10 +61,10 @@ class DoctorController extends Controller
         try {
             $validatedData = $request->validated();
             $this->doctorService->create($validatedData);
-            return redirect()->route(get_area_name().'.doctors.index', ['type' => request('type'), 'membership_status' => "under_approve" ] )->with('success', 'تم إضافة الطبيب بنجاح');
+            return redirect()->route(get_area_name().'.doctors.index', ['type' => request('type') ] )->with('success', 'تم إضافة الطبيب بنجاح');
         } catch (\Exception $e )  {
 
-            return redirect()->back()->withInput()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني' . $e->getMessage()]);
+            return redirect()->route(get_area_name().'.doctors.index', ['type' => request('type') ] )->withInput()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني' . $e->getMessage()]);
         }
     }
 
@@ -306,13 +306,20 @@ class DoctorController extends Controller
                 $doctor->specialty_1_id = $request->specialty_1_id;
                 $doctor->doctor_rank_id = $request->doctor_rank_id;
                 $doctor->institution = $request->institution;
-                $doctor->registered_at = now();
+                if($request->registered_at)
+                {
+                    $doctor->registered_at = Carbon::createFromFormat('Y-m-d', $request->registered_at);
+                } else {
+                    $doctor->registered_at = now();
+                }
                 $doctor->edit_note = null;
                 $doctor->setSequentialIndex();
                 $doctor->makeCode();
                 $doctor->save();
 
 
+                
+                
                 $this->createApproveDoctorInvoices($doctor, $request->is_paid);
                 Mail::to($doctor->email)
                 ->send(new FinalApproval($doctor));
@@ -416,8 +423,6 @@ class DoctorController extends Controller
 
             $doctor->membership_status = "active";
             $doctor->membership_expiration_date = $doctor->type->value == "foreign" ?   Carbon::now()->addMonths(6) : Carbon::now()->addMonths(12);
-            $doctor->setSequentialIndex();
-            $doctor->makeCode();
             $doctor->save();
             
 

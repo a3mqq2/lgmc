@@ -5,7 +5,7 @@
 <div class="row">
     @if (get_area_name() != "finance")
     <div class="col-md-12">
-        <a href="{{ route(get_area_name().'.doctors.create', ['type' => request('type')] ) }}" class="btn btn-success mb-2"><i class="fa fa-plus"></i> إنشاء جديد </a>
+        <a href="{{ route(get_area_name().'.doctors.create', ['type' => request('type')] ) }}" class="btn btn-success mb-2"><i class="fa fa-plus"></i>  اضافة عضوية جديدة    </a>
     </div>
     @endif
 

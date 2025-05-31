@@ -2,12 +2,14 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use App\Models\Log;
 use App\Models\Vault;
 use App\Models\Branch;
 use App\Models\Doctor;
 use App\Models\Country;
 use App\Models\Invoice;
+use App\Models\Licence;
 use App\Models\Pricing;
 use App\Models\FileType;
 use App\Enums\DoctorType;
@@ -17,14 +19,14 @@ use App\Models\DoctorRank;
 use App\Models\University;
 use App\Mail\FinalApproval;
 use App\Mail\FirstApproval;
+use App\Models\Institution;
 use App\Mail\RejectionEmail;
 use App\Models\AcademicDegree;
-use App\Models\Institution;
 use App\Models\MedicalFacility;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log as FacadesLog;
 
@@ -233,13 +235,70 @@ class DoctorService
             $doctor->institutions()->attach($medicalFacilities ?? []);
             $doctor->membership_status = 'under_approve';
             $doctor->membership_expiration_date = null;
+            $doctor->save();
+
+            if($data['index'])
+            {
+                $checkDuplicate = Doctor::where('branch_id', auth()->user()->branch_id)
+                ->where('index', $data['index'])
+                ->first();
+
+
+                if($checkDuplicate)
+                {
+                    throw new \Exception('هذا الرقم موجود بالفعل في الفرع الحالي');
+                }
+
+                $doctor->index = $data['index'];
+                $doctor->makeCode();
+
+                if($data['last_issued_date'] && $data['license_number'] )
+                {
+
+                    // check duplicate
+                    $checkDuplicate = Licence::where('doctor_id', $doctor->id)
+                        ->where('index', $data['license_number'])
+                        ->first();
+
+                    if($checkDuplicate)
+                    {
+                        throw new \Exception('هذا الرقم موجود بالفعل في الفرع الحالي');
+                    }
+
+                    
+
+                    $doctor->membership_status = "active";
+                    $doctor->membership_expiration_date = Carbon::parse($data['last_issued_date'])->addYear();
+                    $doctor->save();
+
+                    // create license 
+                    $licence = new Licence();
+                    $licence->doctor_id = $doctor->id;
+                    $licence->doctor_type = $doctor->type->value;
+                    $licence->issued_date = $data['last_issued_date'];
+                    $licence->expiry_date = Carbon::parse($data['last_issued_date'])->addYear();
+                    $licence->status = "active";
+                    $licence->doctor_rank_id = $doctor->doctor_rank_id;
+                    $licence->created_by = auth()->id();
+                    $licence->amount = 0;
+                    $licence->save();
+
+                    $year = Carbon::parse($data['last_issued_date'])->year;
+                    $licence->update([
+                        'index' => $data['license_number'],
+                        'code' => "LIC-LIB-${year}-{$licence->index}",
+                    ]);
+
+
+                }
+            }
 
 
             if(!$doctor->password)
             {
                 $doctor->password = Hash::make($doctor->phone);
             }
-            
+
 
             if($doctor->type->value == "libyan")
             {
@@ -254,7 +313,6 @@ class DoctorService
 
             return $doctor;
         } catch (\Exception $e) {
-            dd($e->getMessage());
             DB::rollback();
             throw $e; // إعادة إلقاء الاستثناء بعد التراجع عن العملية
         }
@@ -408,7 +466,6 @@ class DoctorService
 
             return $doctor;
         } catch (\Exception $e) {
-            dd($e->getMessage());
             DB::rollback();
             throw $e;  // Re-throw the exception after rolling back
         }

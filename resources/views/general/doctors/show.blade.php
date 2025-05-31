@@ -485,7 +485,7 @@
                                                 </tr>
                                            @endif
                                             <tr>
-                                                <th class="bg-light text-right">المنشات الطبية </th>
+                                                <th class="bg-light text-right">المنشات الطبية / القطاع الخاص </th>
                                                 <td>-</td>
                                             </tr>
                                             <tr>
@@ -566,7 +566,6 @@
                                     <tr>
                                         <th>#</th>
                                         <th>رقم الفاتورة</th>
-                                        <th>الاسم</th>
                                         <th>الوصف</th>
                                         <th>المستخدم</th>
                                         <th>المبلغ</th>
@@ -580,7 +579,6 @@
                                         <tr>
                                             <td>{{ $invoice->id }}</td>
                                             <td>{{ $invoice->id }}</td>
-                                            <td>{{ $invoice->doctor->name }}</td>
                                             <td>{{ $invoice->description }}</td>
                                             <td>{{ $invoice->user?->name ?? '-' }}</td>
                                             <td>{{ number_format($invoice->amount, 2) }} د.ل</td>
@@ -725,13 +723,21 @@
                                 </select>
                             </div>
     
+
+
+                            @if ($doctor->type->value == "libyan")
+                            <div class="mb-3">
+                                <label class="form-label">تاريخ الانتساب </label>
+                                <input type="date" name="registered_at" value="{{$doctor->internership_complete ? Carbon\Carbon::parse($doctor->internership_complete)->addDay() : ""}}" class="form-control">
+                            </div>
+                            @endif
                             <div class="mb-3">
                                 <label class="form-label">اسم الجهة التي يعمل فيها (إن وجدت)</label>
                                 <input type="text" name="institution" value="{{$doctor->institution}}" class="form-control">
                             </div>
     
                             <div class="mb-3">
-                                <label class="form-label">المنشآت الطبية</label>
+                                <label class="form-label">المنشآت الطبية / القطاع الخاص </label>
                                 <select name="medical_facilities[]" multiple class="form-control select2">
                                     {{-- @foreach ($medicalFacilities as $mf)
                                         <option value="{{ $mf->id }}">{{ $mf->name }}</option>

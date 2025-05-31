@@ -108,10 +108,7 @@ class Doctor extends Authenticatable
      | -----------------------------------------------------------------*/
     protected static function booted(): void
     {
-        static::creating(function (Doctor $doctor) {
-            $doctor->setSequentialIndex();
-            $doctor->makeCode();
-        });
+       
     }
 
     /**

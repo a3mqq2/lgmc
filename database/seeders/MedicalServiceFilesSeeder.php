@@ -36,6 +36,7 @@ class MedicalServiceFilesSeeder extends Seeder
                 'is_required' => $file['required'],
                 'doctor_type' => null,
                 'medical_facility_type_id' => $medicalService->id,
+                'facility_type' => 'services'
             ]);
         }
 
@@ -57,6 +58,7 @@ class MedicalServiceFilesSeeder extends Seeder
                 'is_required' => $file['required'],
                 'doctor_type' => null,
                 'medical_facility_type_id' => $medicalService->id,
+                'facility_type' => 'services',
             ]);
         }
 

@@ -16,11 +16,14 @@ class LibyanFiles extends Seeder
         $items = [
             ['name' => 'الصورة الشخصية', 'is_required' => true],
             ['name' => 'نموذج الانتساب', 'is_required' => true],
-            ['name' => 'جواز سفر', 'is_required' => true],
             ['name' => 'شهادة امتياز', 'is_required' => true],
             ['name' => 'كشف درجات', 'is_required' => true],
+            ['name' => 'جواز سفر', 'is_required' => true],
             ['name' => 'شهادة ميلاد إلكترونية', 'is_required' => true],
             ['name' => 'رسالة عمل', 'is_required' => false], // اختيارية
+            ['name' => 'شهادة تخصص', 'is_required' => false], // اختيارية
+            ['name' => 'معادلة مجلس التخصصات الطبية', 'is_required' => false], // اختيارية
+            ['name' => 'معادلة مركز ضمان الجودة', 'is_required' => false], // اختيارية
         ];
 
         foreach ($items as $item) {

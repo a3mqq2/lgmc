@@ -19,9 +19,7 @@ class PrivateClinicFilesSeeder extends Seeder
 
         // مستندات إنشاء عيادة فردية
         $registrationFiles = [
-            'صورة شخصية',
             'شهاده سلبية',
-            'جواز سفر ساري المفعول',
             'وثيقة تأمين من هيئة التأمين الطبي',
             'اذن الطبيب ( اخصائي او استشاري )',
         ];
@@ -34,16 +32,14 @@ class PrivateClinicFilesSeeder extends Seeder
                 'is_required' => 1,
                 'doctor_type' => null,
                 'medical_facility_type_id' => $privateClinic->id,
+                'facility_type' => 'single'
             ]);
         }
 
         // مستندات تجديد عيادة فردية
         $renewalFiles = [
-            'صورة شخصية',
             'شهادة سلبية سارية المفعول',
-            'جواز السفر',
-            'وثيقة تأمين',
-            'اذن ساري للطبيب',
+            'وثيقة تأمين من هيئة التأمين الطبي',
         ];
 
         foreach ($renewalFiles as $name) {
@@ -54,6 +50,7 @@ class PrivateClinicFilesSeeder extends Seeder
                 'is_required' => 1,
                 'doctor_type' => null,
                 'medical_facility_type_id' => $privateClinic->id,
+                'facility_type' => 'single'
             ]);
         }
 

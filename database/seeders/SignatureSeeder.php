@@ -23,10 +23,10 @@ class SignatureSeeder extends Seeder
                 'branch_id' => null,
             ],
             [
-                'name' => "د. خالد محمد",
-                'name_en' => 'khaled mohamed',
-                'job_title_ar' => 'نائب النقيب العام',
-                'job_title' => 'Deputy General Secretary',
+                'name' => "د. صالح أحمد صالح الأشطر",
+                'name_en' => 'Saleh Ahmed Saleh Al-Ashtar',
+                'job_title_ar' => 'نائب نقيب أطباء طرابلس',
+                'job_title' => 'Deputy Secretary General of Tripoli Doctors',
                 'is_selected' => 1,
                 'branch_id' => 1,
             ]

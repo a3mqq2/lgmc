@@ -77,6 +77,9 @@ class StoreDoctorRequest extends FormRequest
             'medical_facility_id' => 'nullable',
             'visit_from' => 'nullable',
             'visit_to' => 'nullable',
+            'index' => 'nullable',
+            'last_issued_date' => 'nullable|date',
+            'license_number' => 'nullable|string|max:255',
             // 'g-recaptcha-response' => ($routeName === 'register-store' && !$isLocalEnv) ? 'required|captcha' : '',
         ];
     }

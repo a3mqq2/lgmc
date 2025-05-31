@@ -41,8 +41,6 @@ class InvoiceService
         {
             $invoice->doctor->membership_status = "active";
             $invoice->doctor->membership_expiration_date = $invoice->doctor->type->value == "foreign" ?   Carbon::now()->addMonths(6) : Carbon::now()->addMonths(12);
-            $invoice->doctor->setSequentialIndex();
-            $invoice->doctor->makeCode();
             $invoice->doctor->save();
 
 

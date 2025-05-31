@@ -56,7 +56,7 @@
 
             {{-- <p class="numbero">رقم الاذن   : #{{$doctor->licence->code}}</p> --}}
 
-            <p class="sub-title">في شأن مزاولة مهنة الطب بمؤسسة او مركز او عيادة طبية</p>
+            <p class="sub-title">في شأن مزاولة مهنة الطب بالقطاع العام او الخاص </p>
 
             <div class="libyan">
 

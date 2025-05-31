@@ -514,7 +514,7 @@
                 </a>
 
                 <div class="card mt-3">
-                    <div class="card-body">
+                    <div class="card-body text-dark">
                         {{auth()->user()->branch ? auth()->user()->branch->name : "-"}}
                     </div>
                 </div>

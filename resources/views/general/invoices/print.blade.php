@@ -94,7 +94,7 @@
 
         {{-- ملاحظة مهمة --}}
        
-        @if (auth()->user()->branch_id == null || auth()->user()->branch_id == 1)
+        @if (auth()->user()->branch_id == null)
         <p style="margin-top:30px">
             يتم السداد كل يوم احد و ثلاثاء والاستلام يكون بعد تاريخ الدفع بإسبوع 
         </p>

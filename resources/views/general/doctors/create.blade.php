@@ -1,6 +1,6 @@
 @extends('layouts.' . get_area_name())
 
-@section('title', 'إضافة طبيب جديد')
+@section('title', 'إضافة عضوية جديدة')
 
 @section('styles')
 @endsection
@@ -14,9 +14,98 @@
 <form action="{{ route(get_area_name().'.doctors.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
 
+{{-- قسم رقم العضوية وتاريخ التجديد - يظهر فقط لفرع معين --}}
+@if(auth('doctor')->user()->branch_id == 1)
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <label for="">رقم العضوية</label>
+                <input type="number" name="index" value="{{auth('doctor')->user()->max('index') + 1}}" id="" class="form-control" required>
+            </div>
+            
+            {{-- خيار الاشتراك الساري --}}
+            <div class="col-md-12 mt-2">
+                <label for="">هل له اشتراك ساري؟</label>
+                <select name="has_active_subscription" id="has_active_subscription" class="form-control" required>
+                    <option value="">اختر</option>
+                    <option value="yes" {{ old('has_active_subscription') == 'yes' ? 'selected' : '' }}>نعم</option>
+                    <option value="no" {{ old('has_active_subscription') == 'no' ? 'selected' : '' }}>لا</option>
+                </select>
+            </div>
+
+            {{-- حقول تظهر عند اختيار "نعم" للاشتراك الساري --}}
+            <div id="subscription_fields" style="display: none;">
+                <div class="row">
+                    <div class="col-md-6 mt-2">
+                        <label for="">تاريخ آخر تجديد</label>
+                        <input type="date" name="last_issued_date" value="{{ old('last_issued_date') }}" class="form-control">
+                    </div>
+                    
+                    <div class="col-md-6 mt-2">
+                        <label for="">رقم الإذن</label>
+                        <input type="text" name="license_number" value="{{ old('license_number') }}" class="form-control" placeholder="أدخل رقم الإذن">
+                    </div>
+                </div>
+            </div>
+
+            {{-- رسالة توضيحية عند اختيار "لا" --}}
+            <div id="no_subscription_message" class="col-md-12 mt-2" style="display: none;">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    لا يوجد اشتراك ساري للطبيب حالياً سيتم وضح حالة الاشتراك قيد الموافقة
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- JavaScript للتحكم في إظهار/إخفاء الحقول --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const subscriptionSelect = document.getElementById('has_active_subscription');
+    const subscriptionFields = document.getElementById('subscription_fields');
+    const noSubscriptionMessage = document.getElementById('no_subscription_message');
+    const lastIssuedDateInput = document.querySelector('input[name="last_issued_date"]');
+    const licenseNumberInput = document.querySelector('input[name="license_number"]');
+
+    function toggleFields() {
+        const value = subscriptionSelect.value;
+        
+        if (value === 'yes') {
+            subscriptionFields.style.display = 'block';
+            noSubscriptionMessage.style.display = 'none';
+            // جعل الحقول مطلوبة
+            lastIssuedDateInput.required = true;
+            licenseNumberInput.required = true;
+        } else if (value === 'no') {
+            subscriptionFields.style.display = 'none';
+            noSubscriptionMessage.style.display = 'block';
+            // إلغاء كون الحقول مطلوبة
+            lastIssuedDateInput.required = false;
+            licenseNumberInput.required = false;
+            // مسح القيم
+            lastIssuedDateInput.value = '';
+            licenseNumberInput.value = '';
+        } else {
+            subscriptionFields.style.display = 'none';
+            noSubscriptionMessage.style.display = 'none';
+            lastIssuedDateInput.required = false;
+            licenseNumberInput.required = false;
+        }
+    }
+
+    // تشغيل الدالة عند تغيير الاختيار
+    subscriptionSelect.addEventListener('change', toggleFields);
+    
+    // تشغيل الدالة عند تحميل الصفحة للحفاظ على الحالة في حالة old input
+    toggleFields();
+});
+</script>
+@endif
     <div class="card">
         <div class="card-header bg-primary text-light">
-            <h3 class="card-title text-light mb-0">إضافة طبيب جديد</h3>
+            <h3 class="card-title text-light mb-0">إضافة عضوية جديدة</h3>
         </div>
 
         <div class="card-body">

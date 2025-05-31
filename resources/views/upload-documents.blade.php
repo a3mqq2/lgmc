@@ -36,7 +36,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="card overflow-hidden">
+                        <div class="card overflow-hidden" dir="rtl">
                             <div class="row g-0">
                                 <div class="col-lg-12">
                                     <div class="p-lg-5 p-4">
@@ -112,53 +112,65 @@
     <script src="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.js"></script>
     <script src="https://unpkg.com/filepond/dist/filepond.min.js"></script>
     <script>
-        FilePond.registerPlugin(
-            FilePondPluginFileValidateSize,
-            FilePondPluginFileValidateType,
-            FilePondPluginImagePreview
-        );
-        
-        const ponds = [];
-        document.querySelectorAll('.filepond').forEach(input => {
-            const pond = FilePond.create(input, {
-                server: {
-                    process: {
-                        url: '{{ route("doctor.filepond.process") }}',
-                        method: 'POST',
-                        headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-                        ondata: formData => {
-                            formData.append('doctor_id', input.dataset.doctorId);
-                            formData.append('file_type_id', input.dataset.fileTypeId);
-                            return formData;
-                        }
-                    },
-                    revert: {
-                        url: '{{ route("doctor.filepond.revert") }}',
-                        method: 'DELETE',
-                        headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}
+       FilePond.registerPlugin(
+        FilePondPluginFileValidateSize,
+        FilePondPluginFileValidateType,
+        FilePondPluginImagePreview
+    );
+
+    const ponds = [];
+    document.querySelectorAll('.filepond').forEach(input => {
+        const pond = FilePond.create(input, {
+            server: {
+                process: {
+                    url: '{{ route("doctor.filepond.process") }}',
+                    method: 'POST',
+                    headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
+                    ondata: formData => {
+                        formData.append('doctor_id', input.dataset.doctorId);
+                        formData.append('file_type_id', input.dataset.fileTypeId);
+                        return formData;
                     }
                 },
-                allowMultiple: false,
-                maxFileSize: '5MB',
-                acceptedFileTypes: ['application/pdf', 'image/*']
-            });
-            pond.on('processfile', updateButtonState);
-            pond.on('removefile', updateButtonState);
-            ponds.push({ pond, required: input.dataset.required === '1' });
+                revert: {
+                    url: '{{ route("doctor.filepond.revert") }}',
+                    method: 'DELETE',
+                    headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'}
+                }
+            },
+            allowMultiple: false,
+            maxFileSize: '5MB',
+            acceptedFileTypes: ['application/pdf', 'image/*']
         });
+        
+        // Listen for all file events
+        pond.on('processfile', updateButtonState);
+        pond.on('removefile', updateButtonState);
+        pond.on('addfile', updateButtonState);
+        pond.on('processfileprogress', updateButtonState);
+        
+        ponds.push({ pond, required: input.dataset.required === '1' });
+    });
 
-        function updateButtonState() {
-            const finishBtn = document.getElementById('finish-upload');
-            const allGood = ponds.every(({ pond, required }) => {
-                const count = pond.getFiles().length;
-                return required ? count === 1 : true;
-            });
-            finishBtn.disabled = !allGood;
-        }
-
-        document.getElementById('finish-upload').addEventListener('click', () => {
-            window.location = '{{ route("doctor.registration.complete", $doctor->id) }}';
+    function updateButtonState() {
+        const finishBtn = document.getElementById('finish-upload');
+        const allGood = ponds.every(({ pond, required }) => {
+            const files = pond.getFiles();
+            const processedFiles = files.filter(file => file.status === FilePond.FileStatus.PROCESSING_COMPLETE);
+            return required ? processedFiles.length === 1 : true;
         });
+        finishBtn.disabled = !allGood;
+    }
+
+    // Initial check after all ponds are created
+    setTimeout(updateButtonState, 100);
+
+    // Also check when DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', updateButtonState);
+
+    document.getElementById('finish-upload').addEventListener('click', () => {
+        window.location = '{{ route("doctor.registration.complete", $doctor->id) }}';
+    });
     </script>
 </body>
 </html>
