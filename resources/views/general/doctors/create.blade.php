@@ -15,7 +15,7 @@
     @csrf
 
 {{-- قسم رقم العضوية وتاريخ التجديد - يظهر فقط لفرع معين --}}
-@if(auth('doctor')->user()->branch_id == 1)
+@if(auth()->user()->branch_id == 1)
 <div class="card">
     <div class="card-body">
         <div class="row">
