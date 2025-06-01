@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-md-12">
                 <label for="">رقم العضوية</label>
-                <input type="number" name="index" value="{{auth('doctor')->user()->max('index') + 1}}" id="" class="form-control" required>
+                <input type="number" name="index" value="{{\App\Models\Doctor::max('index') + 1}}" id="" class="form-control" required>
             </div>
             
             {{-- خيار الاشتراك الساري --}}
