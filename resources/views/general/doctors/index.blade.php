@@ -211,6 +211,9 @@
                                     <a href="{{ route(get_area_name() . '.doctors.show', $doctor) }}" class="btn btn-primary btn-sm text-light">عرض <i class="fa fa-eye"></i></a>
                                     @endif
 
+
+                                    
+
                                     @if (get_area_name() == "finance")
                                         <a href="{{route('finance.total_invoices.create', $doctor)}}" class="btn btn-primary text-light">دفع الفواتير</a>
                                     @endif

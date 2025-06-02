@@ -15,20 +15,24 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="serial_number" class="form-label">رقم المنشأة</label>
-                                    <input type="text" class="form-control" id="name" name="serial_number" required>
+                                    <label for="name" class="form-label">اسم المنشأة</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="name" class="form-label">اسم المنشأة</label>
-                                    <input type="text" class="form-control" id="name" name="name" required>
+                                    <label for="facility_type" class="form-label">نوع المنشأة الطبية</label>
+                                    <select class="form-control" id="facility_type" name="facility_type"
+                                        required>
+                                        <option value="services">خدمات طبية</option>
+                                        <option value="single">عيادة خاصة</option>
+                                    </select>
                                 </div>
                             </div>
                             @if (get_area_name() == "admin")
                             <div class="col-md-12">
                                 <label for="branch">الفرع</label>
-                                <select name="branch_id" id="" class="form-control select2">
+                                <select name="branch_id" id="" class="form-control mb-2">
                                     <option value="">حدد الفرع</option>
                                     @foreach ($branches as $branch)
                                         <option value="{{$branch->id}}">{{$branch->name}}</option>
@@ -40,17 +44,7 @@
                             @endif
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="medical_facility_type_id" class="form-label">نوع المنشأة الطبية</label>
-                                    <select class="form-control" id="medical_facility_type_id" name="medical_facility_type_id"
-                                        required>
-                                        @foreach ($medicalFacilityTypes as $type)
-                                            <option value="{{ $type->id }}">{{ $type->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
+                            
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="address" class="form-label">الموقع</label>
@@ -63,8 +57,8 @@
                                     <input type="text" class="form-control" id="phone_number" name="phone_number" maxlength="10" required>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <label for="">مالك النشاط</label>
+                            <div class="col-md-12">
+                                <label for=""> اسم الطبيب </label>
                                 <select name="manager_id" id="licensable_id" class="form-control" 
                                     @if (get_area_name() == "user")
                                         required
