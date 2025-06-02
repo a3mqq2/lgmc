@@ -38,10 +38,11 @@
     <div class="collapse menu-dropdown" id="doctors">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctors.create', ['type' => "libyan"]) }}" class="nav-link"> إضافة عضو جديد    </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'under_approve']) }}" class="nav-link">طلبات الموقع </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'active']) }}" class="nav-link">الاطباء المفعليين</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء المنتهية صلاحيتهم</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'banned']) }}" class="nav-link">الاطباء الموقوفين</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'active']) }}" class="nav-link">عضويات مفعله</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'inactive']) }}" class="nav-link">عضويات  منتهيه صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'banned']) }}" class="nav-link">عضويات موقوفه</a>
 
             </li>
 
@@ -69,7 +70,7 @@
         <ul class="nav nav-sm flex-column">
 
 
-            {{-- <li class="nav-item">
+            <li class="nav-item">
                 <a class="nav-link menu-link" href="#institutions" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                     <i class="fas fa-building"></i><span data-key="t-layouts"> جهات العمل </span>
                 </a>
@@ -85,7 +86,7 @@
                         </li>
                     </ul>
                 </div>
-            </li> --}}
+            </li>
 
             {{-- Doctor Ranks --}}
             {{-- <li class="nav-item">

@@ -21,7 +21,6 @@ class PrivateClinicFilesSeeder extends Seeder
         $registrationFiles = [
             'شهاده سلبية',
             'وثيقة تأمين من هيئة التأمين الطبي',
-            'اذن الطبيب ( اخصائي او استشاري )',
         ];
 
         foreach ($registrationFiles as $name) {

@@ -16,6 +16,8 @@ enum MembershipStatus: string
     case Banned         = 'banned';
     case UnderComplete = 'under_complete';
     case Expired        = 'expired';
+    case UnderRenew     = 'under_renew';
+    case Suspended      = 'suspended';
 
     public function label(): string
     {
@@ -32,6 +34,8 @@ enum MembershipStatus: string
             self::Banned         => 'محظور',
             self::UnderComplete  => 'قيد الاكتمال',
             self::Expired        => 'منتهي الصلاحية',
+            self::UnderRenew     => 'قيد التجديد',
+            self::Suspended      => 'معلق',
         };
     }
 
@@ -49,7 +53,9 @@ enum MembershipStatus: string
             self::Rejected       => 'bg-danger',
             self::Banned         => 'bg-danger',
             self::UnderComplete  => 'bg-info',
-            self::Expired        => 'bg-secondary',
+            self::Expired        => 'bg-danger',
+            self::UnderRenew     => 'bg-warning',
+            self::Suspended      => 'bg-secondary',
         };
     }
 }

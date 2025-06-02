@@ -74,6 +74,11 @@ Route::prefix('user')->name('user.')->middleware('auth','role:branch_operations'
     Route::post('/invoices/{invoice}/received', [InvoiceController::class, 'received'])->name('invoices.received');
     Route::get('/doctors/{doctor}/print-license', [DoctorController::class, 'print_license'])->name('doctors.print-license');
 
+
+    Route::resource('licences', LicenceController::class);
+    Route::get('/licences/{licence}/print', [LicenceController::class, 'print'])->name('licences.print');
+
+
     // =========== DOCTOR MAILS ============= //
     Route::resource('doctor-mails', DoctorMailController::class);
     Route::put(

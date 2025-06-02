@@ -29,6 +29,9 @@ use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorRequest;
+use App\Models\Institution;
+use App\Models\MedicalFacility;
+use App\Mail\FirstApproval;
 
 class DoctorController extends Controller
 {
@@ -64,7 +67,7 @@ class DoctorController extends Controller
             return redirect()->route(get_area_name().'.doctors.index', ['type' => request('type') ] )->with('success', 'تم إضافة الطبيب بنجاح');
         } catch (\Exception $e )  {
 
-            return redirect()->route(get_area_name().'.doctors.index', ['type' => request('type') ] )->withInput()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني' . $e->getMessage()]);
+            return redirect()->route(get_area_name().'.doctors.index', ['type' => request('type') ] )->withInput()->withErrors(['error' => $e->getMessage()]);
         }
     }
 
@@ -84,6 +87,8 @@ class DoctorController extends Controller
         $data['doctor'] = $doctor;
         $data['specialties'] = Specialty::all();
         $data['doctor_ranks'] = DoctorRank::where('doctor_type', $doctor->type->value)->get();
+        $data['institutions'] = Institution::where('branch_id', $doctor->branch_id)->get();
+        $data['medicalFacilities'] = MedicalFacility::where('branch_id', $doctor->branch_id)->get();
         return view('general.doctors.show', $data);
     }
 
@@ -288,24 +293,13 @@ class DoctorController extends Controller
                 if($request->is_paid)
                 {
                     $doctor->membership_status = "active";
-
-                    // create licence for the doctor
-
-                    $licence = new Licence();
-                    $licence->doctor_id = $doctor->id;
-                    $licence->doctor_type = $doctor->type->value;
-                    $licence->issued_date = now();
-                    $licence->expiry_date = $doctor->type->value == "foreign" ? now()->addMonths(6) : now()->addMonths(12);
-                    $licence->status = "active";
-                    $licence->doctor_rank_id = $doctor->doctor_rank_id;
-                    $licence->created_by = auth()->id();
-                    $licence->amount = 0;
-                    $licence->save();
-
+                    $doctor->setSequentialIndex();
+                    $doctor->makeCode();
+                    $doctor->save();
                 }
                 $doctor->specialty_1_id = $request->specialty_1_id;
                 $doctor->doctor_rank_id = $request->doctor_rank_id;
-                $doctor->institution = $request->institution;
+                $doctor->institution_id = $request->institution_id;
                 if($request->registered_at)
                 {
                     $doctor->registered_at = Carbon::createFromFormat('Y-m-d', $request->registered_at);
@@ -313,17 +307,13 @@ class DoctorController extends Controller
                     $doctor->registered_at = now();
                 }
                 $doctor->edit_note = null;
-                $doctor->setSequentialIndex();
-                $doctor->makeCode();
                 $doctor->save();
 
 
                 
                 
                 $this->createApproveDoctorInvoices($doctor, $request->is_paid);
-                Mail::to($doctor->email)
-                ->send(new FinalApproval($doctor));
-
+  
             }
             DB::commit();
 
@@ -368,20 +358,8 @@ class DoctorController extends Controller
         $invoice_item->description = $pricing_membership->name;
         $invoice_item->amount = $pricing_membership->amount;
         $invoice_item->pricing_id = $pricing_membership->id;
-
         $invoice_item->save();
 
-
-        $pricing_licence = Pricing::where("doctor_type", $doctor->type->value)
-        ->where('doctor_rank_id', $doctor->doctor_rank_id)->where('type', 'license')
-        ->first();
-
-        $invoice_item = new InvoiceItem();
-        $invoice_item->invoice_id = $invoice->id;
-        $invoice_item->description = $pricing_licence->name;
-        $invoice_item->amount = $pricing_licence->amount;
-        $invoice_item->pricing_id = $pricing_licence->id;
-        $invoice_item->save();
 
         
         $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
@@ -398,6 +376,11 @@ class DoctorController extends Controller
         $invoice->update([
             'amount' => $invoice->items()->sum('amount'),
         ]);
+
+
+        Mail::to($doctor->email)
+        ->send(new FirstApproval($doctor, $invoice));
+
 
         if($is_paid)
         {

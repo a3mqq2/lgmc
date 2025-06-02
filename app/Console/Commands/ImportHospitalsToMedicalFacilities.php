@@ -19,15 +19,7 @@ class ImportHospitalsToMedicalFacilities extends Command
         foreach ($oldHospitals as $hospital) {
             Institution::create([
                 'name' => $hospital->name,
-                'address' => $hospital->address,
-                'phone_number' => $hospital->contacts,
-                'membership_status' => 'active',
-                'activity_type' => 'commercial_record',
-                'medical_facility_type_id' => 1,
                 'branch_id' => 1,
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
             ]);
 
             $this->info("✅ Imported: {$hospital->name}");

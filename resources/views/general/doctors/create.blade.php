@@ -371,8 +371,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 @endif
 
                 <div class="col-md-6">
-                    <label>المستشفى</label>
-                    <input type="text" name="institution" value="{{ old('institution') }}" class="form-control">
+                    <div class="">
+                        <label class="form-label">الجهة العامة/ المستشفى</label>
+                        <select name="institution_id" id="" class="form-control select2 selectize">
+                            <option value="">حدد مستشفى</option>
+                            @foreach ($institutions as $institution)
+                                <option value="{{$institution->id}}">{{$institution->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
                 <div class="col-md-6">
@@ -406,6 +413,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
             <input type="hidden" name="type" value="{{request("type")}}">
+
+
+
+            <hr>
+            <h5 class="text-primary mb-3">الانتساب</h5>
+            <div class="row">
+                <div class="col-md-12">
+                    <label> تاريخ الانتساب </label>
+                    <input type="date" name="registered_at" id="" class="form-control">
+                </div>
+            </div>
+            <input type="hidden" name="type" value="{{request("type")}}">
+
+
 
         </div>
 

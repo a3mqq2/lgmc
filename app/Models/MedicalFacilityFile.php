@@ -15,6 +15,7 @@ class MedicalFacilityFile extends Model
         'file_path',
         'uploaded_at',
         "file_type_id",
+        'renew_number'
     ];
 
     protected $casts = [

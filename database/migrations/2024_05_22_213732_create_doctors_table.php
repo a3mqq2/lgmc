@@ -52,8 +52,9 @@ return new class extends Migration
                 'active',
                 'expired',
                 'banned',
+                'suspended',
             ])->default('under_approve');
-
+            $table->text('suspended_reason')->nullable();
             $table->date('membership_expiration_date')->nullable();
             $table->timestamps();
         });

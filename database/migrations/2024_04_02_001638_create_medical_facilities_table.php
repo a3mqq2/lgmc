@@ -21,11 +21,12 @@ class CreateMedicalFacilitiesTable extends Migration
             $table->string('type');
             $table->string('address');
             $table->string('phone_number');
-            $table->enum('membership_status', ['under_approve','under_complete','under_payment','under_edit','active', 'expired', 'banned']);
+            $table->enum('membership_status', ['under_approve','under_complete','under_payment','under_edit','active', 'expired', 'banned','under_renew']);
             $table->date('membership_expiration_date')->nullable();
             $table->string('edit_reason')->nullable();
             $table->foreignId('branch_id')->nullable()->constrained();
             $table->integer('manager_id');
+            $table->integer('renew_number')->nullable();
             $table->timestamps();
         });
     }

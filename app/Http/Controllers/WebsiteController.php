@@ -160,8 +160,9 @@ class WebsiteController extends Controller
                 $ownerKey    = 'medical_facility_id';
                 $ownerId     = $owner->id;
                 $relation    = $owner->files();
+                $medical_facility_type = $owner->type == "private_clinic" ? "single" : "services";
                 $typeQuery   = FileType::where('type', 'medical_facility')
-                                       ->where('facility_type','single');
+                                       ->where('facility_type',$medical_facility_type);
                 $completeCol = 'membership_status';
             }
             else {
@@ -176,20 +177,38 @@ class WebsiteController extends Controller
             );
     
             // 4) اربط أو حدّث السجل
-            $relation->updateOrCreate(
-                [
-                    $ownerKey    => $ownerId,
-                    'file_type_id' => $fileTypeId,
-                ],
-                [
-                    'file_name' => $file->getClientOriginalName(),
-                    'file_path' => $path,
-                ]
-            );
+            
+            if($request->medical_facility_id)
+            {
+                $relation->create(
+                    [
+                        $ownerKey    => $ownerId,
+                        'file_type_id' => $fileTypeId,
+                        'file_name' => $file->getClientOriginalName(),
+                        'file_path' => $path,
+                        'renew_number' =>  $owner->renew_number,
+                    ]
+                );
+            } else {
+                $relation->create(
+                    [
+                        $ownerKey    => $ownerId,
+                        'file_type_id' => $fileTypeId,
+                        'file_name' => $file->getClientOriginalName(),
+                        'file_path' => $path,
+                    ]
+                );
+            }
     
             // 5) احسب المرفوعات المطلوبة
+
+
+
+
+            $is_for_registeration = $owner->membership_status->value == "expired" ? 0 : 1;
+
             $requiredTypeIds = $typeQuery
-                ->where('for_registration', 1)
+                ->where('for_registration', $is_for_registeration)
                 ->where('is_required',    true)
                 ->pluck('id')
                 ->toArray();
@@ -206,7 +225,16 @@ class WebsiteController extends Controller
                     $owner->registered_at = now();
                 } else {
                     // المنشأة الطبية: بعد الرفع الكامل نضعها قيد المراجعة مثلاً
-                    $owner->$completeCol = 'under_approve';
+                    if($owner->membership_status->value == "under_complete")
+                    {
+                        $owner->$completeCol = 'under_approve';
+                    }
+
+                    if($owner->membership_status->value == "expired")
+                    {
+                        $owner->$completeCol = 'under_renew';
+                    }
+                    
                     // أو لو تريد اعتمادًا مباشرًا:
                     // $owner->$completeCol = 'active';
                 }

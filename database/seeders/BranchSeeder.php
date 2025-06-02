@@ -33,6 +33,9 @@ class BranchSeeder extends Seeder
         }
 
 
+
+        $user = User::find(2);
+        $user->branches()->attach(1);
        
     }
 }

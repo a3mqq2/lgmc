@@ -16,7 +16,7 @@ class InstitutionController extends Controller
      */
     public function index()
     {
-        $institutions = Institution::latest()->paginate(30);
+        $institutions = Institution::orderBy('id','asc')->paginate(30);
 
         // Log the access to the institutions list
 

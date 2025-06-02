@@ -11,6 +11,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth:doctor', 'otp.verifi
     Route::get('/doctor-mails', [DoctorHomeController::class, 'doctor_mails'])->name('doctor-mails');
     Route::get('/doctor-mails/create', [DoctorHomeController::class, 'doctor_mails_create'])->name('doctor-mails.create');
     Route::get('/my-facility', [DoctorHomeController::class, 'my_facility'])->name('my-facility');
+    Route::get('/my-facility/renew', [DoctorHomeController::class, 'renew'])->name('my-facility.renew');
     Route::get('/my-facility/create', [DoctorHomeController::class, 'my_facility_create'])->name('my-facility.create');
     Route::post('/my-facility/store', [DoctorHomeController::class, 'my_facility_store'])->name('my-facility.store');
     Route::put('/my-facility/update', [DoctorHomeController::class, 'my_facility_update'])->name('my-facility.update');

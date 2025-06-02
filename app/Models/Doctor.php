@@ -32,7 +32,7 @@ class Doctor extends Authenticatable
         'specialty_3_id', 'certificate_of_excellence_date', 'doctor_number',
         'country_graduation_id', 'type', 'due', 'membership_status',
         'membership_expiration_date', 'password', 'visiting_date', 'registered_at',
-        'institution', 'specialty_2', 'medical_facility_id', 'visit_from',
+        'institution_id', 'specialty_2', 'medical_facility_id', 'visit_from',
         'academic_degree_univeristy_id',
         'visit_to', 'edit_note',
     ];
@@ -63,13 +63,13 @@ class Doctor extends Authenticatable
     public function branch()              { return $this->belongsTo(Branch::class); }
     public function institutions()        { return $this->belongsToMany(Institution::class); }
     public function files()               { return $this->hasMany(DoctorFile::class); }
-    public function licenses()            { return $this->hasMany(Licence::class, 'licensable_id')->where('licensable_type', self::class)->latest(); }
+    public function licenses()            { return $this->hasMany(Licence::class, 'doctor_id')->latest(); }
     public function logs()                { return $this->hasMany(Log::class, 'loggable_id')->where('loggable_type', self::class)->latest(); }
     public function countryGraduation()   { return $this->belongsTo(Country::class, 'country_graduation_id'); }
     public function tickets()             { return $this->hasMany(Ticket::class, 'init_doctor_id')->latest(); }
     public function doctorRequests()      { return $this->hasMany(DoctorRequest::class)->latest(); }
     public function invoices()            { return $this->hasMany(Invoice::class, 'doctor_id')->latest(); }
-    public function institution()         { return $this->belongsTo(Institution::class); }
+    public function institutionObj()         { return $this->belongsTo(Institution::class,'institution_id'); }
     public function medicalFacility()   { return $this->hasOne(MedicalFacility::class, 'manager_id')->where('branch_id', $this->branch_id); }
     public function doctor_mails()        { return $this->hasMany(DoctorMail::class)->latest(); }
     public function transfers()           { return $this->hasMany(DoctorTransfer::class)->latest(); }

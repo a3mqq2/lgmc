@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
-    <title> طباعة اذن مزاولة رقم : #{{$doctor->licence->code}} </title>
+    <title> طباعة اذن مزاولة رقم : #{{$licence->code}} </title>
 
 
 </head>
@@ -39,22 +39,22 @@
             <div class="issued-licence-date text-muted" style="direction: rtl;
             font-size: 12px;
             margin: 10px;">
-                <p class="m-0">تاريخ الطباعة : {{$doctor->created_at->format('Y-m-d')}}</p>
+                <p class="m-0">تاريخ الطباعة : {{$licence->doctor->created_at->format('Y-m-d')}}</p>
                 <p class="m-0">     الأشاري  ............................................... </p>
             </div>
 
             <div class="doctor-photo">
-                <img src="{{ Storage::url($doctor->files->first()?->file_path) }}" alt="صورة الطبيب">
+                <img src="{{ Storage::url($licence->doctor->files->first()?->file_path) }}" alt="صورة الطبيب">
             </div>
 
 
             <div class="card-title" dir="rtl">
-                  اذن مزاولة المهنة  <span class="text-primary"><strong>{{$doctor->licence->code}}</strong></span>
+                  اذن مزاولة المهنة  <span class="text-primary"><strong>{{$licence->code}}</strong></span>
             </div>
 
 
 
-            {{-- <p class="numbero">رقم الاذن   : #{{$doctor->licence->code}}</p> --}}
+            {{-- <p class="numbero">رقم الاذن   : #{{$licence->code}}</p> --}}
 
             <p class="sub-title">في شأن مزاولة مهنة الطب بالقطاع العام او الخاص </p>
 
@@ -112,7 +112,7 @@
                     font-size: 2px;">
                         <h3 class="font-weight-bold" style="font-size: 20px !important;
                         margin: 0;">
-                            <strong>{{$doctor->name}}</strong>
+                            <strong>{{$licence->doctor->name}}</strong>
                         </h3>
                     </div>
                 </div>
@@ -131,7 +131,7 @@
 
                 <div class="branch-box card  p-3 mr-3" style="right:189px!important;">
                     <h6 class="font-weight-bold">
-                        <strong>{{$doctor->branch->name}}</strong>
+                        <strong>{{$licence->doctor->branch->name}}</strong>
                     </h6>
                 </div>
 
@@ -148,7 +148,7 @@
 
                 <div class="number-box card  p-3">
                     <h6 class="font-weight-bold">
-                        <strong>{{$doctor->code}}</strong>
+                        <strong>{{$licence->doctor->code}}</strong>
                     </h6>
                 </div>
 
@@ -166,9 +166,9 @@
 
                 <div class="work-box card  p-3">
                     <h4 class="font-weight-bold">
-                        <strong>{{$doctor->doctor_rank->name}}
-                            @if ($doctor->specialty1)
-                                -   {{$doctor->specialization}}  
+                        <strong>{{$licence->doctor_rank->name}}
+                            @if ($licence->specialty)
+                                -   {{$licence->specialty->name}}  
                             @endif
                         </strong>
                     </h4>
@@ -178,7 +178,7 @@
 
 
 
-                @if (($doctor->MedicalFacility && ! $doctor->institution) || $doctor->MedicalFacility)
+                @if (($licence->workIn))
                 <div class="in-place">
                  <h6 class="font-weight-bold">
                      <strong>
@@ -189,7 +189,7 @@
  
              <div class="medical-facility-box card">
                  <h4 class="font-weight-bold">
-                         <strong>  {{$doctor->MedicalFacility ? $doctor->MedicalFacility->name : "-"}}  </strong>
+                         <strong>  {{$licence->workIn ? $licence->workIn->name : "-"}}  </strong>
                  </h4>
  
              </div>
@@ -197,7 +197,7 @@
 
 
 
-                @if ($doctor->institution && ! $doctor->MedicalFacility)
+                @if ($licence->doctor->institution && ! $licence->doctor->MedicalFacility)
                 <div class="in-place">
                  <h6 class="font-weight-bold">
                      <strong>
@@ -208,7 +208,7 @@
  
              <div class="medical-facility-box card">
                  <h4 class="font-weight-bold">
-                         <strong>  {{$doctor->institution}}  </strong>
+                         <strong>  {{$licence->doctor->institution}}  </strong>
                  </h4>
  
              </div>
@@ -222,7 +222,7 @@
 
                 <div class="expired card">
                     <h5 class="text-center font-weight-bold">
-                        <strong>ينتهي العمل بهذا الإذن ويعتبر ملغياََ بتاريخ {{ date('Y-m-d', strtotime($doctor->licence->expiry_date)) }} </strong>
+                        <strong>ينتهي العمل بهذا الإذن ويعتبر ملغياََ بتاريخ {{ date('Y-m-d', strtotime($licence->expiry_date)) }} </strong>
                     </h5>
                 </div>
 
@@ -238,7 +238,7 @@
                 <div class="qr-code card p-2">
                     <div class="code">
                         @php
-                        $link = env('APP_URL') . "checker?licence=" . $doctor->code;
+                        $link = env('APP_URL') . "checker?licence=" . $licence->doctor->code;
                     $qrCode = DNS2D::getBarcodePNG($link, 'QRCODE', 5, 5);
                     @endphp
                     <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 50px; height: 50px;" />

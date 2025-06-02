@@ -21,10 +21,13 @@ return new class extends Migration
             $table->date('expiry_date');
             $table->string('status');
             $table->string('doctor_type')->nullable();
-            $table->foreignId('doctor_rank_id')->nullable()->constrained('doctor_ranks')->onDelete('cascade');
             $table->unsignedBigInteger('created_by');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->decimal('amount',11,2)->nullable();
+            $table->foreignId('doctor_rank_id')->nullable()->constrained('doctor_ranks')->onDelete('cascade');
+            $table->foreignId('specialty_id')->nullable()->constrained('specialties')->onDelete('cascade');
+            $table->unsignedBigInteger('workin_medical_facility_id')->nullable();
+            $table->foreign('workin_medical_facility_id')->references('id')->on('medical_facilities')->onDelete('cascade');
             $table->timestamps();
         });
     }

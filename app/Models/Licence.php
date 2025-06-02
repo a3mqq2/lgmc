@@ -26,6 +26,7 @@ class Licence extends Model
         'issued_date' => 'date',
         'expiry_date' => 'date',
         'amount'      => 'decimal:2',
+        'status'      => \App\Enums\MembershipStatus::class,
     ];
 
     protected static function booted()
@@ -58,4 +59,13 @@ class Licence extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function workIn(): BelongsTo
+    {
+        return $this->belongsTo(MedicalFacility::class, 'workin_medical_facility_id');
+    }
+
+    public function doctor_rank()         { return $this->belongsTo(DoctorRank::class); }
+    public function specialty()          { return $this->belongsTo(Specialty::class, 'specialty_id'); }
+
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('file_type_id')->constrained()->onDelete('cascade');
             $table->string('file_name');
             $table->string('file_path');
+            $table->integer('renew_number')->nullable();
             $table->timestamp('uploaded_at')->nullable();
             $table->timestamps();
         });

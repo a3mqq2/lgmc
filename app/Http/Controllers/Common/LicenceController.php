@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Common;
 
 use App\Models\FileType;
 use App\Enums\DoctorType;
+use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
 use App\Services\InvoiceService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\{Auth, DB};
 use PhpOffice\PhpSpreadsheet\Calculation\Financial\Securities\Price;
 use App\Models\{Doctor, Invoice, Licence, Log, MedicalFacility, Pricing, Transaction, Vault};
+use Carbon\Carbon;
 
 class LicenceController extends Controller
 {
@@ -107,90 +109,94 @@ class LicenceController extends Controller
 
         return view('general.licences.create', compact('doctors', 'medicalFacilities', 'request','file_types'));
     }
-/**
- * Store a newly created licence in storage.
- */
-public function store(Request $request)
-{
-    // 2) Build validation rules
-    $rules = [
-        'licensable_type'     => 'required|in:App\Models\Doctor,App\Models\MedicalFacility',
-        'licensable_id'       => 'required|integer',
-        'issued_date'         => 'required|date',
-        'expiry_date'         => 'required|date|after_or_equal:issued_date',
-        'medical_facility_id' => 'nullable|integer',
-    ];
 
-    $validated = $request->validate($rules);
 
-    try {
-        DB::transaction(function () use ($request, $validated, $file_types) {
-            // 3) Find the licensable entity (Doctor or MedicalFacility)
-            $licensable = app($validated['licensable_type'])
-                               ->findOrFail($validated['licensable_id']);
+    public function store(Request $request)
+    {
+        // التحقق من صحة البيانات
+        $validated = $request->validate([
+            'doctor_id' => 'required|exists:doctors,id',
+            'doctor_rank_id' => 'required|exists:doctor_ranks,id',
+            'specialty_id' => 'required|exists:specialties,id',
+            'issue_date' => 'required|date',
+            'medical_facility_id' => 'required|exists:medical_facilities,id',
+        ]);
 
-            // 4) Prevent duplicate licences
-            if (Licence::where('licensable_type', $validated['licensable_type'])
-                       ->where('licensable_id',   $validated['licensable_id'])
-                       ->where('issued_date',     $validated['issued_date'])
-                       ->where('expiry_date',     $validated['expiry_date'])
-                       ->exists()
-            ) {
-                throw new \Exception('هذا الترخيص موجود بالفعل');
+        try {
+            DB::beginTransaction();
+
+
+            $doctor = Doctor::findOrFail($validated['doctor_id']);
+
+            $licence = new Licence();
+            $licence->doctor_id = $validated['doctor_id'];
+            $licence->doctor_rank_id = $validated['doctor_rank_id'];
+            $licence->issued_date = $validated['issue_date'];
+            $licence->expiry_date  = $doctor->type->value == "libyan" ? Carbon::parse($validated['issue_date'])->addYear() : Carbon::parse($validated['issue_date'])->addMonths(6);
+            $licence->status = 'under_payment';
+            $licence->doctor_type = $doctor->type->value ?? null;
+            $licence->created_by = Auth::id();
+            $licence->specialty_id = $request->specialty_id;
+            $licence->doctor_rank_id = $request->doctor_rank_id;
+            $licence->workin_medical_facility_id = $request->medical_facility_id ?? null;
+            $licence->amount = 0;
+            $licence->save();
+
+
+            $pricing = Pricing::where('doctor_type', $doctor->type->value)
+            ->where('type', 'license')
+            ->where('doctor_rank_id', $doctor->doctor_rank_id)
+            ->first();
+
+            if(!$pricing)
+            {
+                return redirect()->back()->withErrors(['لم يتم وضع تسعيره اتصل بالدعم الفني']);
             }
 
-            // 5) Create the licence record
-            $licence = Licence::create([
-                'licensable_type'     => $validated['licensable_type'],
-                'licensable_id'       => $validated['licensable_id'],
-                'issued_date'         => $validated['issued_date'],
-                'expiry_date'         => $validated['expiry_date'],
-                'branch_id'           => $licensable->branch_id,
-                'status'              => 'under_payment',
-                'created_by'          => Auth::id(),
-                'doctor_type'         => $licensable instanceof Doctor ? $licensable->type : null,
-                'medical_facility_id' => $licensable instanceof Doctor ? $validated['medical_facility_id'] : null,
+
+            // new invoice
+
+            $medicalFacility = MedicalFacility::find($request->medical_facility_id);
+            $invoice = new Invoice();
+            $invoice->invoice_number = rand(0,999999999);
+            $invoice->description = "فاتورة اذن مزاولة جديد للطبيب " . $doctor->name . ' بالعمل في  ' . $medicalFacility->name;
+            $invoice->user_id = auth()->id();
+            $invoice->amount = $pricing->amount;
+            $invoice->status = "unpaid";
+            $invoice->doctor_id = $doctor->id;
+            $invoice->category = "licence";
+            $invoice->licence_id = $licence->id;
+            $invoice->save();
+
+            $invoice_item = new InvoiceItem();
+            $invoice_item->invoice_id = $invoice->id;
+            $invoice_item->description = $pricing->name;
+            $invoice_item->amount = $pricing->amount;
+            $invoice_item->pricing_id = $pricing->id;
+            $invoice_item->save();
+
+            
+                
+            $invoice->update([
+                'amount' => $invoice->items()->sum('amount'),
             ]);
 
-            // 6) Inline pricing logic & invoice creation
-            $pricingMap = [
-                DoctorType::Libyan->value      => [1=>7, 2=>8, 3=>9, 4=>10, 5=>11, 6=>12],
-                DoctorType::Palestinian->value => [1=>59,2=>60,3=>61,4=>62,5=>63,6=>64],
-                DoctorType::Visitor->value     => [3=>28,4=>29,5=>30],
-                DoctorType::Foreign->value     => [1=>19,2=>20,3=>21,4=>22,5=>23,6=>24],
-            ];
 
-            if ($licensable instanceof Doctor) {
-                $typeVal   = $licensable->type;
-                $rankId    = $licensable->doctor_rank_id;
-                $pricingId = $pricingMap[$typeVal][$rankId] ?? null;
-            } else {
-                // facility: first licence 67, subsequent 43
-                $pricingId = $licensable->licenses()->count() === 0 ? 67 : 43;
-            }
+            DB::commit();
 
-            if ($pricingId && $pricing = Pricing::find($pricingId)) {
-                Invoice::create([
-                    'invoice_number'   => 'LIC_' . uniqid(),
-                    'amount'           => $pricing->amount,
-                    'branch_id'        => $licensable->branch_id,
-                    'description'      => 'إصدار إذن مزاولة لـ ' . $licensable->name,
-                    'invoiceable_type' => get_class($licensable),
-                    'invoiceable_id'   => $licensable->id,
-                    'licence_id'       => $licence->id,
-                    'pricing_id'       => $pricing->id,
-                    'user_id'          => Auth::id(),
-                    'status'           => 'unpaid',
-                ]);
-            }
+            return redirect()
+                ->route(get_area_name() . '.doctors.show', $doctor)
+                ->with('success', 'تم إضافة إذن المزاولة بنجاح. رقم الإذن: ' . $licence->code);
 
-        });
-    } catch (\Exception $e) {
-        return redirect()->back()->withErrors($e->getMessage());
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['حدث خطأ أثناء إضافة إذن المزاولة: ' . $e->getMessage()]);
+        }
     }
-
-    return redirect()->back()->with('success', 'تم إضافة إذن مزاولة بنجاح.');
-}
 
     
 
@@ -457,34 +463,16 @@ public function store(Request $request)
 
     public function print(Licence $licence) {
 
-   
-        if($licence->status != "active") {
-            return redirect()->back()->withErrors(['لا يمكنك طباعة اذن مزاولة في هذه الحاله التي بها']);
-        }   
-
-        Log::create([
-            "user_id" => auth()->id(),
-            "details" => " تمت طباعة اذن المزاولة " . $licence->id, 
-            'loggable_id' => $licence->licensable_id,
-            'loggable_type' => Doctor::class,
-            "action" => "print_licence",
-        ]);
 
 
-
-        if($licence->licensable_type == "App\Models\Doctor") {
-
-            if($licence->licensable->type == DoctorType::Libyan) {
-                return view('general.licences.print', compact('licence'));
+        if($licence->doctor)
+        {
+            if($licence->doctor->type == DoctorType::Libyan) {
+                return view('general.doctors.print_license_libyan', compact('licence'));
             } else {
                 return view('general.licences.print-foreign', compact('licence'));
             }
-
-        } else if($licence->licensable_type == "App\Models\MedicalFacility") {
-            return view('general.licences.print-medical', compact('licence'));
         }
-
-
 
     }
 

@@ -187,6 +187,7 @@ class DoctorService
             'file_types' => $query->get(),
             'specialties2' => $specialties2,
             'doctorRanks' => DoctorRank::where('doctor_type', request('type'))->get(),
+            'institutions' => Institution::all(),
         ];
     }
 
@@ -251,6 +252,8 @@ class DoctorService
 
                 $doctor->index = $data['index'];
                 $doctor->makeCode();
+
+                
 
                 if($data['last_issued_date'] && $data['license_number'] )
                 {

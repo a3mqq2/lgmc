@@ -61,6 +61,19 @@
             </form>
              
          @endif
+
+         @if (request('type') == "medical-services")
+         <p class="font-weight-bold h4">ثانياََ : قم بتعبئة البيانات التالية للخدمات الطبية</p>
+         <form action="{{route('doctor.my-facility.store')}}" method="POST">
+            @csrf
+            <input type="hidden" name="type" value="medical_services">
+            @include('doctor.medical-facility.medical_services_form')
+            
+            <button class="btn-primary btn mt-2">حفظ</button>
+         </form>
+          
+      @endif
+
       @endif
 
     </div>

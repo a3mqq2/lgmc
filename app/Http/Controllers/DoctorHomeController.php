@@ -336,7 +336,8 @@ class DoctorHomeController extends Controller
             return redirect()->route('doctor.dashboard')->withErrors(['لا يمكنك رفع المستندات في هذه المرحلة']);
         }
 
-        $fileTypes = FileType::where('type', 'medical_facility')->where('facility_type','single')->where('for_registration', 1)->get();
+        $medical_facility_type = $medical_facility->type == "private_clinic" ? "single" : "services";
+        $fileTypes = FileType::where('type', 'medical_facility')->where('facility_type', $medical_facility_type)->where('for_registration', 1)->get();
         $uploadedFiles = $medical_facility->files()->pluck('file_type_id')->toArray();
         $requiredFileTypes = $fileTypes->whereNotIn('id', $uploadedFiles);
         if ($requiredFileTypes->isEmpty()) {
@@ -365,7 +366,7 @@ class DoctorHomeController extends Controller
 
         if ($isPending) {
             $facility->update($validated);
-            $facility->membership_status = "under_approve";
+            $facility->membership_status =  $facility->renew_number ? 'under_renew'  :  "under_approve";
             $facility->save();
 
             if ($request->hasFile('files')) {
@@ -383,5 +384,40 @@ class DoctorHomeController extends Controller
         }
 
         return back()->with('success', 'تم تحديث البيانات بنجاح');
+    }
+
+
+    public function renew()
+    {
+        $medical_facility = auth('doctor')->user()->medicalFacility;
+        
+        if($medical_facility->renew_number == null)
+        {
+            $medical_facility->renew_number = 1;
+        } else {
+            $files_for_renew_number = FileType::where('type', 'medical_facility')
+            ->where('facility_type', $medical_facility->type == "private_clinic" ? "single" : "services")
+            ->where('for_registration', 0)
+            ->count();
+
+            $uploadedFiles = $medical_facility->files()->where('renew_number', $medical_facility->renew_number )->pluck('file_type_id')->toArray();
+
+            if($files_for_renew_number == count($uploadedFiles))
+            {
+                $medical_facility->renew_number += 1;
+            }
+
+        }
+        
+        $medical_facility->save();
+        $medical_facility_type = $medical_facility->type == "private_clinic" ? "single" : "services";
+        $fileTypes = FileType::where('type', 'medical_facility')->where('facility_type', $medical_facility_type)->where('for_registration', 0)->get();
+        $uploadedFiles = $medical_facility->files()->where('renew_number', $medical_facility->renew_number )->pluck('file_type_id')->toArray();
+
+        $requiredFileTypes = $fileTypes->whereNotIn('id', $uploadedFiles);
+        if ($requiredFileTypes->isEmpty()) {
+            return redirect()->route('doctor.dashboard')->with('success', 'جميع المستندات المطلوبة تم رفعها بالفعل');
+        }
+        return view('doctor.medical-facility.upload-documents', compact('medical_facility', 'requiredFileTypes'));
     }
 }

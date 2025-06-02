@@ -100,7 +100,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $secondUser = User::find(2);
         if ($secondUser) {
-            $secondUser->branch_id = 5;
+            $secondUser->branch_id = 1;
             $secondUser->syncRoles([$branchOperationsRole]);
             // get all permissions for role 2
             $permissions = $branchOperationsRole->permissions;

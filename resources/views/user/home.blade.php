@@ -290,26 +290,20 @@
             <h1>لوحة التحكم الرئيسية</h1>
             <p>اهلاََ وسهلاََ بيك {{auth()->user()->name}} نتمنى لك يوماََ سعيداََ </p>
         </div>
-        <div class="col-md-4 text-md-end mt-3 mt-md-0">
-            <a href="{{ route(get_area_name().'.doctors.create') }}" class="add-member-btn">
-                <i class="fas fa-plus-circle"></i>
-                إضافة عضو جديد
-            </a>
-        </div>
     </div>
 </div>
 
 <!-- Statistics Section -->
 <div class="container-fluid px-0">
-    <h2 class="section-title text-dark">إحصائيات الأطباء الليبيين</h2>
+    <h2 class="section-title text-dark">إحصائيات العضويات</h2>
     
     <div class="stats-grid">
         @php
             $libyanStatuses = [
                 ['key'=>'under_approve', 'label'=>'طلبات الموقع', 'gradient'=>'card-gradient-primary', 'icon'=>'fa-clock'],
-                ['key'=>'under_edit', 'label'=>'أطباء قيد التعديل', 'gradient'=>'card-gradient-secondary', 'icon'=>'fa-edit'],
-                ['key'=>'under_payment', 'label'=>'أطباء قيد الدفع', 'gradient'=>'card-gradient-danger', 'icon'=>'fa-credit-card'],
-                ['key'=>'active', 'label'=>'أطباء مفعلين', 'gradient'=>'card-gradient-success', 'icon'=>'fa-check-circle'],
+                ['key'=>'under_edit', 'label'=>'عضويات قيد التعديل', 'gradient'=>'card-gradient-secondary', 'icon'=>'fa-edit'],
+                ['key'=>'under_payment', 'label'=>'عضويات قيد الدفع', 'gradient'=>'card-gradient-danger', 'icon'=>'fa-credit-card'],
+                ['key'=>'active', 'label'=>'عضويات مفعله', 'gradient'=>'card-gradient-success', 'icon'=>'fa-check-circle'],
             ];
         @endphp
 
@@ -321,7 +315,7 @@
                             <div class="flex-grow-1">
                                 <p class="stat-label mb-2">{{ $stat['label'] }}</p>
                                 <h2 class="stat-count text-light">
-                                    {{ \App\Models\Doctor::where('membership_status',$stat['key'])->where('type','libyan')->count() }}
+                                    {{ \App\Models\Doctor::where('branch_id', auth()->user()->branch_id)->where('membership_status',$stat['key'])->where('type','libyan')->count() }}
                                 </h2>
                                 <div class="stat-change mt-3">
                                     <i class="fas fa-arrow-up"></i>

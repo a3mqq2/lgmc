@@ -185,13 +185,8 @@
 
                     <a href="{{ route(get_area_name().'.doctors.edit',$doctor) }}" class="btn btn-info text-light">تعديل <i class="fa fa-edit"></i></a>
                     <a href="{{ route(get_area_name().'.doctors.print',$doctor) }}" class="btn btn-secondary text-light">طباعة بيانات الطبيب <i class="fa fa-print"></i></a>
-                    @if ($doctor->membership_status->value == "active")
-                    <a href="{{ route(get_area_name().'.doctors.print-license',$doctor) }}" class="btn btn-primary text-light"> طباعة اذن المزاولة  <i class="fa fa-print"></i></a>
                     <a href="{{ route(get_area_name().'.doctors.print-id',$doctor) }}" class="btn btn-primary text-light"> طباعة  البطاقة  <i class="fa fa-code"></i></a>
-                    @endif
-                    
-
-
+                   
 
                 @if(get_area_name()=='finance')
                     <a href="{{ route('finance.total_invoices.create',$doctor) }}" class="btn btn-primary text-light">دفع الفواتير</a>
@@ -211,6 +206,7 @@
                     <li class="nav-item"><button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button">البيانات الشخصية</button></li>
                     <li class="nav-item"><button class="nav-link" id="docs-tab" data-bs-toggle="tab" data-bs-target="#docs" type="button">مستندات الطبيب</button></li>
                     <li class="nav-item"><button class="nav-link" id="finance-tab" data-bs-toggle="tab" data-bs-target="#finance" type="button"> الملف المالي </button></li>
+                    <li class="nav-item"><button class="nav-link" id="licenses-tab" data-bs-toggle="tab" data-bs-target="#licenses" type="button"> اذونات المزاولة  </button></li>
                     @if ($doctor->membership_status->value != "under_approve")
                     @if(auth()->user()->permissions()->where('name','doctor-mail')->count())
                         <li class="nav-item"><button class="nav-link" id="external-tab" data-bs-toggle="tab" data-bs-target="#external" type="button">طلبات الأوراق الخارجية</button></li>
@@ -490,7 +486,7 @@
                                             </tr>
                                             <tr>
                                                 <th class="bg-light text-right"> جهة العمل / المستشفى </th>
-                                                <td> {{ $doctor->institution ?? '-' }} </td>
+                                                <td> {{ $doctor->institutionObj  ? $doctor->institutionObj->name : '-' }} </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -500,6 +496,24 @@
 
                         @endif
                        
+
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3 class="text-primary"> الانتساب  </h3>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th class="bg-light text-right">تاريخ الانتساب</th>
+                                                <td>{{date('Y-m-d', strtotime($doctor->registered_at) )}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     
 
@@ -633,6 +647,168 @@
 
 
 
+                    <div class="tab-pane fade" id="licenses" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0"> أذونات المزاولة </h5>
+                        </div>
+
+
+                        @if ($doctor->membership_status->value == "active")
+                        <!-- زر إضافة إذن مزاولة جديد -->
+                        <button type="button" class="btn btn-success text-light mb-3" data-bs-toggle="modal" data-bs-target="#addPracticeLicenseModal">
+                            <i class="fa fa-plus"></i> إضافة إذن مزاولة جديد
+                        </button>
+    
+                        <!-- مودال إضافة إذن مزاولة جديد -->
+                        <div class="modal fade" id="addPracticeLicenseModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <form action="{{route(get_area_name().'.licences.store', $doctor)}}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="doctor_id" value="{{ $doctor->id }}">
+                                        
+                                        <div class="modal-header text-light">
+                                            <h5 class="modal-title">
+                                                <i class="fa fa-certificate"></i> إضافة إذن مزاولة جديد
+                                            </h5>
+                                            <button type="button" class="btn-close text-light" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        
+                                        <div class="modal-body">
+                                            <div class="row g-3">
+                                                <!-- معلومات الطبيب -->
+                                                <div class="col-12">
+                                                    <div class="alert alert-info">
+                                                        <strong>الطبيب:</strong> {{ $doctor->name }} 
+                                                        <span class="badge bg-primary">{{ $doctor->code }}</span>
+                                                    </div>
+                                                </div>
+    
+                                                <!-- حدد الصفة -->
+                                                <div class="col-md-6">
+                                                    <label class="form-label">
+                                                        <i class="fa fa-user-tie"></i> حدد الصفة <span class="text-danger">*</span>
+                                                    </label>
+                                                    <select name="doctor_rank_id" class="form-control" required>
+                                                        <option value="">-- اختر الصفة --</option>
+                                                        @foreach($doctor_ranks as $rank)
+                                                            <option value="{{ $rank->id }}" 
+                                                                {{ $doctor->doctor_rank_id == $rank->id ? 'selected' : '' }}>
+                                                                {{ $rank->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+    
+                                                <!-- التخصص -->
+                                                <div class="col-md-6">
+                                                    <label class="form-label">
+                                                        <i class="fa fa-stethoscope"></i> التخصص
+                                                    </label>
+                                                    <select name="specialty_id" class="form-control">
+                                                        <option value="">-- اختر التخصص --</option>
+                                                        @foreach($specialties as $specialty)
+                                                            <option value="{{ $specialty->id }}"
+                                                                {{ $doctor->specialty_1_id == $specialty->id ? 'selected' : '' }}>
+                                                                {{ $specialty->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+    
+                                                <!-- تاريخ الإصدار -->
+                                                <div class="col-md-6">
+                                                    <label class="form-label">
+                                                        <i class="fa fa-calendar"></i> تاريخ الإصدار <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input type="date" 
+                                                        name="issue_date" 
+                                                        class="form-control" 
+                                                        value="{{ date('Y-m-d') }}" 
+                                                        required>
+                                                </div>
+    
+    
+                                                <!-- تاريخ الإصدار -->
+                                                <div class="col-md-6">
+                                                    <label class="form-label">
+                                                        <i class="fa fa-calendar"></i> المنشأة الطبية <span class="text-danger">*</span>
+                                                    </label>
+                                                    
+                                                    <select name="medical_facility_id" 
+                                                            id="medicalFacilityModalSelect" 
+                                                            class="form-control">
+                                                        <option value="">حدد منشأة طبية</option>
+                                                        @foreach ($medicalFacilities as $medicalFacility)
+                                                            <option value="{{$medicalFacility->id}}">{{$medicalFacility->name}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                
+    
+    
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="modal-footer justify-content-end">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                <i class="fa fa-times"></i> إلغاء
+                                            </button>
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fa fa-save"></i> حفظ الإذن
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>                
+                        @endif
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th> رقم الأذن </th>
+                                        <th> المنشأة الطبية </th>
+                                        <th>الحالة</th>
+                                        <th>تاريخ الإنشاء</th>
+                                        <th>الاعدادات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($doctor->licenses as $license)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $license->code }}</td>
+                                            <td>{{ $license->workIn?->name ?? '—' }}</td>
+                                            <td>
+                                                <span class="badge {{ $license->status->badgeClass() }}">
+                                                    {{ $license->status->label() }}
+                                                </span>
+                                            </td>
+                                            <td>{{ $license->created_at->format('Y-m-d') }}</td>
+                                            <td>
+                                                @if ($license->status->value == 'active')
+                                                <a href="{{ route(get_area_name().'.licences.print', $license) }}" class="btn btn-secondary btn-sm text-light">
+                                                    طباعه <i class="fa fa-print"></i>
+                                                </a>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="11" class="text-center">لا توجد فواتير متاحة.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+
+
                     @if(auth()->user()->permissions()->where('name','doctor-mail')->count())
                         <div class="tab-pane fade" id="external" role="tabpanel">
                             <div class="table-responsive mt-3">
@@ -732,16 +908,12 @@
                             </div>
                             @endif
                             <div class="mb-3">
-                                <label class="form-label">اسم الجهة التي يعمل فيها (إن وجدت)</label>
-                                <input type="text" name="institution" value="{{$doctor->institution}}" class="form-control">
-                            </div>
-    
-                            <div class="mb-3">
-                                <label class="form-label">المنشآت الطبية / القطاع الخاص </label>
-                                <select name="medical_facilities[]" multiple class="form-control select2">
-                                    {{-- @foreach ($medicalFacilities as $mf)
-                                        <option value="{{ $mf->id }}">{{ $mf->name }}</option>
-                                    @endforeach --}}
+                                <label class="form-label">الجهة العامة/ المستشفى</label>
+                                <select name="institution_id" id="" class="form-control select2 selectize">
+                                    <option value="">حدد مستشفى</option>
+                                    @foreach ($institutions as $institution)
+                                        <option value="{{$institution->id}}">{{$institution->name}}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -767,27 +939,103 @@
 </div>
 @endsection
 
+<!-- وفي نهاية الصفحة، استبدل قسم scripts بهذا الكود -->
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const statusSelect     = document.getElementById('final_status');
-    const noteContainer    = document.getElementById('edit_note_container');
-    const fieldsContainer  = document.getElementById('approve_fields_container');
+    // إعداد المودال والـ Select2
+    function initModalSelect2() {
+        // تدمير أي select2 موجود مسبقاً
+        if ($('#medicalFacilityModalSelect').hasClass('select2-hidden-accessible')) {
+            $('#medicalFacilityModalSelect').select2('destroy');
+        }
+        
+        // تهيئة Select2 الجديدة
+        $('#medicalFacilityModalSelect').select2({
+            dropdownParent: $('#addPracticeLicenseModal'),
+            placeholder: "حدد منشأة طبية",
+            allowClear: true,
+            width: '100%',
+            language: {
+                noResults: function() {
+                    return "لا توجد نتائج";
+                },
+                searching: function() {
+                    return "جاري البحث...";
+                }
+            }
+        });
+    }
 
-    if (!statusSelect) return;
+    // عند فتح المودال
+    $('#addPracticeLicenseModal').on('shown.bs.modal', function () {
+        initModalSelect2();
+    });
 
-    statusSelect.addEventListener('change', function() {
-        if (this.value === 'approved') {
-            fieldsContainer.style.display = '';
-            noteContainer.style.display   = 'none';
-        } else if (this.value === 'under_edit') {
-            fieldsContainer.style.display = 'none';
-            noteContainer.style.display   = '';
-        } else {
-            fieldsContainer.style.display = 'none';
-            noteContainer.style.display   = 'none';
+    // عند إغلاق المودال
+    $('#addPracticeLicenseModal').on('hidden.bs.modal', function () {
+        if ($('#medicalFacilityModalSelect').hasClass('select2-hidden-accessible')) {
+            $('#medicalFacilityModalSelect').select2('destroy');
         }
     });
+
+    // للنموذج الآخر في الصفحة (نموذج الموافقة)
+    const statusSelect = document.getElementById('final_status');
+    const noteContainer = document.getElementById('edit_note_container');
+    const fieldsContainer = document.getElementById('approve_fields_container');
+
+    if (statusSelect) {
+        statusSelect.addEventListener('change', function() {
+            if (this.value === 'approved') {
+                fieldsContainer.style.display = '';
+                noteContainer.style.display = 'none';
+            } else if (this.value === 'under_edit') {
+                fieldsContainer.style.display = 'none';
+                noteContainer.style.display = '';
+            } else {
+                fieldsContainer.style.display = 'none';
+                noteContainer.style.display = 'none';
+            }
+        });
+    }
 });
 </script>
+
+<!-- CSS إضافي لضمان عمل Select2 بشكل صحيح -->
+<style>
+.select2-container {
+    z-index: 9999 !important;
+}
+
+.select2-dropdown {
+    z-index: 9999 !important;
+}
+
+.select2-container--open {
+    z-index: 9999 !important;
+}
+
+.select2-container--default .select2-selection--single {
+    height: 38px !important;
+    line-height: 36px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding-left: 12px !important;
+    padding-right: 20px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px !important;
+}
+
+/* تأكد من أن المودال له z-index مناسب */
+.modal {
+    z-index: 1050;
+}
+
+.modal-backdrop {
+    z-index: 1040;
+}
+</style>
 @endsection

@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\AcademicDegree;
 use App\Models\University;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -24,6 +25,13 @@ class DatabaseSeeder extends Seeder
             'name' => 'Administrator',
             'email' => 'admin@demo.com',
             'password' => '123123123',
+        ]);
+
+
+        $user = \App\Models\User::factory()->create([
+            'name' => 'ريما',
+            'email' => 'rema@lgmc.org.ly',
+            'password' => 'rema@lgmc.org.ly',
         ]);
 
 
@@ -81,5 +89,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PalestinianDoctorFileTypeSeeder::class);
         $this->call(VisitorDoctorFileTypeSeeder::class);
         $this->call(PermissionForDoctors::class);
+
+        Artisan::call('import:hospitals');
     }
 }

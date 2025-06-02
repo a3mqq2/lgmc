@@ -10,7 +10,7 @@ class MedicalServiceFilesSeeder extends Seeder
 {
     public function run(): void
     {
-        $medicalService = MedicalFacilityType::find(2); // Assuming '2' is the ID for Medical Services
+        $medicalService = MedicalFacilityType::find(2); 
 
         if (!$medicalService) {
             $this->command->error('لم يتم العثور على نوع المنشأة: Medical Services');
@@ -21,8 +21,6 @@ class MedicalServiceFilesSeeder extends Seeder
         $registrationFiles = [
             ['name' => 'سجل تجاري', 'required' => 1],
             ['name' => 'غرفة تجارية', 'required' => 1],
-            ['name' => 'اذن طبيب ساري المفعول', 'required' => 1],
-            ['name' => 'صورة جواز السفر', 'required' => 1],
             ['name' => 'اذونات تآسيسيه نسخه طبق الاصل', 'required' => 1],
             ['name' => 'تعديلات ( ان تم التعديل )', 'required' => 0],
             ['name' => 'وثيقه تامين من هيئة التأمين الطبي', 'required' => 1],
@@ -44,8 +42,6 @@ class MedicalServiceFilesSeeder extends Seeder
         $renewalFiles = [
             ['name' => 'سجل تجاري ساري المفعول', 'required' => 1],
             ['name' => 'غرفة تجارية سارية المفعول', 'required' => 1],
-            ['name' => 'اذن طبيب ساري المفعول', 'required' => 1],
-            ['name' => 'جواز سفر ساري المفعول', 'required' => 1],
             ['name' => 'تعديلات ( ان تم التعديل )', 'required' => 0],
             ['name' => 'وثيقة تأمين من هيئة التأمين الطبي', 'required' => 1],
         ];

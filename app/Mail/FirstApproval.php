@@ -14,13 +14,15 @@ class FirstApproval extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     public $doctor;
+    public $invoice;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($doctor)
+    public function __construct($doctor,$invoice)
     {
         $this->doctor = $doctor;
+        $this->invoice = $invoice;
     }
 
     /**
@@ -42,6 +44,7 @@ class FirstApproval extends Mailable implements ShouldQueue
             view: 'emails.first-approval',
             with: [
                 'doctor' => $this->doctor,
+                'invoice' => $this->invoice,
             ],
         );
     }

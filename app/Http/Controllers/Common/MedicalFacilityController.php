@@ -159,12 +159,19 @@ class MedicalFacilityController extends Controller
         }
 
 
+
+
         if($request->status == "active")
         {
             $medicalFacility->edit_reason = null;
             $medicalFacility->membership_status = "under_payment"; 
-            $medicalFacility->setSequentialIndex();
-            $medicalFacility->makeCode();
+
+            if(!$medicalFacility->renew_number)
+            {
+                $medicalFacility->setSequentialIndex();
+                $medicalFacility->makeCode();
+            }
+           
             $medicalFacility->save();
             $this->createMedicalFacilityInvoice($medicalFacility, $request->is_paid);
         }
@@ -175,9 +182,10 @@ class MedicalFacilityController extends Controller
     public function createMedicalFacilityInvoice(MedicalFacility $medicalFacility, $is_paid)
     {
        
-        $pricing = Pricing::where('entity_type', 'medical_facility')
-        ->where('type', 'membership')
-        ->first();
+        $pricing = $medicalFacility->renew_number ?  Pricing::where('entity_type', 'medical_facility')
+        ->where('type', 'renew')
+        ->first() : Pricing::where('entity_type', 'medical_facility')->first();
+        
         if (!$pricing) {
             return redirect()->back()->withErrors(['error' => 'لا يوجد تسعير للمنشآت الطبية']);
         }
@@ -185,12 +193,15 @@ class MedicalFacilityController extends Controller
 
         $invoice = new Invoice();
         $invoice->invoice_number = rand(0,999999999);
-        $invoice->description = " فاتورة منشأة طبية جديدة    " . $medicalFacility->name;
+        $invoice->description = $medicalFacility->renew_number ? 
+            "فاتورة تجديد عضوية منشأة طبية رقم {$medicalFacility->renew_number} - {$medicalFacility->name}" :
+            "فاتورة عضوية منشأة طبية جديدة - {$medicalFacility->name}";
+
         $invoice->user_id = auth()->id();
         $invoice->amount = 0;
         $invoice->status = "unpaid";
         $invoice->doctor_id = $medicalFacility->manager->id;
-        $invoice->category = "medical_facility_registration";
+        $invoice->category = $medicalFacility->renew_number ? 'medical_facility_renew' : 'medical_facility_registration';
         $invoice->save();
 
         $invoice_item = new InvoiceItem();
@@ -216,6 +227,7 @@ class MedicalFacilityController extends Controller
 
 
               // create license
+              $medicalFacility->licenses()->delete();
               $license = new Licence();
               $license->medical_facility_id = $medicalFacility->id;
               $license->issued_date = now();
@@ -235,7 +247,9 @@ class MedicalFacilityController extends Controller
             $transaction->user_id = auth()->id();
             $transaction->vault_id = $vault->id;
             $transaction->type = "deposit";
-            $transaction->desc = " فاتورة عضوية منشأة طبية جديدة  " . $medicalFacility->name;
+            $transaction->desc = $medicalFacility->renew_number ? 
+                "إيداع مبلغ فاتورة تجديد منشأة طبية رقم {$medicalFacility->renew_number} - {$medicalFacility->name}" :
+                "إيداع مبلغ فاتورة عضوية منشأة طبية جديدة - {$medicalFacility->name}";
             $transaction->branch_id = auth()->user()->branch_id;
             $transaction->balance = $vault->balance;
             $transaction->save();

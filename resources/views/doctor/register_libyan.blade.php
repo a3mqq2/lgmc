@@ -6,7 +6,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="النقابة العامة للاطباء - ليبيا - بوابة النظام" name="description" />
     <meta content="النقابة العامة للاطباء - ليبيا" name="author" />
-    <link rel="shortcut icon" href="assets/images/logo-primary.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.5/js/standalone/selectize.min.js"></script>
+
+    <script>
+        $(".selectize").selectize({dir:"rtl",placeholder:"اختر"});
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            const steps = document.querySelectorAll('.step');
+            const progressBar = document.getElementById('progressBar');
+            const nextBtns = document.querySelectorAll('.nextBtn');
+            const prevBtns = document.querySelectorAll('.prevBtn');
+            const branchCards = document.querySelectorAll('.branch-card');
+            const selectedBranchInput = document.getElementById('selected_branch');
+            const branchNextBtn = document.getElementById('branchNextBtn');
+            let current = 0;
+    
+            // Branch selection functionality
+            branchCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove selected class from all cards
+                    branchCards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Add selected class to clicked card
+                    this.classList.add('selected');
+                    
+                    // Update hidden input
+                    const branchId = this.dataset.branchId;
+                    selectedBranchInput.value = branchId;
+                    
+                    // Enable next button
+                    branchNextBtn.disabled = false;
+                    
+                    // Add animation effect
+                    this.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                });
+            });
+            
+            const showStep = i => {
+                steps.forEach((s, idx) => s.style.display = idx === i ? 'block' : 'none');
+                progressBar.style.width = ((i + 1) / steps.length * 100) + '%';
+            };
+    
+            const validateStep = () => {
+                const currentStep = steps[current];
+                const inputs = currentStep.querySelectorAll('input, select, textarea');
+                let valid = true;
+    
+                inputs.forEach(input => {
+                    input.classList.remove('is-invalid');
+                    if (input.hasAttribute('required') && !input.value.trim()) {
+                        input.classList.add('is-invalid');
+                        input.reportValidity();
+                        valid = false;
+                    }
+                });
+    
+                return valid;
+            };
+    
+            nextBtns.forEach(btn => btn.addEventListener('click', () => {
+                if (validateStep() && current < steps.length - 1) {
+                    current++;
+                    showStep(current);
+                    
+                    // Scroll to top of form
+                    document.querySelector('.info-section').scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }));
+    
+            prevBtns.forEach(btn => btn.addEventListener('click', () => {
+                if (current > 0) {
+                    current--;
+                    showStep(current);
+                    
+                    // Scroll to top of form
+                    document.querySelector('.info-section').scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }));
+    
+            // Form submission validation
+            document.getElementById('multiStepForm').addEventListener('submit', function(e) {
+                if (!validateStep()) {
+                    e.preventDefault();
+                    alert('يرجى التأكد من ملء جميع الحقول المطلوبة');
+                }
+            });
+            
+            // Password confirmation validation
+            const passwordInput = document.querySelector('input[name="password"]');
+            const confirmPasswordInput = document.querySelector('input[name="password_confirmation"]');
+            
+            if (passwordInput && confirmPasswordInput) {
+                confirmPasswordInput.addEventListener('input', function() {
+                    if (this.value !== passwordInput.value) {
+                        this.classList.add('is-invalid');
+                        this.setCustomValidity('كلمة المرور غير متطابقة');
+                    } else {
+                        this.classList.remove('is-invalid');
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+            
+            // Enhanced form field animations
+            const formInputs = document.querySelectorAll('input, select, textarea');
+            formInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                    this.parentElement.style.transition = 'transform 0.2s ease';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = '';
+                });
+            });
+    
+            showStep(current);
+        });
+    </script>
+    
+</body>
+</html>="shortcut icon" href="assets/images/logo-primary.png">
     <script src="assets/js/layout.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,14 +157,12 @@
             border: 2px solid #dc3545 !important;
             box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
         }
-    </style>
-
-
-    <style>
+        
         .step{display:none;}
         .info-section{border:2px dashed #9d1414;padding:20px;margin:20px 0}
         .progress{height:8px}
         .progress-bar{transition:width .4s ease}
+        
         /* prettier alert */
         .custom-alert{
             background:linear-gradient(135deg,#f0f9ff 0%,#e0f4ff 100%);
@@ -42,6 +172,122 @@
             box-shadow:0 4px 12px rgba(0,0,0,.05);
             padding:1rem 1.25rem;
             font-weight:500;
+        }
+        
+        /* Branch Cards Styling */
+        .branch-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .branch-card:hover {
+            border-color: #b91c1c;
+            box-shadow: 0 4px 12px rgba(185, 28, 28, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .branch-card.selected {
+            border-color: #b91c1c;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            box-shadow: 0 6px 20px rgba(185, 28, 28, 0.2);
+        }
+        
+        .branch-card .branch-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #b91c1c, #dc2626);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .branch-card.selected .branch-icon {
+            background: linear-gradient(135deg, #059669, #10b981);
+        }
+        
+        .branch-card h6 {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .branch-card p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .branch-card.selected h6 {
+            color: #b91c1c;
+        }
+        
+        .branch-card.selected p {
+            color: #991b1b;
+        }
+        
+        /* Specialty warning alert */
+        .specialty-warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .specialty-warning .icon {
+            width: 24px;
+            height: 24px;
+            background: #f59e0b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+            margin-left: 0.75rem;
+        }
+        
+        /* Enhanced form sections */
+        .step-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-radius: 12px;
+        }
+        
+        .step-header h4 {
+            color: #b91c1c;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-header p {
+            color: #6b7280;
+            margin: 0;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #b91c1c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin: 0 auto 1rem;
         }
     </style>
 </head>
@@ -77,12 +323,44 @@
                                             @csrf
                                             @method('POST')
 
-                                            <!-- الخطوة 1 -->
+                                            <!-- الخطوة 1: اختيار الفرع -->
                                             <div class="info-section step">
+                                                <div class="step-header">
+                                                    <div class="step-number">1</div>
+                                                    <h4>اختيار الفرع</h4>
+                                                    <p>يرجى اختيار الفرع الأقرب لمكان إقامتك أو عملك</p>
+                                                </div>
+                                                
                                                 <div class="row">
-                                                    <div class="col-md-12 text-primary">
-                                                        <h4 class="mb-3">البيانات الشخصية</h4>
-                                                    </div>
+                                                    @foreach (App\Models\Branch::all() as $branch)
+                                                        <div class="col-md-4 col-sm-6">
+                                                            <div class="branch-card" data-branch-id="{{ $branch->id }}">
+                                                                <div class="branch-icon">
+                                                                    <i class="fas fa-map-marker-alt"></i>
+                                                                </div>
+                                                                <h6>{{ $branch->name }}</h6>
+                                                                <p>اختر هذا الفرع للمتابعة</p>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                
+                                                <input type="hidden" name="branch_id" id="selected_branch" required>
+                                                
+                                                <div class="d-flex justify-content-end mt-4">
+                                                    <button type="button" class="btn btn-primary nextBtn" disabled id="branchNextBtn">التالي</button>
+                                                </div>
+                                            </div>
+
+                                            <!-- الخطوة 2: البيانات الشخصية -->
+                                            <div class="info-section step">
+                                                <div class="step-header">
+                                                    <div class="step-number">2</div>
+                                                    <h4>البيانات الشخصية</h4>
+                                                    <p>أدخل بياناتك الشخصية كما هي موجودة في الوثائق الرسمية</p>
+                                                </div>
+                                                
+                                                <div class="row">
                                                     <div class="col-md-6">
                                                         <label>الاسم بالكامل</label>
                                                         <input type="text" required name="name" value="{{old('name')}}" class="form-control">
@@ -93,51 +371,46 @@
                                                         <input type="text" required name="name_en" value="{{old('name_en')}}" class="form-control">
                                                     </div>
                                                    
+                                                    <div class="col-md-6">
+                                                        <label>الرقم الوطني</label>
+                                                        <input type="text" required name="national_number" value="{{old('national_number')}}" class="form-control">
+                                                    </div>
 
-                                                  <div class="col-md-6">
-                                                         <label> الرقم الوطني    </label>
-                                                         <input type="text" required name="national_number" value="{{old('national_number')}}" class="form-control">
-                                                   </div>
+                                                    <div class="col-md-6">
+                                                        <label>اسم الام</label>
+                                                        <input type="text" required name="mother_name" value="{{old('mother_name')}}" class="form-control">
+                                                    </div>
 
-                                                   <div class="col-md-6">
-                                                         <label> اسم الام      </label>
-                                                         <input type="text" required name="mother_name" value="{{old('mother_name')}}" class="form-control">
-                                                   </div>
+                                                    <div class="col-md-6">
+                                                        <label>تاريخ الميلاد</label>
+                                                        <input type="date" required name="date_of_birth" value="{{old('date_of_birth')}}" class="form-control">
+                                                    </div>
 
-                                                   <div class="col-md-6">
-                                                         <label>     تاريخ الميلاد    </label>
-                                                         <input type="date" required name="date_of_birth" value="{{old('date_of_birth')}}" class="form-control">
-                                                   </div>
-
-
-                                                   <div class="col-md-3">
-                                                         <label>       الحالة الاجتماعية    </label>
-                                                         <select name="marital_status" id="marital_status" class="form-control">
+                                                    <div class="col-md-3">
+                                                        <label>الحالة الاجتماعية</label>
+                                                        <select name="marital_status" id="marital_status" class="form-control">
                                                             <option value="single">اعزب</option>
                                                             <option value="married">متزوج</option>
-                                                         </select>
-                                                   </div>
-                                                   <div class="col-md-3">
-                                                      <label>       الجنس      </label>
-                                                      <select name="gender" id="gender" class="form-control">
-                                                         <option value="male">ذكر</option>
-                                                         <option value="female">انثى</option>
-                                                      </select>
-                                                </div>
+                                                        </select>
+                                                    </div>
+                                                    
+                                                    <div class="col-md-3">
+                                                        <label>الجنس</label>
+                                                        <select name="gender" id="gender" class="form-control">
+                                                            <option value="male">ذكر</option>
+                                                            <option value="female">انثى</option>
+                                                        </select>
+                                                    </div>
 
-                                                   <div class="col-md-6">
-                                                      <label>رقم جواز السفر</label>
-                                                      <input type="text" required name="passport_number" value="{{old('passport_number')}}" class="form-control">
-                                                  </div>
+                                                    <div class="col-md-6">
+                                                        <label>رقم جواز السفر</label>
+                                                        <input type="text" required name="passport_number" value="{{old('passport_number')}}" class="form-control">
+                                                    </div>
 
-                                                  <div class="col-md-6">
-                                                         <label> تاريخ انتهاء صلاحية جواز السفر    </label>
-                                                         <input type="date" required name="passport_expiration" value="{{old('passport_expiration')}}" class="form-control">
-                                                   </div>
-                                                   
-
-                                                   
-
+                                                    <div class="col-md-6">
+                                                        <label>تاريخ انتهاء صلاحية جواز السفر</label>
+                                                        <input type="date" required name="passport_expiration" value="{{old('passport_expiration')}}" class="form-control">
+                                                    </div>
 
                                                     <div class="col-md-12 mt-3">
                                                         <div class="custom-alert d-flex align-items-center mb-4" role="alert">
@@ -146,25 +419,29 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="d-flex justify-content-end mt-4">
+                                                <div class="d-flex justify-content-between mt-4">
+                                                    <button type="button" class="btn btn-secondary prevBtn">السابق</button>
                                                     <button type="button" class="btn btn-primary nextBtn">التالي</button>
                                                 </div>
                                             </div>
 
-                                            <!-- الخطوة 2 -->
+                                            <!-- الخطوة 3: بيانات الاتصال -->
                                             <div class="info-section step">
+                                                <div class="step-header">
+                                                    <div class="step-number">3</div>
+                                                    <h4>بيانات الاتصال</h4>
+                                                    <p>أدخل بيانات الاتصال الخاصة بك وكلمة المرور للحساب</p>
+                                                </div>
+                                                
                                                 <div class="row mb-4">
-                                                    <div class="col-md-12 text-primary">
-                                                        <h4 class="mb-3">بيانات الاتصال</h4>
-                                                    </div>
                                                     <div class="col-md-6">
                                                         <label>رقم الهاتف @if(request('type')=="visitor") - الشركة @endif</label>
                                                         <input type="phone" required name="phone" maxlength="10" value="{{old('phone')}}" class="form-control">
                                                     </div>
                                                     <div class="col-md-6">
-                                                      <label> العنوان   @if(request('type')=="visitor") - الشركة @endif</label>
-                                                      <input type="text" required name="address"   value="{{old('address')}}" class="form-control">
-                                                  </div>
+                                                        <label>العنوان @if(request('type')=="visitor") - الشركة @endif</label>
+                                                        <input type="text" required name="address" value="{{old('address')}}" class="form-control">
+                                                    </div>
                                                     <div class="col-md-6">
                                                         <label>رقم الواتساب</label>
                                                         <input type="phone" name="phone_2" maxlength="10" value="{{old('phone_2')}}" class="form-control">
@@ -188,12 +465,15 @@
                                                 </div>
                                             </div>
 
-                                            <!-- الخطوة 3 -->
+                                            <!-- الخطوة 4: بيانات البكالوريوس -->
                                             <div class="info-section step">
+                                                <div class="step-header">
+                                                    <div class="step-number">4</div>
+                                                    <h4>بيانات البكالوريوس</h4>
+                                                    <p>أدخل معلومات شهادة البكالوريوس في الطب</p>
+                                                </div>
+                                                
                                                 <div class="row mt-2 mb-4">
-                                                    <div class="col-md-12 text-primary">
-                                                        <h4 class="mb-3">بيانات البكالوريوس</h4>
-                                                    </div>
                                                     <div class="col-md-6">
                                                         <label>جهة التخرج</label>
                                                         <select name="hand_graduation_id" class="form-control selectize">
@@ -206,16 +486,15 @@
                                                     <div class="col-md-6">
                                                         <label>سنة التخرج</label>
                                                         <select name="graduation_date" class="form-control selectize select2">
-                                                         <option value="">حدد  تاريخ</option>
-                                                         @php
-                                                               $currentYear = date('Y');
-                                                               $years = range($currentYear, 1950);
-                                                         @endphp
-                                                         <option value="">حدد السنة</option>
-                                                         @foreach ($years as $year)
-                                                               <option value="{{$year}}" {{old('graduation_date')==$year?"selected":""}}>{{$year}}</option>
-                                                         @endforeach
-                                                     </select>
+                                                            <option value="">حدد تاريخ</option>
+                                                            @php
+                                                                $currentYear = date('Y');
+                                                                $years = range($currentYear, 1950);
+                                                            @endphp
+                                                            @foreach ($years as $year)
+                                                                <option value="{{$year}}" {{old('graduation_date')==$year?"selected":""}}>{{$year}}</option>
+                                                            @endforeach
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <div class="d-flex justify-content-between mt-4">
@@ -224,12 +503,15 @@
                                                 </div>
                                             </div>
 
-                                            <!-- الخطوة 4 -->
+                                            <!-- الخطوة 5: بيانات الامتياز -->
                                             <div class="info-section step">
+                                                <div class="step-header">
+                                                    <div class="step-number">5</div>
+                                                    <h4>بيانات الامتياز</h4>
+                                                    <p>أدخل معلومات سنة الامتياز الطبي</p>
+                                                </div>
+                                                
                                                 <div class="row mt-2 mb-4">
-                                                    <div class="col-md-12 text-primary">
-                                                        <h4 class="mb-3">بيانات الامتياز</h4>
-                                                    </div>
                                                     <div class="col-md-6">
                                                         <label>جهة الحصول على الامتياز</label>
                                                         <select name="qualification_university_id" class="form-control selectize">
@@ -240,7 +522,7 @@
                                                         </select>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <label> سنة الحصول عليها </label>
+                                                        <label>سنة الحصول عليها</label>
                                                         <select name="internership_complete" id="internership_complete" class="form-control selectize select2">
                                                             @php
                                                                 $currentYear = date('Y');
@@ -253,76 +535,72 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                           
-
+                                                
                                                 <input type="hidden" name="country_id" value="1">
-
 
                                                 <div class="d-flex justify-content-between mt-4">
                                                     <button type="button" class="btn btn-secondary prevBtn">السابق</button>
-                                                   <button type="button" class="btn btn-primary nextBtn">التالي</button>
-                                                    {{-- <button type="submit" class="btn btn-success">إرسال الطلب</button> --}}
+                                                    <button type="button" class="btn btn-primary nextBtn">التالي</button>
                                                 </div>
-
                                             </div>
 
+                                            <!-- الخطوة 6: الدرجة العلمية -->
                                             <div class="info-section step">
-                                             <div class="row mt-2 mb-4">
-                                                 <div class="col-md-12 text-primary">
-                                                     <h4 class="mb-3"> الدرجة العلمية الحالية  </h4>
-                                                 </div>
-                                                 <div class="col-md-4">
-                                                   <label for="">الدرجة العلمية</label>
-                                                   <select name="academic_degree_id" id="" class="form-control select2">
-                                                       <option value="">حدد درجة علمية</option>
-                                                       @foreach ($academicDegrees as $academicDegree)
-                                                           <option value="{{$academicDegree->id}}" {{old('academic_degree_id') == $academicDegree->id ? "selected" : ""}}>{{$academicDegree->name}}</option>
-                                                       @endforeach
-                                                   </select>
-                                                 </div>
-                                                 <div class="col-md-4">
-                                                     <label> سنة الحصول عليها </label>
-                                                     <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control selectize select2">
-                                                         @php
-                                                             $currentYear = date('Y');
-                                                             $years = range($currentYear, 1950);
-                                                         @endphp
-                                                         <option value="">حدد السنة</option>
-                                                         @foreach ($years as $year)
-                                                             <option value="{{$year}}" {{old('certificate_of_excellence_date')==$year?"selected":""}}>{{$year}}</option>
-                                                         @endforeach
-                                                     </select>
-                                                 </div>
-                                                   <div class="col-md-4">
-                                                      <label>   جهة الحصول عليها  </label>
-                                                      <select name="academic_degree_univeristy_id" class="form-control selectize">
-                                                          <option value="">حدد الجهة</option>
-                                                          @foreach ($universities as $university)
-                                                              <option value="{{$university->id}}" {{old('academic_degree_university_id')==$university->id?"selected":""}}>{{$university->name}}</option>
-                                                          @endforeach
-                                                      </select>
+                                                <div class="step-header">
+                                                    <div class="step-number">6</div>
+                                                    <h4>الدرجة العلمية الحالية</h4>
+                                                    <p>أدخل معلومات أعلى درجة علمية حصلت عليها</p>
                                                 </div>
-                                             </div>
-                                        
-
-                                             <input type="hidden" name="country_id" value="1">
-
-
-                                             <div class="d-flex justify-content-between mt-4">
-                                                 <button type="button" class="btn btn-secondary prevBtn">السابق</button>
-                                                 <button type="button" class="btn btn-primary nextBtn">التالي</button>
-                                                 {{-- <button type="submit" class="btn btn-success">إرسال الطلب</button> --}}
-                                             </div>
-
-                                         </div>
-
-
-                                            <!-- الخطوة 5 -->
-                                            <div class="info-section step">
-                                                <div class="row">
-                                                    <div class="col-md-12 text-primary">
-                                                        <h4 class="mb-3">بيانات العمل الحالي</h4>
+                                                
+                                                <div class="row mt-2 mb-4">
+                                                    <div class="col-md-4">
+                                                        <label for="">الدرجة العلمية</label>
+                                                        <select name="academic_degree_id" id="" class="form-control select2">
+                                                            <option value="">حدد درجة علمية</option>
+                                                            @foreach ($academicDegrees as $academicDegree)
+                                                                <option value="{{$academicDegree->id}}" {{old('academic_degree_id') == $academicDegree->id ? "selected" : ""}}>{{$academicDegree->name}}</option>
+                                                            @endforeach
+                                                        </select>
                                                     </div>
+                                                    <div class="col-md-4">
+                                                        <label>سنة الحصول عليها</label>
+                                                        <select name="certificate_of_excellence_date" id="certificate_of_excellence_date" class="form-control selectize select2">
+                                                            @php
+                                                                $currentYear = date('Y');
+                                                                $years = range($currentYear, 1950);
+                                                            @endphp
+                                                            <option value="">حدد السنة</option>
+                                                            @foreach ($years as $year)
+                                                                <option value="{{$year}}" {{old('certificate_of_excellence_date')==$year?"selected":""}}>{{$year}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label>جهة الحصول عليها</label>
+                                                        <select name="academic_degree_univeristy_id" class="form-control selectize">
+                                                            <option value="">حدد الجهة</option>
+                                                            @foreach ($universities as $university)
+                                                                <option value="{{$university->id}}" {{old('academic_degree_university_id')==$university->id?"selected":""}}>{{$university->name}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-flex justify-content-between mt-4">
+                                                    <button type="button" class="btn btn-secondary prevBtn">السابق</button>
+                                                    <button type="button" class="btn btn-primary nextBtn">التالي</button>
+                                                </div>
+                                            </div>
+
+                                            <!-- الخطوة 7: بيانات العمل الحالي -->
+                                            <div class="info-section step">
+                                                <div class="step-header">
+                                                    <div class="step-number">7</div>
+                                                    <h4>بيانات العمل الحالي</h4>
+                                                    <p>أدخل معلومات وضعك المهني الحالي</p>
+                                                </div>
+                                                
+                                                <div class="row">
                                                     <div class="col-md-12">
                                                         <label>الصفة</label>
                                                         <select name="doctor_rank_id" required id="doctor_rank_id" class="form-control selectize">
@@ -337,49 +615,49 @@
                                                         </select>
                                                     </div>
 
-                                                    <div class="col-md-12 mt-3">
-                                                      <label>حدد فرع (الأقرب)</label>
-                                                      <select name="branch_id" class="form-control selectize" required>
-                                                          <option value="">حدد فرع</option>
-                                                          @foreach (App\Models\Branch::all() as $branch)
-                                                              <option value="{{$branch->id}}">{{$branch->name}}</option>
-                                                          @endforeach
-                                                      </select>
-                                                  </div>
-
-                                                  <div class="mb-3">
-                                                         <label class="form-label">حدد تخصص (ان وجد) </label>
-                                                         <select name="specialty_1_id" class="form-control">
-                                                            <option value="">اختر تخصص </option>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">حدد تخصص (ان وجد)</label>
+                                                        
+                                                        <!-- تحذير متطلبات التخصص -->
+                                                        <div class="specialty-warning d-flex align-items-start mb-3">
+                                                            <div class="icon">
+                                                                <i class="fas fa-exclamation-triangle"></i>
+                                                            </div>
+                                                            <div>
+                                                                <strong class="text-amber-800">متطلبات اختيار التخصص:</strong>
+                                                                <p class="text-amber-700 mb-2 mt-1">
+                                                                    يجب أن تكون لديك خبرة عملية في التخصص المختار لا تقل عن <strong>أربع سنوات</strong> من تاريخ إنهاء سنة الامتياز.
+                                                                </p>
+                                                                <small class="text-amber-600">
+                                                                    <i class="fas fa-info-circle me-1"></i>
+                                                                    إذا لم تستوف هذا الشرط، يرجى ترك هذا الحقل فارغاً واختيار "ممارس عام" كصفة.
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <select name="specialty_1_id" class="form-control">
+                                                            <option value="">اختر تخصص (اختياري)</option>
                                                             @foreach ($specialties as $item)
-                                                               <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
                                                             @endforeach
-                                                         </select>
-                                                   </div>
-                                               
+                                                        </select>
+                                                    </div>
 
-                                                   <div class="mb-3">
-                                                      <label class="form-label"> المستشفى (إن وجدت)</label>
-                                                      <input type="text" name="institution" class="form-control">
-                                                  </div>
-
-
-                                                  {{-- <div class="mb-3">
-                                                      <label class="form-label">المنشآت الطبية</label>
-                                                      <select name="medical_facilities[]" multiple class="form-control select2">
-                                                         @foreach ($medicalFacilities as $mf)
-                                                            <option value="{{ $mf->id }}">{{ $mf->name }}</option>
-                                                         @endforeach
-                                                      </select>
-                                                   </div> --}}
-
+                                                    <div class="mb-3">
+                                                        <label class="form-label">الجهة العامة/ المستشفى</label>
+                                                        <select name="institution_id" id="" class="form-control select2 selectize">
+                                                            <option value="">حدد مستشفى</option>
+                                                            @foreach ($institutions as $institution)
+                                                                <option value="{{$institution->id}}">{{$institution->name}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
                                                 </div>
 
                                                 <div class="d-flex justify-content-between mt-4">
-                                                   <button type="button" class="btn btn-secondary prevBtn">السابق</button>
-                                                   <button type="submit" class="btn btn-success">إرسال الطلب</button>
-                                               </div>
-
+                                                    <button type="button" class="btn btn-secondary prevBtn">السابق</button>
+                                                    <button type="submit" class="btn btn-success">إرسال الطلب</button>
+                                                </div>
                                             </div>
                                         </form>
 

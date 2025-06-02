@@ -63,7 +63,7 @@ class MedicalFacility extends Model
 
     public function licenses()
     {
-        return $this->hasMany(Licence::class, 'licensable_id')->where('licensable_type', 'App\Models\MedicalFacility')->orderBy('created_at', 'desc');
+        return $this->hasMany(Licence::class, 'medical_facility_id');
     }
 
 

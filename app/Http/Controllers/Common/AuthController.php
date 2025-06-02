@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Common;
 
-use App\Enums\MembershipStatus;
 use Carbon\Carbon;
-
 use App\Models\Otp;
+
 use App\Models\Branch;
 use App\Models\Doctor;
 use App\Mail\VerifyOtp;
@@ -16,8 +15,10 @@ use App\Models\Blacklist;
 use App\Models\Specialty;
 use App\Models\DoctorRank;
 use App\Models\University;
+use App\Models\Institution;
 use Illuminate\Http\Request;
 use App\Models\AcademicDegree;
+use App\Enums\MembershipStatus;
 use App\Models\MedicalFacility;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -121,35 +122,35 @@ class AuthController extends Controller
         $specialties = Specialty::whereNull('specialty_id')->get();
         $branches = Branch::all();
         $medicalFacilities = MedicalFacility::all();
-
+        $institutions = Institution::all();
         if($request->type)
         {
             if($request->type == "foreign")
             {
-                return view('doctor.register_foreign', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities'));
+                return view('doctor.register_foreign', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities','institutions'));
             }
 
             if($request->type == "visitor")
             {
-                return view('doctor.register_visitor', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities'));
+                return view('doctor.register_visitor', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities','institutions'));
             }
 
 
             if($request->type == "palestinian")
             {
-                return view('doctor.register_palestinian', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities'));
+                return view('doctor.register_palestinian', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities','institutions'));
             }
 
             if($request->type == "libyan")
             {
-                return view('doctor.register_libyan', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities'));
+                return view('doctor.register_libyan', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities','institutions'));
             }
 
 
         }
 
 
-        return view('doctor.register', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities'));
+        return view('doctor.register', compact('countries','academicDegrees','universities','doctor_ranks','specialties','branches','medicalFacilities','institutions'));
     }
 
 

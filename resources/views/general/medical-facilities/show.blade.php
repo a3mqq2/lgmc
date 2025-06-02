@@ -70,6 +70,7 @@
                                         <th style="width:10%;">معاينة</th>
                                         <th>اسم الملف</th>
                                         <th>نوع الملف</th>
+                                        <th> وقت الرفع  </th>
                                         <th class="text-center" style="width:20%;">الإجراءات</th>
                                     </tr>
                                 </thead>
@@ -89,8 +90,21 @@
                                                     <i class="fa fa-file-pdf fa-2x text-danger"></i>
                                                 @endif
                                             </td>
-                                            <td>{{ $file->file_name }}</td>
+                                            <td>{{ $file->file_name }}
+                                            
+                                            
+                                                @if($file->renew_number)
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-sync-alt me-1"></i>
+                                                    طلب تجديد #{{ $file->renew_number }}
+                                                </span>
+                                            @endif
+                                            
+                                            </td>
                                             <td>{{ optional($file->fileType)->name ?? '-' }}</td>
+                                            <td>
+                                                {{date('Y-m-d H:i:s', strtotime($file->created_at))}}
+                                            </td>
                                             <td class="text-center">
                                                 <a href="{{ $url }}" target="_blank" class="btn btn-sm btn-success me-1">
                                                     <i class="fa fa-eye"></i>
@@ -117,7 +131,7 @@
 
           </div>
 
-          @if ($medicalFacility->membership_status->value == 'under_approve')
+          @if ($medicalFacility->membership_status->value == 'under_approve' || $medicalFacility->membership_status->value == 'under_renew')
           <form action="{{route(get_area_name().'.medical-facilities.change-status', $medicalFacility)}}" method="POST">
             @csrf
             @method('POST')
