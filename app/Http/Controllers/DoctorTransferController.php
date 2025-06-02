@@ -43,7 +43,7 @@ class DoctorTransferController extends Controller
     public function create()
     {
         $doctors  = Doctor::where('branch_id', auth()->user()->branch_id)->select('id', 'name')->get();
-        $branches = Branch::where('id', '!=', auth()->user()->branch_id)->select('id', 'name')->get();
+        $branches = Branch::all();
 
         return view('user.doctor_transfers.create', compact('doctors', 'branches'));
     }
