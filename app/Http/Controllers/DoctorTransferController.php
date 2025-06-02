@@ -198,20 +198,7 @@ class DoctorTransferController extends Controller
                 $newFile->doctor_id = $targetDoctor->id;
                 $newFile->save();
             }
-    
-            /* 5) نسخ الفواتير (مع بنودها) */
-            foreach ($oldDoctor->invoices as $invoice) {
-                $newInvoice            = $invoice->replicate();
-                $newInvoice->doctor_id = $targetDoctor->id;
-                $newInvoice->save();
-    
-                foreach ($invoice->items as $item) {
-                    $newItem             = $item->replicate();
-                    $newItem->invoice_id = $newInvoice->id;
-                    $newItem->save();
-                }
-            }
-    
+
             /* 6) تحديث حالة طلب النقل */
             $doctorTransfer->update([
                 'status'      => 'approved',
