@@ -44,7 +44,6 @@
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'inactive']) }}" class="nav-link">عضويات  منتهيه صلاحيتهم</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'banned']) }}" class="nav-link">عضويات موقوفه</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'suspended']) }}" class="nav-link">عضويات معلقه</a>
-
             </li>
 
         </ul>

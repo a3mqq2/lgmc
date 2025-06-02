@@ -331,6 +331,16 @@
                                         </tr>
 
 
+                                       @if ($doctor->membership_status->value == "suspended" )
+                                       <tr>
+                                            <th class="bg-light text-primary"> سبب التعليق    </th>
+                                            <div class="text-center">
+                                                {{ $doctor->suspended_reason ? $doctor->suspended_reason : '—' }}
+                                            </div>
+                                        </tr>
+                                       @endif
+
+
                                     </tbody>
                                 </table>
 
