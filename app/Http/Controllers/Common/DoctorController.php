@@ -497,9 +497,7 @@ class DoctorController extends Controller
         
         // Specialty filter
         if ($request->filled('specialty_id')) {
-            $query->whereHas('specialties', function($q) use ($request) {
-                $q->whereIn('specialty_id', $request->input('specialty_id'));
-            });
+            $query->where('specialty_1_id',$request->specialty_id);
         }
         
         // Doctor type filter
