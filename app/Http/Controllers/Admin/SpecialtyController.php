@@ -23,8 +23,7 @@ class SpecialtyController extends Controller
      */
     public function create()
     {
-        $specialties = Specialty::where('specialty_id', null)->get();
-        return view('admin.specialties.create', compact('specialties'));
+        return view('admin.specialties.create');
     }
 
     /**
@@ -34,18 +33,11 @@ class SpecialtyController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'specialty_id' => 'nullable|exists:specialties,id'
+            'name_en' => 'required|string|max:255',
         ]);
 
         $specialty = Specialty::create($request->all());
 
-        Log::create([
-            'user_id' => auth()->id(),
-            'details' => "تم إنشاء تخصص: {$specialty->name}",
-            'loggable_id' => $specialty->id,
-            'loggable_type' => Specialty::class,
-            'action' => 'create_specialty',
-        ]);
 
         return redirect()->route(get_area_name() . '.specialties.index')
             ->with('success', 'تم إنشاء التخصص بنجاح.');
@@ -57,8 +49,7 @@ class SpecialtyController extends Controller
     public function edit($id)
     {
         $specialty = Specialty::findOrFail($id);
-        $specialties = Specialty::whereNull('specialty_id')->get();
-        return view('admin.specialties.edit', compact('specialty', 'specialties'));
+        return view('admin.specialties.edit', compact('specialty'));
     }
 
     /**
@@ -68,33 +59,18 @@ class SpecialtyController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'specialty_id' => 'nullable|exists:specialties,id'
+            'name_en' => 'required|string|max:255',
         ]);
 
         $specialty = Specialty::findOrFail($id);
         $specialty->update([
             'name' => $request->name,
-            'specialty_id' => $request->specialty_id,
+            'name_en' => $request->name_en,
         ]);
 
-        Log::create([
-            'user_id' => auth()->id(),
-            'details' => "تم تعديل تخصص: {$specialty->name}",
-            'loggable_id' => $specialty->id,
-            'loggable_type' => Specialty::class,
-            'action' => 'update_specialty',
-        ]);
-
+ 
         return redirect()->route(get_area_name() . '.specialties.index')
             ->with('success', 'تم تحديث التخصص بنجاح.');
     }
 
-    /**
-     * Retrieve sub-specialties for a given specialty.
-     */
-    public function get_subs($id)
-    {
-        $specialties = Specialty::where('specialty_id', $id)->get();
-        return response()->json($specialties, 200);
-    }
 }

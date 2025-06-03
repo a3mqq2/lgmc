@@ -48,15 +48,15 @@
             </div>
 
 
-            <div class="card-title" dir="rtl">
-                  اذن مزاولة المهنة  <span class="text-primary"><strong>{{$licence->code}}</strong></span>
+            <div class="card-title" dir="rtl" style="">
+                  اذن مزاولة رقم (  <span class="text-primary"><strong>{{$licence->code}}</strong></span> )
             </div>
 
 
 
             {{-- <p class="numbero">رقم الاذن   : #{{$licence->code}}</p> --}}
 
-            <p class="sub-title">في شأن مزاولة مهنة الطب بالقطاع العام او الخاص </p>
+            <p class="sub-title ">في شأن مزاولة مهنة الطب  في عيادة او مؤسسة او منشأة طبية  </p>
 
             <div class="libyan">
 

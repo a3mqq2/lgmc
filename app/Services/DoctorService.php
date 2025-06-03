@@ -165,7 +165,7 @@ class DoctorService
 
 
         $query = FileType::query()->where('type', 'doctor');
-        $specialties = Specialty::where('specialty_id', null)->get();
+        $specialties = Specialty::all();
         $specialties2 = DB::table('doctors')
         ->select('specialty_2')
         ->whereNotNull('specialty_2')

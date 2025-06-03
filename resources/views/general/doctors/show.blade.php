@@ -9,15 +9,12 @@
         <h2>{{$doctor->name}}</h2>
     </div>
 
-    
     @if ($doctor->membership_status->value != "under_approve" && $doctor->membership_status->value != "under_edit")
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
                 <h4 class="main-content-label">الإجراءات</h4>
-
-           
-
+    
                 @if ($doctor->transfers->where('status','pending')->count() == 0 && $doctor->branch_id != null)
                        
                 <button type="button" class="btn btn-warning text-light" data-bs-toggle="modal" data-bs-target="#doctorTransferModal">
@@ -67,9 +64,7 @@
                     </div>
                 </div>
                 @endif
-
-
-
+    
                 @if (get_area_name() == "admin")
                 
                     @if (auth()->user()->id == 1)
@@ -78,7 +73,7 @@
                         {{ $doctor->membership_status->value === 'banned' ? 'رفع الحظر' : 'حظر الطبيب' }}
                     </button>
                     @endif
-
+    
                     <div class="modal fade" id="toggleBanDoctorModal" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -107,95 +102,75 @@
                     </div>
                 @endif
                     
-
+    
                 
-                @if ($doctor->membership_status->value == "pending")
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approveInitial{{ $doctor->id }}">القبول المبدئي للعضوية</button>
-                    <div class="modal fade" id="approveInitial{{ $doctor->id }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <form action="{{ route(get_area_name().'.doctors.approve', $doctor) }}" method="POST">
-                                    @csrf
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">تأكيد العضوية المبدئية</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <label>حدد موعد الزيارة</label>
-                                        <input type="date" name="meet_date" value="{{ \Carbon\Carbon::now()->addDay()->format('Y-m-d') }}" class="form-control" required>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary">تأكيد</button>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectMembership{{ $doctor->id }}">رفض العضوية</button>
-                    <div class="modal fade" id="rejectMembership{{ $doctor->id }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <form action="{{ route(get_area_name().'.doctors.reject',['doctor'=>$doctor]) }}" method="POST">
-                                    @csrf
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">تأكيد رفض العضوية</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <textarea name="notes" class="form-control" rows="4" required placeholder="أدخل سبب الرفض"></textarea>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-danger">تأكيد</button>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+    
+    
+                <a href="{{ route(get_area_name().'.doctors.edit',$doctor) }}" class="btn btn-info text-light">تعديل <i class="fa fa-edit"></i></a>
+                <a href="{{ route(get_area_name().'.doctors.print',$doctor) }}" class="btn btn-secondary text-light">طباعة بيانات الطبيب <i class="fa fa-print"></i></a>
+                <a href="{{ route(get_area_name().'.doctors.print-id',$doctor) }}" class="btn btn-primary text-light"> طباعة  البطاقة  <i class="fa fa-code"></i></a>
+               
+    
+                @if(get_area_name()=='finance')
+                    <a href="{{ route('finance.total_invoices.create',$doctor) }}" class="btn btn-primary text-light">دفع الفواتير</a>
                 @endif
-
-
-                @if ($doctor->membership_status->value == "init_approve")
-
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approveFinal{{ $doctor->id }}">القبول النهائي للعضوية</button>
-                <div class="modal fade" id="approveFinal{{ $doctor->id }}" tabindex="-1" aria-hidden="true">
+    
+            </div>
+        </div>
+    </div>
+        
+    @endif
+    
+    {{-- زر الحذف للأطباء تحت الموافقة --}}
+    @if ($doctor->membership_status->value == "under_approve")
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="main-content-label">الإجراءات</h4>
+                
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteDoctorModal{{ $doctor->id }}">
+                    <i class="fa fa-trash"></i> حذف الطبيب
+                </button>
+    
+                <!-- مودال تأكيد الحذف -->
+                <div class="modal fade" id="deleteDoctorModal{{ $doctor->id }}" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <form action="{{ route(get_area_name().'.doctors.approve',['doctor'=>$doctor,'init'=>1]) }}" method="POST">
+                            <form action="{{ route(get_area_name().'.doctors.destroy', $doctor) }}" method="POST">
                                 @csrf
-                                <div class="modal-header">
-                                    <h5 class="modal-title">تأكيد العضوية النهائية</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                @method('DELETE')
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title">
+                                        <i class="fa fa-exclamation-triangle"></i> تأكيد حذف الطبيب
+                                    </h5>
+                                    <button type="button" class="btn-close text-white" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body">
-                                    هل أنت متأكد من الموافقة النهائية على عضوية الطبيب: <strong>{{ $doctor->name }}</strong>؟
+                                    <div class="text-center">
+                                        <i class="fa fa-exclamation-triangle text-danger fa-3x mb-3"></i>
+                                        <h5>هل أنت متأكد من حذف هذا الطبيب؟</h5>
+                                        <p class="text-muted">
+                                            سيتم حذف الطبيب: <strong>{{ $doctor->name }}</strong>
+                                            <br>
+                                            <small class="text-warning">هذا الإجراء لا يمكن التراجع عنه!</small>
+                                        </p>
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">تأكيد</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        <i class="fa fa-times"></i> إلغاء
+                                    </button>
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fa fa-trash"></i> تأكيد الحذف
+                                    </button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
-                @endif
-
-
-                    <a href="{{ route(get_area_name().'.doctors.edit',$doctor) }}" class="btn btn-info text-light">تعديل <i class="fa fa-edit"></i></a>
-                    <a href="{{ route(get_area_name().'.doctors.print',$doctor) }}" class="btn btn-secondary text-light">طباعة بيانات الطبيب <i class="fa fa-print"></i></a>
-                    <a href="{{ route(get_area_name().'.doctors.print-id',$doctor) }}" class="btn btn-primary text-light"> طباعة  البطاقة  <i class="fa fa-code"></i></a>
-                   
-
-                @if(get_area_name()=='finance')
-                    <a href="{{ route('finance.total_invoices.create',$doctor) }}" class="btn btn-primary text-light">دفع الفواتير</a>
-                @endif
-
             </div>
         </div>
     </div>
-        
     @endif
 
     <div class="col-12">
@@ -597,7 +572,7 @@
                                         <th>المبلغ</th>
                                         <th>الحالة</th>
                                         <th>تاريخ الإنشاء</th>
-                                        <th>دفع</th>
+                                        <th>اعدادات</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -615,6 +590,11 @@
                                             </td>
                                             <td>{{ $invoice->created_at->format('Y-m-d') }}</td>
                                             <td>
+
+                                                <a href="{{ route(get_area_name().'.invoices.print', $invoice->id) }}" class="btn btn-sm btn-secondary">
+                                                    طباعة
+                                                </a>
+
                                                 @if ($invoice->status->value == "unpaid")
                                                 <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#received_{{$invoice->id}}">
                                                     استلام القيمة <i class="fa fa-check"></i>
@@ -699,17 +679,15 @@
                                                 <!-- حدد الصفة -->
                                                 <div class="col-md-6">
                                                     <label class="form-label">
-                                                        <i class="fa fa-user-tie"></i> حدد الصفة <span class="text-danger">*</span>
+                                                        <i class="fa fa-user-tie"></i> صفة الطبيب 
                                                     </label>
-                                                    <select name="doctor_rank_id" class="form-control" required>
-                                                        <option value="">-- اختر الصفة --</option>
-                                                        @foreach($doctor_ranks as $rank)
-                                                            <option value="{{ $rank->id }}" 
-                                                                {{ $doctor->doctor_rank_id == $rank->id ? 'selected' : '' }}>
-                                                                {{ $rank->name }}
-                                                            </option>
-                                                        @endforeach
+                                                    <select name="doctor_rank_id" class="form-control" required disabled>
+                                                        <option value="{{ $doctor->doctor_rank_id }}" >
+                                                            {{$doctor->doctor_rank->name}}
+                                                        </option>
                                                     </select>
+
+                                                    <input type="hidden" name="doctor_rank_id" value="{{$doctor->doctor_rank_id}}">
                                                 </div>
     
                                                 <!-- التخصص -->
@@ -717,15 +695,11 @@
                                                     <label class="form-label">
                                                         <i class="fa fa-stethoscope"></i> التخصص
                                                     </label>
-                                                    <select name="specialty_id" class="form-control">
-                                                        <option value="">-- اختر التخصص --</option>
-                                                        @foreach($specialties as $specialty)
-                                                            <option value="{{ $specialty->id }}"
-                                                                {{ $doctor->specialty_1_id == $specialty->id ? 'selected' : '' }}>
-                                                                {{ $specialty->name }}
-                                                            </option>
-                                                        @endforeach
+                                                    <select name="specialty_id" class="form-control" readonly disabled>
+                                                        <option value="{{$doctor->specialty1?->id}}">{{$doctor->specialty1?->name}}</option>
                                                     </select>
+
+                                                    <input type="hidden" name="specialty_id" value="{{$doctor->specialty1?->id}}">
                                                 </div>
     
                                                 <!-- تاريخ الإصدار -->
@@ -737,11 +711,12 @@
                                                         name="issue_date" 
                                                         class="form-control" 
                                                         value="{{ date('Y-m-d') }}" 
-                                                        required>
+                                                        required
+                                                        readonly>
                                                 </div>
     
     
-                                                <!-- تاريخ الإصدار -->
+                                                <!-- المنشأة الطبية -->
                                                 <div class="col-md-6">
                                                     <label class="form-label">
                                                         <i class="fa fa-calendar"></i> المنشأة الطبية <span class="text-danger">*</span>
@@ -749,7 +724,8 @@
                                                     
                                                     <select name="medical_facility_id" 
                                                             id="medicalFacilityModalSelect" 
-                                                            class="form-control">
+                                                            class="form-control"
+                                                            readonly>
                                                         <option value="">حدد منشأة طبية</option>
                                                         @foreach ($medicalFacilities as $medicalFacility)
                                                             <option value="{{$medicalFacility->id}}">{{$medicalFacility->name}}</option>
@@ -801,11 +777,9 @@
                                             </td>
                                             <td>{{ $license->created_at->format('Y-m-d') }}</td>
                                             <td>
-                                                @if ($license->status->value == 'active')
                                                 <a href="{{ route(get_area_name().'.licences.print', $license) }}" class="btn btn-secondary btn-sm text-light">
                                                     طباعه <i class="fa fa-print"></i>
                                                 </a>
-                                                @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -895,8 +869,8 @@
                             <div class="mb-3">
                                 <label class="form-label">حدد الصفة</label>
                                 <select name="doctor_rank_id" class="form-control">
-                                    @foreach ($doctor_ranks as $doctor_rank)
-                                        <option value="{{ $doctor_rank->id }}" {{$doctor->doctor_rank_id == $doctor_rank->id ? "selected" : ""}} >{{ $doctor_rank->name }}</option>
+                                    @foreach ($doctor_ranks as $doctor_rank )
+                                    <option value="{{ $doctor_rank->id }}" {{$doctor->doctor_rank_id == $doctor_rank->id ? "selected" : ""}} >{{ $doctor_rank->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

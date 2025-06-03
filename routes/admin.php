@@ -40,6 +40,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth','role:general_admin')-
 
     Route::post('/doctors/{doctor}/ban', [DoctorController::class, 'ban'])->name('doctors.toggle-ban');
     Route::get('/doctors/print-list', [DoctorController::class, 'printList'])->name('doctors.print_list');
+    Route::get('/doctors/generate-report', [DoctorController::class, 'generateReport'])->name('doctors.generate_report');
+    Route::get('/doctors/preview-report', [DoctorController::class, 'previewReport'])->name('doctors.preview_report');
+    
     Route::get('/reports', [ReportController::class, 'index'])->middleware('permission:manage-branches-reports')->name('reports.index');
     Route::get('/doctors/{doctor}/print-id', [DoctorController::class, 'print_id'])->name('doctors.print-id');
     Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->middleware('permission:doctor-foreign')->name('doctors.print');

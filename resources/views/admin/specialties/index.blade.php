@@ -17,6 +17,7 @@
                                 <tr>
                                     <th class="bg-light" scope="col">#</th>
                                     <th class="bg-light" scope="col">اسم التخصص</th>
+                                    <th class="bg-light" scope="col">اسم التخصص بالانجليزي</th>
                                     <th class="bg-light" scope="col">تاريخ الإنشاء</th>
                                     <th class="bg-light" scope="col">الإجراءات</th>
                                 </tr>
@@ -26,6 +27,7 @@
                                 <tr>
                                     <th scope="row">{{ $specialty->id }}</th>
                                     <td>{{ $specialty->name }}</td>
+                                    <td>{{ $specialty->name_en }}</td>
                                     <td>{{ $specialty->created_at->format('Y-m-d') }}</td>
                                     <td>
                                         <a href="{{ route(get_area_name().'.specialties.edit', $specialty->id) }}" class="btn btn-primary btn-sm">تعديل</a>

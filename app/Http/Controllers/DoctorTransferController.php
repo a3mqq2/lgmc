@@ -8,6 +8,7 @@ use App\Models\Doctor;
 use Illuminate\Http\Request;
 use App\Models\DoctorTransfer;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 
 class DoctorTransferController extends Controller
 {
@@ -43,8 +44,9 @@ class DoctorTransferController extends Controller
     public function create()
     {
         $doctors  = Doctor::where('branch_id', auth()->user()->branch_id)->select('id', 'name')->get();
-        $branches = Branch::all();
-
+        $branches = Branch::where('id', '!=', auth()->user()->branch_id)
+                          ->select('id', 'name')
+                          ->get();
         return view('user.doctor_transfers.create', compact('doctors', 'branches'));
     }
 
@@ -149,35 +151,29 @@ class DoctorTransferController extends Controller
         DB::transaction(function () use ($doctorTransfer) {
     
             $oldDoctor   = $doctorTransfer->doctor;
-            $emailBackup = $oldDoctor->email;   // نحتفظ بالإيميل لإعادة استخدامه
+            $emailBackup = $oldDoctor->email;
     
-            /* 1) البحث عن ملف طبيب مُعلَّق مسبقًا في الفرع المستهدف */
             $existingDoctor = Doctor::where('branch_id', $doctorTransfer->to_branch_id)
-                ->where('national_number', $oldDoctor->national_number)   // غيّر العمود إذا كنت تستخدم معرفًا آخر
+                ->where('national_number', $oldDoctor->national_number)
                 ->where('membership_status', 'suspended')
                 ->latest()
                 ->first();
     
-            /* 2) تعليق الطبيب في الفرع الحالي */
             $oldDoctor->membership_status = 'suspended';
             $oldDoctor->suspended_reason  = 'تم النقل إلى الفرع ' . $doctorTransfer->toBranch->name;
-            $oldDoctor->email             = null;          // إتاحة الإيميل
+            $oldDoctor->email             = null;
             $oldDoctor->save();
     
-            /** 3) اختيار ملف الهدف: قديم مفعَّل أو جديد منسوخ **/
             if ($existingDoctor) {
     
-                /* ─ إعادة تفعيل الملف القديم في الفرع المستهدف ─ */
                 $targetDoctor                    = $existingDoctor;
                 $targetDoctor->membership_status = 'active';
                 $targetDoctor->suspended_reason  = null;
-                $targetDoctor->email             = $emailBackup;   // إعادة الإيميل إليه
+                $targetDoctor->email             = $emailBackup;
                 $targetDoctor->updated_at        = now();
-                $targetDoctor->save();
     
             } else {
     
-                /* ─ إنشاء نسخة جديدة في الفرع المستهدف ─ */
                 $targetDoctor                    = $oldDoctor->replicate();
                 $targetDoctor->branch_id         = $doctorTransfer->to_branch_id;
                 $targetDoctor->membership_status = 'active';
@@ -185,28 +181,22 @@ class DoctorTransferController extends Controller
                 $targetDoctor->email             = $emailBackup;
                 $targetDoctor->created_at        = now();
                 $targetDoctor->updated_at        = now();
-                $targetDoctor->save();
-    
-                $targetDoctor->setSequentialIndex();
-                $targetDoctor->makeCode();
-                $targetDoctor->save();
             }
     
-            /* 4) نسخ الملفات إلى الملف المفعَّل (إن لم تكن موجودة) */
+            $targetDoctor->regenerateCode();
+    
             foreach ($oldDoctor->files as $file) {
                 $newFile            = $file->replicate();
                 $newFile->doctor_id = $targetDoctor->id;
                 $newFile->save();
             }
-
-            /* 6) تحديث حالة طلب النقل */
+    
             $doctorTransfer->update([
                 'status'      => 'approved',
                 'approved_by' => auth()->id(),
                 'approved_at' => now(),
             ]);
     
-            /* 7) Log */
             Log::create([
                 'user_id'       => auth()->id(),
                 'details'       => "تمت الموافقة على طلب نقل الطبيب: {$oldDoctor->name} إلى الفرع {$doctorTransfer->toBranch->name}. "
@@ -279,4 +269,66 @@ class DoctorTransferController extends Controller
         return redirect()->route(get_area_name().'.doctor-transfers.index')
                          ->with('success', 'تم حذف طلب النقل.');
     }
+
+    /**
+     * Branch transfers report (JSON).
+     */
+    public function report(Request $request): JsonResponse
+    {
+        $branchId = auth()->user()->branch_id;
+
+        $baseQuery = DoctorTransfer::where(function($q) use ($branchId){
+            $q->where('from_branch_id',$branchId)
+              ->orWhere('to_branch_id',$branchId);
+        });
+
+        $startDate = $request->start ?? now()->subYear()->startOfYear()->toDateString();
+        $endDate   = $request->end   ?? now()->toDateString();
+
+        $statusData = $baseQuery->whereBetween('created_at',[$startDate,$endDate])
+            ->selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total','status');
+
+        $monthly = $baseQuery->whereBetween('created_at',[$startDate,$endDate])
+            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as total")
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total','month');
+
+        return response()->json([
+            'stats' => [
+                'total'    => $statusData->sum(),
+                'pending'  => $statusData['pending'] ?? 0,
+                'approved' => $statusData['approved'] ?? 0,
+                'rejected' => $statusData['rejected'] ?? 0,
+            ],
+            'monthly' => $monthly,
+        ]);
+    }
+
+    // app/Http/Controllers/DoctorTransferController.php  (append inside the class)
+
+    public function print(Request $request)
+    {
+        $branchId = auth()->user()->branch_id;
+
+        $transfers = DoctorTransfer::where(function ($q) use ($branchId) {
+                $q->where('from_branch_id', $branchId)
+                ->orWhere('to_branch_id', $branchId);
+            })
+            ->when($request->filled('status'),    fn($q) => $q->whereIn('status', (array) $request->status))
+            ->when($request->filled('from_date'), fn($q) => $q->whereDate('created_at', '>=', $request->from_date))
+            ->when($request->filled('to_date'),   fn($q) => $q->whereDate('created_at', '<=', $request->to_date))
+            ->with(['doctor', 'fromBranch', 'toBranch', 'createdBy'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('user.doctor_transfers.print', [
+            'transfers' => $transfers,
+            'printed_at'=> now()->format('Y-m-d H:i'),
+            'filters'   => $request->only(['status','from_date','to_date'])
+        ]);
+    }
+
 }

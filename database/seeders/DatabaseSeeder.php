@@ -39,29 +39,33 @@ class DatabaseSeeder extends Seeder
 
         
         DB::table('doctor_ranks')->insert([
-            ['name' => 'ممارس عام', 'doctor_type' => "libyan"],  
-            ['name' => 'طبيب ممارس ', 'doctor_type' => "libyan"],      
-            ['name' => 'أخصائي ثاني ', 'doctor_type' => "libyan"],      
-            ['name' => 'أخصائي اول ', 'doctor_type' => "libyan"],      
-            ['name' => 'استشاري ثاني', 'doctor_type' => "libyan"],        
-            ['name' => 'استشاري اول ', 'doctor_type' => "libyan"],        
+            ['name' => 'ممارس عام', 'doctor_type' => "libyan", 'name_en' => 'General Practitioner'],      
+            ['name' => 'طبيب ممارس ', 'doctor_type' => "libyan", 'name_en' => 'Practitioner Physician'],      
+            ['name' => 'أخصائي ثاني ', 'doctor_type' => "libyan", 'name_en' => 'Second Specialist'],      
+            ['name' => 'أخصائي اول ', 'doctor_type' => "libyan", 'name_en' => 'First Specialist'],      
+            ['name' => 'استشاري ثاني', 'doctor_type' => "libyan", 'name_en' => 'Second Consultant'],        
+            ['name' => 'استشاري اول ', 'doctor_type' => "libyan", 'name_en' => 'First Consultant'],
+       
 
 
-            ['name' => 'ممارس عام', 'doctor_type' => "foreign"],      
-            ['name' => 'طبيب ممارس ', 'doctor_type' => "foreign"],      
-            ['name' => 'أخصائي ', 'doctor_type' => "foreign"],      
-            ['name' => 'استشاري ', 'doctor_type' => "foreign"],        
+            ['name' => 'ممارس عام', 'doctor_type' => "foreign", 'name_en' => 'General Practitioner'],      
+            ['name' => 'طبيب ممارس ', 'doctor_type' => "foreign", 'name_en' => 'Practitioner Physician'],      
+            ['name' => 'أخصائي ', 'doctor_type' => "foreign", 'name_en' => 'Specialist'],      
+            ['name' => 'استشاري ', 'doctor_type' => "foreign", 'name_en' => 'Consultant'],      
+            ['name' => 'استشاري  ', 'doctor_type' => "foreign", 'name_en' => 'Precise Consultant'],
 
 
-            ['name' => 'أخصائي ', 'doctor_type' => "visitor"],      
-            ['name' => 'استشاري ', 'doctor_type' => "visitor"],        
-            ['name' => 'استشاري دقيق ', 'doctor_type' => "visitor"],        
+
+            ['name' => 'أخصائي ', 'doctor_type' => "visitor", 'name_en' => 'Specialist'],      
+            ['name' => 'استشاري ', 'doctor_type' => "visitor", 'name_en' => 'Consultant'],      
+            ['name' => 'استشاري دقيق ', 'doctor_type' => "visitor", 'name_en' => 'Precise Consultant'],        
 
 
-            ['name' => ' ممارس عام', 'doctor_type' => 'palestinian'],      
-            ['name' => 'طبيب ممارس ', 'doctor_type' => 'palestinian'],      
-            ['name' => 'أخصائي ', 'doctor_type' => 'palestinian'],      
-            ['name' => 'استشاري ', 'doctor_type' => 'palestinian'],          
+            ['name' => ' ممارس عام', 'doctor_type' => 'palestinian', 'name_en' => 'General Practitioner'],      
+            ['name' => 'طبيب ممارس ', 'doctor_type' => 'palestinian', 'name_en' => 'Practitioner Physician'],      
+            ['name' => 'أخصائي ', 'doctor_type' => 'palestinian', 'name_en' => 'Specialist'],      
+            ['name' => 'استشاري ', 'doctor_type' => 'palestinian', 'name_en' => 'Consultant'],      
+            ['name' => 'استشاري  ', 'doctor_type' => 'palestinian', 'name_en' => 'Precise Consultant'],
 
         ]);
 

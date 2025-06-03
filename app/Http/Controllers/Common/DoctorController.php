@@ -440,4 +440,290 @@ class DoctorController extends Controller
         return view('general.doctors.print_license', $data);
     }
     
+
+    
+    public function generateReport(Request $request)
+    {
+        $reportType = $request->input('report_type', 'summary');
+        $format = $request->input('format', 'pdf');
+        
+        // Build query based on filters
+        $query = Doctor::query();
+        
+        // Apply filters
+        $this->applyReportFilters($query, $request);
+        
+        // Get data based on report type
+        if ($reportType === 'summary') {
+            $data = $this->generateSummaryReportData($query, $request);
+            $view = 'general.reports.doctors_summary';
+        } else {
+            $data = $this->generateDetailedReportData($query, $request);
+            $view = 'general.reports.doctors_detailed';
+        }
+        
+        // Add general report info
+        $data['report_date'] = now()->format('Y-m-d H:i');
+        $data['report_type'] = $reportType;
+        $data['filters'] = $this->getAppliedFilters($request);
+        
+        // Generate report based on format
+        switch ($format) {
+            case 'excel':
+                return $this->exportToExcel($data, $reportType);
+                
+            case 'print':
+                return view($view . '_print', $data);
+                
+            case 'pdf':
+            default:
+                $pdf = PDF::loadView($view, $data);
+                $pdf->setPaper('A4', 'landscape');
+                return $pdf->download('doctors_report_' . now()->format('Y-m-d') . '.pdf');
+        }
+    }
+    
+    private function applyReportFilters($query, Request $request)
+    {
+        // Doctor rank filter
+        if ($request->filled('doctor_rank_id')) {
+            $query->whereIn('doctor_rank_id', $request->input('doctor_rank_id'));
+        }
+        
+        // Institution filter
+        if ($request->filled('institution_id')) {
+            $query->whereIn('institution_id', $request->input('institution_id'));
+        }
+        
+        // Specialty filter
+        if ($request->filled('specialty_id')) {
+            $query->whereHas('specialties', function($q) use ($request) {
+                $q->whereIn('specialty_id', $request->input('specialty_id'));
+            });
+        }
+        
+        // Doctor type filter
+        if ($request->filled('doctor_type')) {
+            $query->whereIn('type', $request->input('doctor_type'));
+        }
+        
+        // Registration date range
+        if ($request->filled('registered_from')) {
+            $query->whereDate('registered_at', '>=', $request->input('registered_from'));
+        }
+        if ($request->filled('registered_to')) {
+            $query->whereDate('registered_at', '<=', $request->input('registered_to'));
+        }
+        
+        // Membership expiry date range
+        if ($request->filled('membership_expired_from')) {
+            $query->whereDate('membership_expiration_date', '>=', $request->input('membership_expired_from'));
+        }
+        if ($request->filled('membership_expired_to')) {
+            $query->whereDate('membership_expiration_date', '<=', $request->input('membership_expired_to'));
+        }
+        
+        // Membership status filter
+        if ($request->filled('membership_status')) {
+            $query->whereIn('membership_status', $request->input('membership_status'));
+        }
+        
+        // Gender filter
+        if ($request->filled('gender')) {
+            $query->where('gender', $request->input('gender'));
+        }
+    }
+    
+    private function generateSummaryReportData($query, Request $request)
+    {
+        $data = [];
+        
+        // Total counts
+        $data['total_doctors'] = $query->count();
+        
+        // Clone query for each aggregation to avoid conflicts
+        $baseQuery = clone $query;
+        
+        // Group by doctor rank
+        $data['by_rank'] = (clone $baseQuery)
+            ->select('doctor_rank_id', DB::raw('count(*) as total'))
+            ->with('doctor_rank')
+            ->groupBy('doctor_rank_id')
+            ->get();
+        
+        // Group by specialty - Direct relationship
+        $data['by_specialty'] = DB::table('doctors')
+            ->leftJoin('specialties', 'doctors.specialty_1_id', '=', 'specialties.id')
+            ->select(
+                DB::raw('COALESCE(specialties.name, "بدون تخصص") as name'), 
+                DB::raw('count(doctors.id) as total')
+            )
+            ->when($request->filled('doctor_rank_id'), function($q) use ($request) {
+                $q->whereIn('doctors.doctor_rank_id', $request->input('doctor_rank_id'));
+            })
+            ->groupBy('specialties.id', 'specialties.name')
+            ->orderBy('total', 'desc')
+            ->get();
+        
+        // Group by type
+        $data['by_type'] = (clone $baseQuery)
+            ->select('type', DB::raw('count(*) as total'))
+            ->groupBy('type')
+            ->get();
+        
+        // Group by membership status
+        $data['by_membership_status'] = (clone $baseQuery)
+            ->select('membership_status', DB::raw('count(*) as total'))
+            ->groupBy('membership_status')
+            ->get();
+        
+        // Group by gender
+        $data['by_gender'] = (clone $baseQuery)
+            ->select('gender', DB::raw('count(*) as total'))
+            ->groupBy('gender')
+            ->get();
+        
+        // Financial summary (if finance area)
+        if (get_area_name() == "finance") {
+            $financialDoctorIds = (clone $baseQuery)->pluck('id');
+            
+            $data['financial_summary'] = [
+                'total_due' => DB::table('invoices')
+                    ->whereIn('doctor_id', $financialDoctorIds)
+                    ->where('status', 'unpaid')
+                    ->sum('amount'),
+                'total_paid' => DB::table('invoices')
+                    ->whereIn('doctor_id', $financialDoctorIds)
+                    ->where('status', 'paid')
+                    ->sum('amount'),
+                'total_relief' => (clone $baseQuery)->sum('full_break_amount')
+            ];
+        }
+        
+        // Registration trends (last 12 months) - Fixed
+        $data['registration_trends'] = (clone $baseQuery)
+            ->selectRaw('YEAR(registered_at) as year, MONTH(registered_at) as month, count(*) as total')
+            ->whereNotNull('registered_at')
+            ->where('registered_at', '>=', now()->subYear())
+            ->groupBy('year', 'month')
+            ->orderByRaw('YEAR(registered_at) DESC, MONTH(registered_at) DESC')
+            ->get();
+        
+        // Membership expiry analysis
+        $data['membership_expiry'] = [
+            'expired' => (clone $baseQuery)->where('membership_expiration_date', '<', now())->count(),
+            'expiring_30_days' => (clone $baseQuery)->whereBetween('membership_expiration_date', [now(), now()->addDays(30)])->count(),
+            'expiring_90_days' => (clone $baseQuery)->whereBetween('membership_expiration_date', [now(), now()->addDays(90)])->count(),
+            'active' => (clone $baseQuery)->where('membership_expiration_date', '>', now()->addDays(90))->count(),
+        ];
+        
+        return $data;
+    }
+    
+    private function generateDetailedReportData($query, Request $request)
+    {
+        $data = [];
+        
+        // Get doctors with relationships
+        $doctors = $query->with([
+            'doctor_rank',
+            'institutionObj',
+            'invoices' => function($q) {
+                $q->select('doctor_id', 'status', DB::raw('sum(amount) as total'))
+                    ->groupBy('doctor_id', 'status');
+            }
+        ]);
+        
+        // Apply additional options
+        if (!$request->input('include_contact')) {
+            $doctors->select(DB::raw('*, NULL as phone, NULL as email, NULL as address'));
+        }
+        
+        // Paginate for performance
+        $data['doctors'] = $doctors->paginate(50);
+        
+        // Include additional data based on options
+        $data['include_photo'] = $request->input('include_photo', false);
+        $data['include_contact'] = $request->input('include_contact', true);
+        $data['include_financial'] = $request->input('include_financial', false);
+        $data['include_membership_history'] = $request->input('include_membership_history', false);
+        
+        // Get summary statistics
+        $data['summary'] = [
+            'total' => $data['doctors']->total(),
+            'per_page' => $data['doctors']->perPage(),
+            'current_page' => $data['doctors']->currentPage(),
+            'last_page' => $data['doctors']->lastPage()
+        ];
+        
+        return $data;
+    }
+    
+    private function getAppliedFilters(Request $request)
+    {
+        $filters = [];
+        
+        if ($request->filled('doctor_rank_id')) {
+            $filters['doctor_ranks'] = DoctorRank::whereIn('id', $request->input('doctor_rank_id'))->pluck('name')->toArray();
+        }
+        
+        if ($request->filled('institution_id')) {
+            $filters['institutions'] = Institution::whereIn('id', $request->input('institution_id'))->pluck('name')->toArray();
+        }
+        
+        if ($request->filled('specialty_id')) {
+            $filters['specialties'] = Specialty::whereIn('id', $request->input('specialty_id'))->pluck('name')->toArray();
+        }
+        
+        if ($request->filled('doctor_type')) {
+            $filters['types'] = $request->input('doctor_type');
+        }
+        
+        if ($request->filled('registered_from') || $request->filled('registered_to')) {
+            $filters['registration_period'] = [
+                'from' => $request->input('registered_from'),
+                'to' => $request->input('registered_to')
+            ];
+        }
+        
+        if ($request->filled('membership_expired_from') || $request->filled('membership_expired_to')) {
+            $filters['membership_expiry_period'] = [
+                'from' => $request->input('membership_expired_from'),
+                'to' => $request->input('membership_expired_to')
+            ];
+        }
+        
+        return $filters;
+    }
+    
+    public function previewReport(Request $request)
+    {
+        // Same logic as generateReport but return view instead of download
+        $reportType = $request->input('report_type', 'summary');
+        
+        $query = Doctor::query();
+        $this->applyReportFilters($query, $request);
+        
+        if ($reportType === 'summary') {
+            $data = $this->generateSummaryReportData($query, $request);
+            $view = 'general.reports.doctors_summary_preview';
+        } else {
+            $data = $this->generateDetailedReportData($query, $request);
+            $view = 'general.reports.doctors_detailed_preview';
+        }
+        
+        $data['report_date'] = now()->format('Y-m-d H:i');
+        $data['report_type'] = $reportType;
+        $data['filters'] = $this->getAppliedFilters($request);
+        
+        return view($view, $data);
+    }
+    
+    private function exportToExcel($data, $reportType)
+    {
+        return Excel::download(
+            new DoctorsReportExport($data, $reportType), 
+            'doctors_report_' . now()->format('Y-m-d') . '.xlsx'
+        );
+    }
 }

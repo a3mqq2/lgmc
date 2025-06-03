@@ -35,8 +35,14 @@ class Licence extends Model
             $year = Carbon::now()->year;
             $lastIndex = self::whereYear('issued_date', $year)->max('index') ?? 0;
             $licence->index = $lastIndex + 1;
-            $short = !$licence->doctor_type ? 'MF' : strtoupper(substr($licence->doctor_type, 0, 3));
-            $licence->code = "LIC-{$short}-{$year}-{$licence->index}";
+            $short = !$licence->doctor_type ? 'MF' :   strtoupper(substr($licence->doctor_type, 0, 3));
+            if($licence->doctor_type && $licence->doctor_type == "libyan")
+            {
+                $licence->code = "{$year}-{$licence->index}";
+
+            } else {
+                $licence->code = "{$short}-{$year}-{$licence->index}";
+            }
         });
     }
 

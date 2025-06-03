@@ -26,6 +26,19 @@
                         </div>
 
 
+                        <div class="mb-3">
+                            <label for="name_en" class="form-label">اسم التخصص</label>
+                            <input type="text" class="form-control @error('name_en') is-invalid @enderror" id="name_en" name="name_en" value="{{ $specialty->name_en }}" required>
+                            @error('name_en')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+
+
+
+
                         <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
                     </form>
                 </div>

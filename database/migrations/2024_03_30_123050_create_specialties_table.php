@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('specialties', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('specialty_id')->nullable()->constrained();
+            $table->string('name_en');
             $table->timestamps();
         });
     }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('doctor_ranks', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('name_en');
             $table->timestamps();
         });
     }
