@@ -302,7 +302,6 @@
                                     <i class="fa fa-user-md"></i> صفة الطبيب
                                 </label>
                                 <select class="form-control select2" name="doctor_rank_id[]" id="report_doctor_rank_id" multiple>
-                                    <option value="">جميع الصفات</option>
                                     @foreach ($doctor_ranks as $doctorRank)
                                         <option value="{{ $doctorRank->id }}">{{ $doctorRank->name }}</option>
                                     @endforeach
@@ -315,7 +314,6 @@
                                     <i class="fa fa-hospital"></i> القطاع العام
                                 </label>
                                 <select class="form-control select2" name="institution_id[]" id="report_institution_id" multiple>
-                                    <option value="">جميع المؤسسات</option>
                                     @foreach ($institutions ?? [] as $institution)
                                         <option value="{{ $institution->id }}">{{ $institution->name }}</option>
                                     @endforeach
@@ -330,7 +328,6 @@
                                     <i class="fa fa-stethoscope"></i> التخصص
                                 </label>
                                 <select class="form-control select2" name="specialty_id[]" id="report_specialty_id" multiple>
-                                    <option value="">جميع التخصصات</option>
                                     @foreach ($specialties as $specialty)
                                         <option value="{{ $specialty->id }}">{{ $specialty->name }}</option>
                                     @endforeach
@@ -343,7 +340,6 @@
                                     <i class="fa fa-flag"></i> نوع الطبيب
                                 </label>
                                 <select class="form-control select2" name="doctor_type[]" id="report_doctor_type" multiple>
-                                    <option value="">جميع الأنواع</option>
                                     <option value="libyan">ليبي</option>
                                     <option value="palestinian">فلسطيني</option>
                                     <option value="foreign">أجنبي</option>
@@ -389,9 +385,7 @@
                                     <i class="fa fa-user-check"></i> حالة العضوية
                                 </label>
                                 <select class="form-control select2" name="membership_status[]" id="report_membership_status" multiple>
-                                    <option value="">جميع الحالات</option>
                                     <option value="active">نشط</option>
-                                    <option value="inactive">غير نشط</option>
                                     <option value="suspended">معلق</option>
                                     <option value="banned">محظور</option>
                                     <option value="expired">منتهي</option>
