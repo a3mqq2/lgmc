@@ -446,7 +446,9 @@
                             </div>
                         </div>
 
-                    
+                        <!-- Report Format -->
+                        <input type="hidden" name="format" value="print">
+
                     </div>
                 </div>
                 
