@@ -446,30 +446,7 @@
                             </div>
                         </div>
 
-                        <!-- Report Format -->
-                        <div class="row mb-3 mt-4">
-                            <div class="col-12">
-                                <h6 class="text-primary mb-3">تنسيق التقرير</h6>
-                                <div class="btn-group w-100" role="group">
-                                    {{-- <input type="radio" class="btn-check" name="format" id="format_pdf" value="pdf" >
-                                    <label class="btn btn-outline-secondary" for="format_pdf">
-                                        <i class="fa fa-file-pdf"></i> PDF
-                                    </label>
-                                    
-                                    <input type="radio" class="btn-check" name="format" id="format_excel" value="excel">
-                                    <label class="btn btn-outline-secondary" for="format_excel">
-                                        <i class="fa fa-file-excel"></i> Excel
-                                    </label>
-                                     --}}
-                                    {{-- <input type="radio" class="btn-check" name="format" id="format_print" value="print" checked>
-                                    <label class="btn btn-outline-secondary" for="format_print">
-                                        <i class="fa fa-print"></i> طباعة مباشرة
-                                    </label> --}}
-
-                                    <input type="hidden" name="format" value="print">
-                                </div>
-                            </div>
-                        </div>
+                    
                     </div>
                 </div>
                 
