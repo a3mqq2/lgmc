@@ -348,27 +348,7 @@
         </div>
         
         <!-- Distribution by Specialty -->
-        <div class="chart-container">
-            <h2 class="chart-title">توزيع الأطباء حسب التخصص</h2>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>التخصص</th>
-                        <th>العدد</th>
-                        <th>النسبة المئوية</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($by_specialty->take(10) as $specialty)
-                    <tr>
-                        <td>{{ $specialty->name }}</td>
-                        <td>{{ number_format($specialty->total) }}</td>
-                        <td>{{ number_format(($specialty->total / $total_doctors) * 100, 1) }}%</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+ 
         
   
         @if (get_area_name() == "admin")
