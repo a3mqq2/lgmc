@@ -312,7 +312,7 @@
                             <!-- Institution Filter -->
                             <div class="col-md-6">
                                 <label for="report_institution_id" class="form-label">
-                                    <i class="fa fa-hospital"></i> المؤسسة الصحية
+                                    <i class="fa fa-hospital"></i> القطاع العام
                                 </label>
                                 <select class="form-control select2" name="institution_id[]" id="report_institution_id" multiple>
                                     <option value="">جميع المؤسسات</option>
