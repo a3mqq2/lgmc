@@ -21,7 +21,8 @@ Route::prefix('finance')->name('finance.')->middleware('auth', 'check.finance.pe
     Route::post('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::post('/invoices/{invoice}/received', [InvoiceController::class, 'received'])->name('invoices.received');
     Route::post('invoices/{invoice}/relief', [InvoiceController::class, 'relief'])->name('invoices.relief');
-    Route::get('/doctors/print-list', [DoctorController::class, 'printList'])->name('doctors.print_list');
+    Route::get('invoices/print-list', [InvoiceController::class, 'print_list'])->name('invoices.print-list');
+    Route::get('/doctors/print-list', [DoctorController::class, 'printListFinance'])->name('doctors.print_list');
     Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
     Route::resource('invoices', InvoiceController::class)->only(['index', 'edit', 'update','destroy','create','store']);
     Route::post('/tickets/{ticket}/reply', [TicketController::class, 'reply'])->name('tickets.reply');

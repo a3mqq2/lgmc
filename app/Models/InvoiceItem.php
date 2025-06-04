@@ -15,6 +15,7 @@ class InvoiceItem extends Model
         'from_year',
         'to_year',
         'amount',
+        'description',
     ];
 
     public function invoice()

@@ -504,42 +504,99 @@
                     </div>
                     
 
-                    <div class="tab-pane fade" id="docs" role="tabpanel">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0">مستندات الطبيب</h5>
-
-                            <a href="{{ route(get_area_name().'.doctors.files.create',$doctor) }}" class="btn btn-primary"><i class="fa fa-plus"></i> إضافة مستند للطبيب</a>
-
+                   {{-- تاب المستندات المحدث --}}
+                   <div class="tab-pane fade" id="docs" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">مستندات الطبيب</h5>
+                        <div>
+                            {{-- <button type="button" class="btn btn-warning text-light me-2" data-bs-toggle="modal" data-bs-target="#reorderFilesModal">
+                                <i class="fa fa-sort"></i> إعادة ترتيب المستندات
+                            </button> --}}
+                            <a href="{{ route(get_area_name().'.doctors.files.create',$doctor) }}" class="btn btn-primary">
+                                <i class="fa fa-plus"></i> إضافة مستند للطبيب
+                            </a>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
+                    </div>
+
+                    {{-- مودال إعادة ترتيب المستندات --}}
+                    <div class="modal fade" id="reorderFilesModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        <i class="fa fa-sort me-2"></i>
+                                        إعادة ترتيب مستندات الطبيب
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="alert alert-info">
+                                        <i class="fa fa-info-circle me-2"></i>
+                                        اسحب وأفلت المستندات لتغيير ترتيبها
+                                    </div>
+                                    
+                                    <div id="sortableFilesList" class="sortable-list">
+                                        @foreach($doctor->files->sortBy('sort_order') as $index => $file)
+                                        <div class="file-item sortable-item" data-id="{{ $file->id }}">
+                                            <div class="order-number">{{ $index + 1 }}</div>
+                                            <div class="drag-handle">
+                                                <i class="fa fa-grip-vertical"></i>
+                                            </div>
+                                            <div class="d-flex align-items-center w-100 sortable-content">
+                                                <img src="{{ Storage::url($file->file_path) }}" 
+                                                     alt="{{ $file->file_name }}" 
+                                                     class="file-thumbnail me-3">
+                                                <div class="file-info flex-grow-1">
+                                                    <div class="file-name">{{ $file->file_name }}</div>
+                                                    <div class="file-type">
+                                                        <i class="fa fa-file me-1"></i>
+                                                        {{ $file->fileType?->name ?? 'غير محدد' }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        <i class="fa fa-times"></i> إلغاء
+                                    </button>
+                                    <button type="button" class="btn btn-success" id="saveOrderBtn">
+                                        <i class="fa fa-save"></i> حفظ الترتيب الجديد
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="bg-light text-primary">#</th>
+                                    <th class="bg-light text-primary">العرض</th>
+                                    <th class="bg-light text-primary">اسم الملف</th>
+                                    <th class="bg-light text-primary">نوع الملف</th>
+                                    <th class="bg-light text-primary">تحميل</th>
+                                    <th class="bg-light text-primary">إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($doctor->files->sortBy('sort_order') as $file)
                                     <tr>
-                                        <th class="bg-light text-primary">#</th>
-                                        <th class="bg-light text-primary">العرض</th>
-                                        <th class="bg-light text-primary">اسم الملف</th>
-                                        <th class="bg-light text-primary">نوع الملف</th>
-                                        <th class="bg-light text-primary">تحميل</th>
-                                        <th class="bg-light text-primary">إجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($doctor->files as $file)
-                                        <tr>
-                                            <td>{{ $file->id }}</td>
-                                            <td><img src="{{ Storage::url($file->file_path) }}" class="img-thumbnail" style="width:50px;height:50px;object-fit:cover;"></td>
-                                            <td>{{ $file->file_name }}</td>
-                                            <td>{{ $file->fileType?->name ?? '—' }}</td>
-                                            <td>
-                                                <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fa fa-eye"></i></a>
-                                                <a download href="{{ Storage::url($file->file_path) }}" class="btn btn-sm btn-outline-secondary"><i class="fa fa-download"></i></a>
-                                            </td>
-
-
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td><img src="{{ Storage::url($file->file_path) }}" class="img-thumbnail" style="width:50px;height:50px;object-fit:cover;"></td>
+                                        <td>{{ $file->file_name }}</td>
+                                        <td>{{ $file->fileType?->name ?? '—' }}</td>
+                                        <td>
+                                            <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fa fa-eye"></i></a>
+                                            <a download href="{{ Storage::url($file->file_path) }}" class="btn btn-sm btn-outline-secondary"><i class="fa fa-download"></i></a>
+                                        </td>
                                         @if ($doctor->membership_status->value != "under_approve" && $doctor->membership_status->value != "under_edit")
                                             @if (get_area_name() == "admin" && $doctor->type->value != "libyan" || get_area_name() == "user" && $doctor->type->value == "libyan")
                                             <td>
-                                              
+                                                <a href="{{ route(get_area_name().'.doctors.files.edit',['doctor'=>$doctor->id,'file'=>$file->id]) }}" class="btn btn-sm btn-outline-info"><i class="fa fa-edit"></i></a>
                                                 <form action="{{ route(get_area_name().'.files.destroy',['doctor'=>$doctor->id,'file'=>$file->id]) }}" method="POST" class="d-inline">
                                                     @csrf @method('DELETE')
                                                     <button class="btn btn-sm btn-outline-danger" onclick="return confirm('هل أنت متأكد؟')"><i class="fa fa-trash"></i></button>
@@ -547,94 +604,230 @@
                                             </td>
                                             @endif
                                         @endif
-                                        </tr>
-                                    @endforeach
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-                                </tbody>
-                            </table>
+                {{-- تاب المالي المحدث --}}
+                <div class="tab-pane fade" id="finance" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0"> الملف المالي للطبيب</h5>
+                        <button type="button" class="btn btn-success text-light" data-bs-toggle="modal" data-bs-target="#addManualDuesModal">
+                            <i class="fa fa-plus"></i> إضافة مستحقات يدوية
+                        </button>
+                    </div>
+
+                    {{-- مودال إضافة مستحقات يدوية --}}
+                    <div class="modal fade" id="addManualDuesModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <form action="{{ route(get_area_name().'.invoices.store') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="doctor_id" value="{{ $doctor->id }}">
+                                    
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            <i class="fa fa-plus me-2"></i>
+                                            إضافة مستحقات يدوية
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    
+                                    <div class="modal-body">
+                                        {{-- وصف الفاتورة --}}
+                                        <div class="mb-3">
+                                            <label for="modalDescription" class="form-label">
+                                                <i class="fa fa-file-text me-1"></i>
+                                                وصف الفاتورة <span class="text-danger">*</span>
+                                            </label>
+                                            <textarea name="description" 
+                                                    id="modalDescription" 
+                                                    class="form-control" 
+                                                    rows="3" 
+                                                    placeholder="أدخل وصف تفصيلي للفاتورة..." 
+                                                    required></textarea>
+                                        </div>
+
+                                        {{-- Switch لحساب اشتراكات سابقة --}}
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="modalPreviousSwitch">
+                                            <label class="form-check-label" for="modalPreviousSwitch">
+                                                <i class="fa fa-history me-1"></i>
+                                                حساب اشتراكات سابقة
+                                            </label>
+                                        </div>
+
+                                        {{-- جدول الصفات والسنوات --}}
+                                        <div id="modalRankTableContainer" style="display:none" class="mb-3">
+                                            <div class="alert alert-info">
+                                                <i class="fa fa-info-circle me-1"></i>
+                                                قم بإضافة الصفات والسنوات المطلوب حساب الاشتراكات لها
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-sm">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th width="30%">الصفة</th>
+                                                            <th width="25%">من سنة</th>
+                                                            <th width="25%">إلى سنة</th>
+                                                            <th width="20%">إجراء</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="modalRankTableBody"></tbody>
+                                                </table>
+                                            </div>
+                                            <button type="button" id="modalAddRowBtn" class="btn btn-sm btn-outline-primary">
+                                                <i class="fa fa-plus me-1"></i> إضافة بند
+                                            </button>
+                                        </div>
+
+                                        {{-- قيمة الفاتورة --}}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label for="modalAmount" class="form-label">
+                                                    <i class="fa fa-money-bill me-1"></i>
+                                                    قيمة الفاتورة (د.ل) <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="number" 
+                                                       step="0.01" 
+                                                       name="amount" 
+                                                       id="modalAmount" 
+                                                       class="form-control" 
+                                                       placeholder="0.00"
+                                                       required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label text-muted">معاينة الإجمالي</label>
+                                                <div class="form-control bg-light" id="modalTotalPreview">0.00 د.ل</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            <i class="fa fa-times"></i> إلغاء
+                                        </button>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fa fa-save"></i> إنشاء الفاتورة
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
 
+                    {{-- Template للصفوف الجديدة --}}
+                    <div id="modalRowTemplate" style="display: none">
+                        <table>
+                            <tr>
+                                <td>
+                                    <select name="ranks[]" class="form-control form-control-sm">
+                                        <option value="">-- اختر الصفة --</option>
+                                        @foreach(App\Models\DoctorRank::where('doctor_type', $doctor->type->value)->get() as $rank)
+                                            <option value="{{ $rank->id }}" data-price="{{ App\Models\Pricing::where('type','membership')->where('doctor_type', $doctor->type->value)->where('doctor_rank_id', $rank->id)->first()->amount }}">{{ $rank->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" 
+                                           name="from_years[]" 
+                                           min="1900" 
+                                           max="2100" 
+                                           class="form-control form-control-sm"
+                                           placeholder="2020">
+                                </td>
+                                <td>
+                                    <input type="number" 
+                                           name="to_years[]" 
+                                           min="1900" 
+                                           max="2100" 
+                                           class="form-control form-control-sm"
+                                           placeholder="2024">
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-danger modal-remove-row">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
 
-
-                    <div class="tab-pane fade" id="finance" role="tabpanel">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0"> الملف المالي للطبيب</h5>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
-                                <thead>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>رقم الفاتورة</th>
+                                    <th>الوصف</th>
+                                    <th>المستخدم</th>
+                                    <th>المبلغ</th>
+                                    <th>الحالة</th>
+                                    <th>تاريخ الإنشاء</th>
+                                    <th>اعدادات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($doctor->invoices as $invoice)
                                     <tr>
-                                        <th>#</th>
-                                        <th>رقم الفاتورة</th>
-                                        <th>الوصف</th>
-                                        <th>المستخدم</th>
-                                        <th>المبلغ</th>
-                                        <th>الحالة</th>
-                                        <th>تاريخ الإنشاء</th>
-                                        <th>اعدادات</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($doctor->invoices as $invoice)
-                                        <tr>
-                                            <td>{{ $invoice->id }}</td>
-                                            <td>{{ $invoice->id }}</td>
-                                            <td>{{ $invoice->description }}</td>
-                                            <td>{{ $invoice->user?->name ?? '-' }}</td>
-                                            <td>{{ number_format($invoice->amount, 2) }} د.ل</td>
-                                            <td>
-                                               <span class="badge {{$invoice->status->badgeClass()}}">
-                                                    {{$invoice->status->label()}}
-                                               </span>
-                                            </td>
-                                            <td>{{ $invoice->created_at->format('Y-m-d') }}</td>
-                                            <td>
-
-                                                <a href="{{ route(get_area_name().'.invoices.print', $invoice->id) }}" class="btn btn-sm btn-secondary">
-                                                    طباعة
-                                                </a>
-
-                                                @if ($invoice->status->value == "unpaid")
-                                                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#received_{{$invoice->id}}">
-                                                    استلام القيمة <i class="fa fa-check"></i>
-                                                </button>
-                                                <div class="modal fade" id="received_{{$invoice->id}}" tabindex="-1" aria-labelledby="received_{{$invoice->id}}Label" aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <form method="POST" action="{{ route(get_area_name() . '.invoices.received', ['invoice' => $invoice->id]) }}">
-                                                                @csrf
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="received_{{$invoice->id}}Label">تآكيد إستلام القيمة</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <td>{{ $invoice->id }}</td>
+                                        <td>{{ $invoice->id }}</td>
+                                        <td>{{ $invoice->description }}</td>
+                                        <td>{{ $invoice->user?->name ?? '-' }}</td>
+                                        <td>{{ number_format($invoice->amount, 2) }} د.ل</td>
+                                        <td>
+                                           <span class="badge {{$invoice->status->badgeClass()}}">
+                                                {{$invoice->status->label()}}
+                                           </span>
+                                        </td>
+                                        <td>{{ $invoice->created_at->format('Y-m-d') }}</td>
+                                        <td>
+                                            <a href="{{ route(get_area_name().'.invoices.print', $invoice->id) }}" class="btn btn-sm btn-secondary">
+                                                طباعة
+                                            </a>
+                                            @if ($invoice->status->value == "unpaid")
+                                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#received_{{$invoice->id}}">
+                                                استلام القيمة <i class="fa fa-check"></i>
+                                            </button>
+                                            {{-- مودال استلام القيمة --}}
+                                            <div class="modal fade" id="received_{{$invoice->id}}" tabindex="-1" aria-labelledby="received_{{$invoice->id}}Label" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <form method="POST" action="{{ route(get_area_name() . '.invoices.received', ['invoice' => $invoice->id]) }}">
+                                                            @csrf
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="received_{{$invoice->id}}Label">تآكيد إستلام القيمة</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="mb-3">
+                                                                    <label for="notes" class="form-label">ملاحظات - اختياري</label>
+                                                                    <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
                                                                 </div>
-                                                                <div class="modal-body">
-                                                                    <div class="mb-3">
-                                                                        <label for="notes" class="form-label">ملاحظات - اختياري</label>
-                                                                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                                                                    <button type="submit" class="btn btn-primary">موافقة</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                                                                <button type="submit" class="btn btn-primary">موافقة</button>
+                                                            </div>
+                                                        </form>
                                                     </div>
                                                 </div>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="11" class="text-center">لا توجد فواتير متاحة.</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
+                                            </div>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center">لا توجد فواتير متاحة.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
-
+                </div>
 
 
 
@@ -927,16 +1120,156 @@
 
 <!-- وفي نهاية الصفحة، استبدل قسم scripts بهذا الكود -->
 @section('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // إعداد المودال والـ Select2
+    // ***** كود إعادة ترتيب المستندات *****
+    let sortable;
+    
+    // تفعيل إعادة الترتيب عند فتح المودال
+    document.getElementById('reorderFilesModal').addEventListener('shown.bs.modal', function () {
+        const sortableList = document.getElementById('sortableFilesList');
+        if (sortableList) {
+            sortable = Sortable.create(sortableList, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                dragClass: 'sortable-drag',
+                handle: '.drag-handle',
+                onEnd: function (evt) {
+                    // تحديث أرقام الترتيب
+                    updateOrderNumbers();
+                }
+            });
+        }
+    });
+
+    // تحديث أرقام الترتيب
+    function updateOrderNumbers() {
+        const items = document.querySelectorAll('#sortableFilesList .file-item');
+        items.forEach((item, index) => {
+            const orderNumber = item.querySelector('.order-number');
+            if (orderNumber) {
+                orderNumber.textContent = index + 1;
+            }
+        });
+    }
+
+    // حفظ الترتيب الجديد
+    document.getElementById('saveOrderBtn').addEventListener('click', function() {
+        const items = document.querySelectorAll('#sortableFilesList .file-item');
+        const orderData = [];
+        
+        items.forEach((item, index) => {
+            orderData.push({
+                id: item.getAttribute('data-id'),
+                order: index + 1
+            });
+        });
+
+        // إرسال البيانات للخادم
+        fetch('{{ route(get_area_name().".doctors.files.reorder", $doctor) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': "{{ csrf_token() }}",
+            },
+            body: JSON.stringify({ order: orderData })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // إغلاق المودال
+                const modal = bootstrap.Modal.getInstance(document.getElementById('reorderFilesModal'));
+                modal.hide();
+                
+                // إظهار رسالة نجاح
+                showSuccessMessage('تم حفظ الترتيب الجديد بنجاح!');
+                
+                // إعادة تحميل الصفحة بعد ثانيتين
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            } else {
+                showErrorMessage('حدث خطأ أثناء حفظ الترتيب!');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorMessage('حدث خطأ أثناء حفظ الترتيب!');
+        });
+    });
+
+    // ***** كود مودال المستحقات اليدوية *****
+    const modalSwitchEl = document.getElementById('modalPreviousSwitch');
+    const modalContainer = document.getElementById('modalRankTableContainer');
+    const modalTbody = document.getElementById('modalRankTableBody');
+    const modalAddRowBtn = document.getElementById('modalAddRowBtn');
+    const modalRowTemplate = document.querySelector('#modalRowTemplate table tr');
+    const modalAmountInput = document.getElementById('modalAmount');
+    const modalTotalPreview = document.getElementById('modalTotalPreview');
+
+    function toggleModalContainer() {
+        modalContainer.style.display = modalSwitchEl.checked ? 'block' : 'none';
+        modalAmountInput.readOnly = modalSwitchEl.checked;
+        if (modalSwitchEl.checked) {
+            calculateModalTotal();
+        } else {
+            modalTotalPreview.textContent = '0.00 د.ل';
+        }
+    }
+
+    function calculateModalTotal() {
+        let total = 0;
+        modalTbody.querySelectorAll('tr').forEach(function (row) {
+            const fromYear = parseInt(row.querySelector('input[name="from_years[]"]').value) || 0;
+            const toYear = parseInt(row.querySelector('input[name="to_years[]"]').value) || 0;
+            const rankSelect = row.querySelector('select[name="ranks[]"]');
+            const price = parseFloat(rankSelect?.selectedOptions[0]?.dataset?.price || 0);
+            const years = toYear >= fromYear ? (toYear - fromYear + 1) : 0;
+            total += years * price;
+        });
+        modalAmountInput.value = total.toFixed(2);
+        modalTotalPreview.textContent = total.toFixed(2) + ' د.ل';
+    }
+
+    if (modalSwitchEl) {
+        modalSwitchEl.addEventListener('change', toggleModalContainer);
+    }
+
+    if (modalAddRowBtn && modalRowTemplate) {
+        modalAddRowBtn.addEventListener('click', function () {
+            const newRow = modalRowTemplate.cloneNode(true);
+            modalTbody.appendChild(newRow);
+        });
+    }
+
+    modalTbody.addEventListener('click', function (e) {
+        if (e.target.classList.contains('modal-remove-row') || e.target.closest('.modal-remove-row')) {
+            e.target.closest('tr').remove();
+            calculateModalTotal();
+        }
+    });
+
+    document.addEventListener('input', function (e) {
+        if (
+            e.target.matches('input[name="from_years[]"]') ||
+            e.target.matches('input[name="to_years[]"]') ||
+            e.target.matches('select[name="ranks[]"]')
+        ) {
+            calculateModalTotal();
+        }
+    });
+
+    // تطبيق الإعدادات الأولية
+    toggleModalContainer();
+
+    // ***** باقي الكود الأصلي *****
     function initModalSelect2() {
-        // تدمير أي select2 موجود مسبقاً
         if ($('#medicalFacilityModalSelect').hasClass('select2-hidden-accessible')) {
             $('#medicalFacilityModalSelect').select2('destroy');
         }
         
-        // تهيئة Select2 الجديدة
         $('#medicalFacilityModalSelect').select2({
             dropdownParent: $('#addPracticeLicenseModal'),
             placeholder: "حدد منشأة طبية",
@@ -953,19 +1286,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // عند فتح المودال
     $('#addPracticeLicenseModal').on('shown.bs.modal', function () {
         initModalSelect2();
     });
 
-    // عند إغلاق المودال
     $('#addPracticeLicenseModal').on('hidden.bs.modal', function () {
         if ($('#medicalFacilityModalSelect').hasClass('select2-hidden-accessible')) {
             $('#medicalFacilityModalSelect').select2('destroy');
         }
     });
 
-    // للنموذج الآخر في الصفحة (نموذج الموافقة)
     const statusSelect = document.getElementById('final_status');
     const noteContainer = document.getElementById('edit_note_container');
     const fieldsContainer = document.getElementById('approve_fields_container');
@@ -984,7 +1314,278 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // دوال إظهار الرسائل
+    function showSuccessMessage(message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        alertDiv.innerHTML = `
+            <i class="fa fa-check-circle me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+
+    function showErrorMessage(message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        alertDiv.innerHTML = `
+            <i class="fa fa-exclamation-triangle me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
 });
+</script>
+
+<!-- CSS الأنماط -->
+<style>
+.select2-container {
+    z-index: 9999 !important;
+}
+
+.select2-dropdown {
+    z-index: 9999 !important;
+}
+
+.select2-container--open {
+    z-index: 9999 !important;
+}
+
+.select2-container--default .select2-selection--single {
+    height: 38px !important;
+    line-height: 36px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding-left: 12px !important;
+    padding-right: 20px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px !important;
+}
+
+/* أنماط المودال */
+.modal {
+    z-index: 1050;
+}
+
+.modal-backdrop {
+    z-index: 1040;
+}
+
+/* أنماط إعادة ترتيب المستندات */
+.sortable-list {
+    min-height: 200px;
+    padding: 10px;
+}
+
+.file-item {
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+    cursor: grab;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.file-item:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0,123,255,0.15);
+    transform: translateY(-2px);
+}
+
+.file-item.sortable-chosen {
+    transform: rotate(2deg);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    border-color: #28a745;
+    background: #f8fff9;
+    cursor: grabbing;
+}
+
+.file-item.sortable-ghost {
+    opacity: 0.3;
+    background: #007bff;
+    border-color: #007bff;
+}
+
+.file-item.sortable-drag {
+    transform: rotate(5deg);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.drag-handle {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 18px;
+    cursor: grab;
+    padding: 5px;
+}
+
+.drag-handle:hover {
+    color: #007bff;
+}
+
+.file-thumbnail {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid #e9ecef;
+    flex-shrink: 0;
+}
+
+.file-info {
+    flex: 1;
+    margin-right: 15px;
+}
+
+.file-name {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    font-size: 0.95em;
+}
+
+.file-type {
+    color: #6c757d;
+    font-size: 0.85em;
+}
+
+.order-number {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #007bff;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.sortable-item {
+    padding-right: 45px;
+}
+
+.sortable-content {
+    padding-right: 10px;
+}
+
+/* تحسينات للمودال المالي */
+#modalRankTableContainer .table {
+    margin-bottom: 0;
+}
+
+#modalRankTableContainer .table th {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+#modalRankTableContainer .table td {
+    vertical-align: middle;
+    padding: 8px;
+}
+
+#modalTotalPreview {
+    font-weight: bold;
+    color: #28a745;
+    text-align: center;
+}
+
+.form-control-sm {
+    font-size: 0.875rem;
+}
+
+/* تحسينات الاستجابة */
+@media (max-width: 768px) {
+    .file-item {
+        padding: 10px;
+    }
+    
+    .file-thumbnail {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .drag-handle {
+        font-size: 16px;
+        left: 5px;
+    }
+    
+    .order-number {
+        width: 20px;
+        height: 20px;
+        font-size: 11px;
+        top: -6px;
+        right: -6px;
+    }
+    
+    .sortable-item {
+        padding-right: 35px;
+    }
+    
+    .file-name {
+        font-size: 0.9em;
+    }
+    
+    .file-type {
+        font-size: 0.8em;
+    }
+}
+
+/* تحسينات إضافية للمودال */
+.modal-lg {
+    max-width: 900px;
+}
+
+.alert-info {
+    border-left: 4px solid #17a2b8;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* تحسين مظهر الأزرار */
+.btn-warning.text-light:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+.btn-success.text-light:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+</style>
 </script>
 
 <!-- CSS إضافي لضمان عمل Select2 بشكل صحيح -->

@@ -13,26 +13,6 @@
             <form action="{{ route(get_area_name().'.invoices.store') }}" method="POST">
                 @csrf
                 <div class="row">
-                    <input type="hidden" name="type" value="{{ request()->type }}">
-                    @if (!request()->type)
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="invoiceable_type" class="form-label">نوع الجهة</label>
-                            <select name="invoiceable_type" id="invoiceable_type" class="form-control" required>
-                                <option value="">اختر النوع</option>
-                                <option value="App\Models\Doctor">طبيب</option>
-                                <option value="App\Models\MedicalFacility">منشأة طبية</option>
-                            </select>
-                        </div>
-                    </div>
-                    @endif
-
-                    <div class="{{ request()->type ? 'col-md-12' : 'col-md-6' }}">
-                        <div class="mb-3">
-                            <label for="invoiceable_id" class="form-label">الرقم النقابي</label>
-                            <input type="text" name="invoiceable_id" id="invoiceable_id" class="form-control" required>
-                        </div>
-                    </div>
 
                     @if (request()->type)
                     <div class="col-md-12">

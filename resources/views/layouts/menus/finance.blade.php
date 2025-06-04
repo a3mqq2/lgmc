@@ -2,20 +2,22 @@
 
 
 
+@if (auth()->user()->branch_id)
 <li class="nav-item">
     <a class="nav-link menu-link" href="#doctors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-        <i class="fa fa-user-doctor"></i><span data-key="t-layouts">    الفواتير    </span>
+        <i class="fa fa-user-doctor"></i><span data-key="t-layouts">    العضويات    </span>
     </a>
     <div class="collapse menu-dropdown" id="doctors">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
-                <a href="{{ route(get_area_name().'.invoices.index', ['status' => 'unpaid']) }}" class="nav-link" data-key="t-horizontal">    عرض الفواتير المستحقة    </a>
-                <a href="{{ route(get_area_name().'.invoices.index', ['status' => 'paid']) }}" class="nav-link" data-key="t-horizontal">    عرض الفواتير المدفوعة    </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['payment_status' => 'has_unpaid']) }}" class="nav-link" data-key="t-horizontal">    عرض العضويات التي عليها استحقاق   </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['payment_status' => 'no_dues']) }}" class="nav-link" data-key="t-horizontal">    عرض العضويات التي ليس لها استحقاق   </a>
             </li>
 
         </ul>
     </div>
 </li>
+@endif
 
 
 
@@ -62,7 +64,6 @@
 
 
 
-@if (auth()->user()->permissions->where('name','financial-administration')->count() && !auth()->user()->branch_id)
     
 <li class="nav-item">
     <a class="nav-link menu-link" href="#vaults" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
@@ -77,9 +78,6 @@
         </ul>
     </div>
 </li>
-
-@endif
-
 
 
 

@@ -18,7 +18,7 @@ class VaultController extends Controller
     {
         $vaults = Vault::query();
 
-        if (get_area_name() == "user") {
+        if (auth()->user()->branch_id) {
             $vaults->where('branch_id', auth()->user()->branch_id);
         }
 
@@ -43,20 +43,16 @@ class VaultController extends Controller
         $request->validate([
             "name" => "required",
             "openning_balance" => "required",
-            'user_id' => "required",
         ]);
 
 
 
-        $user = User::find($request->user_id);
 
         $vault = new Vault();
         $vault->name = $request->name;
         $vault->openning_balance = $request->openning_balance;
         $vault->balance = $vault->openning_balance;
-        $vault->user_id = $user->id;
-        $vault->branch_id = $user->branch_id;
-        $vault->branch_id = $request->branch_id;
+        $vault->branch_id = auth()->user()->branch_id;
         $vault->save();
 
         Log::create([

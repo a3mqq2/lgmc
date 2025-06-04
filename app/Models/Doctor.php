@@ -62,7 +62,14 @@ class Doctor extends Authenticatable
     public function doctorRank()         { return $this->belongsTo(DoctorRank::class); }
     public function branch()              { return $this->belongsTo(Branch::class); }
     public function institutions()        { return $this->belongsToMany(Institution::class); }
-    public function files()               { return $this->hasMany(DoctorFile::class); }
+    public function files()
+    {
+        return $this->hasMany(DoctorFile::class)->ordered();
+    }
+    public function filesRaw()
+    {
+        return $this->hasMany(DoctorFile::class);
+    }
     public function licenses()            { return $this->hasMany(Licence::class, 'doctor_id')->latest(); }
     public function logs()                { return $this->hasMany(Log::class, 'loggable_id')->where('loggable_type', self::class)->latest(); }
     public function countryGraduation()   { return $this->belongsTo(Country::class, 'country_graduation_id'); }
@@ -90,7 +97,7 @@ class Doctor extends Authenticatable
 
     public function getFullBreakAmountAttribute(): float
     {
-        $paid  = Invoice::where('invoiceable_id', $this->id)->where('status', 'paid')->where('invoiceable_type', self::class)->sum('amount');
+        $paid  = Invoice::where('doctor_id', $this->id)->where('status', 'paid')->where('doctor_id', self::class)->sum('amount');
         $total = TotalInvoice::where('doctor_id', $this->id)->sum('total_amount');
         return $paid - $total;
     }

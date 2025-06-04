@@ -724,4 +724,12 @@ class DoctorController extends Controller
             'doctors_report_' . now()->format('Y-m-d') . '.xlsx'
         );
     }
+
+
+
+    public function printListFinance(Request $request)
+    {
+        $doctors = $this->doctorService->getDoctors(true);
+        return view('general.doctors.finance_list', compact('doctors'));
+    }
 }

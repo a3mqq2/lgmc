@@ -42,6 +42,7 @@ class UserService
         $vault->openning_balance = 0;
         $vault->balance = 0;
         $vault->name = "حساب الموظف " . $user->name;
+        $vault->branch_id = $data['branch_id'] ?? $user->branches->first()->id ?? null;
         $vault->save();
 
         $user->vault_id = $vault->id;

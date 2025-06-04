@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Doctor;
-use App\Models\DoctorFile;
+use Exception;
 use App\Models\Log;
-use Illuminate\Http\Request;
+use App\Models\Doctor;
 use App\Models\FileType;
+use App\Models\DoctorFile;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class DoctorFileController extends Controller
 {
@@ -17,7 +21,7 @@ class DoctorFileController extends Controller
     public function index(Doctor $doctor)
     {
         $doctorFiles = $doctor->files;
-        return view('admin.doctor_files.index', compact('doctorFiles', 'doctor'));
+        return view('general.doctor_files.index', compact('doctorFiles', 'doctor'));
     }
 
     /**
@@ -26,7 +30,10 @@ class DoctorFileController extends Controller
     public function create(Doctor $doctor)
     {
         $fileTypes = FileType::where("type", "doctor")
-        ->where('doctor_type', $doctor->type->value)->where('for_registration', 1)->get();
+            ->where('doctor_type', $doctor->type->value)
+            ->where('for_registration', 1)
+            ->get();
+
         return view('general.doctor_files.create', compact('doctor', 'fileTypes'));
     }
 
@@ -36,30 +43,30 @@ class DoctorFileController extends Controller
     public function store(Request $request, Doctor $doctor)
     {
         $request->validate([
-            "file_type_id" => "required|exists:file_types,id",
-            'document' => 'required|file',
+            "file_type_id"   => "required|exists:file_types,id",
+            'document'       => 'required|file',
         ]);
 
         try {
-            $file = $request->file('document');
+            $file     = $request->file('document');
             $fileName = $file->getClientOriginalName();
             $filePath = $file->storeAs('files', $fileName, 'public');
 
             $doctorFile = DoctorFile::create([
-                'doctor_id' => $doctor->id,
-                'file_name' => $fileName,
-                'file_path' => $filePath,
+                'doctor_id'    => $doctor->id,
+                'file_name'    => $fileName,
+                'file_path'    => $filePath,
                 "file_type_id" => $request->file_type_id,
-                'file_type' => $file->getMimeType(),
-                'uploaded_at' => now(),
+                'file_type'    => $file->getMimeType(),
+                'uploaded_at'  => now(),
             ]);
 
             Log::create([
-                'user_id' => auth()->id(),
-                'details' => "تم رفع ملف جديد للطبيب: {$doctor->name}",
-                'loggable_id' => $doctorFile->id,
+                'user_id'       => auth()->id(),
+                'details'       => "تم رفع ملف جديد للطبيب: {$doctor->name}",
+                'loggable_id'   => $doctorFile->id,
                 'loggable_type' => DoctorFile::class,
-                'action' => 'upload_doctor_file',
+                'action'        => 'upload_doctor_file',
             ]);
 
             return redirect()->route(get_area_name() . '.doctors.show', $doctor->id)
@@ -76,41 +83,70 @@ class DoctorFileController extends Controller
      */
     public function show(DoctorFile $file)
     {
-        return view('admin.doctor_files.show', compact('file'));
+        return view('general.doctor_files.show', compact('file'));
     }
 
     /**
      * Show the form for editing the specified doctor file.
      */
-    public function edit(DoctorFile $file)
+    public function edit($doc, $id)
     {
-        return view('admin.doctor_files.edit', compact('file'));
+        $file = DoctorFile::findOrFail($id);
+        $fileTypes = FileType::where("type", "doctor")
+            ->where('doctor_type', $file->doctor->type->value)
+            ->get();
+
+        return view('general.doctor_files.edit', compact('file', 'fileTypes'));
     }
 
     /**
      * Update the specified doctor file in storage.
      */
-    public function update(Request $request, DoctorFile $file)
+    public function update(Request $request, $doc,$fileId)
     {
+        $file = DoctorFile::findOrFail($fileId);
+        $doctor= Doctor::findOrFail($doc);
         $request->validate([
-            'file_name' => 'required|string|max:255',
-            'file_path' => 'required|string',
-            'file_type' => 'required|string|max:255',
-            'uploaded_at' => 'nullable|date',
+            'file_type_id' => 'required|exists:file_types,id',
+            'document'     => 'nullable|file',
         ]);
 
-        $file->update($request->all());
+        try {
+            // لو تم رفع ملف جديد احذف القديم وارفع الجديد
+            if ($request->hasFile('document')) {
+                if ($file->file_path && Storage::disk('public')->exists($file->file_path)) {
+                    Storage::disk('public')->delete($file->file_path);
+                }
 
-        Log::create([
-            'user_id' => auth()->id(),
-            'details' => "تم تعديل بيانات ملف الطبيب: {$file->doctor->name}",
-            'loggable_id' => $file->id,
-            'loggable_type' => DoctorFile::class,
-            'action' => 'update_doctor_file',
-        ]);
+                $newDoc   = $request->file('document');
+                $fileName = time() . '_' . $newDoc->getClientOriginalName();      
+                $filePath = $newDoc->storeAs('files', $fileName, 'public');
 
-        return redirect()->route(get_area_name() . '.doctors.files.index', $file->doctor_id)
-            ->with('success', 'تم تعديل بيانات ملف الطبيب بنجاح.');
+                $file->file_name   = $fileName;
+                $file->file_path   = $filePath;
+                $file->uploaded_at = now();
+            }
+
+            // حدّث نوع الملف (file_type_id) دائماً
+            $file->file_type_id = $request->file_type_id;
+            $file->save();
+
+            Log::create([
+                'user_id'       => auth()->id(),
+                'details'       => "تم تعديل ملف الطبيب: {$doctor->name}",
+                'loggable_id'   => $file->id,
+                'loggable_type' => DoctorFile::class,
+                'action'        => 'update_doctor_file',
+            ]);
+
+            return redirect()
+                ->route(get_area_name() . '.doctors.show', $doctor->id)
+                ->with('success', 'تم تعديل بيانات ملف الطبيب بنجاح.');
+        } catch (\Throwable $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['file' => 'فشل تعديل الملف: ' . $e->getMessage()]);
+        }
     }
 
     /**
@@ -119,18 +155,82 @@ class DoctorFileController extends Controller
     public function destroy(DoctorFile $file)
     {
         $doctorName = $file->doctor->name;
-        $fileId = $file->id;
+        $fileId     = $file->id;
+
+        if ($file->file_path && Storage::disk('public')->exists($file->file_path)) {
+            Storage::disk('public')->delete($file->file_path);
+        }
+
         $file->delete();
 
         Log::create([
-            'user_id' => auth()->id(),
-            'details' => "تم حذف ملف الطبيب: {$doctorName}",
-            'loggable_id' => $fileId,
+            'user_id'       => auth()->id(),
+            'details'       => "تم حذف ملف الطبيب: {$doctorName}",
+            'loggable_id'   => $fileId,
             'loggable_type' => DoctorFile::class,
-            'action' => 'delete_doctor_file',
+            'action'        => 'delete_doctor_file',
         ]);
 
         return redirect()->back()
             ->with('success', 'تم حذف ملف الطبيب بنجاح.');
+    }
+
+
+ public function reorderFiles(Request $request, Doctor $doctor)
+    {
+        try {
+            // التحقق من صحة البيانات
+            $request->validate([
+                'order' => 'required|array',
+                'order.*.id' => 'required|integer|exists:doctor_files,id',
+                'order.*.order' => 'required|integer|min:1'
+            ]);
+
+            // التحقق من أن جميع الملفات تخص هذا الطبيب
+            $fileIds = collect($request->order)->pluck('id');
+            $doctorFileIds = $doctor->files()->pluck('id');
+     
+
+            // تحديث ترتيب الملفات
+            foreach ($request->order as $item) {
+                DB::table('doctor_files')
+                    ->where('id', $item['id'])
+                    ->where('doctor_id', $doctor->id)
+                    ->update(['sort_order' => $item['order']]);
+            }
+
+            // تسجيل العملية في السجل
+            \Log::info('Files reordered for doctor', [
+                'doctor_id' => $doctor->id,
+                'doctor_name' => $doctor->name,
+                'user_id' => auth()->id(),
+                'files_count' => count($request->order)
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تم حفظ الترتيب الجديد بنجاح'
+            ]);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'بيانات غير صحيحة',
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            \Log::error('Error reordering files', [
+                'doctor_id' => $doctor->id,
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء حفظ الترتيب'
+            ], 500);
+        }
     }
 }

@@ -20,5 +20,17 @@ class VaultSeeder extends Seeder
         $doctorVault->openning_balance = 0;
         $doctorVault->save();
 
+
+        $branches = Branch::all();
+        foreach ($branches as $branch) {
+            $vault = new Vault();
+            $vault->name = "حساب " . $branch->name . ' الأساسي';
+            $vault->balance = 0;
+            $vault->openning_balance = 0;
+            $vault->branch_id = $branch->id;
+            $vault->save();
+        }
+
+
     }
 }
