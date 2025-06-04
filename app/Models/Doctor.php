@@ -64,7 +64,7 @@ class Doctor extends Authenticatable
     public function institutions()        { return $this->belongsToMany(Institution::class); }
     public function files()
     {
-        return $this->hasMany(DoctorFile::class)->ordered();
+        return $this->hasMany(DoctorFile::class);
     }
     public function filesRaw()
     {

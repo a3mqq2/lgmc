@@ -15,12 +15,10 @@ class DoctorFile extends Model
         'file_path',
         'uploaded_at',
         "file_type_id",
-        'sort_order'
     ];
 
     protected $casts = [
         'uploaded_at' => 'datetime',
-        'sort_order' => 'integer',
     ];
 
     public function doctor()
@@ -33,8 +31,4 @@ class DoctorFile extends Model
     }
 
 
-    public function scopeOrdered($query)
-    {
-        return $query->orderBy('sort_order')->orderBy('id');
-    }
 }
