@@ -36,14 +36,13 @@ class ImportOtherDocuments extends Command
             });
 
             foreach ($matched as $filePath) {
-                DoctorFile::updateOrCreate(
+                DoctorFile::create(
                     [
                         'doctor_id' => $doctor->id,
                         'file_path' => $filePath,
-                    ],
-                    [
                         'file_name'    => basename($filePath),
                         'file_type_id' => $fileTypeId,
+                        'order_number' => 99,
                     ]
                 );
             }
