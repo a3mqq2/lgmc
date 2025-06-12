@@ -436,15 +436,6 @@
                         <div class="welcome-stat-label">طبيب مسجل</div>
                     </div>
                 </div>
-                <div class="welcome-stat">
-                    <div class="welcome-stat-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div>
-                        <div class="welcome-stat-value">{{ \App\Models\MedicalFacility::where('membership_status', 'under_approve')->count() }}</div>
-                        <div class="welcome-stat-label">طلب قيد المراجعة</div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

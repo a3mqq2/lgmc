@@ -226,7 +226,7 @@ class DoctorService
              'invoices' => fn ($q) => $q
                  ->select('id', 'doctor_id', 'amount', 'status', 'created_at', 'received_at', 'description')
                  ->orderByDesc('created_at')
-         ])->orderByDesc('id');
+         ])->orderByDesc('index');
      
          return $without_paginate ? $query->get()
                                    : $query->paginate(10);

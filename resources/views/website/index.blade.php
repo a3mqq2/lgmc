@@ -432,18 +432,13 @@
           <div class="col-lg-8 mt-lg-2">
             <div class="row align-items-center counter-wrapper gy-6 text-center">
               <div class="col-md-4">
-                <h3 class="counter counter-lg">7,070+</h3>
+                <h3 class="counter counter-lg">{{\App\Models\Doctor::count()}} + </h3>
                 <p>عدد الأطباء في ليبيا</p>
               </div>
               <!--/column -->
               <div class="col-md-4">
-                <h3 class="counter counter-lg">19+</h3>
-                <p>عدد الأطباء لكل 10,000 نسمة</p>
-              </div>
-              <!--/column -->
-              <div class="col-md-4">
-                <h3 class="counter counter-lg">537+</h3>
-                <p>عدد العيادات غير الإيوائية الخاصة</p>
+                <h3 class="counter counter-lg">{{\App\Models\MedicalFacility::count()}} + </h3>
+                <p>عدد المنشأت الطبية   </p>
               </div>
               <!--/column -->
             </div>
