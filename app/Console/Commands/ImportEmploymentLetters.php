@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\Doctor;
 use App\Models\DoctorFile;
+use App\Models\FileType;
 
 class ImportEmploymentLetters extends Command
 {
@@ -59,7 +60,7 @@ class ImportEmploymentLetters extends Command
             // 3) import each match
             foreach ($matched as $filePath) {
                 $fileName = basename($filePath);
-
+                $fileType = FileType::find(31);
                 DoctorFile::updateOrCreate(
                     [
                         'doctor_id' => $doctor->id,
@@ -68,6 +69,7 @@ class ImportEmploymentLetters extends Command
                     [
                         'file_name'    => $fileName,
                         'file_type_id' => 31, // <— change to your employment_letter file_type_id
+
                     ]
                 );
 
