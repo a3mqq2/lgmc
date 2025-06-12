@@ -1,66 +1,67 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# مشروع “نقابة الأطباء”
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+نظام إلكتروني متكامل لإدارة شؤون الأطباء وتسهيل إجراءات النقابة، يشتمل على المكونات والوظائف التالية:
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🔹 تسجيل الأطباء من الموقع الإلكتروني
+- نموذج تسجيل واضح وبسيط يسمح للأطباء بإدخال بياناتهم الشخصية والأكاديمية بواجهة ويب.
+- رفع المستندات المطلوبة مثل شهادات التخرج، صورة الهوية، وترخيص مزاولة المهنة.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🔹 القبول والرفض وإدارة تحكّم كاملة
+- لوحة إدارة للنقابة تعرض طلبات التسجيل الواردة.
+- إمكانية مراجعة البيانات والمستندات، ثم الموافقة أو الرفض يدويًا.
+- إرسال إشعارات آلية عبر البريد الإلكتروني للطبيب بحالة الطلب (موافق/مرفوض).
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🔹 موظفين إدارة عامة وفروع وصلاحيات
+- تقسيم النظام إلى “إدارة عامة” و”فروع النقابة” لكلٍ حسب مهامه وصلاحياته.
+- دور “مدير عام النقابة” يمتلك صلاحيات كاملة لإضافة/تعديل/حذف الموظفين وتعيين الصلاحيات المناسبة.
+- لكل فرع صلاحيات محددة (مثل: مراجعة المستندات، إصدار التراخيص، إدارة شؤون الفواتير).
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🔹 ملف كامل للطبيب وإدارة فواتيره السنوية أو فواتير استحقاقات أخرى
+- “ملف الطبيب” يعرض كافة البيانات المسجلة: السيرة الذاتية، التخصص، مكان العمل، تاريخ التسجيل.
+- واجهة خاصة بإدارة الفواتير السنوية (اشتراك النقابة) أو أي استحقاقات أخرى (رسوم امتحانات، شهادات).
+- عرض تاريخ الدفع، المبالغ المستحقة، وصلّات الدفع الإلكتروني، والتنبيهات للفواتير المتأخرة.
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🔹 تسجيل منشآت طبية وزوار
+- واجهة لإضافة المنشآت (مستشفيات، عيادات، مراكز صحية) مع بيانات تفصيلية لكل منشأة.
+- نظام لتسجيل الزوار (طلاب طب، إداريين، مختصين) يربطهم بمنشأة معينة وتحديد صلاحياتهم.
+- إمكانية متابعة حالة الاعتماد أو الشراكة بين النقابة والمنشأة الطبية.
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## 🔹 إصدار فواتير للأطباء
+- توليد فواتير إلكترونية شاملة للاشتراكات وخدمات النقابة (دورات، تراخيص، شهادات).
+- إمكانية تعديل الفاتورة قبل الإصدار وإضافة ضريبة القيمة المضافة إن وجدت.
+- إرسال الفاتورة إلى البريد الإلكتروني للطبيب وتجهيزها للطباعة بصيغة PDF.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🔹 واجهة كاملة للطبيب
+- لوحة تحكم شخصية (Dashboard) تحتوي على:
+  - ملخص الحالة المالية (الفواتير المستحقة والمدفوعة).
+  - حالة الترخيص والتنبيهات لتاريخ انتهاء الترخيص أو الاشتراك.
+  - إمكانية تحديث البيانات الشخصية ورفع المستندات الجديدة.
+  - روابط سريعة لحجز الدورات والتواصل مع إدارة النقابة.
+- تصميم متجاوب يدعم سطح المكتب والهاتف المحمول لتجربة مستخدم سلسة في أي وقت.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## التقنيات المستخدمة
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- **Vue 3** (نسخة: ^3.5.13)  
+- **Vite** (نسخة: ^5.0.0)  
+- **@vitejs/plugin-vue** (نسخة: ^5.2.3)  
+- **laravel-vite-plugin** (نسخة: ^1.0.0)  
+- **Axios** (نسخة: ^1.9.0)  
+- **sweetalert2** (نسخة: ^11.21.0)  
+- **vue-select** (نسخة: ^3.20.4)  
+- **vue3-select** (نسخة: ^0.1.2)  
