@@ -48,6 +48,7 @@ class ImportApplicationForm extends Command
                     'file_name'    => $fileName,
                     'file_path'    => $filePath,
                     'file_type_id' => 26,
+                    'order_number' => 2
                 ]);
 
                 $this->info("Image imported for Doctor ID: {$doctor->id} - {$fileName}");
