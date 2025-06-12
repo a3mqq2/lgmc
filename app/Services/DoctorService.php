@@ -50,310 +50,186 @@ class DoctorService
      {
          $query = Doctor::query();
      
-         // الفلاتر الأساسية الموجودة
-         if (request()->filled('branch_id')) {
-             $query->where('branch_id', request('branch_id'));
-         }
+         /* -------------------------------------------------
+          |  الفلاتر العامة على الأطباء
+          * ------------------------------------------------*/
+         if (request()->filled('branch_id'))      $query->where('branch_id', request('branch_id'));
+         if (request()->filled('doctor_number'))  $query->where('doctor_number', request('doctor_number'));
+         if (request()->filled('name'))           $query->where('name', 'like', '%' . request('name') . '%');
+         if (request()->filled('phone'))          $query->where('phone', 'like', '%' . request('phone') . '%');
+         if (request()->filled('email'))          $query->where('email', 'like', '%' . request('email') . '%');
+         if (request()->filled('registered_at'))  $query->whereDate('registered_at', request('registered_at'));
+         if (request()->filled('membership_status')) $query->where('membership_status', request('membership_status'));
+         if (request()->filled('specialization')) $query->where('specialty_1_id', request('specialization'));
+         if (request()->filled('national_number')) $query->where('national_number', 'like', '%' . request('national_number') . '%');
+         if (request()->filled('doctor_rank_id')) $query->where('doctor_rank_id', request('doctor_rank_id'));
+         if (request()->filled('passport_number')) $query->where('passport_number', 'like', '%' . request('passport_number') . '%');
+         if (request()->filled('academic_degree')) $query->where('academic_degree_id', request('academic_degree'));
+         if (request('type'))                     $query->where('type', request('type'));
+         if (request()->filled('banned'))         $query->where('membership_status', 'banned');
      
-         if (request()->filled('doctor_number')) {
-             $query->where('doctor_number', request('doctor_number'));
-         }
-     
-         if (request()->filled('name')) {
-             $query->where('name', 'like', '%' . request('name') . '%');
-         }
-     
-         if (request()->filled('phone')) {
-             $query->where('phone', 'like', '%' . request('phone') . '%');
-         }
-     
-         if (request()->filled('email')) {
-             $query->where('email', 'like', '%' . request('email') . '%');
-         }
-     
-         if (request()->filled('registered_at')) {
-             $query->whereDate('registered_at', request('registered_at'));
-         }
-     
-         if (request()->filled('membership_status')) {
-             $query->where('membership_status', request('membership_status'));
-         }
-     
+         /* -------------------------------------------------
+          |  فلترة حالة الرخصة
+          * ------------------------------------------------*/
          if (request()->filled('last_license_status')) {
              $query->whereHas('licenses', function ($q) {
                  $q->where('status', request('last_license_status'));
              });
          }
      
-         if (request()->filled('specialization')) {
-             $query->where('specialty_1_id', request('specialization'));
-         }
+         /* -------------------------------------------------
+          |  الفلاتر المالية (منطقة المالية فقط)
+          * ------------------------------------------------*/
+         if (get_area_name() === 'finance') {
      
-         if (request()->filled('national_number')) {
-             $query->where('national_number', 'like', '%' . request('national_number') . '%');
-         }
-     
-         if(request('doctor_rank_id')) {
-             $query->where('doctor_rank_id', request('doctor_rank_id'));
-         }
-     
-         if (request()->filled('passport_number')) {
-             $query->where('passport_number', 'like', '%' . request('passport_number') . '%');
-         }
-     
-         if (request()->filled('academic_degree')) {
-             $query->where('academic_degree_id', request('academic_degree'));
-         }
-     
-         // Type filters
-        
-         if(request('type'))
-         {
-            $query->where('type', request('type'));
-         }
-     
-         if (request()->filled('banned')) {
-             $query->where('membership_status', 'banned');
-         }
-     
-         // ***** الفلاتر المالية الجديدة للمدير المالي *****
-         if (get_area_name() == "finance") {
-             
-             // فلتر حالة الدفع
+             // الأطباء الذين لديهم مستحقات غير مدفوعة / أو ليس لديهم مستحقات
              if (request()->filled('payment_status')) {
                  switch (request('payment_status')) {
                      case 'has_unpaid':
-                         // الأطباء الذين لديهم مستحقات غير مدفوعة
-                         $query->whereHas('invoices', function($q) {
-                             $q->where('status', \App\Enums\InvoiceStatus::unpaid)
+                         $query->whereIn('id', function ($q) {
+                             $q->select('doctor_id')
+                               ->from('invoices')
+                               ->where('status', \App\Enums\InvoiceStatus::unpaid)
+                               ->groupBy('doctor_id')
                                ->havingRaw('SUM(amount) > 0');
                          });
                          break;
-                         
+     
                      case 'no_dues':
-                         // الأطباء الذين ليس لديهم مستحقات
-                         $query->whereDoesntHave('invoices', function($q) {
-                             $q->where('status', \App\Enums\InvoiceStatus::unpaid);
+                         $query->whereNotIn('id', function ($q) {
+                             $q->select('doctor_id')
+                               ->from('invoices')
+                               ->where('status', \App\Enums\InvoiceStatus::unpaid)
+                               ->groupBy('doctor_id');
                          });
                          break;
                  }
              }
      
-             // فلتر الحد الأدنى للمستحقات
+             // الحدّ الأدنى للمستحقات
              if (request()->filled('min_amount')) {
-                 $minAmount = (float) request('min_amount');
-                 $query->whereHas('invoices', function($q) use ($minAmount) {
-                     $q->where('status', \App\Enums\InvoiceStatus::unpaid)
-                       ->havingRaw('SUM(amount) >= ?', [$minAmount]);
+                 $min = (float) request('min_amount');
+                 $query->whereIn('id', function ($q) use ($min) {
+                     $q->select('doctor_id')
+                       ->from('invoices')
+                       ->where('status', \App\Enums\InvoiceStatus::unpaid)
+                       ->groupBy('doctor_id')
+                       ->havingRaw('SUM(amount) >= ?', [$min]);
                  });
              }
      
-             // فلتر الحد الأقصى للمستحقات
+             // الحدّ الأقصى للمستحقات
              if (request()->filled('max_amount')) {
-                 $maxAmount = (float) request('max_amount');
-                 $query->whereHas('invoices', function($q) use ($maxAmount) {
-                     $q->where('status', \App\Enums\InvoiceStatus::unpaid)
-                       ->havingRaw('SUM(amount) <= ?', [$maxAmount]);
+                 $max = (float) request('max_amount');
+                 $query->whereIn('id', function ($q) use ($max) {
+                     $q->select('doctor_id')
+                       ->from('invoices')
+                       ->where('status', \App\Enums\InvoiceStatus::unpaid)
+                       ->groupBy('doctor_id')
+                       ->havingRaw('SUM(amount) <= ?', [$max]);
                  });
              }
      
-             // فلتر تاريخ الفاتورة من
+             // تواريخ الفواتير (من / إلى)
              if (request()->filled('invoice_date_from')) {
-                 $query->whereHas('invoices', function($q) {
-                     $q->whereDate('created_at', '>=', request('invoice_date_from'));
+                 $query->whereIn('id', function ($q) {
+                     $q->select('doctor_id')->from('invoices')
+                       ->whereDate('created_at', '>=', request('invoice_date_from'));
                  });
              }
-     
-             // فلتر تاريخ الفاتورة إلى
              if (request()->filled('invoice_date_to')) {
-                 $query->whereHas('invoices', function($q) {
-                     $q->whereDate('created_at', '<=', request('invoice_date_to'));
+                 $query->whereIn('id', function ($q) {
+                     $q->select('doctor_id')->from('invoices')
+                       ->whereDate('created_at', '<=', request('invoice_date_to'));
                  });
              }
      
-          
-     
-             // فلتر نوع الفاتورة
+             // أنواع الفواتير
              if (request()->filled('invoice_type')) {
-                 switch (request('invoice_type')) {
-                     case 'membership':
-                         $query->whereHas('invoices', function($q) {
-                             $q->where('description', 'like', '%عضوية%')
-                               ->orWhere('description', 'like', '%اشتراك%');
-                         });
-                         break;
-                         
-                     case 'license':
-                         $query->whereHas('invoices', function($q) {
-                             $q->where('description', 'like', '%رخصة%')
-                               ->orWhere('description', 'like', '%إذن%');
-                         });
-                         break;
-                         
-                     case 'penalty':
-                         $query->whereHas('invoices', function($q) {
-                             $q->where('description', 'like', '%غرامة%')
-                               ->orWhere('description', 'like', '%مخالفة%');
-                         });
-                         break;
-                         
-                     case 'manual':
-                         $query->whereHas('invoices', function($q) {
-                             $q->where('description', 'like', '%يدوية%')
-                               ->orWhere('description', 'like', '%إضافية%');
-                         });
-                         break;
-                 }
-             }
+                 $needle = match (request('invoice_type')) {
+                     'membership' => ['%عضوية%', '%اشتراك%'],
+                     'license'    => ['%رخصة%', '%إذن%'],
+                     'penalty'    => ['%غرامة%', '%مخالفة%'],
+                     'manual'     => ['%يدوية%', '%إضافية%'],
+                     default      => [],
+                 };
      
-             // فلتر تاريخ آخر دفعة
-             if (request()->filled('last_payment_from')) {
-                 $query->whereHas('invoices', function($q) {
-                     $q->where('status', \App\Enums\InvoiceStatus::paid)
-                       ->whereDate('received_at', '>=', request('last_payment_from'));
-                 });
-             }
-     
-             if (request()->filled('last_payment_to')) {
-                 $query->whereHas('invoices', function($q) {
-                     $q->where('status', \App\Enums\InvoiceStatus::paid)
-                       ->whereDate('received_at', '<=', request('last_payment_to'));
-                 });
-             }
-     
-             // فلتر حسب المستخدم الذي أنشأ الفاتورة
-             if (request()->filled('created_by_user')) {
-                 $query->whereHas('invoices', function($q) {
-                     $q->where('user_id', request('created_by_user'));
-                 });
-             }
-     
-             // فلتر حسب حالة الإعفاء
-             if (request()->filled('relief_status')) {
-                 if (request('relief_status') === 'has_relief') {
-                     $query->whereHas('invoices', function($q) {
-                         $q->where('status', \App\Enums\InvoiceStatus::relief);
-                     });
-                 } elseif (request('relief_status') === 'no_relief') {
-                     $query->whereDoesntHave('invoices', function($q) {
-                         $q->where('status', \App\Enums\InvoiceStatus::relief);
+                 if ($needle) {
+                     $query->whereIn('id', function ($q) use ($needle) {
+                         $q->select('doctor_id')->from('invoices')
+                           ->where(fn ($s) => $s
+                               ->where('description', 'like', $needle[0])
+                               ->orWhere('description', 'like', $needle[1] ?? $needle[0]));
                      });
                  }
              }
      
-             // فلتر حسب عدد الفواتير
-             if (request()->filled('min_invoices_count')) {
-                 $minCount = (int) request('min_invoices_count');
-                 $query->has('invoices', '>=', $minCount);
-             }
+             // عدد الفواتير
+             if (request()->filled('min_invoices_count'))
+                 $query->has('invoices', '>=', (int) request('min_invoices_count'));
      
-             if (request()->filled('max_invoices_count')) {
-                 $maxCount = (int) request('max_invoices_count');
-                 $query->has('invoices', '<=', $maxCount);
-             }
+             if (request()->filled('max_invoices_count'))
+                 $query->has('invoices', '<=', (int) request('max_invoices_count'));
      
-             // فلتر الأطباء الذين لم يدفعوا لفترة طويلة
+             // دَين متأخّر لأكثر من X يوم
              if (request()->filled('overdue_days')) {
-                 $overdueDays = (int) request('overdue_days');
-                 $query->whereHas('invoices', function($q) use ($overdueDays) {
-                     $q->where('status', \App\Enums\InvoiceStatus::unpaid)
-                       ->where('created_at', '<=', now()->subDays($overdueDays));
+                 $days = (int) request('overdue_days');
+                 $query->whereIn('id', function ($q) use ($days) {
+                     $q->select('doctor_id')->from('invoices')
+                       ->where('status', \App\Enums\InvoiceStatus::unpaid)
+                       ->where('created_at', '<=', now()->subDays($days));
                  });
              }
      
-             // إضافة الحسابات المالية للنتائج
-             $query->withSum([
-                 'invoices as total_unpaid' => function($q) {
-                     $q->where('status', \App\Enums\InvoiceStatus::unpaid);
-                 }
-             ], 'amount')
-             ->withSum([
-                 'invoices as total_paid' => function($q) {
-                     $q->where('status', \App\Enums\InvoiceStatus::paid);
-                 }
-             ], 'amount')
-             ->withSum([
-                 'invoices as total_relief' => function($q) {
-                     $q->where('status', \App\Enums\InvoiceStatus::relief);
-                 }
-             ], 'amount')
-             ->withCount([
-                 'invoices as total_invoices_count'
-             ])
-             ->withCount([
-                 'invoices as unpaid_invoices_count' => function($q) {
-                     $q->where('status', \App\Enums\InvoiceStatus::unpaid);
-                 }
-             ]);
+             /* ----- التجميعات ----- */
+             $query->withSum(['invoices as total_unpaid' => function ($q) {
+                         $q->where('status', \App\Enums\InvoiceStatus::unpaid);
+                     }], 'amount')
+                   ->withSum(['invoices as total_paid' => function ($q) {
+                         $q->where('status', \App\Enums\InvoiceStatus::paid);
+                     }], 'amount')
+                   ->withSum(['invoices as total_relief' => function ($q) {
+                         $q->where('status', \App\Enums\InvoiceStatus::relief);
+                     }], 'amount')
+                   ->withCount('invoices as total_invoices_count')
+                   ->withCount(['invoices as unpaid_invoices_count' => function ($q) {
+                         $q->where('status', \App\Enums\InvoiceStatus::unpaid);
+                     }]);
      
-             // ترتيب خاص بالمدير المالي
+             /* ----- الترتيب ----- */
              if (request()->filled('sort_by')) {
-                 switch (request('sort_by')) {
-                     case 'highest_dues':
-                         $query->orderByDesc('total_unpaid');
-                         break;
-                     case 'lowest_dues':
-                         $query->orderBy('total_unpaid');
-                         break;
-                     case 'most_paid':
-                         $query->orderByDesc('total_paid');
-                         break;
-                     case 'most_invoices':
-                         $query->orderByDesc('total_invoices_count');
-                         break;
-                     case 'oldest_dues':
-                         $query->whereHas('invoices', function($q) {
-                             $q->where('status', \App\Enums\InvoiceStatus::unpaid);
-                         })->orderBy(
-                             \DB::table('invoices')
-                                 ->select('created_at')
-                                 ->whereColumn('doctor_id', 'doctors.id')
-                                 ->where('status', \App\Enums\InvoiceStatus::unpaid)
-                                 ->orderBy('created_at')
-                                 ->limit(1)
-                         );
-                         break;
-                     default:
-                         $query->orderByDesc('total_unpaid');
-                 }
+                 match (request('sort_by')) {
+                     'highest_dues' => $query->orderByDesc('total_unpaid'),
+                     'lowest_dues'  => $query->orderBy('total_unpaid'),
+                     'most_paid'    => $query->orderByDesc('total_paid'),
+                     'most_invoices'=> $query->orderByDesc('total_invoices_count'),
+                     default        => $query->orderByDesc('total_unpaid'),
+                 };
              } else {
-                 // الترتيب الافتراضي للمدير المالي: حسب المستحقات
                  $query->orderByDesc('total_unpaid');
              }
-     
-         } else {
-             // إذا لم يكن المدير المالي، أظهر فقط الأطباء الذين لديهم فواتير غير مدفوعة
-             // $query->whereHas('invoices', function($q) {
-             //     $q->where('status', 'unpaid');
-             // });
          }
      
-         // Area-based branch restriction
-         
-         if(get_area_name() != "admin")
-         {
-            $query->where('branch_id', auth()->user()->branch_id);
+         /* -------------------------------------------------
+          |  تقييد الفرع حسب المنطقة
+          * ------------------------------------------------*/
+         if (get_area_name() !== 'admin') {
+             $query->where('branch_id', auth()->user()->branch_id);
          }
      
-        $query = $query->with([
+         /* -------------------------------------------------
+          |  علاقات محمّلة + ترتيب افتراضي
+          * ------------------------------------------------*/
+         $query->with([
              'branch',
              'doctor_rank',
-             'invoices' => function($q) {
-                 // تحميل الفواتير مع التفاصيل المطلوبة
-                 $q->select('id', 'doctor_id', 'amount', 'status', 'created_at', 'received_at', 'description')
-                   ->orderByDesc('created_at');
-             }
-         ])
-         ->orderByDesc('id');
-
-         if($without_paginate)
-         {
-            $query = $query->get();
-         } else {
-            $query = $query->paginate(10);
-         }
-
-         return $query;
+             'invoices' => fn ($q) => $q
+                 ->select('id', 'doctor_id', 'amount', 'status', 'created_at', 'received_at', 'description')
+                 ->orderByDesc('created_at')
+         ])->orderByDesc('id');
+     
+         return $without_paginate ? $query->get()
+                                   : $query->paginate(10);
      }
      
 
