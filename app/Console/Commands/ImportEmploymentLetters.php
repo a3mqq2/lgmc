@@ -69,6 +69,7 @@ class ImportEmploymentLetters extends Command
                     [
                         'file_name'    => $fileName,
                         'file_type_id' => 19, // <— change to your employment_letter file_type_id
+                        'order_number' => 8,
 
                     ]
                 );
