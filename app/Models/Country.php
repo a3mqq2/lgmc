@@ -14,6 +14,7 @@ class Country extends Model
         'en_name',
         'location',
         'country_id',
+        'country_name_en',
     ];
 
 }

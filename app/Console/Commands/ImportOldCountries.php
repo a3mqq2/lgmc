@@ -17,14 +17,14 @@ class ImportOldCountries extends Command
 
         foreach ($oldCountries as $old) {
             try {
-                $exists = Country::where('name', $old->country_arabic)
-                    ->orWhere('en_name', $old->country_english)
+                $exists = Country::where('country_name_ar', $old->country_arabic)
+                    ->orWhere('country_name_en', $old->country_english)
                     ->first();
 
                 if (!$exists) {
                     Country::create([
                         'name' => $old->country_arabic,
-                        'en_name' => $old->country_english,
+                        'country_name_en' => $old->country_english,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
