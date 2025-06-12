@@ -23,9 +23,9 @@ class ImportDoctorSpecialties extends Command
 
         foreach ($oldSpecialties as $memberId => $specialties) {
             $firstSpecialtyName = $specialties->pluck('name')->unique()->first();
-
+            $firstNameEn = $specialties->pluck('name_en')->unique()->first();
             if ($firstSpecialtyName) {
-                $specialty = Specialty::firstOrCreate(['name' => $firstSpecialtyName]);
+                $specialty = Specialty::firstOrCreate(['name' => $firstSpecialtyName,'name_en' => $firstNameEn]);
 
                 $doctor = Doctor::where('doctor_number', $memberId)->first();
 
