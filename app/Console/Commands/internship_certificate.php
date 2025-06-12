@@ -47,7 +47,8 @@ class internship_certificate extends Command
                     'doctor_id'    => $doctor->id,
                     'file_name'    => $fileName,
                     'file_path'    => $filePath,
-                    'file_type_id' => 28,
+                    'file_type_id' => 15,
+                    'order_number' => 3,
                 ]);
 
                 $this->info("Image imported for Doctor ID: {$doctor->id} - {$fileName}");
