@@ -47,7 +47,7 @@ class passport extends Command
                     'doctor_id'    => $doctor->id,
                     'file_name'    => $fileName,
                     'file_path'    => $filePath,
-                    'file_type_id' => 27,
+                    'file_type_id' => 17,
                 ]);
 
                 $this->info("Image imported for Doctor ID: {$doctor->id} - {$fileName}");
