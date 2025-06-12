@@ -7,9 +7,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WebsiteController;
+use App\Http\Controllers\DoctorWebController;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 use App\Http\Controllers\Common\AuthController;
 use App\Http\Controllers\VisitorDoctorController;
+use App\Http\Controllers\DoctorsDirectoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +67,9 @@ Route::middleware('auth')->group(function() {
     Route::get('/sections', [AuthController::class, 'sections'])->name('sections');
 });
 
+
+
+Route::get('/doctors', [DoctorsDirectoryController::class , 'index'])->name('doctors.index');
 
 // send testing email
 Route::get('/send-email', function() {

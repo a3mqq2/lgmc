@@ -53,9 +53,7 @@
                 <li class="nav-item">
                   <a class="nav-link" href="#goals"> اهداف النقابة </a>
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#services">  الخدمات المقدمة  </a>
-                </li>
+
               </ul>
               <!-- /.navbar-nav -->
               <div class="offcanvas-footer d-lg-none">
@@ -135,7 +133,39 @@
     </section>
 
 
-    <div class="warpper" style="margin-top: 140px">
+
+
+    <section class="wrapper " dir="rtl" style="margin-top: 120px !important;">
+      <div class="container py-14 pt-md-17 ">
+          <div class="row">
+            <div class="col-md-6 text-center">
+               <div class="card border">
+                <div class="card-body">
+                    <div class="">
+                      <img src="{{asset('assets/stethoscope.png')}}" alt="">
+                    </div>
+                    <h3 class="text-center"> دليل الأطباء </h3>
+                    <p class="text-muted m-0">دليل شامل لجميع اطباء ليبيا وبياناتهم</p>
+                </div>
+               </div>
+            </div>
+            <div class="col-md-6 text-center">
+              <div class="card border">
+               <div class="card-body">
+                   <div class="">
+                     <img src="{{asset('assets/hospital-logo.png')}}" alt="">
+                   </div>
+                   <h3 class="text-center text-primary"> دليل المنشأت الطبية </h3>
+                   <p class="text-muted m-0">دليل شامل لجميع  المنشأت الطبية   وبياناتهم</p>
+               </div>
+              </div>
+           </div>
+          </div>
+      </div>
+    </section>
+
+
+    <div class="warpper" style="margin-top: 40px;">
       <div class="container pt-7  pb-8" id="about">
           <div class="row gy-10 gy-sm-13 gx-lg-3 align-items-center">
             {{-- <div class="col-md-8 col-lg-6 offset-lg-1 order-lg-2 position-relative">
@@ -178,24 +208,6 @@
                   </div>
                   <!--/.accordion-collapse -->
                 </div>
-                <!--/.accordion-item -->
-                <div class="card plain accordion-item">
-                  <div class="card-header" id="headingThree">
-                    <button class="collapsed text-right" style="text-align: right!important;color:#9e0302" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree"> الخدمات المقدمة للأعضاء والمجتمع
-
-                    </button>
-                  </div>
-                  <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                    <div class="card-body">
-                      <p>
-                        تقدم النقابة مجموعة من الخدمات لأعضائها، تشمل إصدار الشهادات وأذونات مزاولة الأنشطة، تنظيم دورات تدريبية وورش عمل في تخصصات طبية مختلفة، تقديم المشورة القانونية والدعم للأعضاء، والتنسيق مع الجهات الحكومية لضمان حقوق الأطباء. كما تسهم النقابة في نشر الوعي الصحي وتنظيم المؤتمرات والندوات الطبية للمساهمة في تطوير المعرفة الطبية وتبادل الخبرات بين الأطباء. 
-                      </p>
-                    </div>
-                    <!--/.card-body -->
-                  </div>
-                  <!--/.accordion-collapse -->
-                </div>
-                <!--/.accordion-item -->
               </div>
               <!--/.accordion -->
             </div>
@@ -262,117 +274,6 @@
 
 
     
-    <section class="wrapper bg-light" id="services"  dir="rtl">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 col-xl-7 col-xxl-6">
-            <h2 class="fs-16 text-uppercase text-line text-primary mb-3">الخدمات المقدمة</h2>
-            <p style="font-size: 18px;">
-              تقدم النقابة العامة للأطباء في ليبيا مجموعة متنوعة من الخدمات لدعم أعضائها وتعزيز مهنة الطب في البلاد.
-            </p>
-          </div>
-          <!-- /column -->
-        </div>
-        <!-- /.row -->
-        <div class="row gx-md-8 gy-8 mb-14 mb-md-18">
-          <div class="col-md-6 col-lg-4">
-            <div class="icon btn btn-block btn-lg btn-soft-primary pe-none mb-6"  style="margin-left: 20px;
-            background: #ffdcdc;
-            border: 1px solid #ffb4b4;
-            color: #cc0100;">
-              <i class="uil uil-file-alt"></i>
-            </div>
-            <h4>إصدار الشهادات وأذونات مزاولة الأنشطة</h4>
-            <p class="mb-3">
-              تقديم الشهادات وإذن مزاولة الأنشطة الطبية للأعضاء، مع توضيح المستندات المطلوبة لكل نوع من الأذونات.
-            </p>
-          </div>
-          <!--/column -->
-          <div class="col-md-6 col-lg-4">
-            <div class="icon btn btn-block btn-lg btn-soft-primary pe-none mb-6"  style="margin-left: 20px;
-            background: #ffdcdc;
-            border: 1px solid #ffb4b4;
-            color: #cc0100;">
-              <i class="uil uil-user-plus"></i>
-            </div>
-            <h4>التسجيل والقيد</h4>
-            <p class="mb-3">
-              إجراءات الانتساب للنقابة، بما في ذلك المستندات المطلوبة ورسوم الاشتراك للأطباء الليبيين وغير الليبيين.
-            </p>
-          </div>
-          <!--/column -->
-          <div class="col-md-6 col-lg-4">
-            <div class="icon btn btn-block btn-lg btn-soft-primary pe-none mb-6"  style="margin-left: 20px;
-            background: #ffdcdc;
-            border: 1px solid #ffb4b4;
-            color: #cc0100;">
-              <i class="uil uil-graduation-cap"></i>
-            </div>
-            <h4>التعليم الطبي المستمر</h4>
-            <p class="mb-3">
-              تنظيم دورات تدريبية وورش عمل في تخصصات طبية مختلفة، مثل الإنعاش القلبي الأساسي (BLS) والإنعاش القلبي المتقدم (ACLS)، ودورات في طرق البحث العلمي.
-            </p>
-          </div>
-          <!--/column -->
-          <div class="col-md-6 col-lg-4">
-            <div class="icon btn btn-block btn-lg btn-soft-primary pe-none mb-6"  style="margin-left: 20px;
-            background: #ffdcdc;
-            border: 1px solid #ffb4b4;
-            color: #cc0100;">
-              <i class="uil uil-balance-scale"></i>
-            </div>
-            <h4>الدعم القانوني والمشورة</h4>
-            <p class="mb-3">
-              تقديم المشورة القانونية والدعم للأعضاء فيما يتعلق بالقضايا المهنية والتشريعات الصحية.
-            </p>
-          </div>
-          <!--/column -->
-          <div class="col-md-6 col-lg-4 ">
-            <div class="icon btn btn-block btn-lg btn-soft-primary pe-none mb-6"  style="margin-left: 20px;
-            background: #ffdcdc;
-            border: 1px solid #ffb4b4;
-            color: #cc0100;">
-              <i class="uil uil-comments-alt"></i>
-            </div>
-            <h4>التواصل مع الجهات الحكومية</h4>
-            <p class="mb-3">
-              التنسيق مع الجهات المختصة لضمان حقوق الأطباء والمشاركة في وضع السياسات الصحية.
-            </p>
-          </div>
-          <!--/column -->
-          <div class="col-md-6 col-lg-4">
-            <div class="icon btn btn-block btn-lg btn-soft-primary pe-none mb-6"  style="margin-left: 20px;
-            background: #ffdcdc;
-            border: 1px solid #ffb4b4;
-            color: #cc0100;">
-              <i class="uil uil-megaphone"></i>
-            </div>
-            <h4>نشر الوعي الصحي</h4>
-            <p class="mb-3">
-              المساهمة في حملات توعية صحية للمجتمع، بهدف الوقاية من الأمراض وتعزيز الصحة العامة.
-            </p>
-          </div>
-          <!--/column -->
-          <div class="col-md-6 col-lg-4">
-            <div class="icon btn btn-block btn-lg btn-soft-primary pe-none mb-6"  style="margin-left: 20px;
-            background: #ffdcdc;
-            border: 1px solid #ffb4b4;
-            color: #cc0100;">
-              <i class="uil uil-heart-medical"></i>
-            </div>
-            <h4>تقديم الدعم الاجتماعي والمادي</h4>
-            <p class="mb-3">
-              توفير الدعم والمساعدات المعنوية والمادية للأعضاء وأسرهم عند الحاجة.
-            </p>
-          </div>
-
-          <!--/column -->
-        </div>
-        <!--/.row -->
-      </div>
-      <!-- /.container -->
-    </section>
-    
     <!-- /section -->
     <section class="wrapper image-wrapper" style="background: #cc0100;">
       <div class="container py-18">
@@ -394,30 +295,6 @@
     <!-- /section -->
 
 
-
-    <section class="wrapper  " dir="rtl">
-      <div class="container py-14 pt-md-17 ">
-        <div class="row gx-lg-8 gx-xl-12 gy-10 gy-lg-0 mb-2 align-items-end">
-          <div class="col-md-12 d-flex justify-content-center mb-3">
-            <img src="{{asset('/assets/images/shield.png')}}" width="50" alt="" style="width: 80px!important;">
-          </div>
-        <div class="col-lg-12 text-center">
-            <h2 class="fs-16 text-center text-uppercase text-line text-primary mb-3">
-              تأكّد من طبيبك بواسطة الأداة
-            </h2>
-            <h3 class="display-4 mb-0 text-danger text-center">
-              تحقق من بيانات طبيب
-            </h3>
-          </div>
-          <div class="col-md-12 text-center text-danger">
-            <a href="/checker" class="btn btn-primary mt-3"><strong class="font-weight-bold">انقر هنا</strong></a>
-          </div>
-
-        </div>
-        <!-- /.row -->
-      </div>
-      <!-- /.container -->
-    </section>
     
 
 
@@ -485,7 +362,6 @@
             <h4 class="widget-title text-white mb-3">روابط سريعة</h4>
             <ul class="list-unstyled  mb-0">
               <li><a href="#about">عن النقابة</a></li>
-              <li><a href="#services">الخدمات المقدمة</a></li>
               <li><a href="#contact">اتصل بنا</a></li>
             </ul>
           </div>

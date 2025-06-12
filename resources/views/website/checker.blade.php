@@ -53,9 +53,6 @@
                 <li class="nav-item">
                   <a class="nav-link" href="#goals"> اهداف النقابة </a>
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#services">  الخدمات المقدمة  </a>
-                </li>
               </ul>
               <!-- /.navbar-nav -->
               <div class="offcanvas-footer d-lg-none">
@@ -208,7 +205,6 @@
             <h4 class="widget-title text-white mb-3">روابط سريعة</h4>
             <ul class="list-unstyled  mb-0">
               <li><a href="#about">عن النقابة</a></li>
-              <li><a href="#services">الخدمات المقدمة</a></li>
               <li><a href="#contact">اتصل بنا</a></li>
             </ul>
           </div>
