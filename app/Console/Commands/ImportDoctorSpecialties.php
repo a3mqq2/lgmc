@@ -27,7 +27,7 @@ class ImportDoctorSpecialties extends Command
             if ($firstSpecialtyName) {
                 $specialty = Specialty::firstOrCreate(['name' => $firstSpecialtyName,'name_en' => $firstNameEn]);
 
-                $doctor = Doctor::where('doctor_number', $memberId)->first();
+                $doctor = Doctor::where('index', $memberId)->first();
 
                 if ($doctor) {
                     if ($specialty->name === 'ممارس عام') {
