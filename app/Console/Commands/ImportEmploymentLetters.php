@@ -61,12 +61,10 @@ class ImportEmploymentLetters extends Command
             foreach ($matched as $filePath) {
                 $fileName = basename($filePath);
                 $fileType = FileType::find(31);
-                DoctorFile::updateOrCreate(
+                DoctorFile::create(
                     [
                         'doctor_id' => $doctor->id,
                         'file_path' => $filePath,
-                    ],
-                    [
                         'file_name'    => $fileName,
                         'file_type_id' => 19, // <— change to your employment_letter file_type_id
                         'order_number' => 8,
