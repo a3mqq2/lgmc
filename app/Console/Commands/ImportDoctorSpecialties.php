@@ -17,7 +17,7 @@ class ImportDoctorSpecialties extends Command
         $oldSpecialties = DB::connection('lgmc_r')
             ->table('member_specialty')
             ->join('specialties', 'member_specialty.specialty_id', '=', 'specialties.id')
-            ->select('member_specialty.member_id', 'specialties.name')
+            ->select('member_specialty.member_id', 'specialties.name', 'specialties.name_en')
             ->get()
             ->groupBy('member_id');
 
