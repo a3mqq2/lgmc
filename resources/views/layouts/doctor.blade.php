@@ -10,11 +10,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- App favicon -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
     
+
     
     <link rel="shortcut icon" href="{{asset('assets/images/favicon.ico')}}">
 
@@ -449,21 +451,19 @@
                             </li>
                             
                             @if (auth('doctor')->user()->membership_status->value == "active")
-                            @if(in_array(auth('doctor')->user()->doctor_rank_id, [3,4,5,6]))
                             <li class="nav-item">
                                 <a class="nav-link fs-14  {{Route::currentRouteName() == "doctor.my-facility" || Route::currentRouteName() == "doctor.my-facility.create" ? "active" : "" }}  "  href="{{route('doctor.my-facility')}}" role="tab">
                                     <i class="fa fa-hospital d-inline-block d-m"></i> <span class="d-md-inline-block"> منشأتي الطبية </span>
                                 </a>
                             </li>
-                            @endif
                             <li class="nav-item">
                                 <a class="nav-link fs-14"   href="{{route('doctor.doctor-mails')}}" >
                                     <i class="ri-folder-4-line d-inline-block d-m"></i> <span class=" d-md-inline-block">اوراق الخارج</span>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fs-14" data-bs-toggle="tab" href="#invoices"  role="tab">
-                                       <i class="fa fa-file d-inline-block d-m"></i> <span class=" d-md-inline-block">الفواتير</span>
+                                <a class="nav-link fs-14"  href="{{route('doctor.invoices')}}"  role="tab">
+                                       <i class="fa fa-file d-inline-block d-m"></i> <span class=" d-md-inline-block">فواتيري</span>
                                    </a>
                                </li>
             
@@ -549,19 +549,6 @@
         });
     });
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('input[type="date"]').forEach(function (input) {
-                input.addEventListener('input', function () {
-                    let dateParts = this.value.split('-'); // تقسيم القيمة إلى [السنة، الشهر، اليوم]
-                    if (dateParts.length === 3) {
-                        this.value = `0000-${dateParts[1]}-${dateParts[2]}`;
-                    }
-                });
-            });
-        });
-        </script>
-
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">

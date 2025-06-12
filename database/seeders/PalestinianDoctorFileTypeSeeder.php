@@ -24,7 +24,7 @@ class PalestinianDoctorFileTypeSeeder extends Seeder
             'ورقة  من السفارة الفلسطينية - لإثبات عضوية في الاتحاد الفلسطيني',
         ];
         
-
+        $index = 1;
         foreach ($items as $name) {
             FileType::create([
                 'type' => 'doctor',
@@ -33,6 +33,7 @@ class PalestinianDoctorFileTypeSeeder extends Seeder
                 'doctor_type' => 'palestinian',
                 'for_registration' => true,
                 'facility_type' => null,
+                'order_number' => $index++,
             ]);
         }
 
@@ -45,6 +46,7 @@ class PalestinianDoctorFileTypeSeeder extends Seeder
             'doctor_type' => 'palestinian',
             'for_registration' => true,
             'facility_type' => null,
+            'order_number' => $index++,
         ]);
     }
 }

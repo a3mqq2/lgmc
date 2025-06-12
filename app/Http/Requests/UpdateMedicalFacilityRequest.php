@@ -20,17 +20,11 @@ class UpdateMedicalFacilityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'serial_number' => 'required|string|max:255|unique:medical_facilities,serial_number,' . $this->medical_facility,
-            'name' => 'required|string|max:255',
-            'commerical_number' => 'required|string|max:255',
-            'branch_id' => 'nullable|exists:branches,id',
-            'medical_facility_type_id' => 'required|exists:medical_facility_types,id',
-            'address' => 'nullable|string|max:255',
-            'phone_number' => 'required|string|regex:/^\d{10}$/',
-            'activity_start_date' => 'required|date',
-            'activity_type' => 'required|in:commercial_record,negative_certificate',
-            'manager_id' => 'nullable|exists:doctors,id',
-            'documents' => "nullable",
+            'name'                   => 'required|string|max:255',
+            'address'                => 'required|string|max:255',
+            'phone_number'           => 'required|string|digits:10',
+            'manager_id'             => 'required',
+            'last_issued_date' => 'nullable|date',
         ];
     }
 
@@ -40,21 +34,10 @@ class UpdateMedicalFacilityRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'serial_number.required' => 'رقم المنشأة مطلوب.',
-            'serial_number.unique' => 'رقم المنشأة مستخدم بالفعل.',
-            'name.required' => 'اسم المنشأة مطلوب.',
-            'commerical_number.required' => 'رقم السجل التجاري مطلوب.',
-            'branch_id.exists' => 'الفرع المحدد غير صحيح.',
-            'medical_facility_type_id.required' => 'يجب اختيار نوع المنشأة الطبية.',
-            'medical_facility_type_id.exists' => 'نوع المنشأة الطبية غير صالح.',
+            'name.required' => 'اسم المنشأة الطبية مطلوب.',
+            'address.required' => 'العنوان مطلوب.',
             'phone_number.required' => 'رقم الهاتف مطلوب.',
-            'phone_number.regex' => 'رقم الهاتف يجب أن يتكون من 10 أرقام فقط.',
-            'activity_start_date.required' => 'تاريخ بدء النشاط مطلوب.',
-            'activity_start_date.date' => 'يجب أن يكون تاريخ بدء النشاط تاريخًا صحيحًا.',
-            'activity_type.required' => 'يجب اختيار نوع النشاط.',
-            'activity_type.in' => 'نوع النشاط غير صالح.',
-            'manager_id.exists' => 'مالك النشاط المحدد غير صحيح.',
-
+            'manager_id.required' => 'مدير المنشأة الطبية مطلوب.',
         ];
     }
 }

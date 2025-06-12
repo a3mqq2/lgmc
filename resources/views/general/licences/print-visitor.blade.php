@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
-    <title> طباعة اذن مزاولة رقم : #{{$licence->id}} </title>
+    <title> طباعة اذن مزاولة رقم : #{{$licence->doctor->code}} </title>
 
 
 </head>
@@ -27,36 +27,7 @@
         // else if it is for clinic 
 
         $file_type = "";
-        if($licence->licensable_type == "App\Models\Doctor") {
-            if($licence->licensable->type == \App\Enums\DoctorType::Libyan->value)
-            {
-                $file_type = "libyan";
-            }
-
-
-            if($licence->licensable->type == \App\Enums\DoctorType::Foreign->value)
-            {
-                $file_type = "foreign";
-            }
-
-
-            if($licence->licensable->type == \App\Enums\DoctorType::Visitor->value)
-            {
-                $file_type = "visitor";
-            }
-
-
-            if($licence->licensable->type == \App\Enums\DoctorType::Palestinian->value)
-            {
-                $file_type = "foreign";
-            }
-
-
-            
-
-        } else {
-            $file_type = "facilities";
-        }
+        $file_type = "foreign";
 
 
 
@@ -65,25 +36,35 @@
         <section class="sheet zima bill {{$file_type}} ">
 
 
-            <div class="issued-licence-date text-muted">
-                {{-- humman readable --}}
-                <p>تاريخ الاصدار : {{$licence->created_at->format('Y-m-d')}}</p>
+            <div class="issued-licence-date text-muted" style="direction: rtl;
+            font-size: 12px;
+            margin: 10px;">
+                <p class="m-0">تاريخ الطباعة : {{$licence->doctor->created_at->format('Y-m-d')}}</p>
+                <p class="m-0">     الأشاري  ............................................... </p>
             </div>
 
             <div class="doctor-photo">
-                <img src="{{ Storage::url($licence->licensable->files->first()?->file_path) }}" alt="صورة الطبيب">
+                <img src="{{ Storage::url($licence->doctor->files->first()?->file_path) }}" alt="صورة الطبيب">
             </div>
+
+
+            <div class="card-title" style="font-size:25px;" dir="rtl">
+                  إذن مزاولة مؤقت لمهنة طبيب زائر رقم<span class="text-primary">({{$licence->code}})</span>
+            </div>
+
+
+
+            <p class="sub-title">في شأن مزاولة مهنة الطب بمؤسسة او مركز او عيادة طبية</p>
 
             <div class="libyan">
 
 
-                <div class="branch-sett">
-                    <h6 class="font-weight-bold"><strong>وبالإطلاع علـى سجل العضوية لنقابة أطباء {{ $licence->licensable->branch->name }}</strong></h6>
+                <div class="branch-sett" style="position: absolute;
+                right: 50px;
+                top: 540px;">
                 </div>
 
-                <div class="request-sett">
-                  <h6 class="font-weight-bold text-danger" style="font-size:10px!important;"><strong>وبناء على الطلب المقدم إلينا من {{ $licence->MedicalFacility->name }}</strong></h6>
-              </div>
+          
 
 
 
@@ -91,41 +72,80 @@
 
                 </div>
 
-                <div id="id-visitor">
-                    <p>#{{$licence->id}}</p>
+
+
+                <div class="card-permissions">
+                    <p class="main-head m-0" style="font-size: 11px;margin-bottom: 10px !important;margin-bottom:0!important;">بعد الاطلاع على</p>
+                    <ol class="list-unstyled" dir="rtl" style="font-size: 10px!important;margin-bottom:0!important;">
+                        <li><span>&#8592;</span> الاعلان الدستوري الصادر عن المجلس الوطني الانتقالي بتاريخ 03/08/2011.</li>
+                        <li><span>&#8592;</span> وعلى قرار تشكيل المجلس الوطني المؤقت وتحديد اختصاصاته ونظامه الأساسي.</li>
+                        <li><span>&#8592;</span> وعلى قرار المجلس الوطني الانتقالي رقم 184 لسنة 2011 بشأن اعتماد حكومة الانتقالية.</li>
+                        <li><span>&#8592;</span> وعلى قرار مجلس الوزراء رقم 38 لسنة 2012 بشأن اعتماد الهيكل التنظيمي واختصاصات وزارة الصحة وتنظيم جهازها الإداري.</li>
+                        <li><span>&#8592;</span> وعلى القانون رقم 23 لسنة 1428 بشأن نقابة الأطباء ولائحته التنفيذية.</li>
+                        <li><span>&#8592;</span> وعلى القانون رقم 106 لسنة 1973 ولائحته.</li>
+                        <li><span>&#8592;</span> وعلى القانون رقم 9 لسنة 1985 ولائحته.</li>
+                        <li><span>&#8592;</span> وعلى اللوائح والقوانين المنظمة لعمل نقابة الأطباء البشريين.</li>
+                        <li><span>&#8592;</span> وبالإطلاع علـى سجل العضوية للنقابة العامة للأطباء   </li>
+                    </ol>
+                    <p class="main-head text-dark mt-3 m-0" style="font-size: 13px;" dir="rtl"> وبناء على الطلب المقدم إلينا من {{$licence->workIn->name}}  المسجلة بنقابة الأطباء تحت رقم  {{$licence->workIn->code}} ترخيص رقم : {{$licence->workIn->commercial_number}} بشأن استضافة طبيب زائر  </p>
                 </div>
+                
    
-                <div class="permit">
-                    <h6 class="font-weight-bold">
-                        <strong>
-                            يـــــؤذن للطبيب
-                        </strong>
-                    </h6>
-                </div>
-                <div class="name-box-visitor card  p-3">
-                    <h3 class="font-weight-bold">
-                        <strong>{{$licence->licensable->name}}</strong>
-                    </h3>
+                <div class="">
+                    <div class="permit" style="bottom:513px!important;">
+                        <h6 class="font-weight-bold">
+                            <strong>
+                                يـــــؤذن للطبيب
+                            </strong>
+                        </h6>
+                    </div>
+                    <div class="name-box-visitor card  p-3" style=" text-align: center;
+                    width: 246px !important;
+                    position: absolute;
+                    top: 572px;
+                    right: 158px;
+                    background: linear-gradient(45deg, #ffcaca, #cc20281c);
+                    border: 2px dashed #6a6a6a;
+                    padding: 5px !important;
+                    font-size: 2px;">
+                        <h3 class="font-weight-bold" style="font-size: 14px !important;
+                        margin: 0;">
+                            <strong>{{$licence->doctor->name}}</strong>
+                        </h3>
+                    </div>
                 </div>
 
 
-                <div class="his-national">
+                <div class="his-national" style="font-size: 25px;
+                font-weight: bold !important;
+                text-align: center;
+                position: absolute;
+                right: 430px;
+                bottom: 517px;">
                   <h6 class="font-weight-bold">
                       <strong>
-                        من الدولــــة
-                      </strong>
+                            جنـسيته
+                        </strong>
                   </h6>
               </div>
 
 
-              <div class="country-name-box card  p-3">
+              <div class="country-name-box card  p-3" style="text-align: center;
+              width: 140px;
+              position: absolute;
+              top: 564px;
+              right: 547px;
+              background: linear-gradient(45deg, #ffcaca, #cc20281c);
+              border: 2px dashed #6a6a6a;
+              padding: 5px !important;
+              font-size: 2px;">
                   <h6 class="font-weight-bold">
-                     <strong>{{$licence->licensable->country->nationality_name_ar}}</strong>
+                     <strong>{{$licence->doctor->country->nationality_name_ar}}</strong>
                   </h6>
             </div>
             
 
-                <div class="that-registered">
+                <div class="that-registered" style="bottom:440px!important;">
 
                     <h6 class="font-weight-bold">
                         <strong>
@@ -134,14 +154,14 @@
                     </h6>
                 </div>
 
-                <div class="branch-box card  p-3">
+                <div class="branch-box card  p-3" style="top:645px!important;">
                     <h6 class="font-weight-bold">
-                        <strong>{{$licence->licensable->passport_number}}</strong>
+                        <strong>{{$licence->doctor->passport_number}}</strong>
                     </h6>
                 </div>
 
 
-                <div class="under-number">
+                <div class="under-number" style="bottom: 441px!important;">
 
                     <h6 class="font-weight-bold">
                         <strong>
@@ -151,15 +171,15 @@
                 </div>
 
 
-                <div class="number-box card  p-3">
+                <div class="number-box card  p-3" style="top:640px!important;">
                     <h6 class="font-weight-bold">
-                        <strong>{{$licence->licensable->id}}</strong>
+                        <strong>{{$licence->doctor->code}}</strong>
                     </h6>
                 </div>
 
 
 
-                <div class="work-for">
+                <div class="work-for" style="bottom:382px!important;">
 
                     <h6 class="font-weight-bold">
                         <strong>
@@ -169,44 +189,67 @@
                 </div>
 
 
-                <div class="work-box card  p-3">
+                <div class="work-box card  p-3" style="top:698px!important;">
                     <h4 class="font-weight-bold">
-                        <strong>{{$licence->licensable->doctor_rank->name}} \ {{$licence->licensable->specialization}}  </strong>
+                        <strong>{{$licence->doctor->doctor_rank->name}}
+                            @if ($licence->doctor->specialty1)
+                                -   {{$licence->doctor->specialization}}  
+                            @endif
+                        </strong>
                     </h4>
                 </div>
 
 
 
 
-
-                <div class="in-place">
-
+                <div class="in-place" style="bottom:321px!important;">
                     <h6 class="font-weight-bold">
                         <strong>
                             بـالمنشأة الطــبية  
                         </strong>
                     </h6>
                 </div>
-
-
-
-                <div class="medical-facility-box card">
+    
+                <div class="medical-facility-box card" style="top:760px!important;">
                     <h4 class="font-weight-bold">
-                          <strong>  {{$licence->MedicalFacility ? $licence->MedicalFacility->name : "-"}}  </strong>
+                            <strong>  {{$licence->workIn? $licence->workIn->name : "-"}}  </strong>
                     </h4>
-
+    
                 </div>
 
-                <div class="expired card">
+
+                @if ($licence->doctor->institution && ! $licence->doctor->MedicalFacility)
+                <div class="in-place">
+                 <h6 class="font-weight-bold">
+                     <strong>
+                          بــالجهــة  
+                     </strong>
+                 </h6>
+             </div>
+ 
+             <div class="medical-facility-box card">
+                 <h4 class="font-weight-bold">
+                         <strong>  {{$licence->doctor->institution}}  </strong>
+                 </h4>
+ 
+             </div>
+                @endif
+
+
+
+
+
+
+
+                <div class="expired card" style="top:830px!important;">
                     <h5 class="text-center font-weight-bold">
-                        <strong>ينتهي العمل بهذا الإذن ويعتبر ملغياََ بتاريخ {{ $licence->expiry_date }} </strong>
+                        <strong>ينتهي العمل بهذا الإذن ويعتبر ملغياََ بتاريخ {{ date('Y-m-d', strtotime($licence->doctor->licence->expiry_date)) }} </strong>
                     </h5>
                 </div>
 
 
 
                 <div class="signuture">
-                    <h5><strong>نقابة أطباء {{$licence->licensable->branch->name}} </strong></h5>
                 </div>
 
                 <div class="valid text-danger text-right font-weight-bold">
@@ -216,7 +259,7 @@
                 <div class="qr-code card p-2">
                     <div class="code">
                         @php
-                        $link = env('APP_URL') . "checker?licence=" . $licence->licensable->code;
+                        $link = env('APP_URL') . "checker?licence=" . $licence->doctor->code;
                     $qrCode = DNS2D::getBarcodePNG($link, 'QRCODE', 5, 5);
                     @endphp
                     <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 50px; height: 50px;" />
@@ -225,6 +268,29 @@
 
 
             </div>
+
+
+            <div class="important_notes" style="    position: absolute;
+            bottom: 60px;
+            direction: rtl;
+            right: 26px;
+            font-size: 10px !important;
+            text-align: right;">
+                <p class="m-0 font-weight-bold"><strong class="arrow" >←</strong> يجب ان يراعى التجديد حسب التاريخ المذكور اعلاه</p>
+                <p class="m-0 font-weight-bold"><strong class="arrow">←</strong> لا يسمح للطبيب بالعمل الا في الجهة المذكورة فقط  </p>
+                <p class="m-0 font-weight-bold"><strong class="arrow">←</strong> يلغى هذا الاذن في حالة مخالفة القوانين واللوائح المنظمة للمهنة </p>
+            </div>
+
+
+            @isset($signature)
+                <div class="signature" style="position: absolute;
+                bottom: 162px;
+                left: 120px;">
+                    <h6 class="text-center">{{$signature->name}}</h6>
+                    <h6 class="text-center">{{$signature->job_title_en}}</h6>
+                </div>
+            @endisset
+
         </section>
     </body>
 

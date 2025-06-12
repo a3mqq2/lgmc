@@ -36,7 +36,7 @@ class DoctorRequestController extends Controller
 
      public function getVault()
      {
-        return auth()->user()->branch ? auth()->user()->branch->vault : Vault::first();
+        return auth()->user()->branch;
      }
 
     public function index(Request $request)

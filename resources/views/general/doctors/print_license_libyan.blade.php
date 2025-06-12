@@ -86,8 +86,7 @@
                         <li><span>&#8592;</span> وعلى القانون رقم 23 لسنة 1428 بشأن نقابة الأطباء ولائحته التنفيذية.</li>
                         <li><span>&#8592;</span> وعلى القانون رقم 106 لسنة 1973 ولائحته.</li>
                         <li><span>&#8592;</span> وعلى القانون رقم 9 لسنة 1985 ولائحته.</li>
-                        <li><span>&#8592;</span> وعلى اللوائح والقوانين المنظمة لعمل نقابة أطباء البشريين.</li>
-                        <li><span>&#8592;</span> وبالإطلاع علـى سجل العضوية للنقابة العامة للأطباء   </li>
+                        <li><span>&#8592;</span> وعلى اللوائح والقوانين المنظمة لعمل نقابة الأطباء البشريين.</li>
                     </ol>
                     <p class="main-head m-0" style="font-size: 13px;" dir="rtl"> وعليـــه  ...   </p>
                 </div>
@@ -167,9 +166,7 @@
                 <div class="work-box card  p-3">
                     <h4 class="font-weight-bold">
                         <strong>{{$licence->doctor_rank->name}}
-                            @if ($licence->specialty)
-                                -   {{$licence->specialty->name}}  
-                            @endif
+                         
                         </strong>
                     </h4>
                 </div>
@@ -266,7 +263,7 @@
                 bottom: 162px;
                 left: 120px;">
                     <h6 class="text-center">{{$signature->name}}</h6>
-                    <h6 class="text-center">{{$signature->job_title_en}}</h6>
+                    <h6 class="text-center">{{$signature->job_title_ar}}</h6>
                 </div>
             @endisset
 

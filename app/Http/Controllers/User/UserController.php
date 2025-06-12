@@ -38,14 +38,27 @@ class UserController extends Controller
         {
             $doctor = Doctor::where('phone', 'like', '%' . request('phone') . '%')
             ->orWhere('phone_2', 'like', '%' . request('phone') . "%")
-            ->where('branch_id',auth()->user()->branch_id)
-            ->first();
+            ->when(auth()->user()->branch_id, function ($query) {
+                $query->where('branch_id', auth()->user()->branch_id);
+            })->first();
         }
 
         if(request('code'))
         {
-            $doctor = Doctor::where('code', 'like', '%' . request('code') . '%')->where('branch_id',auth()->user()->branch_id)->first();
+            $code = explode('-', $request->code);
+            if(count($code) > 1)
+            {
+                $doctor = Doctor::where('code', request('code'))
+                ->when(auth()->user()->branch_id, function ($query) {
+                   $query->where('branch_id', auth()->user()->branch_id);
+                })->first();
+            } else {
+                $doctor = Doctor::where('index', request('code'))->when(auth()->user()->branch_id, function($q) {
+                    $q->where('branch_id', auth()->user()->branch_id);
+                })->first();
+            }
         }
+
 
         if($doctor)
         {

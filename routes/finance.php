@@ -10,14 +10,21 @@ use App\Http\Controllers\Common\ReportController;
 use App\Http\Controllers\Common\TicketController;
 use App\Http\Controllers\VaultTransferController;
 use App\Http\Controllers\Common\InvoiceController;
+use App\Http\Controllers\FinancialCategoryController;
 use App\Http\Controllers\Common\TransactionController;
 use App\Http\Controllers\Common\TransactionTypeController;
 
 Route::prefix('finance')->name('finance.')->middleware('auth', 'check.finance.permission')->group(function () {
    Route::get('/home', [HomeController::class, 'home'])->name('home');
-   Route::resource("vaults", VaultController::class)->middleware('permission:financial-administration');
-    Route::resource("transaction-types", TransactionTypeController::class);
-    Route::resource("transactions", TransactionController::class);
+   Route::patch('vaults/{vault}/close-custody', [VaultController::class, 'closeCustody'])->name('vaults.close-custody');
+   Route::resource("vaults", VaultController::class);
+   Route::resource('financial-categories', FinancialCategoryController::class);
+
+   Route::resource("transactions", TransactionController::class)->except('show');
+   Route::get('/transactions/report', [TransactionController::class, 'report'])->name('transactions.report');
+   Route::get('/transactions/report/print', [TransactionController::class, 'reportPrint'])->name('transactions.report.print');
+   Route::get('/transactions/export', [TransactionController::class, 'export'])->name('transactions.export');
+
     Route::post('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::post('/invoices/{invoice}/received', [InvoiceController::class, 'received'])->name('invoices.received');
     Route::post('invoices/{invoice}/relief', [InvoiceController::class, 'relief'])->name('invoices.relief');
@@ -46,6 +53,8 @@ Route::prefix('finance')->name('finance.')->middleware('auth', 'check.finance.pe
         Route::get('/reports/licences', [ReportController::class, 'licences'])->name('reports.licences');
         Route::get('/reports/licences/print', [ReportController::class, 'licences_print'])->name('reports.licences_print');
         Route::get('/reports/transactions/print', [ReportController::class, 'transactions_print'])->name('reports.transactions_print');
+
+
         // =============== REPORTS ================ //
     
 });

@@ -10,19 +10,19 @@ class PrivateClinicFilesSeeder extends Seeder
 {
     public function run(): void
     {
-        $privateClinic = MedicalFacilityType::find(1); // Assuming '2' is the ID for Medical Services
+        $privateClinic = MedicalFacilityType::find(1); 
 
         if (!$privateClinic) {
             $this->command->error('لم يتم العثور على نوع المنشأة: Private Clinic');
             return;
         }
 
-        // مستندات إنشاء عيادة فردية
         $registrationFiles = [
             'شهاده سلبية',
             'وثيقة تأمين من هيئة التأمين الطبي',
         ];
 
+        $index = 1;
         foreach ($registrationFiles as $name) {
             FileType::create([
                 'type' => 'medical_facility',
@@ -31,7 +31,8 @@ class PrivateClinicFilesSeeder extends Seeder
                 'is_required' => 1,
                 'doctor_type' => null,
                 'medical_facility_type_id' => $privateClinic->id,
-                'facility_type' => 'single'
+                'facility_type' => 'single',
+                'order_number' => $index++,
             ]);
         }
 
@@ -41,6 +42,7 @@ class PrivateClinicFilesSeeder extends Seeder
             'وثيقة تأمين من هيئة التأمين الطبي',
         ];
 
+        $index = 1;
         foreach ($renewalFiles as $name) {
             FileType::create([
                 'type' => 'medical_facility',
@@ -49,7 +51,8 @@ class PrivateClinicFilesSeeder extends Seeder
                 'is_required' => 1,
                 'doctor_type' => null,
                 'medical_facility_type_id' => $privateClinic->id,
-                'facility_type' => 'single'
+                'facility_type' => 'single',
+                'order_number' => $index++,
             ]);
         }
 

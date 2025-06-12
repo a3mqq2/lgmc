@@ -81,7 +81,7 @@ class TotalInvoiceController extends Controller
 
         }
 
-        $vault = auth()->user()->branch_id ? auth()->user()->branch->vault : Vault::first();
+        $vault = auth()->user()->branch_id;
 
         $transaction = Transaction::create([
             'desc' => implode(', ', $invoices->pluck('description')->toArray()),

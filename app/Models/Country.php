@@ -16,5 +16,4 @@ class Country extends Model
         'country_id',
     ];
 
-    // Enable timestamps
 }

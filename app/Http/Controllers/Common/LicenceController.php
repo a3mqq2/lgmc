@@ -10,8 +10,9 @@ use App\Services\InvoiceService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\{Auth, DB};
 use PhpOffice\PhpSpreadsheet\Calculation\Financial\Securities\Price;
-use App\Models\{Doctor, Invoice, Licence, Log, MedicalFacility, Pricing, Transaction, Vault};
+use App\Models\{Doctor, Invoice, Licence, Log, MedicalFacility, Pricing, Signature, Transaction, Vault};
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sign;
 
 class LicenceController extends Controller
 {
@@ -464,13 +465,23 @@ class LicenceController extends Controller
     public function print(Licence $licence) {
 
 
-
+        $signature = null;
+        if(get_area_name() == "admin")
+        {
+            $signature = Signature::whereNull('branch_id')->where('is_selected', 1)->first();
+        } else {
+            $signature = Signature::where('branch_id', $licence->branch_id)->where('is_selected', 1)->first();
+        }
+        
         if($licence->doctor)
         {
             if($licence->doctor->type == DoctorType::Libyan) {
-                return view('general.doctors.print_license_libyan', compact('licence'));
+                $signature = Signature::where('branch_id', $licence->doctor->branch_id)->where('is_selected', 1)->first();
+                return view('general.doctors.print_license_libyan', compact('licence','signature'));
+            } else if($licence->doctor->type == DoctorType::Visitor) {
+                return view('general.licences.print-visitor', compact('licence','signature'));
             } else {
-                return view('general.licences.print-foreign', compact('licence'));
+                return view('general.licences.print-foreign', compact('licence','signature'));
             }
         }
 

@@ -29,11 +29,15 @@
 
 
 
-@if (auth()->user()->permissions()->where('name', 'manage-doctors')->count())
+@if (auth()->user()->permissions()->where('name', 'doctor-libyan')->count())
 <li class="nav-item">
     <a class="nav-link menu-link" data-bs-target="#doctors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-user-doctor"></i>
-        <span data-key="t-layouts">العضويات</span>
+        <span data-key="t-layouts">العضويات 
+            @if (auth()->user()->branch_id != 1)
+                - ليبيين
+            @endif
+        </span>
     </a>
     <div class="collapse menu-dropdown" id="doctors">
         <ul class="nav nav-sm flex-column">
@@ -41,7 +45,7 @@
                 <a href="{{ route(get_area_name().'.doctors.create', ['type' => "libyan"]) }}" class="nav-link"> إضافة عضو جديد    </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'under_approve']) }}" class="nav-link">طلبات الموقع </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'active']) }}" class="nav-link">عضويات مفعله</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'inactive']) }}" class="nav-link">عضويات  منتهيه صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'expired']) }}" class="nav-link">عضويات  منتهيه صلاحيتهم</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'banned']) }}" class="nav-link">عضويات موقوفه</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan", 'membership_status' => 'suspended']) }}" class="nav-link">عضويات معلقه</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "libyan"]) }}" class="nav-link"> جميع العضويات </a>
@@ -56,6 +60,49 @@
 
 
 
+@if (auth()->user()->branch_id != 1)
+@if (auth()->user()->permissions()->where('name', 'doctor-palestinian')->count())
+<li class="nav-item">
+    <a class="nav-link menu-link" data-bs-target="#palestinian" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fa fa-user-doctor"></i>
+        <span data-key="t-layouts">العضويات الفلسطينيين</span>
+    </a>
+    <div class="collapse menu-dropdown" id="palestinian">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'under_payment']) }}" class="nav-link"> عضويات قيد الدفع  </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'active']) }}" class="nav-link"> عضويات مفعله </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'expired']) }}" class="nav-link"> عضويات منتهية الصلاحية </a>
+            </li>
+        </ul>
+    </div>
+</li>
+@endif
+
+
+
+
+
+@if (auth()->user()->permissions()->where('name', 'doctor-foreign')->count())
+<li class="nav-item">
+    <a class="nav-link menu-link" data-bs-target="#foreign" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fa fa-user-doctor"></i>
+        <span data-key="t-layouts">العضويات الأجانب</span>
+    </a>
+    <div class="collapse menu-dropdown" id="foreign">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'under_payment']) }}" class="nav-link"> عضويات قيد الدفع  </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'active']) }}" class="nav-link"> عضويات مفعله </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'expired']) }}" class="nav-link"> عضويات منتهية الصلاحية </a>
+            </li>
+        </ul>
+    </div>
+</li>
+@endif
+
+
+@endif
 
 
 
@@ -188,6 +235,14 @@
                     </ul>
                 </div>
             </li>
+
+            <li class="nav-item">
+                <a href="{{route('user.signatures.index')}}" class="nav-link menu-link" aria-controls="sidebarLayouts">
+                    <i class="fa fa-signature"></i>
+                    <span data-key="t-layouts"> التوقيعات </span>
+                </a>
+            </li>
+
 
             {{-- File Types --}}
             {{-- <li class="nav-item">

@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Calculation\Statistical\Distributions\F;
 
 class Doctor extends Authenticatable
 {
@@ -34,7 +36,8 @@ class Doctor extends Authenticatable
         'membership_expiration_date', 'password', 'visiting_date', 'registered_at',
         'institution_id', 'specialty_2', 'medical_facility_id', 'visit_from',
         'academic_degree_univeristy_id',
-        'visit_to', 'edit_note',
+        'visit_to', 'edit_note','ban_reason','renew_number','email_verified_at',
+        'documents_completed','password'
     ];
 
     protected $hidden = ['remember_token'];
@@ -64,7 +67,7 @@ class Doctor extends Authenticatable
     public function institutions()        { return $this->belongsToMany(Institution::class); }
     public function files()
     {
-        return $this->hasMany(DoctorFile::class);
+        return $this->hasMany(DoctorFile::class)->orderBy('order_number');
     }
     public function filesRaw()
     {
@@ -77,7 +80,8 @@ class Doctor extends Authenticatable
     public function doctorRequests()      { return $this->hasMany(DoctorRequest::class)->latest(); }
     public function invoices()            { return $this->hasMany(Invoice::class, 'doctor_id')->latest(); }
     public function institutionObj()         { return $this->belongsTo(Institution::class,'institution_id'); }
-    public function medicalFacility()   { return $this->hasOne(MedicalFacility::class, 'manager_id')->where('branch_id', $this->branch_id); }
+    public function medicalFacility()   { return $this->hasOne(MedicalFacility::class, 'manager_id'); }
+    public function medicalFacilityWork()   { return $this->belongsTo(MedicalFacility::class,'medical_facility_id'); }
     public function doctor_mails()        { return $this->hasMany(DoctorMail::class)->latest(); }
     public function transfers()           { return $this->hasMany(DoctorTransfer::class)->latest(); }
     public function licence()             { return $this->hasOne(Licence::class)->latest(); }
@@ -203,5 +207,11 @@ class Doctor extends Authenticatable
                 });
             });
         });
+    }
+
+
+    public function getPhotoAttribute()
+    {
+        return $this->files()->where('order_number', 1)->first() ? Storage::url($this->files()->first()->file_path) : null;
     }
 }

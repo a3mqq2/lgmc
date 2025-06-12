@@ -19,6 +19,7 @@ use App\Models\MedicalFacility;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Invoice;
 use Illuminate\Support\Facades\Storage;
 
 class DoctorHomeController extends Controller
@@ -229,7 +230,7 @@ class DoctorHomeController extends Controller
 
     public function doctor_mails()
     {
-        $doctorMails = DoctorMail::where('doctor_id', auth('doctor')->id())->get();
+        $doctorMails = DoctorMail::where('doctor_id', auth('doctor')->id())->orderBy('id','desc')->get();
         return view('doctor.doctor-mails.index', compact('doctorMails'));
     }
 
@@ -248,11 +249,6 @@ class DoctorHomeController extends Controller
             return redirect()->route('doctor.dashboard')->withErrors(['هذه الصفحة متاحة فقط للأطباء الليبيين']);
         }
 
-        if(!in_array(auth('doctor')->user()->doctor_rank_id, [3,4,5,6]))
-        {
-            return redirect()->route('doctor.dashboard')->withErrors(['هذه الصفحة متاحة فقط للأطباء من رتبة اخصائي ثاني فما فوق']);
-        }
-
         return view('doctor.medical-facility.index');
     }
 
@@ -264,10 +260,7 @@ class DoctorHomeController extends Controller
             return redirect()->route('doctor.dashboard')->with('error', 'هذه الصفحة متاحة فقط للأطباء الليبيين');
         }
 
-        if(!in_array(auth('doctor')->user()->doctor_rank_id, [3,4,5,6]))
-        {
-            return redirect()->route('doctor.dashboard')->with('error', 'هذه الصفحة متاحة فقط للأطباء من رتبة اخصائي ثاني فما فوق');
-        }
+   
         return view('doctor.medical-facility.create');
     }
 
@@ -281,10 +274,6 @@ class DoctorHomeController extends Controller
             return redirect()->route('doctor.dashboard')->with('error', 'هذه الصفحة متاحة فقط للأطباء الليبيين');
         }
 
-        if(!in_array(auth('doctor')->user()->doctor_rank_id, [3,4,5,6]))
-        {
-            return redirect()->route('doctor.dashboard')->with('error', 'هذه الصفحة متاحة فقط للأطباء من رتبة اخصائي ثاني فما فوق');
-        }
 
         $request->validate([
             'type' => "required|in:private_clinic,medical_services",
@@ -316,10 +305,7 @@ class DoctorHomeController extends Controller
             return redirect()->route('doctor.dashboard')->withErrors(['هذه الصفحة متاحة فقط للأطباء الليبيين']);
         }
 
-        if(!in_array(auth('doctor')->user()->doctor_rank_id, [3,4,5,6]))
-        {
-            return redirect()->route('doctor.dashboard')->withErrors([ 'هذه الصفحة متاحة فقط للأطباء من رتبة اخصائي ثاني فما فوق']);
-        }
+
 
         $medical_facility = MedicalFacility::where('manager_id', auth('doctor')->id())
             ->where('branch_id', auth('doctor')->user()->branch_id)
@@ -419,5 +405,15 @@ class DoctorHomeController extends Controller
             return redirect()->route('doctor.dashboard')->with('success', 'جميع المستندات المطلوبة تم رفعها بالفعل');
         }
         return view('doctor.medical-facility.upload-documents', compact('medical_facility', 'requiredFileTypes'));
+    }
+
+    public function invoices()
+    {
+        return view('doctor.invoices.index');
+    }
+
+    public function invoice_show(Invoice $invoice)
+    {
+        return view('doctor.invoices.show', compact('invoice'));
     }
 }

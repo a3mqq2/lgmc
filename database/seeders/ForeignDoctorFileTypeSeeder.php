@@ -24,6 +24,7 @@ class ForeignDoctorFileTypeSeeder extends Seeder
 
         $not_required = ['معادلة الشهادة (ان وجدت) ', 'صورة من إذن مزاولة  سابق للطبيب  (ان وجد)', 'شهائد تخصص (ان وجدت)'];
 
+        $index = 1;
         foreach ($items as $name) {
             FileType::create([
                 'type' => 'doctor',
@@ -32,6 +33,7 @@ class ForeignDoctorFileTypeSeeder extends Seeder
                 'doctor_type' => 'foreign',
                 'for_registration' => true,
                 'facility_type' => null,
+                'order_number' => $index++,
             ]);
         }
     }

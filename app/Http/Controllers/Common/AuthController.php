@@ -90,7 +90,7 @@ class AuthController extends Controller
         if(in_array($request->branch_id, auth()->user()->branches->pluck('id')->toArray())) {
             $user->branch_id = $request->branch_id;
         } else {
-            if($request->branch_id == null && auth()->user()->roles->where('name', 'general_admin')->count() > 0) {
+            if($request->branch_id == null && auth()->user()->permissions()->where('name', 'finance-general')->count() > 0) {
                 $user->branch_id = null;
                 $user->save();
             } else {
@@ -101,13 +101,7 @@ class AuthController extends Controller
         $user->save();
 
 
-
-        if(request('area'))
-        {
-            return redirect()->route('finance.home');
-        } else {
-            return redirect()->route('user.home');
-        }
+        return redirect()->back();
 
     }
 
@@ -119,7 +113,7 @@ class AuthController extends Controller
         $academicDegrees = AcademicDegree::all();
         $universities = University::all();
         $doctor_ranks = DoctorRank::where('doctor_type', $request->type)->get();
-        $specialties = Specialty::whereNull('specialty_id')->get();
+        $specialties = Specialty::all();
         $branches = Branch::all();
         $medicalFacilities = MedicalFacility::all();
         $institutions = Institution::all();

@@ -48,6 +48,7 @@ return new class extends Migration
             $table->enum('membership_status', [
                 'under_approve',
                 'under_edit',
+                'under_upload',
                 'under_payment',
                 'active',
                 'expired',

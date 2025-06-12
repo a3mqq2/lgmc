@@ -1,6 +1,6 @@
 @extends('layouts.'.get_area_name())
 
-@section('title', 'كشف حساب الحساب')
+@section('title', 'كشف حساب الخزينة')
 
 @section('content')
 <div class="row">
@@ -9,7 +9,7 @@
     </div>
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header bg-primary text-light">كشف حساب الحساب</div>
+            <div class="card-header bg-primary text-light">كشف حساب الخزينة</div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered">

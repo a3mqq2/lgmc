@@ -106,14 +106,10 @@ class DoctorService
          }
      
          // Type filters
-         if (request('type') === 'libyan') {
-             $query->where('type', 'libyan');
-         } elseif (request('type') === 'palestinian') {
-             $query->where('type', 'palestinian');
-         } elseif (request('type') === 'visitor') {
-             $query->where('type', 'visitor');
-         } elseif (request('type') === 'foreign') {
-             $query->where('type', 'foreign');
+        
+         if(request('type'))
+         {
+            $query->where('type', request('type'));
          }
      
          if (request()->filled('banned')) {
@@ -138,17 +134,6 @@ class DoctorService
                          // الأطباء الذين ليس لديهم مستحقات
                          $query->whereDoesntHave('invoices', function($q) {
                              $q->where('status', \App\Enums\InvoiceStatus::unpaid);
-                         });
-                         break;
-                         
-                     case 'overpaid':
-                         // الأطباء الذين دفعوا أكثر من المطلوب (نادر)
-                         $query->whereHas('invoices', function($q) {
-                             $q->selectRaw('
-                                 SUM(CASE WHEN status = "paid" THEN amount ELSE 0 END) as paid_total,
-                                 SUM(CASE WHEN status = "unpaid" THEN amount ELSE 0 END) as unpaid_total
-                             ')
-                             ->havingRaw('paid_total > unpaid_total');
                          });
                          break;
                  }
@@ -186,10 +171,7 @@ class DoctorService
                  });
              }
      
-             // فلتر الفرع (للمدير المالي المركزي)
-             if (request()->filled('branch_id') && auth()->user()->can('view_all_branches')) {
-                 $query->where('branch_id', request('branch_id'));
-             }
+          
      
              // فلتر نوع الفاتورة
              if (request()->filled('invoice_type')) {
@@ -347,8 +329,10 @@ class DoctorService
          }
      
          // Area-based branch restriction
-         if (in_array(get_area_name(), ['user','finance'])) {
-             $query->where('branch_id', auth()->user()->branch_id);
+         
+         if(get_area_name() != "admin")
+         {
+            $query->where('branch_id', auth()->user()->branch_id);
          }
      
         $query = $query->with([
@@ -406,186 +390,187 @@ class DoctorService
 
     public function create(array $data)
     {
-
-
-        // استخراج نوع الطبيب من البيانات
+        // Extract doctor type
         $doctorType = $data['type'];
-
-      
-
-        // check the doctor is exists before
+    
+        // Check if doctor already exists
         $doctor = Doctor::where('name', $data['name'])
             ->where('phone', $data['phone'])
             ->where('email', $data['email'])
             ->where('type', $data['type'])
             ->first();
-
-        if($doctor)
-        {
+    
+        if($doctor) {
             return redirect()->back()->withInput()->withErrors(['هذا الطبيب موجود بالفعل']);
         }
-        
-
-        DB::beginTransaction(); 
-
+    
+        // Check for duplicate index BEFORE creating the doctor
+        if(isset($data['index']) && $data['index']) {
+            $checkDuplicate = Doctor::where('branch_id', auth()->user()->branch_id)
+                ->where('type', $data['type'])
+                ->where('index', $data['index'])
+                ->first();
+    
+            if($checkDuplicate) {
+                return redirect()->back()->withInput()->withErrors(['هذا الرقم موجود بالفعل في الفرع الحالي']);
+            }
+        }
+    
+        DB::beginTransaction();
+    
         try {
-            
-            $data['branch_id'] = auth()->user()->branch_id;
 
-
-            if(isset($data['ex_medical_facilities']))
+            if(get_area_name() == "user")
             {
+                $data['branch_id'] = auth()->user()->branch_id;
+            } else {
+                $data['branch_id'] = isset($data['branch_id']) ? $data['branch_id'] : null;
+            }
+            
+            if($data['type'] == "visitor")
+            {
+                $doctor->medical_facility_id = auth('doctor')->user()->medicalFacility->id ?? null;
+                $doctor->branch_id = auth('doctor')->user()->branch_id ?? null;
+            }
+
+            // Handle medical facilities
+            if(isset($data['ex_medical_facilities'])) {
                 $medicalFacilities = $data['ex_medical_facilities'];
                 $medicalFacilities = array_filter($medicalFacilities, function($value) {
                     return $value != '-';
                 });
                 unset($data['ex_medical_facilities']);
-            } 
-
-
+            }
+    
+            // Create doctor with index if provided
             $doctor = Doctor::create($data);
             $doctor->code = null;
-            $doctor->index = null;
             $doctor->institutions()->attach($medicalFacilities ?? []);
             $doctor->membership_status = 'under_approve';
             $doctor->membership_expiration_date = null;
-            $doctor->save();
+            $doctor->documents_completed = true;
+            $doctor->email_verified_at = now();
 
-            if($data['index'])
-            {
-                $checkDuplicate = Doctor::where('branch_id', auth()->user()->branch_id)
-                ->where('index', $data['index'])
-                ->first();
-
-
-                if($checkDuplicate)
-                {
-                    throw new \Exception('هذا الرقم موجود بالفعل في الفرع الحالي');
-                }
-
+            if(isset($data['index']) && $data['index']) {
                 $doctor->index = $data['index'];
                 $doctor->makeCode();
 
-                
-
-                if($data['last_issued_date'] && $data['license_number'] )
-                {
-
-                    // check duplicate
-                    $checkDuplicate = Licence::where('doctor_id', $doctor->id)
-                        ->where('index', $data['license_number'])
-                        ->first();
-
-                    if($checkDuplicate)
-                    {
-                        throw new \Exception('هذا الرقم موجود بالفعل في الفرع الحالي');
-                    }
-
+                if($data['last_issued_date']) {
+                    $lastIssuedDate = Carbon::parse($data['last_issued_date']);
+                    $now = Carbon::now();
+                    $validityPeriod = $doctor->type->value == "libyan" ? 12 : 6; 
+                    $expirationDate = $lastIssuedDate->copy()->addMonths($validityPeriod);
                     
-
-                    $doctor->membership_status = "active";
-                    $doctor->membership_expiration_date = Carbon::parse($data['last_issued_date'])->addYear();
-                    $doctor->save();
-
-                    // create license 
-                    $licence = new Licence();
-                    $licence->doctor_id = $doctor->id;
-                    $licence->doctor_type = $doctor->type->value;
-                    $licence->issued_date = $data['last_issued_date'];
-                    $licence->expiry_date = Carbon::parse($data['last_issued_date'])->addYear();
-                    $licence->status = "active";
-                    $licence->doctor_rank_id = $doctor->doctor_rank_id;
-                    $licence->created_by = auth()->id();
-                    $licence->amount = 0;
-                    $licence->save();
-
-                    $year = Carbon::parse($data['last_issued_date'])->year;
-                    $licence->update([
-                        'index' => $data['license_number'],
-                        'code' => "LIC-LIB-${year}-{$licence->index}",
-                    ]);
-
-
+                    if ($now->greaterThan($expirationDate)) {
+                        $doctor->membership_status = "expired";
+                        $doctor->membership_expiration_date = $expirationDate;
+                    } else {
+                        $doctor->membership_status = "active";
+                        $doctor->membership_expiration_date = $expirationDate;
+                    }
+                } else {
+                    $doctor->membership_status = "under_payment";
+                    $this->createApproveDoctorInvoices($doctor, false);
                 }
             }
-
-
-            if(!$doctor->password)
-            {
+    
+            // Set default password if not provided
+            if(!$doctor->password) {
                 $doctor->password = Hash::make($doctor->phone);
             }
-
-
-            if($doctor->type->value == "libyan")
-            {
+    
+            // Set branch for Libyan doctors
+            if($doctor->type->value == "libyan") {
                 $doctor->branch_id = auth()->user()->branch_id;
             }
+    
             $doctor->save();
-
-
-
-   
             DB::commit();
-
+    
             return $doctor;
+            
         } catch (\Exception $e) {
             DB::rollback();
-            throw $e; // إعادة إلقاء الاستثناء بعد التراجع عن العملية
+            throw $e;
         }
     }
 
 
-    public function createInvoice($doctor)
-    {
+    public function createApproveDoctorInvoices($doctor, $is_paid)
+{
+    // إنشاء فاتورة العضوية
+    $invoice = new Invoice();
+    $invoice->invoice_number = 'INV-' . str_pad(Invoice::count() + 1, 8, '0', STR_PAD_LEFT);
+    $invoice->description = "فاتورة عضوية طبيب " . ($doctor->membership_status == "under_payment" ? "جديد" : "تجديد") . " - " . $doctor->name;
+    $invoice->user_id = auth()->id();
+    $invoice->amount = 0;
+    $invoice->status = "unpaid";
+    $invoice->doctor_id = $doctor->id;
+    $invoice->category = $doctor->membership_status == "under_payment" ? "registration" : "renewal";
+    $invoice->branch_id = auth()->user()->branch_id ?? $doctor->branch_id;
+    $invoice->save();
 
-
-
-        $pricing = Pricing::where('type', 'membership')->where('doctor_rank_id', $doctor->doctor_rank_id)
-        ->where('doctor_type', $doctor->type->value)->first();
-
-
-       
-        $data = [
-            'invoice_number' => "RGS-" . Invoice::count() + 1,
-            'invoiceable_id' => $doctor->id,
-            'invoiceable_type' => 'App\Models\Doctor',
-            'description' => $pricing->name,
-            'user_id' => auth()->id(),
-            'amount' => $pricing->amount,
-            'pricing_id' => $pricing->id,
-            'status' => 'unpaid',
-            'branch_id' => auth()->user()->branch_id,
-            'user_id' => auth()->user()->id,
-        ];
-
-
-        $invoice = Invoice::create($data);
-
-
-
-        $open_file = Pricing::where('category', 'open_file')->where('doctor_type', $doctor->type->value)->first();
-
-        if(isset($open_file))
-        {
-            $data = [
-                'invoice_number' => "FIL-" . Invoice::latest()->first()->id + 1,
-                'invoiceable_id' => $doctor->id,
-                'invoiceable_type' => 'App\Models\Doctor',
-                'description' => $open_file->name,
-                'user_id' => auth()->id(),
-                'amount' => $open_file->amount,
-                'pricing_id' => $open_file->id,
-                'status' => 'unpaid',
-                'branch_id' => auth()->user()->branch_id,
-                'user_id' => auth()->user()->id,
-            ];
-    
-    
-            $invoice = Invoice::create($data);
-            // $this->invoiceService->markAsPaid($this->getVault(), $invoice, $invoice->description);
+    try {
+        // فاتورة العضوية
+        $pricing_membership = Pricing::where('doctor_type', $doctor->type->value)
+                                   ->where('type', 'membership')
+                                   ->where('doctor_rank_id', $doctor->doctor_rank_id)
+                                   ->first();
+        
+        if ($pricing_membership) {
+            $invoice_item = new InvoiceItem();
+            $invoice_item->invoice_id = $invoice->id;
+            $invoice_item->description = $pricing_membership->name;
+            $invoice_item->amount = $pricing_membership->amount;
+            $invoice_item->pricing_id = $pricing_membership->id;
+            $invoice_item->save();
         }
 
+        // فاتورة البطاقة (للأطباء الجدد فقط)
+        if ($doctor->membership_status == "under_payment") {
+            $pricing_card = Pricing::where('doctor_type', $doctor->type->value)
+                                  ->where('type', 'card')
+                                  ->first();
+
+            if ($pricing_card) {
+                $invoice_item = new InvoiceItem();
+                $invoice_item->invoice_id = $invoice->id;
+                $invoice_item->description = $pricing_card->name;
+                $invoice_item->amount = $pricing_card->amount;
+                $invoice_item->pricing_id = $pricing_card->id;
+                $invoice_item->save();
+            }
+        }
+
+        // تحديث إجمالي الفاتورة
+        $invoice->update([
+            'amount' => $invoice->items()->sum('amount'),
+        ]);
+
+        // إرسال إيميل الموافقة
+        try {
+            Mail::to($doctor->email)->send(new FirstApproval($doctor, $invoice));
+        } catch (Exception $e) {
+            Log::warning('Failed to send approval email to doctor: ' . $e->getMessage(), [
+                'doctor_id' => $doctor->id,
+                'email' => $doctor->email
+            ]);
+        }
+
+
+    } catch (\Exception $e) {
+        Log::error('Error creating invoice for doctor approval: ' . $e->getMessage(), [
+            'doctor_id' => $doctor->id,
+            'invoice_id' => $invoice->id
+        ]);
+        
+        // حذف الفاتورة في حالة الخطأ
+        $invoice->delete();
+        throw $e;
     }
+
+    return $invoice;
+}
 
 
     public function getVault()
@@ -618,6 +603,11 @@ class DoctorService
                 unset($data['password']);
             }
             
+
+            if(isset($data['phone']))
+            {
+
+            }
 
 
 
@@ -857,8 +847,12 @@ class DoctorService
     public function sendFinalApprovalEmail($doctor)
     {
         // send email to the doctor
-        Mail::to($doctor->email)
-        ->send(new FinalApproval($doctor));
+        try {
+            Mail::to($doctor->email)
+            ->send(new FinalApproval($doctor));
+        } catch (\Exception $e) {
+            \Log::error('Error sending final approval email: ' . $e->getMessage());
+        }
     }
 
     public function sendFirstApprovalEmail($doctor)

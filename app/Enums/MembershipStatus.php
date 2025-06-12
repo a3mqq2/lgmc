@@ -18,6 +18,7 @@ enum MembershipStatus: string
     case Expired        = 'expired';
     case UnderRenew     = 'under_renew';
     case Suspended      = 'suspended';
+    case UnderUpload    = 'under_upload';
 
     public function label(): string
     {
@@ -36,6 +37,7 @@ enum MembershipStatus: string
             self::Expired        => 'منتهي الصلاحية',
             self::UnderRenew     => 'قيد التجديد',
             self::Suspended      => 'معلق',
+            self::UnderUpload    => 'قيد رفع الملفات',
         };
     }
 
@@ -56,6 +58,7 @@ enum MembershipStatus: string
             self::Expired        => 'bg-danger',
             self::UnderRenew     => 'bg-warning',
             self::Suspended      => 'bg-secondary',
+            self::UnderUpload    => 'bg-info',
         };
     }
 }

@@ -104,7 +104,11 @@
                                                </div>
                                                <div class="list-group-item d-flex justify-content-between align-items-center">
                                                    <span><i class="fas fa-heart text-info"></i> الحالة الاجتماعية</span>
-                                                   <span>{{ $doctor->marital_status->label() }}</span>
+                                                   @if ($doctor->marital_status)
+                                                   <span class="form-value">{{ $doctor->marital_status->value == 'single' ? 'أعزب' : ($doctor->marital_status->value == 'married' ? 'متزوج' : '') }}</span>
+                                                   @else 
+                                                   <span class="form-value"></span>
+                                               @endif
                                                </div>
                                                <div class="list-group-item d-flex justify-content-between align-items-center">
                                                 <span><i class="fa fa-venus-mars text-info"></i>  الجنس  </span>

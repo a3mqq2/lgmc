@@ -12,15 +12,7 @@ class Specialty extends Model
     protected $fillable = [
         'name',
         'name_en',
-        'specialty_id',
     ];
 
-
-    public function specialities() {
-        return $this->hasMany(Specialty::class,'specialty_id');
-    }
-    public function subSpecialty()
-    {
-        return $this->belongsTo(Specialty::class, 'specialty_id');
-    }
+ 
 }

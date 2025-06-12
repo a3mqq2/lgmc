@@ -5,7 +5,6 @@
 @section('content')
 <div class="container-fluid">
     <h4 class="mb-4">الفواتير الكلية</h4>
-
     <div class="card">
         <div class="card-header bg-primary text-white">تصفية الفواتير الكلية</div>
         <div class="card-body">

@@ -19,11 +19,11 @@ class MedicalServiceFilesSeeder extends Seeder
 
         // مستندات إنشاء شركات خدمات طبية
         $registrationFiles = [
-            ['name' => 'سجل تجاري', 'required' => 1],
-            ['name' => 'غرفة تجارية', 'required' => 1],
-            ['name' => 'اذونات تآسيسيه نسخه طبق الاصل', 'required' => 1],
-            ['name' => 'تعديلات ( ان تم التعديل )', 'required' => 0],
-            ['name' => 'وثيقه تامين من هيئة التأمين الطبي', 'required' => 1],
+            ['name' => 'سجل تجاري', 'required' => 1, 'order_number' => 1],
+            ['name' => 'غرفة تجارية', 'required' => 1, 'order_number' => 2],
+            ['name' => 'اذونات تآسيسيه نسخه طبق الاصل', 'required' => 1, 'order_number' => 3],
+            ['name' => 'تعديلات ( ان تم التعديل )', 'required' => 0, 'order_number' => 1],
+            ['name' => 'وثيقه تامين من هيئة التأمين الطبي', 'required' => 1, 'order_number' => 4],
         ];
 
         foreach ($registrationFiles as $file) {
@@ -34,16 +34,17 @@ class MedicalServiceFilesSeeder extends Seeder
                 'is_required' => $file['required'],
                 'doctor_type' => null,
                 'medical_facility_type_id' => $medicalService->id,
-                'facility_type' => 'services'
+                'facility_type' => 'services',
+                'order_number' => $file['order_number'],
             ]);
         }
 
         // مستندات تجديد شركات خدمات طبية
         $renewalFiles = [
-            ['name' => 'سجل تجاري ساري المفعول', 'required' => 1],
-            ['name' => 'غرفة تجارية سارية المفعول', 'required' => 1],
-            ['name' => 'تعديلات ( ان تم التعديل )', 'required' => 0],
-            ['name' => 'وثيقة تأمين من هيئة التأمين الطبي', 'required' => 1],
+            ['name' => 'سجل تجاري ساري المفعول', 'required' => 1, 'order_number' => 1],
+            ['name' => 'غرفة تجارية سارية المفعول', 'required' => 1, 'order_number' => 2],
+            ['name' => 'تعديلات ( ان تم التعديل )', 'required' => 0, 'order_number' => 3],
+            ['name' => 'وثيقة تأمين من هيئة التأمين الطبي', 'required' => 1, 'order_number' => 4],
         ];
 
         foreach ($renewalFiles as $file) {
@@ -55,6 +56,7 @@ class MedicalServiceFilesSeeder extends Seeder
                 'doctor_type' => null,
                 'medical_facility_type_id' => $medicalService->id,
                 'facility_type' => 'services',
+                'order_number' => $file['order_number'],
             ]);
         }
 

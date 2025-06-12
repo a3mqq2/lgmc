@@ -20,6 +20,7 @@ class CreateMedicalFacilitiesTable extends Migration
             $table->string('index')->nullable();
             $table->string('type');
             $table->string('address');
+            $table->string('commercial_number')->nullable();
             $table->string('phone_number');
             $table->enum('membership_status', ['under_approve','under_complete','under_payment','under_edit','active', 'expired', 'banned','under_renew']);
             $table->date('membership_expiration_date')->nullable();

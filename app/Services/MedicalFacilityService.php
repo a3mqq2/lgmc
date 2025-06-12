@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\Pricing;
 use App\Models\FileType;
 use App\Models\MedicalFacility;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,125 +28,82 @@ class MedicalFacilityService
 
     public function create(array $data)
     {
-        $data['user_id'] = Auth::id();
 
-        if (isset($data['date'])) {
-            $data['activity_start_date'] = $data['date'];
-            unset($data['date']);
+
+        $doctor = Doctor::find($data['manager_id']);
+        if ($doctor->medicalFacility) {
+            throw new \Exception('هذا الطبيب لديه منشأة طبية مسجلة بالفعل');
         }
 
-        if (isset($data['documents'])) {
-            unset($data['documents']);
+
+        // check if the doctor is not libyan
+        if($doctor->type->value != "libyan")
+        {
+            throw new \Exception('الطبيب ليس ليبي الجنسية، لا يمكنه تسجيل منشأة طبية');
         }
 
-        $data['membership_status'] = "inactive";
+        // check if medical facility type private_clinic and doctor rank is not ( 3,4,5,6)
+        if($data['type'] == 'private_clinic' && !in_array($doctor->rank, [3, 4, 5, 6]))
+        {
+            throw new \Exception('الطبيب لا يملك الرتبة المطلوبة لتسجيل منشأة طبية خاصة');
+        }
 
-
-
+    
+        $data['branch_id'] = $doctor->branch_id;
+    
+        $lastIssuedDate = $data['last_issued_date'] ?? null;
+        unset($data['last_issued_date']);
+    
         $medicalFacility = MedicalFacility::create($data);
+    
+        if ($lastIssuedDate) {
+            $medicalFacility->membership_expiration_date = Carbon::parse($lastIssuedDate)->addYear();
+            $medicalFacility->membership_status = $medicalFacility->membership_expiration_date < now() ? 'expired' : 'active';
+            $medicalFacility->index = MedicalFacility::max('index') + 1;
+            $medicalFacility->code = $medicalFacility->branch->code . '-' . 'MF-' . str_pad($medicalFacility->index, 3, '0', STR_PAD_LEFT);
+            $medicalFacility->save();
 
-
-        $file_types = FileType::where('type', 'medical_facility')
-            ->where('for_registration', 1)
-        ->get();
-        foreach ($file_types as $file_type) {
-            if (isset($data['documents'][$file_type->id])) {
-                $file = $data['documents'][$file_type->id];
-                $path = $file->store('medical-facilites', 'public');
-
-                $medicalFacility->files()->create([
-                    'file_name' => $file->getClientOriginalName(),
-                    'file_type_id' => $file_type->id,
-                    'file_path' => $path,
-                ]);
-            }
+            // create license
+            $license = $medicalFacility->licenses()->create([
+                'status' => $medicalFacility->membership_status,
+                'issued_date' => $lastIssuedDate,
+                'expiry_date' => $medicalFacility->membership_expiration_date,
+                'created_by' => Auth::id(),
+            ]);
         }
-
-        Log::create([
-            'user_id' => Auth::id(),
-            'details' => 'تم إنشاء منشأة طبية جديدة: ' . $medicalFacility->name,
-            'loggable_id' => $medicalFacility->id,
-            'loggable_type' => MedicalFacility::class,
-            'action' => 'create_medical_facility',
-        ]);
-
+        
         return $medicalFacility;
     }
+    
 
-    public function update(MedicalFacility $medicalFacility, array $data): MedicalFacility
+    public function update(MedicalFacility $medicalFacility, array $data)
     {
-        \DB::beginTransaction();
-
-        try {
-            $data['user_id'] = Auth::id();
-
-            if ($data['manager_id'] === null) {
-                unset($data['manager_id']);
-            }
-            
-
-            if (isset($data['date'])) {
-                $data['activity_start_date'] = $data['date'];
-                unset($data['date']);
-            }
-
-            if (isset($data['manager_id']) && $medicalFacility->manager_id != $data['manager_id']) {
-                $existingFacility = MedicalFacility::where('manager_id', $data['manager_id'])
-                    ->where('id', '!=', $medicalFacility->id)
-                    ->first();
-                if ($existingFacility) {
-                    throw new \Exception('هذا المدير لديه منشأة طبية مسجلة بالفعل');
-                }
-            }
-
-
-            if (isset($data['documents'])) {
-                $fileTypes = FileType::where('type', 'medical_facility')
-                    ->where('for_registration', 1)
-                ->get();
-
-                foreach ($fileTypes as $fileType) {
-                    if (isset($data['documents'][$fileType->id])) {
-                        $file = $data['documents'][$fileType->id];
-                        $path = $file->store('medical-facilites', 'public');
-
-                        $medicalFacility->files()->updateOrCreate(
-                            ['file_type_id' => $fileType->id],
-                            [
-                                'file_name' => $file->getClientOriginalName(),
-                                'file_type_id' => $fileType->id,
-                                'file_path' => $path,
-                            ]
-                        );
-                    }
-                }
-            }
-
-            if($data['documents'])
-            {
-                unset($data['documents']);
-            }
-
-            $medicalFacility->update($data);
-
-            
-
-            Log::create([
-                'user_id' => Auth::id(),
-                'details' => 'تم تحديث بيانات المنشأة الطبية: ' . $medicalFacility->name,
-                'loggable_id' => $medicalFacility->id,
-                'loggable_type' => MedicalFacility::class,
-                'action' => 'update_medical_facility',
-            ]);
-
-            \DB::commit();
-
-            return $medicalFacility;
-        } catch (\Exception $e) {
-            \DB::rollBack();
-            throw new \Exception('حدث خطأ أثناء تحديث المنشأة الطبية: ' . $e->getMessage());
+        $doctor = Doctor::find($data['manager_id']);
+        if ($doctor->medicalFacility && $doctor->medicalFacility->id !== $medicalFacility->id) {
+            throw new \Exception('هذا الطبيب لديه منشأة طبية مسجلة بالفعل');
         }
+    
+        $data['branch_id'] = $doctor->branch_id;
+    
+        $lastIssuedDate = $data['last_issued_date'] ?? null;
+        unset($data['last_issued_date']);
+    
+        $medicalFacility->update($data);
+    
+        if ($lastIssuedDate) {
+            $medicalFacility->membership_expiration_date = Carbon::parse($lastIssuedDate)->addYear();
+            $medicalFacility->membership_status = $medicalFacility->membership_expiration_date < now() ? 'expired' : 'active';
+    
+            if ($medicalFacility->branch_id !== $medicalFacility->getOriginal('branch_id')) {
+                $medicalFacility->code = $medicalFacility->branch->code . '-MF-' . str_pad($medicalFacility->index, 3, '0', STR_PAD_LEFT);
+            }
+    
+            $medicalFacility->save();
+        }
+    
+        return $medicalFacility;
     }
+    
 
     public function delete(MedicalFacility $medicalFacility)
     {
@@ -168,6 +126,7 @@ class MedicalFacilityService
         });
     }
     
+    // في الـ Controller أو Service الذي يستدعي getAll():
     public function getAll(array $filters = [], int $perPage = 10)
     {
         $query = MedicalFacility::query();
@@ -176,14 +135,39 @@ class MedicalFacilityService
             $query->where('name', 'like', '%' . $filters['q'] . '%');
         }
 
+
+        if(!empty($filters['code']))
+        {
+            $code = explode('-', $filters['code']);
+            if(count($code) == 3)
+            {
+                $query->where('code', 'like', '%' . $filters['code'] . '%');
+            } else {
+                $query->where('index', $filters['code']);
+            }
+        }
+
+        if (!empty($filters['phone'])) {
+            $query->where('phone_number', 'like', '%' . $filters['phone'] . '%');
+        }
+
         if (!empty($filters['ownership'])) {
-            $query->where('ownership', $filters['ownership']);
+            $query->where('type', $filters['ownership']);
         }
 
-        if (!empty($filters['medical_facility_type_id'])) {
-            $query->where('medical_facility_type_id', $filters['medical_facility_type_id']);
+
+        if (!empty($filters['membership_status'])) {
+            if($filters['membership_status'] == "expiring_soon")
+            {
+                $query->whereBetween('membership_expiration_date', [now(), now()->addDays(30)]);
+            } else {
+                $query->where('membership_status', $filters['membership_status']);
+            }
         }
 
+        if (!empty($filters['manager_id'])) {
+            $query->where('manager_id', $filters['manager_id']);
+        }
 
         if(get_area_name() == "user")
         {
@@ -192,6 +176,7 @@ class MedicalFacilityService
 
         return $query->orderByDesc('id')->paginate($perPage);
     }
+
 
     protected function createInvoice($medicalFacility)
     {

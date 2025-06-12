@@ -296,8 +296,13 @@
                 </div>
                 @endif
                 <div class="col-md-6">
-                    <label>المستشفى</label>
-                    <input type="text" name="institution" value="{{ old('institution',$doctor->institution) }}" class="form-control">
+                    <label class="form-label">الجهة العامة/ المستشفى</label>
+                    <select name="institution_id" id="" class="form-control select2 selectize">
+                        <option value="">حدد مستشفى</option>
+                        @foreach ($institutions as $institution)
+                            <option value="{{$institution->id}}" {{$institution->id == $doctor->institution_id ? "selected" : ""}} >{{$institution->name}}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="col-md-6">
                     <label>الصفة</label>

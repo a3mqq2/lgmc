@@ -40,6 +40,8 @@ class Invoice extends Model
         'relief_reason',
         'branch_id',
         'doctor_id',
+        'visitor_id',
+        'category',
     ];
 
     /**
@@ -62,16 +64,6 @@ class Invoice extends Model
         'amount' => 'decimal:2',
         'status' => InvoiceStatus::class,
     ];
-
-    /**
-     * ✅ Polymorphic relationship for invoiceable entities.
-     *
-     * @return MorphTo
-     */
-    public function invoiceable(): MorphTo
-    {
-        return $this->morphTo();
-    }
 
     /**
      * ✅ Relationship with Licence.
@@ -176,5 +168,11 @@ class Invoice extends Model
     public function doctor()
     {
         return $this->belongsTo(Doctor::class);
+    }
+
+
+    public function visitor()
+    {
+        return $this->belongsTo(Doctor::class,'visitor_id');
     }
 }

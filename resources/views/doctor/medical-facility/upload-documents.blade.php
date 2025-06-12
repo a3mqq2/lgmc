@@ -111,7 +111,7 @@
       }
 
       finishBtn.addEventListener('click', () => {
-        window.location.href = '{{ route("doctor.dashboard") }}';
+        window.location.href = '{{ route("doctor.my-facility") }}';
       });
     });
     </script>

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('file_path');
             $table->integer('renew_number')->nullable();
             $table->timestamp('uploaded_at')->nullable();
+            $table->integer('order_number');
             $table->timestamps();
         });
     }

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Doctor;
+use App\Models\MedicalFacility;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -14,8 +15,13 @@ class ExpireMemberships extends Command
     public function handle(): int
     {
         Doctor::whereDate('membership_expiration_date', '<=', Carbon::today())
-              ->where('membership_status', '!=', 'inactive')
-              ->update(['membership_status' => 'inactive']);
+              ->where('membership_status', '!=', 'expired')
+              ->update(['membership_status' => 'expired']);
+
+
+              MedicalFacility::whereDate('membership_expiration_date', '<=', Carbon::today())
+              ->where('membership_status', '!=', 'expired')
+              ->update(['membership_status' => 'expired']);
 
         return self::SUCCESS;
     }

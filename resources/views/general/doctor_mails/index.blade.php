@@ -1,210 +1,448 @@
-{{-- resources/views/general/doctor_mails/index.blade.php --}}
-@extends('layouts.' . get_area_name())
-@section('title', 'طلبات أوراق بالخارج')
+@extends('layouts.'.get_area_name())
+@section('title', 'طلبات أوراق الخارج')
 
 @section('content')
-{{-- رأس الصفحة --------------------------------------------------------- --}}
-<div class="row mb-4">
-  <div class="col-md-6">
-    <h3 class="mb-0">قائمة طلبات الأوراق الخارجية</h3>
-  </div>
-  <div class="col-md-6 text-end">
-    <a href="{{ route(get_area_name().'.doctor-mails.create') }}" class="btn btn-success">
-      <i class="fa fa-plus me-1"></i> إضافة طلب جديد
-    </a>
-  </div>
-</div>
-
-{{-- فلترة --------------------------------------------------------------- --}}
-<div class="card mb-4 shadow-sm">
-  <div class="card-header bg-primary text-white">
-    <i class="fa fa-filter me-2"></i> فلترة الطلبات
-  </div>
-  <div class="card-body">
-    <form class="row g-3" method="GET" action="{{ route(get_area_name().'.doctor-mails.index') }}">
-      <div class="col-sm-6 col-md-3">
-        <div class="form-floating">
-          <input type="text" name="name" value="{{ request('name') }}" class="form-control" id="filterName" placeholder="اسم الطبيب">
-          <label for="filterName"><i class="fa fa-user-doctor me-1"></i> اسم الطبيب</label>
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 class="page-title">
+                    <i class="fas fa-envelope text-primary me-2"></i>
+                    طلبات  اوراق الخارج
+                </h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-transparent p-0 mt-1">
+                        <li class="breadcrumb-item"><a href="{{ route('admin.home') }}">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">طلبات اوراق الخارج</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-auto">
+                <div class="btn-group">
+                    <a href="{{ route('admin.doctor-mails.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>
+                        طلب جديد
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="col-sm-6 col-md-3">
-        <div class="form-floating">
-          <input type="text" name="code" value="{{ request('code') }}" class="form-control" id="filterCode" placeholder="رقم النقابي">
-          <label for="filterCode"><i class="fa fa-id-badge me-1"></i> رقم النقابي</label>
-        </div>
-      </div>
-      <div class="col-sm-6 col-md-2">
-        <div class="form-floating">
-          <input type="text" name="request_number" value="{{ request('request_number') }}" class="form-control" id="filterReqNum" placeholder="رقم الطلب">
-          <label for="filterReqNum"><i class="fa fa-hashtag me-1"></i> رقم الطلب</label>
-        </div>
-      </div>
-      <div class="col-sm-6 col-md-2">
-        <div class="form-floating">
-          <input type="date" name="request_date" value="{{ request('request_date') }}" class="form-control" id="filterDate" placeholder="تاريخ الطلب">
-          <label for="filterDate"><i class="fa fa-calendar-day me-1"></i> تاريخ الطلب</label>
-        </div>
-      </div>
-      <div class="col-sm-6 col-md-2">
-        <div class="form-floating">
-          <select name="status" id="filterStatus" class="form-select">
-            <option value="">اختر الحالة</option>
-            <option value="under_approve"   @selected(request('status')=='under_approve') >قيد الموافقة</option>
-            <option value="under_payment"   @selected(request('status')=='under_payment') >قيد الدفع</option>
-            <option value="under_proccess"  @selected(request('status')=='under_proccess')>قيد التجهيز</option>
-            <option value="done"       @selected(request('status')=='done')     >مكتمل</option>
-            <option value="failed"          @selected(request('status')=='failed')        >فشل</option>
-          </select>
-          <label for="filterStatus"><i class="fa fa-info-circle me-1"></i> الحالة</label>
-        </div>
-      </div>
-      <div class="col-12 text-end">
-        <button type="submit" class="btn btn-outline-primary px-4">
-          <i class="fa fa-search me-1"></i> تطبيق الفلتر
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
-
-{{-- الجدول -------------------------------------------------------------- --}}
-<div class="card shadow-sm">
-  <div class="card-header bg-primary text-white">
-    <i class="fa fa-list me-2"></i> عرض الطلبات
-  </div>
-  <div class="card-body p-0">
-    <div class="table-responsive">
-      <table class="table table-hover table-bordered mb-0">
-        <thead class="table-light">
-          <tr>
-            <th style="width:50px">#</th>
-            <th>الطبيب</th>
-            <th>الإيميلات</th>
-            <th>الدول</th>
-            <th>الإجمالي</th>
-            <th>هل اصدر اوراق من قبل ؟ </th>
-            <th>سنة الاصدار</th>
-            <th>الحالة</th>
-            <th>تاريخ الإنشاء</th>
-            <th style="width:170px">إجراءات</th>
-          </tr>
-        </thead>
-        <tbody>
-          @forelse($doctor_mails as $mail)
-            <tr>
-              <td>{{ $mail->id }}</td>
-              <td>
-                  <a href="{{route(get_area_name().'.doctors.show', $mail->doctor->id)}}">
-                    <strong>{{ $mail->doctor->name }}</strong><br>
-                    <small class="text-muted">{{ $mail->doctor->code }}</small>
-                  </a>
-              </td>
-              <td>
-                <ul class="mb-0 ps-3">
-                  @foreach($mail->emails as $e) <li>{{ $e }}</li> @endforeach
-                </ul>
-              </td>
-              <td>
-                @foreach ($mail->countries as $country)
-                  <span class="badge bg-secondary">{{ App\Models\Country::find($country) ? App\Models\Country::find($country)->name : "" }}</span>
-                @endforeach
-              </td>
-              <td>{{ number_format($mail->grand_total,2) }} د.ل</td>
-              <td>
-                @if ($mail->contacted_before)
-                  <span class="badge bg-success">نعم</span>
-                @else
-                  <span class="badge bg-danger">لا</span>
-                @endif
-              </td>
-              <td>
-                @if ($mail->last_extract_year)
-                  {{ $mail->last_extract_year }}
-                @else
-                  <span class="badge bg-secondary">غير محدد</span>
-                @endif
-              </td>
-              <td>
-                @php
-                  $badge = [
-                    'under_approve'  => 'bg-warning',
-                    'under_payment'  => 'bg-info',
-                    'under_proccess' => 'bg-primary',
-                    'done'      => 'bg-success',
-                    'failed'         => 'bg-danger',
-                     'under_edit' => 'bg-secondary',
-                  ][$mail->status] ?? 'bg-secondary';
-
-                  $label = [
-                    'under_approve'  => 'قيد الموافقة',
-                    'under_payment'  => 'قيد الدفع',
-                    'under_proccess' => 'قيد التجهيز',
-                    'done'      => 'مكتمل',
-                     'under_edit' => 'قيد التعديل',
-                    'failed'         => 'فشل',
-                  ][$mail->status] ?? 'غير معروف';
-                @endphp
-                <span class="badge {{ $badge }}">{{ $label }}</span>
-              </td>
-              <td>{{ $mail->created_at->format('Y-m-d') }}</td>
-              <td>
-               <div class="btn-group btn-group-sm" role="group">
-                   {{-- زرّ عرض --}}
-                  
-
-                   @if (get_area_name() == "admin")
-                   <a href="{{ route(get_area_name().'.doctor-mails.show', $mail) }}"
-                    class="btn btn-outline-info" title="عرض">
-                    <i class="fa fa-eye"></i>
-                  </a>
-                   @endif
-
-                   {{-- زرّ اكتمال (يظهر فقط إذا كان قيد التجهيز) --}}
-                   @if($mail->status === 'under_proccess')
-                     <form action="{{ route(get_area_name().'.doctor-mails.complete', $mail) }}"
-                           method="POST" onsubmit="return confirm('تأكيد الإكمال؟');">
-                       @csrf @method('PUT')
-                       <button type="submit" class="btn btn-outline-success" title="اكتمال">
-                         <i class="fa fa-check"></i>
-                       </button>
-                     </form>
-                   @endif
-             
-                   {{-- زرّ طباعة --}}
-                   {{-- <a href="{{ route(get_area_name().'.doctor-mails.print', $mail) }}"
-                      target="_blank" class="btn btn-outline-primary" title="طباعة">
-                      <i class="fa fa-print"></i>
-                   </a>
-              --}}
-                   {{-- زرّ حذف --}}
-                 
-                   @if (get_area_name() == "active")
-                   <form action="{{ route(get_area_name().'.doctor-mails.destroy', $mail) }}"
-                        method="POST" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger" title="حذف">
-                      <i class="fa fa-trash"></i>
-                    </button>
-                  </form>
-                   @endif
-
-               </div>
-             </td>
-             
-            </tr>
-          @empty
-            <tr>
-              <td colspan="8" class="text-center py-4">لا توجد طلبات لعرضها</td>
-            </tr>
-          @endforelse
-        </tbody>
-      </table>
     </div>
-  </div>
+
+    <!-- Advanced Filters -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-light border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-filter me-2"></i>
+                    تصفية النتائج
+                </h5>
+            </div>
+        </div>
+        <div class="collapse show" id="filterCollapse">
+            <div class="card-body">
+                <form action="{{ route('admin.doctor-mails.index') }}" method="GET" id="filterForm">
+                    <div class="row g-3">
+                        <!-- Search Input -->
+                        <div class="col-md-3">
+                            <label class="form-label small text-muted">البحث</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" name="search" 
+                                       placeholder="رقم الطلب، اسم الطبيب، البريد الإلكتروني..." 
+                                       value="{{ request('search') }}">
+                            </div>
+                        </div>
+
+
+                        <!-- Status Filter -->
+                        <div class="col-md-3">
+                            <label class="form-label small text-muted">حالة الطلب</label>
+                            <select class="form-select" name="status">
+                                <option value="">جميع الحالات</option>
+                                <option value="under_approve" {{ request('status') == 'under_approve' ? 'selected' : '' }}>
+                                    <i class="fas fa-clock"></i> قيد الموافقة
+                                </option>
+                                <option value="under_edit" {{ request('status') == 'under_edit' ? 'selected' : '' }}>
+                                    <i class="fas fa-spinner"></i> قيد التعديل
+                                </option>
+                                <option value="under_payment" {{ request('status') == 'under_payment' ? 'selected' : '' }}>
+                                    <i class="fas fa-check"></i> قيد الدفع
+                                </option>
+                                <option value="under_proccess" {{ request('status') == 'under_proccess' ? 'selected' : '' }}>
+                                  <i class="fas fa-times"></i> قيد الإجراء
+                              </option>
+                              <option value="done" {{ request('status') == 'done' ? 'selected' : '' }}>
+                                <i class="fas fa-times"></i> مكتمل 
+                            </option>
+                            </select>
+                        </div>
+
+                        <!-- Date Range -->
+                        <div class="col-md-3">
+                            <label class="form-label small text-muted">من تاريخ</label>
+                            <input type="date" class="form-control" name="date_from" value="{{ request('date_from') }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small text-muted">إلى تاريخ</label>
+                            <input type="date" class="form-control" name="date_to" value="{{ request('date_to') }}">
+                        </div>
+
+
+                        <!-- Action Buttons -->
+                        <div class="col-12">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search me-2"></i>
+                                    بحث
+                                </button>
+                                <a href="{{ route('admin.doctor-mails.index') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-redo me-2"></i>
+                                    إعادة تعيين
+                                </a>
+                                @if(request()->filled('search') || request()->filled('status') || request()->filled('doctor_id'))
+                                    <div class="ms-auto">
+                                        <small class="text-muted">
+                                            عرض {{ $doctorMails->count() }} من {{ $doctorMails->total() }} نتيجة
+                                        </small>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class=" px-4">#</th>
+                            <th class="">رقم الطلب</th>
+                            <th class="">الطبيب</th>
+                            <th class="">الخدمات</th>
+                            <th class="">الإيميلات</th>
+                            <th class="">المبلغ الإجمالي</th>
+                            <th class="">الحالة</th>
+                            <th class="">تاريخ الإنشاء</th>
+                            <th class=" text-center">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($doctorMails as $mail)
+                            <tr>
+                                <td class="px-4">{{ $loop->iteration + ($doctorMails->currentPage() - 1) * $doctorMails->perPage() }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">#{{ str_pad($mail->id, 6, '0', STR_PAD_LEFT) }}</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar avatar-sm me-2">
+                                            @if($mail->doctor->photo)
+                                                <img src="{{ asset($mail->doctor->photo) }}" class="rounded-circle" alt="">
+                                            @else
+                                                <div class="avatar-title rounded-circle bg-primary text-white">
+                                                    {{ substr($mail->doctor->name, 0, 1) }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">{{ $mail->doctor->name }}</div>
+                                            <small class="text-muted">{{ $mail->doctor->code }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        @foreach($mail->services->take(2) as $service)
+                                            <span class="badge bg-info">{{ $service->service_name }}</span>
+                                        @endforeach
+                                        @if($mail->services->count() > 2)
+                                            <span class="badge bg-secondary">+{{ $mail->services->count() - 2 }}</span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-envelope text-muted me-2"></i>
+                                        <span>{{ $mail->emails->count() }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-bold">{{ number_format($mail->grand_total, 2) }}</span>
+                                    <small class="text-muted">د.ل</small>
+                                </td>
+                                <td>
+                                    @php
+                                        $statusClasses = [
+                                            'under_approve' => 'warning',
+                                            'under_payment' => 'info',
+                                            "under_edit" => "secondary",
+                                            'under_proccess' => 'primary',
+                                            "done" => "success",
+                                        ];
+                                        $statusIcons = [
+                                            'under_approve' => 'clock',
+                                            'under_payment' => 'spinner',
+                                            "under_edit" => "edit",
+                                            'done' => 'check-circle',
+                                            "under_proccess" => "spinner",
+                                        ];
+                                        $statusLabels = [
+                                            'under_approve' => 'قيد الموافقة',
+                                            'under_payment' => 'قيد الدفع',
+                                            "under_edit" => "قيد التعديل",
+                                            "under_proccess" => "قيد الاجراء",
+                                            'done' => 'مكتمل',
+                                        ];
+                                    @endphp
+                                    <span class="badge bg-{{ $statusClasses[$mail->status] ?? 'secondary' }} bg-opacity-10 text-light px-3 py-2">
+                                        <i class="fas fa-{{ $statusIcons[$mail->status] ?? 'question' }} me-1"></i>
+                                        {{ $statusLabels[$mail->status] ?? $mail->status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div class="text-muted small">{{ $mail->created_at->format('Y/m/d') }}</div>
+                                        <div class="text-muted small">{{ $mail->created_at->format('h:i A') }}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ route('admin.doctor-mails.show', $mail) }}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           data-bs-toggle="tooltip" 
+                                           title="عرض التفاصيل">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if($mail->status == 'pending')
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-success"
+                                                    onclick="updateStatus({{ $mail->id }}, 'in_progress')"
+                                                    data-bs-toggle="tooltip" 
+                                                    title="بدء التنفيذ">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        @endif
+                                        @if(in_array($mail->status, ['pending', 'in_progress']))
+                                            <a href="{{ route('admin.doctor-mails.edit', $mail) }}" 
+                                               class="btn btn-sm btn-outline-warning"
+                                               data-bs-toggle="tooltip" 
+                                               title="تعديل">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        @endif
+                                        <button type="button" 
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="confirmDelete({{ $mail->id }})"
+                                                data-bs-toggle="tooltip" 
+                                                title="حذف">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                                        <p class="text-muted">لا توجد طلبات خارج</p>
+                                        <a href="{{ route('admin.doctor-mails.create') }}" class="btn btn-primary">
+                                            <i class="fas fa-plus me-2"></i>
+                                            إنشاء طلب جديد
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @if($doctorMails->hasPages())
+            <div class="card-footer bg-white border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        عرض {{ $doctorMails->firstItem() }} إلى {{ $doctorMails->lastItem() }} من {{ $doctorMails->total() }} سجل
+                    </div>
+                    {{ $doctorMails->withQueryString()->links() }}
+                </div>
+            </div>
+        @endif
+    </div>
 </div>
 
-<div class="mt-4">
-  {{ $doctor_mails->withQueryString()->links() }}
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">تأكيد الحذف</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <p class="mb-0">هل أنت متأكد من حذف هذا الطلب؟</p>
+                <p class="text-muted small">لا يمكن التراجع عن هذا الإجراء</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <form id="deleteForm" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">حذف</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Status Update Form -->
+<form id="statusForm" method="POST" class="d-none">
+    @csrf
+    @method('PATCH')
+    <input type="hidden" name="status" id="statusInput">
+</form>
+
+@endsection
+
+@section('styles')
+<style>
+    .page-header {
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 1rem;
+    }
+
+    .avatar {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1rem;
+    }
+
+    .avatar-sm {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.875rem;
+    }
+
+    .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar-title {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+    }
+
+    .badge {
+        font-weight: 500;
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .empty-state {
+        padding: 3rem 0;
+    }
+
+    .select2-container--default .select2-selection--single {
+        height: calc(1.5em + 0.75rem + 2px);
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #ced4da;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: calc(1.5em + 0.75rem);
+    }
+
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .bg-opacity-10 {
+        --bs-bg-opacity: 0.1;
+    }
+</style>
+@endsection
+
+@section('scripts')
+<script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+    // Initialize Select2
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: 'اختر...',
+            allowClear: true,
+            dir: 'rtl'
+        });
+    });
+
+    // Delete confirmation
+    function confirmDelete(id) {
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        const form = document.getElementById('deleteForm');
+        form.action = `/admin/doctor-mails/${id}`;
+        modal.show();
+    }
+
+    // Update status
+    function updateStatus(id, status) {
+        if (confirm('هل أنت متأكد من تغيير حالة الطلب؟')) {
+            const form = document.getElementById('statusForm');
+            const statusInput = document.getElementById('statusInput');
+            statusInput.value = status;
+            form.action = `/admin/doctor-mails/${id}/status`;
+            form.submit();
+        }
+    }
+
+    // Export data
+    function exportData() {
+        const params = new URLSearchParams(window.location.search);
+        params.append('export', 'excel');
+        window.location.href = `${window.location.pathname}?${params.toString()}`;
+    }
+
+    // Auto-submit form on select change
+    document.querySelectorAll('select[name="status"], select[name="has_files"], select[name="email_count"]').forEach(select => {
+        select.addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+    });
+</script>
 @endsection

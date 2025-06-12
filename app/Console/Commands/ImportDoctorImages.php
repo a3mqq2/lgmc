@@ -17,14 +17,14 @@ class ImportDoctorImages extends Command
         $branchId = 1;
         
         $doctors = Doctor::where('branch_id', $branchId)
-            ->whereNotNull('doctor_number')
-            ->orderBy('doctor_number')
+            ->whereNotNull('index')
+            ->orderBy('index')
             ->get();
 
         $this->info("Found {$doctors->count()} doctors.");
 
         foreach ($doctors as $doctor) {
-            $fileName = "{$doctor->doctor_number}.jpg";
+            $fileName = "{$doctor->index}.jpg";
             $filePath = "profilepic/{$fileName}";
 
             if (Storage::disk('public')->exists($filePath)) {

@@ -12,7 +12,7 @@ class CheckRole
     {
 
         if($role == "finance") {
-            if(auth()->user()->roles->where('name','financial-administration') || auth()->user()->roles->where('name','financial-branch')) {
+            if(auth()->user()->roles->where('name','finance-general') || auth()->user()->roles->where('name','finance-branch')) {
                 abort(403, 'Unauthorized action.');
             }
         }

@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Doctor;
 use App\Models\Licence;
 use App\Models\FileType;
+use App\Models\DoctorFile;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\MedicalFacility;
+use App\Models\MedicalFacilityFile;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 
@@ -137,7 +140,7 @@ class WebsiteController extends Controller
                 return response('No file uploaded', 400);
             }
             $file = array_shift($allFiles);
-    
+        
             // 2) نحدد نوع الرفع: طبيب أم منشأة؟
             if ($request->has('doctor_id')) {
                 $request->validate([
@@ -168,56 +171,59 @@ class WebsiteController extends Controller
             else {
                 return response('Missing owner identifier', 400);
             }
-    
+        
             $fileTypeId = $request->file_type_id;
+            
             // 3) خزّن الملف
             $path = $file->store(
                 ($request->has('doctor_id') ? "doctors/{$ownerId}" : "facilities/{$ownerId}"),
                 'public'
             );
-    
+        
             // 4) اربط أو حدّث السجل
+            $fileType = FileType::findOrFail($fileTypeId);
             
-            if($request->medical_facility_id)
-            {
-                $relation->create(
-                    [
-                        $ownerKey    => $ownerId,
-                        'file_type_id' => $fileTypeId,
-                        'file_name' => $file->getClientOriginalName(),
-                        'file_path' => $path,
-                        'renew_number' =>  $owner->renew_number,
-                    ]
-                );
-            } else {
-                $relation->create(
-                    [
-                        $ownerKey    => $ownerId,
-                        'file_type_id' => $fileTypeId,
-                        'file_name' => $file->getClientOriginalName(),
-                        'file_path' => $path,
-                    ]
-                );
+            // تحديد ما إذا كان نحتاج renew_number للطبيب الزائر
+            $fileData = [
+                $ownerKey      => $ownerId,
+                'file_type_id' => $fileTypeId,
+                'file_name'    => $file->getClientOriginalName(),
+                'file_path'    => $path,
+                'order_number' => $fileType->order_number,
+            ];
+        
+            // إضافة renew_number للمنشآت والأطباء الزوار
+            if ($request->has('medical_facility_id') || 
+                ($request->has('doctor_id') && $owner->type->value == "visitor")) {
+                $fileData['renew_number'] = $owner->renew_number;
             }
-    
+        
+            $relation->create($fileData);
+        
             // 5) احسب المرفوعات المطلوبة
-
-
-
-
             $is_for_registeration = $owner->membership_status->value == "expired" ? 0 : 1;
-
+        
             $requiredTypeIds = $typeQuery
                 ->where('for_registration', $is_for_registeration)
                 ->where('is_required',    true)
                 ->pluck('id')
                 ->toArray();
-    
-            $uploadedCount = $relation
-                ->whereIn('file_type_id', $requiredTypeIds)
-                ->distinct()
-                ->count('file_type_id');
-    
+        
+            // للأطباء الزوار: التحقق من الملفات بنفس renew_number
+            if ($request->has('doctor_id') && $owner->type->value == "visitor") {
+                $uploadedCount = $relation
+                    ->whereIn('file_type_id', $requiredTypeIds)
+                    ->where('renew_number', $owner->renew_number)
+                    ->distinct()
+                    ->count('file_type_id');
+            } else {
+                // للأطباء العاديين والمنشآت
+                $uploadedCount = $relation
+                    ->whereIn('file_type_id', $requiredTypeIds)
+                    ->distinct()
+                    ->count('file_type_id');
+            }
+        
             // 6) إذا اكتمل الرفع، حدّث العمود المناسب
             if ($uploadedCount === count($requiredTypeIds)) {
                 if ($request->has('doctor_id')) {
@@ -225,25 +231,115 @@ class WebsiteController extends Controller
                     $owner->registered_at = now();
                 } else {
                     // المنشأة الطبية: بعد الرفع الكامل نضعها قيد المراجعة مثلاً
-                    if($owner->membership_status->value == "under_complete")
-                    {
+                    if($owner->membership_status->value == "under_complete") {
                         $owner->$completeCol = 'under_approve';
                     }
-
-                    if($owner->membership_status->value == "expired")
-                    {
+        
+                    if($owner->membership_status->value == "expired") {
                         $owner->$completeCol = 'under_renew';
                     }
-                    
-                    // أو لو تريد اعتمادًا مباشرًا:
-                    // $owner->$completeCol = 'active';
                 }
                 $owner->save();
             }
-    
+        
             return response($path, 200);
         }
     
+
+
+        public function filepond_revert(Request $request)
+        {
+            // الحصول على مسار الملف من الطلب
+            $filePath = $request->getContent();
+            
+            if (empty($filePath)) {
+                return response('No file path provided', 400);
+            }
+            
+            try {
+                // البحث عن الملف في قاعدة البيانات
+                $file = null;
+                
+                // البحث في ملفات الأطباء
+                $doctorFile = DoctorFile::where('file_path', $filePath)
+                    ->whereNotNull('doctor_id')
+                    ->first();
+                    
+                // البحث في ملفات المنشآت الطبية
+                $facilityFile = MedicalFacilityFile::where('file_path', $filePath)
+                    ->whereNotNull('medical_facility_id')
+                    ->first();
+                    
+                $file = $doctorFile ?? $facilityFile;
+                
+                if (!$file) {
+                    return response('File not found in database', 404);
+                }
+                
+                // تحديد المالك (طبيب أو منشأة)
+                if ($file->doctor_id) {
+                    $owner = Doctor::find($file->doctor_id);
+                    $ownerKey = 'doctor_id';
+                    $completeCol = 'documents_completed';
+                    $typeQuery = FileType::where('doctor_type', $owner->type->value);
+                } else {
+                    $owner = MedicalFacility::find($file->medical_facility_id);
+                    $ownerKey = 'medical_facility_id';
+                    $completeCol = 'membership_status';
+                    $medical_facility_type = $owner->type == "private_clinic" ? "single" : "services";
+                    $typeQuery = FileType::where('type', 'medical_facility')
+                                         ->where('facility_type', $medical_facility_type);
+                }
+                
+                if (!$owner) {
+                    return response('Owner not found', 404);
+                }
+                
+                // حذف الملف من التخزين
+                if (Storage::disk('public')->exists($filePath)) {
+                    Storage::disk('public')->delete($filePath);
+                }
+                
+                // حذف السجل من قاعدة البيانات
+                $file->delete();
+                
+                // إعادة حساب حالة اكتمال المستندات
+                $is_for_registration = $owner->membership_status->value == "expired" ? 0 : 1;
+                
+                $requiredTypeIds = $typeQuery
+                    ->where('for_registration', $is_for_registration)
+                    ->where('is_required', true)
+                    ->pluck('id')
+                    ->toArray();
+                
+                $uploadedCount = $owner->files()
+                    ->whereIn('file_type_id', $requiredTypeIds)
+                    ->distinct()
+                    ->count('file_type_id');
+                
+                // تحديث حالة اكتمال المستندات
+                if ($uploadedCount < count($requiredTypeIds)) {
+                    if ($file->doctor_id) {
+                        // للطبيب: إذا لم تكتمل المستندات
+                        $owner->$completeCol = false;
+                    } else {
+                        // للمنشأة الطبية: إرجاع الحالة إلى قيد الإكمال
+                        if ($owner->membership_status->value == 'under_approve') {
+                            $owner->$completeCol = 'under_complete';
+                        } elseif ($owner->membership_status->value == 'under_renew') {
+                            $owner->$completeCol = 'expired';
+                        }
+                    }
+                    $owner->save();
+                }
+                
+                return response('File deleted successfully', 200);
+                
+            } catch (\Exception $e) {
+                \Log::error('FilePond revert error: ' . $e->getMessage());
+                return response('Error deleting file: ' . $e->getMessage(), 500);
+            }
+        }
     
     public function complete_registration(Request $request, Doctor $doctor)
     {

@@ -122,25 +122,32 @@ class PricingSeeder extends Seeder
                 "entity_type" => "doctor",
             ],
             [
-                "name" => "اشتراك سنوي اجنبي ممارس مقيم",
+                "name" => "اشتراك سنوي اجنبي ممارس عام مقيم",
                 "doctor_type" => "foreign",
                 "amount" => 50,
                 "type" => "membership",
-                "doctor_rank_id" => 5,
+                "doctor_rank_id" => 7,
+            ],
+            [
+                "name" => "اشتراك سنوي اجنبي طبيب ممارس  مقيم",
+                "doctor_type" => "foreign",
+                "amount" => 50,
+                "type" => "membership",
+                "doctor_rank_id" => 8,
             ],
             [
                 "name" => "اشتراك سنوي اجنبي اخصائي مقيم",
                 "doctor_type" => "foreign",
                 "amount" => 100,
                 "type" => "membership",
-                "doctor_rank_id" => 6,
+                "doctor_rank_id" => 9,
             ],
             [
                 "name" => "اشتراك سنوي اجنبي استشاري مقيم",
                 "doctor_type" => "foreign",
                 "amount" => 120,
                 "type" => "membership",
-                "doctor_rank_id" => 7,
+                "doctor_rank_id" => 10,
             ]
         ];
 
@@ -152,6 +159,9 @@ class PricingSeeder extends Seeder
                     "amount" => 100,
                     "type" => "mail",
                     "doctor_rank_id" => 6,
+                    "file_required" => false,
+                    "file_name" => "ارفاق النموذج ( اختياري )",
+                    'document_type' => 'license',
                 ],
                 [
                     "name" => "تعريف - Certificate / اجنبي مقيم",
@@ -159,6 +169,9 @@ class PricingSeeder extends Seeder
                     "amount" => 100,
                     "type" => "mail",
                     "doctor_rank_id" => 6,
+                    "file_required" => false,
+                    "file_name" => "رسالة عمل صادرة من مدير مستشفى او شؤون العاملين او  الطبية او الادارية والمالية ( غير الزامي )",
+                    'document_type' => 'certificate',
                 ],
                 [
                     "name" => "حسن سيرة وسلوك / اجنبي مقيم",
@@ -166,6 +179,9 @@ class PricingSeeder extends Seeder
                     "amount" => 100,
                     "type" => "mail",
                     "doctor_rank_id" => 6,
+                    "file_required" => false,
+                    "file_name" => "رسالة عمل صادرة من مدير مستشفى او شؤون العاملين او  الطبية او الادارية والمالية ( غير الزامي )",
+                    'document_type' => "good_standing",
                 ],
                 [
                     "name" => "رسالة تحقق بخصوص عمل (تتضمن فترة تدريب) / اجنبي مقيم",
@@ -173,6 +189,9 @@ class PricingSeeder extends Seeder
                     "amount" => 100,
                     "type" => "mail",
                     "doctor_rank_id" => 6,
+                    "file_required" => true,
+                    "file_name" => "رسالة صادرة من القسم او الوحدة يذكر بها الفترة ( من الى ) والقسم",
+                    'document_type' => 'verification_work',
                 ],
                 [
                     "name" => "رسائل الجامعة - University Letters / اجنبي مقيم",
@@ -180,6 +199,9 @@ class PricingSeeder extends Seeder
                     "amount" => 100,
                     "type" => "mail",
                     "doctor_rank_id" => 6,
+                    "file_required" => true,
+                    "file_name" => "ارفاق النموذج",
+                    'document_type' => "university_letters",
                 ],
                 [
                     "name" => "رسالة تحقق من تسجيل اخصائي او استشاري / اجنبي مقيم",
@@ -187,6 +209,9 @@ class PricingSeeder extends Seeder
                     "amount" => 100,
                     "type" => "mail",
                     "doctor_rank_id" => 6,
+                    "file_required" => false,
+                    "file_name" => "ارفاق النموذج ( اختياري )",
+                    'document_type' => 'specialist',
                 ],
                 [
                     "name" => "بريد الكتروني / اجنبي مقيم",
@@ -194,6 +219,15 @@ class PricingSeeder extends Seeder
                     "amount" => 100,
                     "type" => "email",
                     "doctor_rank_id" => 6,
+                ],
+
+                [
+                    'name' => 'سنة ثانية امتياز / اجنبي مقيم',
+                    'doctor_type' => 'foreign',
+                    'amount' => 100,
+                    'type' => 'mail',
+                    'file_name' => 'ارفاق النموذج',
+                    'document_type' => 'internship_second_year',
                 ],
             ];
 
@@ -261,42 +295,65 @@ class PricingSeeder extends Seeder
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "mail",
+                    'document_type' => 'license',
                 ],
                 [
                     "name" => "تعريف - Certificate / ليبي",
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "mail",
+                    "file_name" => "رسالة عمل صادرة من مدير مستشفى او شؤون العاملين او  الطبية او الادارية والمالية ( غير الزامي )",
+                    'document_type' => 'certificate',
                 ],
                 [
                     "name" => "حسن سيرة وسلوك / ليبي",
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "mail",
+                    "file_name" => "رسالة عمل صادرة من مدير مستشفى او شؤون العاملين او  الطبية او الادارية والمالية ( غير الزامي )",
+                    'document_type' => 'good_standing',
                 ],
                 [
                     "name" => "رسالة تحقق بخصوص عمل (تتضمن فترة تدريب) / ليبي",
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "mail",
+                    "file_name" => "رسالة صادرة من القسم او الوحدة يذكر بها الفترة ( من الى ) والقسم",
+                    "file_required" => 1,
+                    'document_type' => 'verification_work',
                 ],
                 [
                     "name" => "رسائل الجامعة - University Letters / ليبي",
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "mail",
+                    "file_required" => true,
+                    "file_name" => "ارفاق النموذج",
+                    'document_type' => "university_letters",
                 ],
                 [
                     "name" => "رسالة تحقق من تسجيل اخصائي او استشاري / ليبي",
                     "doctor_type" => "libyan",
                     "amount" => 50,
                     "type" => "mail",
+                    "file_required" => false,
+                    "file_name" => "ارفاق النموذج ( اختياري )",
+                    'document_type' => 'specialist',
                 ],
                 [
                     'name' => 'بريد الكتروني / ليبي',
                     'doctor_type' => 'libyan',
                     'amount' => 50,
                     'type' => 'email',
+                ],
+
+                [
+                    'name' => 'سنة ثانية امتياز /  ليبي',
+                    'doctor_type' => 'libyan',
+                    'amount' => 50,
+                    'type' => 'mail',
+                    'file_name' => 'ارفاق النموذج',
+                    'document_type' => 'internship_second_year',
                 ],
             ];
 
@@ -313,27 +370,90 @@ class PricingSeeder extends Seeder
                     "entity_type" => "doctor",
                 ],
                 [
-                    "name" => "اشتراك سنوي فلسطيني ممارس",
+                    "name" => "اشتراك سنوي فلسطيني ممارس عام",
                     "doctor_type" => "palestinian",
                     "amount" => 25,
                     "type" => "membership",
-                    "doctor_rank_id" => 12,
+                    "doctor_rank_id" => 14,
+                ],
+                [
+                    "name" => "اشتراك سنوي فلسطيني طبيب ممارس",
+                    "doctor_type" => "palestinian",
+                    "amount" => 25,
+                    "type" => "membership",
+                    "doctor_rank_id" => 15,
                 ],
                 [
                     "name" => "اشتراك سنوي فلسطيني اخصائي",
                     "doctor_type" => "palestinian",
                     "amount" => 25,
                     "type" => "membership",
-                    'doctor_rank_id' => 13,
+                    'doctor_rank_id' => 16,
                 ],
                 [
                     'name' => 'اشتراك سنوي فلسطيني استشاري',
                     'doctor_type' => 'palestinian',
                     'amount' => 60,
                     'type' => 'membership',
-                    'doctor_rank_id' => 14,
+                    'doctor_rank_id' => 17,
                 ]
             ];
+
+
+
+
+
+            $list_of_pricings_visitor = 
+            [
+                [
+                    "name" => "رسوم تسجيل عضوية طبيب زائر أخصائي",
+                    "amount" => 200,
+                    "type" => "membership",
+                    "entity_type" => "doctor",
+                    "doctor_type" => "visitor",
+                    "doctor_rank_id" => 11,
+                ],
+                [
+                    "name" => "رسوم تسجيل عضوية طبيب زائر استشاري",
+                    "amount" => 300,
+                    "type" => "membership",
+                    "entity_type" => "doctor",
+                    "doctor_type" => "visitor",
+                    "doctor_rank_id" => 12,
+                ],
+                [
+                    "name" => "رسوم تسجيل عضوية طبيب زائر استشاري تخصص دقيق",
+                    "amount" => 400,
+                    "type" => "membership",
+                    "entity_type" => "doctor",
+                    "doctor_type" => "visitor",
+                    "doctor_rank_id" => 13,
+                ],
+                [
+                    'name' => 'رسوم اصدار اذن مزاولة طبيب زائر اخصائي',
+                    'amount' => 400,
+                    'type' => 'license',
+                    'entity_type' => 'doctor',
+                    'doctor_type' => 'visitor',
+                    'doctor_rank_id' => 11,
+                ],
+                [
+                    'name' => 'رسوم اصدار اذن مزاولة طبيب زائر استشاري',
+                    'amount' => 500,
+                    'type' => 'license',
+                    'entity_type' => 'doctor',
+                    'doctor_type' => 'visitor',
+                    'doctor_rank_id' => 12,
+                ],
+                [
+                    'name' => 'رسوم اصدار اذن مزاولة طبيب زائر استشاري تخصص دقيق',
+                    'amount' => 600,
+                    'type' => 'license',
+                    'entity_type' => 'doctor',
+                    'doctor_type' => 'visitor',
+                    'doctor_rank_id' => 13,
+                ]
+        ];
 
 
 
@@ -344,6 +464,8 @@ class PricingSeeder extends Seeder
                     "amount" => 50,
                     "type" => "mail",
                     "doctor_rank_id" => 10,
+                    "file_name" => "إرفاق ملف (اختياري)",
+                    'document_type' => 'license',
                 ],
                 [
                     "name" => "تعريف - Certificate / فلسطيني",
@@ -351,6 +473,7 @@ class PricingSeeder extends Seeder
                     "amount" => 50,
                     "type" => "mail",
                     "doctor_rank_id" => 10,
+                    'document_type' => 'certificate',
                 ],
                 [
                     "name" => "حسن سيرة وسلوك / فلسطيني",
@@ -358,30 +481,47 @@ class PricingSeeder extends Seeder
                     "amount" => 50,
                     "type" => "mail",
                     'doctor_rank_id' => 10,
+                    "file_name" => "رسالة عمل صادرة من مدير مستشفى او شؤون العاملين او  الطبية او الادارية والمالية ( غير الزامي )",
+                    'document_type' => 'certificate',
                 ],
                 [
                     'name' => 'رسالة تحقق بخصوص عمل (تتضمن فترة تدريب) / فلسطيني',
                     'doctor_type' => 'palestinian',
                     'amount' => 50,
                     'type' => 'mail',
+                    'file_name' => 'رسالة صادرة من القسم او الوحدة يذكر بها الفترة ( من الى ) والقسم',
+                    'document_type' => 'verification_work',
                 ],
                 [
                     'name' => 'رسائل الجامعة - University Letters / فلسطيني',
                     'doctor_type' => 'palestinian',
                     'amount' => 50,
                     'type' => 'mail',
+                    'file_required' => true,
+                    'file_name' => 'ارفاق النموذج',
+                    'document_type' => "university_letters",
                 ],
                 [
                     'name' => 'رسالة تحقق من تسجيل اخصائي او استشاري / فلسطيني',
                     'doctor_type' => 'palestinian',
                     'amount' => 50,
                     'type' => 'mail',
+                    'document_type' => 'specialist',
                 ],
                 [
                     'name' => 'بريد الكتروني / فلسطيني',
                     'doctor_type' => 'palestinian',
                     'amount' => 50,
                     'type' => 'email',
+                ],
+
+                [
+                    'name' => 'سنة ثانية امتياز / فلسطيني',
+                    'doctor_type' => 'palestinian',
+                    'amount' => 50,
+                    'type' => 'mail',
+                    'file_name' => 'ارفاق النموذج',
+                    'document_type' => 'internship_second_year',
                 ],
             ];
 
@@ -554,6 +694,7 @@ class PricingSeeder extends Seeder
              $list_of_pricings_libyan_mails,
              $list_of_pricings_palestinian,
              $list_of_pricings_palestinian_mails,
+             $list_of_pricings_visitor,
              $licenses,
              $cards
              ) as $pricing)

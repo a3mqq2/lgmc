@@ -31,6 +31,8 @@ return new class extends Migration
                 ->nullOnDelete();
             $table->softDeletes();
             $table->string('category')->nullable();
+            // visitor id on doctors table
+            $table->foreignId('visitor_id')->nullable()->constrained('doctors')->nullOnDelete();
             $table->timestamps();
         });
     }

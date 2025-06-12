@@ -14,7 +14,6 @@ use App\Mail\PaymentSuccess;
 use Illuminate\Http\Request;
 use App\Enums\MembershipStatus;
 use App\Models\MedicalFacility;
-use App\Models\TransactionType;
 use App\Services\InvoiceService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -87,8 +86,7 @@ class InvoiceController extends Controller
     public function create()
     {
         $doctor_ranks = DoctorRank::all();
-        $transaction_types = TransactionType::all();
-        return view('general.invoices.create', compact('doctor_ranks','transaction_types'));
+        return view('general.invoices.create', compact('doctor_ranks'));
     }
 
     /**
@@ -182,9 +180,10 @@ class InvoiceController extends Controller
                  'description' => $description,
                  'amount' => $amount,
                  'status' => InvoiceStatus::unpaid,
-                 'branch_id' => $doctor->branch_id ?? auth()->user()->branch_id ?? 1,
+                 'branch_id' => $doctor->branch_id,
                  'user_id' => auth()->id(),
                  'doctor_id' => $doctor->id,
+                 'category' => 'registration'
              ];
      
              $invoice = Invoice::create($invoiceData);
@@ -331,10 +330,11 @@ class InvoiceController extends Controller
             if ($invoice->status != InvoiceStatus::unpaid) {
                 return redirect()->back()->withErrors(['لا يمكن الاستلام من هذه الفاتورة']);
             }
+
     
          
     
-            $vault = auth()->user()->vault ?? Vault::first();
+            $vault = auth()->user()->vault;
             $this->invoiceService->markAsPaid($vault, $invoice, $request->notes);
     
             DB::commit();

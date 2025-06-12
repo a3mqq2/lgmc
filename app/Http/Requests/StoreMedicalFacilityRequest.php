@@ -22,14 +22,32 @@ class StoreMedicalFacilityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'serial_number'          => 'required',
             'name'                   => 'required|string|max:255',
-            'medical_facility_type_id' => 'required|exists:medical_facility_types,id',
+            'type'         => 'required|in:private_clinic,medical_services',
             'address'                => 'required|string|max:255',
             'phone_number'           => 'required|string|digits:10',
-            'documents'              => 'nullable',
-            'branch_id'              => 'required|exists:branches,id',
-            'manager_id'             => 'nullable',
+            'manager_id'             => 'required',
+            'last_issued_date' => 'nullable|date',
+            'commercial_number' => 'required|string|max:255',
         ];
     }
+
+    /**
+     * Get custom error messages for the validation rules.
+     *
+     * @return array<string, string>
+     */
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'اسم المنشأة الطبية مطلوب.',
+            'facility_type.required' => 'نوع المنشأة الطبية مطلوب.',
+            'address.required' => 'العنوان مطلوب.',
+            'phone_number.required' => 'رقم الهاتف مطلوب.',
+            'branch_id.required' => 'الفرع مطلوب.',
+            'manager_id.required' => 'مدير المنشأة الطبية مطلوب.',
+        ];
+    }
+
 }

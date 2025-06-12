@@ -31,7 +31,7 @@
 {{-- doctor mails --}}
 
 
-@if(auth()->user()->permissions()->where('name', 'doctor-mail')->count())
+@if(auth()->user()->permissions()->where('name', 'doctor-mails')->count())
 <li class="nav-item">
     <a class="nav-link menu-link" data-bs-target="#doctor_mails" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-file"></i>
@@ -58,7 +58,7 @@
 <li class="nav-item">
     <a class="nav-link menu-link" data-bs-toggle="collapse" data-bs-target="#emails" role="button" aria-expanded="false" aria-controls="emails">
         <i class="fa fa-envelope"></i>
-        <span data-key="t-layouts">البريد الإلكترونية</span>
+        <span data-key="t-layouts"> قائمة البريد الالكتروني </span>
     </a>
     <div class="collapse menu-dropdown" id="emails">
         <ul class="nav nav-sm flex-column">
@@ -77,52 +77,10 @@
 
 
 
-@if(auth()->user()->permissions()->where('name', 'services-pricing')->count())
-<li class="nav-item">
-    <a class="nav-link menu-link" data-bs-target="#pricing_licenses_all" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-        <i class="fa fa-money-bill"></i>
-        <span data-key="t-layouts">تسعير الخدمات</span>
-    </a>
-    <div class="collapse menu-dropdown" id="pricing_licenses_all">
-        <ul class="nav nav-sm flex-column">
-            <li class="nav-item">
-                {{-- <a href="{{ route(get_area_name().'.pricings.create') }}" class="nav-link" data-key="t-horizontal">
-                    إضافة تسعير جديد
-                </a> --}}
-                <a href="{{ route(get_area_name().'.pricings.index') }}" class="nav-link" data-key="t-horizontal">
-                    عرض جميع التسعيرات
-                </a>
-            </li>
-        </ul>
-    </div>
-</li>
-@endif
 
 
 
 
-
-
-@if (auth()->user()->permissions()->where('name', 'doctor-visitors')->count())
-<li class="nav-item">
-    <a class="nav-link menu-link" data-bs-target="#visitor" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-        <i class="fa fa-user-doctor"></i>
-        <span data-key="t-layouts">الاطباء الزوار</span>
-    </a>
-    <div class="collapse menu-dropdown" id="visitor">
-        <ul class="nav nav-sm flex-column">
-            <li class="nav-item">
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'under_approve']) }}" class="nav-link">طلبات الموقع </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'active']) }}" class="nav-link">الاطباء المفعليين</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء منتهي اشتراكهم</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'banned']) }}" class="nav-link">الاطباء الموقوفين</a>
-
-            </li>
-
-        </ul>
-    </div>
-</li>
-@endif
 
 
 
@@ -135,9 +93,10 @@
     <div class="collapse menu-dropdown" id="palestinian">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctors.create', ['type' => "palestinian", 'membership_status' => 'under_approve']) }}" class="nav-link"> اضافة عضو جديد </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'under_approve']) }}" class="nav-link">طلبات الموقع </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'active']) }}" class="nav-link">الاطباء المفعليين</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء المنتهية اشتراكاتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'expired']) }}" class="nav-link">الاطباء المنتهية اشتراكاتهم</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'banned']) }}" class="nav-link">الاطباء الموقوفين</a>
 
             </li>
@@ -160,9 +119,10 @@
     <div class="collapse menu-dropdown" id="doctors">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctors.create', ['type' => "foreign", 'membership_status' => 'under_approve']) }}" class="nav-link"> اضافة عضو جديد </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'under_approve']) }}" class="nav-link">طلبات الموقع </a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'active']) }}" class="nav-link">الاطباء المفعليين</a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'inactive']) }}" class="nav-link">الاطباء المنتهية صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'expired']) }}" class="nav-link">الاطباء المنتهية صلاحيتهم</a>
                 <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'banned']) }}" class="nav-link">الاطباء الموقوفين</a>
 
             </li>
@@ -174,10 +134,33 @@
 
 
 
+@if(auth()->user()->permissions()->where('name','doctor-visitor')->count())
+
+<li class="nav-item">
+    <a class="nav-link menu-link" data-bs-target="#visitors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fa fa-user-doctor"></i>
+        <span data-key="t-layouts">الاطباء الزوار</span>
+    </a>
+    <div class="collapse menu-dropdown" id="visitors">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'under_approve']) }}" class="nav-link">طلبات الموقع </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'active']) }}" class="nav-link">الاطباء المفعليين</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'expired']) }}" class="nav-link">الاطباء المنتهية صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'banned']) }}" class="nav-link">الاطباء الموقوفين</a>
+            </li>
+
+        </ul>
+    </div>
+</li>
+@endif
 
 
 
-{{-- MEDICAL FACILITIES --}}
+
+
+{{-- MEDICAL FACILITIES --}} 
+@if(auth()->user()->permissions()->where('name','manage-medical-facilities')->count())
 
 <li class="nav-item">
     <a class="nav-link menu-link" data-bs-target="#medical-facility" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
@@ -187,13 +170,13 @@
     <div class="collapse menu-dropdown" id="medical-facility">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
-                <a href="{{ route(get_area_name().'.medical-facilities.create') }}" class="nav-link" data-key="t-horizontal">إنشاء مرفق جديد</a>
+                <a href="{{ route(get_area_name().'.medical-facilities.create') }}" class="nav-link" data-key="t-horizontal">إنشاء  منشأة طبية جديدة</a>
                 <a href="{{ route(get_area_name().'.medical-facilities.index') }}" class="nav-link" data-key="t-horizontal">عرض جميع المنشآت طبية</a>
             </li>
         </ul>
     </div>
 </li>
-
+@endif
 
 {{-- BRANCHES (managing branches & reports) --}}
 @if(auth()->user()->permissions()->where('name','manage-branches')->count())
@@ -227,36 +210,10 @@
 </li>
 @endif
 
-{{-- SECURITY LOGS (could be 'manage-staff' or 'manage-all-tickets' or some other permission) --}}
-@if(auth()->user()->permissions()->where('name','logs')->count())
-<li class="nav-item">
-    <a class="nav-link menu-link" data-bs-target="{{ route(get_area_name().'.logs') }}">
-        <i class="fa fa-font-awesome"></i>
-        <span>السجلات الأمنية</span>
-    </a>
-</li>
-@endif
-
-{{-- BLACKLIST --}}
-{{-- @if(auth()->user()->permissions()->where('name','manage-blacklist')->count())
-<li class="nav-item">
-    <a class="nav-link menu-link" data-bs-target="#blacklists" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="blacklists">
-        <i class="fa fa-ban"></i>
-        <span data-key="t-blacklists">البلاك ليست</span>
-    </a>
-    <div class="collapse menu-dropdown" id="blacklists">
-        <ul class="nav nav-sm flex-column">
-            <li class="nav-item">
-                <a href="{{ route(get_area_name().'.blacklists.create') }}" class="nav-link" data-key="t-create-blacklist">إنشاء شخص جديد</a>
-                <a href="{{ route(get_area_name().'.blacklists.index') }}" class="nav-link" data-key="t-view-blacklists">عرض البلاك ليست</a>
-            </li>
-        </ul>
-    </div>
-</li>
-@endif --}}
+ 
 
 {{-- REGISTRATION SETTINGS --}}
-@if(auth()->user()->permissions()->where('name','registration-settings')->count())
+@if(auth()->user()->permissions()->where('name','addons')->count())
 <li class="nav-item">
     <a class="nav-link menu-link" data-bs-target="#settings" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
         <i class="fa fa-cog"></i>
@@ -326,6 +283,17 @@
                     </ul>
                 </div>
             </li>
+
+
+
+            <li class="nav-item">
+                <a href="{{route('admin.signatures.index')}}" class="nav-link menu-link" aria-controls="sidebarLayouts">
+                    <i class="fa fa-signature"></i>
+                    <span data-key="t-layouts"> التوقيعات </span>
+                </a>
+            </li>
+
+
 
             {{-- File Types --}}
             {{-- <li class="nav-item">

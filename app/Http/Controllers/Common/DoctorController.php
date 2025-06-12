@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Common;
-use Carbon\Carbon;
+use ZipArchive;
 
+use Carbon\Carbon;
 use App\Models\Log;
 use App\Models\User;
 use App\Models\Vault;
@@ -16,10 +17,13 @@ use App\Models\Specialty;
 use App\Models\DoctorRank;
 use PhpParser\Comment\Doc;
 use App\Mail\FinalApproval;
+use App\Mail\FirstApproval;
+use App\Models\Institution;
 use App\Models\InvoiceItem;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Imports\DoctorsImport;
+use App\Models\MedicalFacility;
 use App\Services\DoctorService;
 use Illuminate\Support\Facades\DB;
 use App\Imports\DoctorsSheetImport;
@@ -27,11 +31,11 @@ use App\Mail\RegisterUnderEditMail;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreDoctorRequest;
 use App\Http\Requests\UpdateDoctorRequest;
-use App\Models\Institution;
-use App\Models\MedicalFacility;
-use App\Mail\FirstApproval;
+use App\Models\DoctorMail;
+use App\Models\DoctorMailService;
 
 class DoctorController extends Controller
 {
@@ -165,17 +169,20 @@ class DoctorController extends Controller
     }
 
 
-    public function ban(Doctor $doctor)
-    {
+    public function ban(Request $request, Doctor $doctor)
+    {   
 
+
+       
         // Check if the doctor is currently banned
         if ($doctor->membership_status->value === 'banned') {
             // ✅ UNBAN LOGIC
 
 
-            $newStatus = $doctor->membership_expiration_date && $doctor->membership_expiration_date > now() ? 'active' : 'inactive';
-    
-            $doctor->update(['membership_status' => $newStatus]);
+
+            $newStatus = $doctor->membership_expiration_date && $doctor->membership_expiration_date > now() ? 'active' : 'expired';
+            
+            $doctor->update(['membership_status' => $newStatus, 'ban_reason' => null]);
     
             // Log the unban action
             \App\Models\Log::create([
@@ -188,8 +195,8 @@ class DoctorController extends Controller
             ]);
     
             // ✅ If membership expired, create an invoice for renewal
-            if ($newStatus === 'inactive') {
-                $this->doctorService->createInvoice($doctor);
+            if ($newStatus === 'expired') {
+
             }
     
             return redirect()->back()->with('success', 'تم رفع الحظر عن الطبيب بنجاح.');
@@ -197,10 +204,14 @@ class DoctorController extends Controller
     
         // ✅ BAN LOGIC
         $doctor->update(['membership_status' => 'banned']);
-    
+        $request->validate([
+            'ban_reason' => "required",
+        ]); 
+        $doctor->update(['ban_reason' => $request->ban_reason]);
+
         foreach($doctor->licenses as $licence)
         {
-            $licence->status = "revoked";
+            $licence->status = "banned";
             $licence->save();
         }
 
@@ -270,7 +281,10 @@ class DoctorController extends Controller
     {
         $request->validate([
             "final_status" => "required|in:under_edit,approved",
-            'edit_note' => "required_if:final_status,==,under_edit"
+            'edit_note' => "required_if:final_status,==,under_edit",
+            // visit from and visit to are required when doctor type is visitor
+            'visit_from' => 'nullable|date',
+            'visit_to' => 'nullable|date',
         ]);
 
 
@@ -282,7 +296,11 @@ class DoctorController extends Controller
                 $doctor->edit_note = $request->edit_note;
                 $doctor->save();
 
-                Mail::to($doctor->email)->send(new RegisterUnderEditMail($doctor));
+                try {
+                    Mail::to($doctor->email)->send(new RegisterUnderEditMail($doctor));
+                } catch (\Exception $e) {
+                    // Log the error or handle it as needed
+                }
 
 
 
@@ -293,13 +311,20 @@ class DoctorController extends Controller
                 if($request->is_paid)
                 {
                     $doctor->membership_status = "active";
-                    $doctor->setSequentialIndex();
-                    $doctor->makeCode();
+                    if(!$doctor->code)
+                    {
+                        $doctor->setSequentialIndex();
+                        $doctor->makeCode();
+                    }
+                  
                     $doctor->save();
+
                 }
                 $doctor->specialty_1_id = $request->specialty_1_id;
                 $doctor->doctor_rank_id = $request->doctor_rank_id;
                 $doctor->institution_id = $request->institution_id;
+                $doctor->visit_from = $request->visit_from ? Carbon::createFromFormat('Y-m-d', $request->visit_from) : null;
+                $doctor->visit_to = $request->visit_to ? Carbon::createFromFormat('Y-m-d', $request->visit_to) : null;
                 if($request->registered_at)
                 {
                     $doctor->registered_at = Carbon::createFromFormat('Y-m-d', $request->registered_at);
@@ -340,14 +365,14 @@ class DoctorController extends Controller
         // create membership_invoice
         $invoice = new Invoice();
         $invoice->invoice_number = rand(0,999999999);
-        $invoice->description = " فاتورة عضوية طبيب جديد  " . $doctor->name;
+        $invoice->description = " فاتورة عضوية طبيب جديد  " . $doctor->name .  ($doctor->type->value == "visitor" ? "  زائر  " : "") ;
         $invoice->user_id = auth()->id();
         $invoice->amount = 0;
         $invoice->status = "unpaid";
-        $invoice->doctor_id = $doctor->id;
+        $invoice->doctor_id = $doctor->type->value == "visitor" ? $doctor->medicalFacilityWork->manager_id : $doctor->id;
         $invoice->category = "registration";
+        $invoice->visitor_id = $doctor->type->value == "visitor" ? $doctor->id : null;
         $invoice->save();
-
 
         // registeration invoice 
         $pricing_membership = Pricing::where('doctor_type', $doctor->type->value)->where('type','membership')
@@ -362,15 +387,30 @@ class DoctorController extends Controller
 
 
         
-        $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
+        if($doctor->type->value != "visitor")
+        {
+            $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
 
-        $invoice_item = new InvoiceItem();
-        $invoice_item->invoice_id = $invoice->id;
-        $invoice_item->description = $pricing_card_id->name;
-        $invoice_item->amount = $pricing_card_id->amount;
-        $invoice_item->pricing_id = $pricing_card_id->id;
-        $invoice_item->save();
+            $invoice_item = new InvoiceItem();
+            $invoice_item->invoice_id = $invoice->id;
+            $invoice_item->description = $pricing_card_id->name;
+            $invoice_item->amount = $pricing_card_id->amount;
+            $invoice_item->pricing_id = $pricing_card_id->id;
+            $invoice_item->save();
+        }
 
+
+        if($doctor->type->value == "visitor")
+        {
+            $pricing_license = Pricing::where('doctor_type', $doctor->type->value)->where('type','license')->first();
+            $invoice_item = new InvoiceItem();
+            $invoice_item->invoice_id = $invoice->id;
+            $invoice_item->description = $pricing_license->name;
+            $invoice_item->amount = $pricing_license->amount;
+            $invoice_item->pricing_id = $pricing_license->id;
+            $invoice_item->save();
+
+        }
 
         
         $invoice->update([
@@ -378,8 +418,12 @@ class DoctorController extends Controller
         ]);
 
 
-        Mail::to($doctor->email)
-        ->send(new FirstApproval($doctor, $invoice));
+        try {
+            Mail::to($doctor->email)
+            ->send(new FirstApproval($doctor, $invoice));
+        } catch (\Exception $e) {
+            // Log the error or handle it as needed
+        }
 
 
         if($is_paid)
@@ -399,15 +443,40 @@ class DoctorController extends Controller
             $transaction->user_id = auth()->id();
             $transaction->vault_id = $vault->id;
             $transaction->type = "deposit";
-            $transaction->desc = " فاتورة عضوية طبيب جديد  " . $doctor->name . " رقم الفاتورة  " . $invoice->invoice_number;
+            $transaction->desc = " فاتورة عضوية طبيب جديد  " . $doctor->name . " رقم الفاتورة  " . $invoice->id;
             $transaction->branch_id = auth()->user()->branch_id;
             $transaction->balance = $vault->balance;
+            $transaction->financial_category_id = 1;
             $transaction->save();
 
             $doctor->membership_status = "active";
-            $doctor->membership_expiration_date = $doctor->type->value == "foreign" ?   Carbon::now()->addMonths(6) : Carbon::now()->addMonths(12);
+            if($doctor->type->value == "visitor")
+            {
+                $membership_expiration_date = $doctor->visit_to;
+                
+                if(!$doctor->code)
+                {
+                    $doctor->setSequentialIndex();
+                    $doctor->makeCode();
+                }
+
+                // create license
+                $license = new Licence();
+                $license->workin_medical_facility_id  = $doctor->medical_facility_id;
+                $license->doctor_id = $doctor->id;
+                $license->doctor_type = $doctor->type->value;
+                $license->issued_date = $doctor->visit_from;
+                $license->expiry_date = $doctor->visit_to;
+                $license->status = "active";
+                $license->created_by = auth()->id();
+                $license->amount = 0; 
+                $license->save();
+            } else {
+                $membership_expiration_date = $doctor->type->value == "foreign" ?   Carbon::now()->addMonths(6) : Carbon::now()->addMonths(12);
+            }
+
+            $doctor->membership_expiration_date = $membership_expiration_date;
             $doctor->save();
-            
 
         }
 
@@ -488,6 +557,14 @@ class DoctorController extends Controller
         // Doctor rank filter
         if ($request->filled('doctor_rank_id')) {
             $query->whereIn('doctor_rank_id', $request->input('doctor_rank_id'));
+        }
+
+        if($request->filled('medical_facility_id'))
+        {
+            $query->whereHas('licenses', function($q) use ($request) {
+                $q->where('status', 'active');
+                $q->where('medical_facility_id', $request->medical_facility_id);
+            });
         }
         
         // Institution filter
@@ -731,5 +808,207 @@ class DoctorController extends Controller
     {
         $doctors = $this->doctorService->getDoctors(true);
         return view('general.doctors.finance_list', compact('doctors'));
+    }
+
+
+    public function print_membership_form(Doctor $doctor)
+    {
+        return view('general.doctors.membership-form', compact('doctor'));
+    }
+
+
+
+    public function downloadAllFiles(Doctor $doctor)
+    {
+        // التحقق من وجود ملفات
+        if ($doctor->files->count() == 0) {
+            return back()->with('error', 'لا توجد مستندات للتحميل');
+        }
+    
+        // إنشاء اسم فريد للملف المضغوط
+        $zipFileName = 'doctor_' . $doctor->code . '_' . $doctor->name . '_files_' . date('Y-m-d_H-i-s') . '.zip';
+        $zipPath = storage_path('app/temp/' . $zipFileName);
+    
+        // إنشاء المجلد المؤقت إذا لم يكن موجود
+        if (!file_exists(storage_path('app/temp'))) {
+            mkdir(storage_path('app/temp'), 0777, true);
+        }
+    
+        // إنشاء ملف ZIP
+        $zip = new ZipArchive();
+        
+        if ($zip->open($zipPath, ZipArchive::CREATE) === TRUE) {
+            $addedFiles = 0; // عداد للملفات المضافة
+            
+            // إضافة جميع الملفات إلى الملف المضغوط
+            foreach ($doctor->files as $index => $file) {
+                // استخدام Storage::disk('public') للحصول على المسار الصحيح
+                $filePath = Storage::disk('public')->path($file->file_path);
+                
+                if (file_exists($filePath)) {
+                    // إنشاء اسم فريد للملف داخل الـ ZIP
+                    $fileExtension = pathinfo($filePath, PATHINFO_EXTENSION);
+                    $fileNameInZip = ($index + 1) . '_';
+                    
+                    // إضافة نوع الملف إلى الاسم إذا كان موجود
+                    if ($file->fileType) {
+                        $fileNameInZip .= $file->fileType->name . '_';
+                    }
+                    
+                    $fileNameInZip .= $file->file_name;
+                    
+                    // التأكد من أن الاسم فريد
+                    if (!$fileNameInZip) {
+                        $fileNameInZip = ($index + 1) . '_document.' . $fileExtension;
+                    }
+                    
+                    // إضافة الملف إلى الـ ZIP
+                    if ($zip->addFile($filePath, $fileNameInZip)) {
+                        $addedFiles++;
+                    } else {
+                        \Log::error("Failed to add file to ZIP: " . $filePath);
+                    }
+                } else {
+                    \Log::warning("File not found: " . $filePath);
+                }
+            }
+            
+            // إضافة ملف معلومات الطبيب
+            $infoContent = "معلومات الطبيب\n";
+            $infoContent .= "================\n\n";
+            $infoContent .= "كود الطبيب: " . $doctor->code . "\n";
+            $infoContent .= "اسم الطبيب: " . $doctor->name . "\n";
+            $infoContent .= "الاسم بالإنجليزية: " . ($doctor->name_en ?? 'غير محدد') . "\n";
+            $infoContent .= "التخصص: " . ($doctor->specialization ?? 'غير محدد') . "\n";
+            $infoContent .= "الصفة: " . ($doctor->doctor_rank?->name ?? 'غير محدد') . "\n";
+            $infoContent .= "رقم الهاتف: " . $doctor->phone . "\n";
+            $infoContent .= "البريد الإلكتروني: " . $doctor->email . "\n";
+            $infoContent .= "تاريخ التحميل: " . date('Y-m-d H:i:s') . "\n";
+            $infoContent .= "عدد المستندات: " . $doctor->files->count() . "\n";
+            $infoContent .= "عدد الملفات المضافة: " . $addedFiles . "\n\n";
+            $infoContent .= "قائمة المستندات:\n";
+            $infoContent .= "================\n";
+            
+            foreach ($doctor->files as $index => $file) {
+                $infoContent .= ($index + 1) . ". " . $file->file_name;
+                if ($file->fileType) {
+                    $infoContent .= " (" . $file->fileType->name . ")";
+                }
+                $infoContent .= "\n";
+            }
+            
+            $zip->addFromString('معلومات_الطبيب.txt', $infoContent);
+            
+            $zip->close();
+            
+            // التحقق من وجود ملفات في الأرشيف
+            if ($addedFiles == 0) {
+                unlink($zipPath); // حذف الملف المضغوط الفارغ
+                return back()->with('error', 'لم يتم العثور على أي ملفات للتحميل');
+            }
+            
+            // تحميل الملف المضغوط
+            return response()->download($zipPath)->deleteFileAfterSend(true);
+        } else {
+            return back()->with('error', 'فشل في إنشاء الملف المضغوط');
+        }
+    }
+
+
+    public function renewMembership(Doctor $doctor)
+    {
+        try {
+            $this->createInvoice($doctor);
+            $doctor->update([
+                'membership_status' => 'under_payment',
+                'membership_expiration_date' => null,
+            ]);
+            return redirect()->route(get_area_name().'.doctors.show', $doctor)->with('success', 'تم إنشاء فاتورة تجديد الاشتراك بنجاح');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني ' . $e->getMessage() ]);
+        }
+    }
+
+
+    private function createInvoice($doctor)
+    {
+
+            // create membership_invoice
+            $invoice = new Invoice();
+            $invoice->invoice_number = rand(0,999999999);
+            $invoice->description = " فاتورة تجديد اشتراك طبيب   " . $doctor->name;
+            $invoice->user_id = auth()->id();
+            $invoice->amount = 0;
+            $invoice->status = "unpaid";
+            $invoice->doctor_id = $doctor->id;
+            $invoice->category = "registration";
+            $invoice->save();
+
+
+            // registeration invoice 
+            $pricing_membership = Pricing::where('doctor_type', $doctor->type->value)->where('type','membership')
+            ->where('doctor_rank_id', $doctor->doctor_rank_id)->first();
+            
+            $invoice_item = new InvoiceItem();
+            $invoice_item->invoice_id = $invoice->id;
+            $invoice_item->description = $pricing_membership->name;
+            $invoice_item->amount = $pricing_membership->amount;
+            $invoice_item->pricing_id = $pricing_membership->id;
+
+            $invoice_item->save();
+
+
+            $pricing_licence = Pricing::where("doctor_type", $doctor->type->value)
+            ->where('doctor_rank_id', $doctor->doctor_rank_id)->where('type', 'license')
+            ->first();
+
+            $invoice_item = new InvoiceItem();
+            $invoice_item->invoice_id = $invoice->id;
+            $invoice_item->description = $pricing_licence->name;
+            $invoice_item->amount = $pricing_licence->amount;
+            $invoice_item->pricing_id = $pricing_licence->id;
+            $invoice_item->save();
+
+            
+            $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
+
+            $invoice_item = new InvoiceItem();
+            $invoice_item->invoice_id = $invoice->id;
+            $invoice_item->description = $pricing_card_id->name;
+            $invoice_item->amount = $pricing_card_id->amount;
+            $invoice_item->pricing_id = $pricing_card_id->id;
+            $invoice_item->save();
+
+
+            
+            $invoice->update([
+                'amount' => $invoice->items()->sum('amount'),
+            ]);
+       
+    }
+
+
+    public function saveFileToDoctor($id, Request $request)
+    {
+
+        $doctorMail = DoctorMail::find($id);
+        $service = DoctorMailService::find($request->service_id);
+        $doctor = $doctorMail->doctor;
+        
+        $doctor->files()->create([
+            'file_name' => $service->file_name,
+            'file_path' => $service->file_path,
+            'file_type_id' => 55,
+            'order_number' => 9999,
+        ]);
+
+        try {
+            $doctor->save();
+            return redirect()->back()->with('success', 'تم حفظ الملف للطبيب بنجاح');
+        } catch (\Exception $e) {
+            // Log the error or handle it as needed
+            \Log::error("Error saving file to doctor: " . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني ' . $e->getMessage() ]);
+        }
     }
 }

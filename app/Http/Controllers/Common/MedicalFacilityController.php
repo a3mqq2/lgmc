@@ -23,6 +23,7 @@ use App\Mail\MedicalFacilityRejectMail;
 use App\Imports\ImportMedicalFacilities;
 use App\Services\MedicalFacilityService;
 use App\Http\Requests\StoreMedicalFacilityRequest;
+use App\Models\Signature;
 use App\Models\Vault;
 
 class MedicalFacilityController extends Controller
@@ -38,7 +39,7 @@ class MedicalFacilityController extends Controller
     {
         // Retrieve filtered/paginated results from the service
         $medicalFacilities = $this->medicalFacilityService->getAll(
-            $request->only(['q', 'ownership', 'medical_facility_type_id']), 
+            $request->only(['q', 'ownership', 'medical_facility_type_id','membership_status','code']), 
             10
         );
 
@@ -60,9 +61,12 @@ class MedicalFacilityController extends Controller
 
     public function store(StoreMedicalFacilityRequest $request)
     {
-        // Validation is handled by StoreMedicalFacilityRequest
-        $this->medicalFacilityService->create($request->validated());
 
+        try {
+            $this->medicalFacilityService->create($request->validated());
+        } catch(\Exception $e) {
+            return redirect()->back()->withErrors([$e->getMessage()]);
+        }
         
         return redirect()->route(get_area_name().'.medical-facilities.index')
             ->with('success', 'تم إنشاء منشأة طبية جديدة بنجاح.');
@@ -70,16 +74,15 @@ class MedicalFacilityController extends Controller
 
     public function show(MedicalFacility $medicalFacility)
     {
-        return view('general.medical-facilities.show', compact('medicalFacility'));
+        $medicalFacilityFileTypes = FileType::where('type', 'medical_facility')->where('facility_type', (($medicalFacility->type) == "single" ? "private" : "services") )->get();
+        return view('general.medical-facilities.show', compact('medicalFacility','medicalFacilityFileTypes'));
     }
 
     public function edit($id)
     {
         $medicalFacilityTypes = MedicalFacilityType::all();
         $file_types = FileType::where('type', 'medical_facility')->where('for_registration', 1)->get();
-        $doctors = auth()->user()->branch ? auth()->user()->branch->doctors()->whereHas('licenses', function($q) {
-            $q->where('status', 'active');
-        }) : Doctor::all();
+        $doctors = Doctor::where('membership_status','active')->where('type', 'libyan')->get();
         $branches = Branch::all();
         $medicalFacility = MedicalFacility::findOrFail($id);
         return view('general.medical-facilities.edit', compact('medicalFacility','medicalFacilityTypes','file_types','doctors','branches'));
@@ -87,17 +90,14 @@ class MedicalFacilityController extends Controller
 
     public function update(Request $request, MedicalFacility $medicalFacility)
     {
-        $request->validate([
-            'serial_number' => "required",
-            'name' => 'required|string|max:255',
-            'medical_facility_type_id' => 'required|exists:medical_facility_types,id',
-            'address' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
-            "commerical_number" => "required",
-            'activity_start_date' => "required",
-        ]);
+      
 
-        $this->medicalFacilityService->update($medicalFacility, $request->all());
+        try {
+            $this->medicalFacilityService->update($medicalFacility, $request->all());
+        } catch(\Exception $e)
+        {
+            return redirect()->back()->withErrors([$e->getMessage()]);
+        }
 
         return redirect()->route(get_area_name().'.medical-facilities.index')
             ->with('success', 'تم تحديث بيانات منشأة طبية بنجاح.');
@@ -155,7 +155,11 @@ class MedicalFacilityController extends Controller
             $medicalFacility->edit_reason = $request->edit_reason;
             $medicalFacility->save();
 
-            Mail::to($medicalFacility->manager->email)->send(new MedicalFacilityRejectMail($medicalFacility, $request->edit_reason));
+            try {
+                Mail::to($medicalFacility->manager->email)->send(new MedicalFacilityRejectMail($medicalFacility, $request->edit_reason));
+            } catch (\Exception $e) {
+                return redirect()->back()->withErrors(['error' => 'فشل في إرسال البريد الإلكتروني: ' . $e->getMessage()]);
+            }
         }
 
 
@@ -257,5 +261,16 @@ class MedicalFacilityController extends Controller
         }
 
         return $invoice;
+    }
+
+    public function print_license(MedicalFacility $medicalFacility)
+    {
+        $license = $medicalFacility->licenses()->latest()->first();
+        if (!$license) {
+            return redirect()->back()->withErrors(['error' => 'لا يوجد رخصة لهذه المنشأة الطبية']);
+        }
+
+        $signature =  Signature::where('is_selected', 1)->where('branch_id', null)->first();
+        return view('general.medical-facilities.license', compact('medicalFacility', 'license','signature'));
     }
 }

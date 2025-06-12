@@ -44,7 +44,7 @@ class MedicalFacility extends Model
 
     public function doctors()
     {
-        return $this->belongsToMany(Doctor::class);
+        return $this->hasMany(Doctor::class,'medical_facility_id');
     }
 
     public function medicalFacilityType() {
@@ -53,7 +53,7 @@ class MedicalFacility extends Model
     
 
     public function files() {
-        return $this->hasMany(MedicalFacilityFile::class);
+        return $this->hasMany(MedicalFacilityFile::class)->orderBy('order_number');
     }
 
     public function manager()
@@ -126,4 +126,35 @@ class MedicalFacility extends Model
             });
         }
 
+    
+        public function getInvoicesAttribute()
+        
+        {
+            return Invoice::where('doctor_id', $this->manager_id)
+                ->whereIn('category', ['medical_facility_registration', 'medical_facility_renew'])
+                ->get();
+        }
+
+
+        public function getVisitorDoctorsAttribute()
+        {
+            return Doctor::where('medical_facility_id', $this->id)
+                ->where('type', 'visitor')
+                ->get();
+        }
+
+
+
+        public function getVisitorDoctorsWithExpiredMembershipMissingReportFile()
+        {
+            $doctors = $this->doctors()
+                ->where('type', 'visitor')
+                ->where('membership_status', 'expired')
+                ->whereDoesntHave('files', function ($query) {
+                    $query->where('file_type_id', 54);
+                })->get();
+
+                return $doctors;
+        }
+        
 }

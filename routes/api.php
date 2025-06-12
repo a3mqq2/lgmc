@@ -29,13 +29,6 @@ Route::get('/doctors/{id}', function (Request $request, $id) {
 
 
 
-Route::get('/emails', function (Request $request) {
-    $search = $request->get('search');
-    return Email::where('email', 'like', "%{$search}%")
-        ->select('email')
-        ->limit(10)
-        ->get();
-});
 
 Route::post('/emails', function (Request $request) {
     $request->validate([
@@ -47,13 +40,33 @@ Route::post('/emails', function (Request $request) {
     ]);
 });
 
+Route::get('/emails', function (Request $request) {
+    return Email::select('id', 'email')
+        ->limit(100)  
+        ->get()
+        ->map(function($email) {
+            return [
+                'id' => $email->id,
+                'email' => $email->email,
+                'label' => $email->email,
+                'value' => $email->email
+            ];
+        });
+});
+
 Route::get('/countries', function (Request $request) {
-    $search = $request->get('search');
-    return Country::where('name', 'like', "%{$search}%")
-        ->where('mailable', 1)
-        ->select('id', 'name')
-        ->limit(10)
-        ->get();
+    return Country::where('mailable', 1)
+        ->select('id', 'country_name_ar')
+        ->limit(200)  
+        ->get()
+        ->map(function($country) {
+            return [
+                'id' => $country->id,
+                'name_ar' => $country->country_name_ar,
+                'label' => $country->country_name_ar,
+                'value' => $country->country_name_ar
+            ];
+        });
 });
 
 Route::get('/pricing/{id}', function ($id) {
@@ -63,7 +76,7 @@ Route::get('/pricing/{id}', function ($id) {
 Route::get('/pricings', function (Request $request) {
     return Pricing::where('type', 'mail')
         ->where('doctor_type', $request->get('doctor_type'))
-        ->select('id', 'name', 'amount')
+        ->select('id', 'name', 'amount','file_required', 'file_name')
         ->get();
 });
 
@@ -74,3 +87,6 @@ Route::post('/doctor-mails', [DoctorMailController::class, 'store'])
 
      Route::get('/get-sub-specialties/{id}', [SpecialtyController::class, 'get_subs']);
      Route::get('file-types', [FileTypeController::class, 'index_api']);
+
+     Route::patch('doctor-mails/{doctorMail}/update', [DoctorMailController::class, 'updateRequest'])->name('doctor-mails.update');
+     Route::get('doctor-mails/{doctorMail}/data', [DoctorMailController::class, 'getDoctorMailData'])->name('doctor-mails.data');

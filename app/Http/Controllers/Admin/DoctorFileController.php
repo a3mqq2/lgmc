@@ -29,11 +29,12 @@ class DoctorFileController extends Controller
      */
     public function create(Doctor $doctor)
     {
-        $fileTypes = FileType::where("type", "doctor")
-            ->where('doctor_type', $doctor->type->value)
-            ->where('for_registration', 1)
-            ->get();
-
+        $fileTypes = FileType::where('type', 'doctor')
+        ->where(function ($query) use ($doctor) {
+            $query->where('doctor_type', $doctor->type->value)
+                  ->orWhereNull('doctor_type');
+        })
+        ->get();
         return view('general.doctor_files.create', compact('doctor', 'fileTypes'));
     }
 
@@ -51,7 +52,7 @@ class DoctorFileController extends Controller
             $file     = $request->file('document');
             $fileName = $file->getClientOriginalName();
             $filePath = $file->storeAs('files', $fileName, 'public');
-
+            $fileType = FileType::findOrFail($request->file_type_id);
             $doctorFile = DoctorFile::create([
                 'doctor_id'    => $doctor->id,
                 'file_name'    => $fileName,
@@ -59,6 +60,7 @@ class DoctorFileController extends Controller
                 "file_type_id" => $request->file_type_id,
                 'file_type'    => $file->getMimeType(),
                 'uploaded_at'  => now(),
+                'order_number' => $fileType->order_number,
             ]);
 
             Log::create([

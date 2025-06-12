@@ -29,13 +29,13 @@ class UpdateDoctorRequest extends FormRequest
             'day' => 'nullable|numeric|min:1|max:31',
             'marital_status' => 'nullable|string|in:single,married',
             'gender' => 'nullable|string|in:male,female',
-            'passport_number' => 'required|string|max:20',
+            'passport_number' => 'nullable|string|max:20',
             'passport_expiration' => 'nullable|date',
             'password' => 'nullable|min:6|confirmed',
             'country_graduation_id' => 'nullable|numeric',
             "graduation_date" => "required",
             'phone' => [
-                'required',
+                'nullable',
                 'regex:/^09[1-9][0-9]{7}$/',
                 function ($attribute, $value, $fail) {
                     if ($this->input('type') === 'libyan') {

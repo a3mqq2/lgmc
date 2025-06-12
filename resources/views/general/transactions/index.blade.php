@@ -2,77 +2,9 @@
 @section('title', 'قائمة المعاملات المالية')
 
 @section('content')
+    {{-- إحصائيات سريعة --}}
+
     <div class="row">
-        {{-- إحصائيات سريعة --}}
-        <div class="col-md-12 mb-4">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="card bg-success text-white">
-                        <div class="card-body text-center">
-                            <i class="fa fa-arrow-down fa-2x mb-2"></i>
-                            <h4>{{ number_format($statistics['total_deposits'], 2) }} د.ل</h4>
-                            <small>إجمالي الإيداعات</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card bg-danger text-white">
-                        <div class="card-body text-center">
-                            <i class="fa fa-arrow-up fa-2x mb-2"></i>
-                            <h4>{{ number_format($statistics['total_withdrawals'], 2) }} د.ل</h4>
-                            <small>إجمالي السحوبات</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card bg-info text-white">
-                        <div class="card-body text-center">
-                            <i class="fa fa-balance-scale fa-2x mb-2"></i>
-                            <h4>{{ number_format($statistics['net_balance'], 2) }} د.ل</h4>
-                            <small>الرصيد الصافي</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card bg-warning text-white">
-                        <div class="card-body text-center">
-                            <i class="fa fa-calculator fa-2x mb-2"></i>
-                            <h4>{{ $statistics['total_transactions'] }}</h4>
-                            <small>إجمالي المعاملات</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- الأزرار الرئيسية --}}
-        <div class="col-md-12 mb-3">
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDepositModal">
-                            <i class="fa fa-plus"></i> إضافة إيداع
-                        </button>
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addWithdrawalModal">
-                            <i class="fa fa-minus"></i> إضافة سحب
-                        </button>
-                    </div>
-                </div>
-                <div class="col-md-4 text-end">
-                    <div class="btn-group">
-                        @if(count(array_filter(request()->except('page'))))
-                        <a  class="btn btn-secondary">
-                            <i class="fa fa-download"></i> تصدير
-                        </a>
-                        <a   class="btn btn-outline-secondary" target="_blank">
-                            <i class="fa fa-print"></i> طباعة
-                        </a>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header bg-primary text-light">
@@ -84,8 +16,8 @@
                             <span class="badge bg-light text-dark me-2">
                                 {{ $transactions->total() }} معاملة
                             </span>
-                            <button type="button" class="btn btn-outline-light btn-sm" data-bs-toggle="collapse" data-bs-target="#filtersCollapse">
-                                <i class="fa fa-filter"></i> الفلاتر
+                            <button type="button" class="btn btn-outline-light btn-sm me-2" data-bs-toggle="modal" data-bs-target="#reportModal">
+                                <i class="fa fa-chart-bar"></i> تقرير مفصل
                             </button>
                         </div>
                     </div>
@@ -143,15 +75,17 @@
                                     </div>
 
                                     <div class="col-md-3">
-                                        <label for="amount_range" class="form-label">
-                                            <i class="fa fa-money-bill"></i> نطاق المبلغ
+                                        <label for="financial_category_id" class="form-label select2">
+                                            <i class="fa fa-tags"></i> التصنيف المالي
                                         </label>
-                                        <select name="amount_range" id="amount_range" class="form-control">
-                                            <option value="">جميع المبالغ</option>
-                                            <option value="0-100" {{ request('amount_range') == '0-100' ? 'selected' : '' }}>أقل من 100 د.ل</option>
-                                            <option value="100-500" {{ request('amount_range') == '100-500' ? 'selected' : '' }}>100 - 500 د.ل</option>
-                                            <option value="500-1000" {{ request('amount_range') == '500-1000' ? 'selected' : '' }}>500 - 1000 د.ل</option>
-                                            <option value="1000+" {{ request('amount_range') == '1000+' ? 'selected' : '' }}>أكثر من 1000 د.ل</option>
+                                        <select name="financial_category_id" id="financial_category_id" class="form-control select2">
+                                            <option value="">جميع التصنيفات</option>
+                                            @foreach ($financialCategories as $category)
+                                                <option value="{{ $category->id }}" {{ $category->id == request('financial_category_id') ? 'selected' : '' }}>
+                                                    <span class="badge bg-{{ $category->type_color }}">{{ $category->type_name }}</span>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
 
@@ -210,12 +144,14 @@
                         <table class="table table-striped table-hover">
                             <thead class="table-dark">
                                 <tr>
-                             
                                     <th>
                                         <i class="fa fa-hashtag"></i> رقم المعاملة
                                     </th>
                                     <th>
                                         <i class="fa fa-vault"></i> الخزينة
+                                    </th>
+                                    <th>
+                                        <i class="fa fa-tags"></i> التصنيف المالي
                                     </th>
                                     <th>
                                         <i class="fa fa-user"></i> المستخدم
@@ -250,6 +186,20 @@
                                             <span class="badge bg-primary">{{ $transaction->vault->name }}</span>
                                             @if($transaction->to_vault_id)
                                                 <br><small class="text-muted">إلى: {{ $transaction->toVault->name }}</small>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($transaction->financialCategory)
+                                                <div class="d-flex flex-column">
+                                                    <span class="badge bg-{{ $transaction->financialCategory->type_color }} mb-1">
+                                                        <i class="fa fa-tag me-1"></i>
+                                                        {{ $transaction->financialCategory->name }}
+                                                    </span>
+                                                </div>
+                                            @else
+                                                <span class="badge bg-secondary">
+                                                    <i class="fa fa-minus"></i> غير محدد
+                                                </span>
                                             @endif
                                         </td>
                                         <td>
@@ -291,7 +241,7 @@
                                         </td>
                                         <td>
                                             <span class="badge bg-info">
-                                                {{ number_format($transaction->balance_after ?? 0, 2) }} د.ل
+                                                {{ number_format($transaction->balance ?? 0, 2) }} د.ل
                                             </span>
                                         </td>
                                         <td>
@@ -304,7 +254,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="text-center py-4">
+                                        <td colspan="9" class="text-center py-4">
                                             <div class="empty-state">
                                                 <i class="fa fa-inbox fa-3x text-muted mb-3"></i>
                                                 <h5 class="text-muted">لا توجد معاملات</h5>
@@ -320,27 +270,9 @@
                         </table>
                     </div>
 
-                    {{-- إجراءات جماعية --}}
+                    {{-- الصفحات --}}
                     <div class="row mt-3">
-                        <div class="col-md-6">
-                            <div id="bulkActions" style="display: none;">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-outline-primary" onclick="bulkExport()">
-                                        <i class="fa fa-download"></i> تصدير المحدد
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary" onclick="bulkPrint()">
-                                        <i class="fa fa-print"></i> طباعة المحدد
-                                    </button>
-                                    @if(auth()->user()->can('delete_transactions'))
-                                    <button type="button" class="btn btn-outline-danger" onclick="bulkDelete()">
-                                        <i class="fa fa-trash"></i> حذف المحدد
-                                    </button>
-                                    @endif
-                                </div>
-                                <span id="selectedCount" class="ms-3 text-muted"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             {{ $transactions->appends(request()->query())->links() }}
                         </div>
                     </div>
@@ -349,126 +281,98 @@
         </div>
     </div>
 
-    {{-- مودال إضافة إيداع --}}
-    <div class="modal fade" id="addDepositModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+    {{-- مودال التقرير المفصل --}}
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
-                <form action="{{ route(get_area_name().'.transactions.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="type" value="deposit">
-                    
-                    <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title">
-                            <i class="fa fa-plus"></i> إضافة إيداع
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="depositVault" class="form-label">الخزينة</label>
-                            <select name="vault_id" id="depositVault" class="form-control" required>
-                                <option value="">اختر الخزينة</option>
-                                @foreach($vaults as $vault)
-                                    <option value="{{ $vault->id }}">{{ $vault->name }} - الرصيد: {{ number_format($vault->balance, 2) }} د.ل</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="depositAmount" class="form-label">المبلغ</label>
-                            <input type="number" step="0.01" name="amount" id="depositAmount" class="form-control" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="depositDesc" class="form-label">الوصف</label>
-                            <textarea name="desc" id="depositDesc" class="form-control" rows="3" required></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fa fa-plus"></i> إضافة الإيداع
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- مودال إضافة سحب --}}
-    <div class="modal fade" id="addWithdrawalModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form action="{{ route(get_area_name().'.transactions.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="type" value="withdrawal">
-                    
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title">
-                            <i class="fa fa-minus"></i> إضافة سحب
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="withdrawalVault" class="form-label">الخزينة</label>
-                            <select name="vault_id" id="withdrawalVault" class="form-control" required>
-                                <option value="">اختر الخزينة</option>
-                                @foreach($vaults as $vault)
-                                    <option value="{{ $vault->id }}" data-balance="{{ $vault->balance }}">
-                                        {{ $vault->name }} - الرصيد: {{ number_format($vault->balance, 2) }} د.ل
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="withdrawalAmount" class="form-label">المبلغ</label>
-                            <input type="number" step="0.01" name="amount" id="withdrawalAmount" class="form-control" required>
-                            <div id="balanceWarning" class="text-danger mt-1" style="display: none;">
-                                <i class="fa fa-exclamation-triangle"></i> المبلغ أكبر من الرصيد المتاح
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="reportModalLabel">
+                        <i class="fa fa-chart-bar me-2"></i>
+                        كشف حساب الخزينة المفصل
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route(get_area_name().'.transactions.report') }}" method="GET" target="_blank">
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <label for="report_vault_id" class="form-label">
+                                    <i class="fa fa-vault"></i> اختر الخزينة
+                                </label>
+                                <select name="vault_id" id="report_vault_id" class="form-control select2" required>
+                                    <option value="">حدد خزينة</option>
+                                    @foreach ($vaults as $vault)
+                                        <option value="{{ $vault->id }}" {{ request('vault_id') == $vault->id ? 'selected' : '' }}>
+                                            {{ $vault->name }} - الرصيد: {{ number_format($vault->balance, 2) }} د.ل
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="report_from_date" class="form-label">
+                                    <i class="fa fa-calendar"></i> من تاريخ
+                                </label>
+                                <input type="date" name="from_date" id="report_from_date" class="form-control" 
+                                       value="{{ request('from_date', now()->subMonth()->format('Y-m-d')) }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="report_to_date" class="form-label">
+                                    <i class="fa fa-calendar"></i> إلى تاريخ
+                                </label>
+                                <input type="date" name="to_date" id="report_to_date" class="form-control" 
+                                       value="{{ request('to_date', now()->format('Y-m-d')) }}" required>
                             </div>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label for="withdrawalDesc" class="form-label">الوصف</label>
-                            <textarea name="desc" id="withdrawalDesc" class="form-control" rows="3" required></textarea>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="report_type" class="form-label">
+                                    <i class="fa fa-filter"></i> نوع المعاملة
+                                </label>
+                                <select name="type" id="report_type" class="form-control">
+                                    <option value="">جميع المعاملات</option>
+                                    <option value="deposit">الإيداعات فقط</option>
+                                    <option value="withdrawal">السحوبات فقط</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="report_format" class="form-label">
+                                    <i class="fa fa-file"></i> صيغة التقرير
+                                </label>
+                                <select name="format" id="report_format" class="form-control">
+                                    <option value="view">عرض في المتصفح</option>
+                                    <option value="print">للطباعة</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="border-top pt-3">
+                            <div class="btn-group w-100">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-chart-bar me-2"></i>
+                                    إنشاء التقرير
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="generateQuickReport()">
+                                    <i class="fa fa-eye me-2"></i>
+                                    معاينة سريعة
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    {{-- معاينة سريعة للتقرير --}}
+                    <div id="quickReportPreview" class="mt-4" style="display: none;">
+                        <hr>
+                        <h6><i class="fa fa-eye me-2"></i>معاينة سريعة للتقرير</h6>
+                        <div id="previewContent" class="bg-light p-3 rounded">
+                            {{-- سيتم ملء المحتوى بـ JavaScript --}}
                         </div>
                     </div>
-                    
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                        <button type="submit" class="btn btn-danger" id="submitWithdrawal">
-                            <i class="fa fa-minus"></i> تنفيذ السحب
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    {{-- مودال عرض تفاصيل المعاملة --}}
-    <div class="modal fade" id="viewTransactionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title">
-                        <i class="fa fa-eye"></i> تفاصيل المعاملة
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                
-                <div class="modal-body" id="transactionDetails">
-                    {{-- سيتم ملؤها بـ JavaScript --}}
-                </div>
-                
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                    <button type="button" class="btn btn-primary" onclick="printCurrentTransaction()">
-                        <i class="fa fa-print"></i> طباعة
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fa fa-times me-2"></i>
+                        إغلاق
                     </button>
                 </div>
             </div>
@@ -477,7 +381,7 @@
 
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // تهيئة Select2
@@ -494,239 +398,72 @@ document.addEventListener('DOMContentLoaded', function() {
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-
-    // التحديد الجماعي
-    const selectAll = document.getElementById('selectAll');
-    const checkboxes = document.querySelectorAll('.transaction-checkbox');
-    const bulkActions = document.getElementById('bulkActions');
-    const selectedCount = document.getElementById('selectedCount');
-
-    selectAll.addEventListener('change', function() {
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = this.checked;
-        });
-        updateBulkActions();
-    });
-
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateBulkActions);
-    });
-
-    function updateBulkActions() {
-        const selected = document.querySelectorAll('.transaction-checkbox:checked');
-        if (selected.length > 0) {
-            bulkActions.style.display = 'block';
-            selectedCount.textContent = `تم تحديد ${selected.length} معاملة`;
-        } else {
-            bulkActions.style.display = 'none';
-        }
-    }
-
-    // التحقق من رصيد السحب
-    const withdrawalVault = document.getElementById('withdrawalVault');
-    const withdrawalAmount = document.getElementById('withdrawalAmount');
-    const balanceWarning = document.getElementById('balanceWarning');
-    const submitWithdrawal = document.getElementById('submitWithdrawal');
-
-    function checkBalance() {
-        const selectedVault = withdrawalVault.options[withdrawalVault.selectedIndex];
-        const balance = parseFloat(selectedVault.dataset.balance || 0);
-        const amount = parseFloat(withdrawalAmount.value || 0);
-
-        if (amount > balance) {
-            balanceWarning.style.display = 'block';
-            submitWithdrawal.disabled = true;
-        } else {
-            balanceWarning.style.display = 'none';
-            submitWithdrawal.disabled = false;
-        }
-    }
-
-    if (withdrawalVault && withdrawalAmount) {
-        withdrawalVault.addEventListener('change', checkBalance);
-        withdrawalAmount.addEventListener('input', checkBalance);
-    }
-
-    // عرض تفاصيل المعاملة
-    const viewTransactionModal = document.getElementById('viewTransactionModal');
-    if (viewTransactionModal) {
-        viewTransactionModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const transaction = JSON.parse(button.getAttribute('data-transaction'));
-            
-            const detailsContainer = document.getElementById('transactionDetails');
-            detailsContainer.innerHTML = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <table class="table table-borderless">
-                            <tr>
-                                <th>رقم المعاملة:</th>
-                                <td>#${String(transaction.id).padStart(6, '0')}</td>
-                            </tr>
-                            <tr>
-                                <th>نوع العملية:</th>
-                                <td>
-                                    <span class="badge ${transaction.type === 'deposit' ? 'bg-success' : 'bg-danger'}">
-                                        ${transaction.type === 'deposit' ? 'إيداع' : 'سحب'}
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>المبلغ:</th>
-                                <td class="${transaction.type === 'deposit' ? 'text-success' : 'text-danger'} fw-bold">
-                                    ${parseFloat(transaction.amount).toLocaleString('ar-LY', {minimumFractionDigits: 2})} د.ل
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>الخزينة:</th>
-                                <td>${transaction.vault.name}</td>
-                            </tr>
-                            <tr>
-                                <th>المستخدم:</th>
-                                <td>${transaction.user.name}</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="col-md-6">
-                        <table class="table table-borderless">
-                            <tr>
-                                <th>التاريخ:</th>
-                                <td>${new Date(transaction.created_at).toLocaleDateString('ar-LY')}</td>
-                            </tr>
-                            <tr>
-                                <th>الوقت:</th>
-                                <td>${new Date(transaction.created_at).toLocaleTimeString('ar-LY')}</td>
-                            </tr>
-                            <tr>
-                                <th>الرصيد بعد العملية:</th>
-                                <td class="text-info fw-bold">
-                                    ${parseFloat(transaction.balance_after || 0).toLocaleString('ar-LY', {minimumFractionDigits: 2})} د.ل
-                                </td>
-                            </tr>
-                            ${transaction.reference_id ? `
-                            <tr>
-                                <th>الرقم المرجعي:</th>
-                                <td>${transaction.reference_id}</td>
-                            </tr>` : ''}
-                        </table>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <h6>الوصف:</h6>
-                        <div class="bg-light p-3 rounded">
-                            ${transaction.desc}
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-    }
 });
 
-// دوال JavaScript للإجراءات
-function confirmDelete(transactionId) {
-    if (confirm('هل أنت متأكد من حذف هذه المعاملة؟ هذا الإجراء لا يمكن التراجع عنه.')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `{{ route(get_area_name().'.transactions.destroy', '') }}/${transactionId}`;
-        
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
-        
-        const methodField = document.createElement('input');
-        methodField.type = 'hidden';
-        methodField.name = '_method';
-        methodField.value = 'DELETE';
-        
-        form.appendChild(csrfToken);
-        form.appendChild(methodField);
-        document.body.appendChild(form);
-        form.submit();
-    }
+// طباعة التقرير الحالي
+function printCurrentReport() {
+    const params = new URLSearchParams(window.location.search);
+    params.set('format', 'print');
+    
+    const printUrl = `{{ route(get_area_name().'.transactions.report') }}?${params.toString()}`;
+    window.open(printUrl, '_blank');
 }
 
-function printTransaction(transactionId) {
+// إنشاء معاينة سريعة للتقرير
+function generateQuickReport() {
+    const vaultId = document.getElementById('report_vault_id').value;
+    const fromDate = document.getElementById('report_from_date').value;
+    const toDate = document.getElementById('report_to_date').value;
+    const reportType = document.getElementById('report_type').value;
 
-}
-
-function printCurrentTransaction() {
-    // طباعة المعاملة المعروضة حالياً
-    window.print();
-}
-
-function bulkExport() {
-    const selected = Array.from(document.querySelectorAll('.transaction-checkbox:checked')).map(cb => cb.value);
-    if (selected.length === 0) {
-        alert('يرجى تحديد معاملة واحدة على الأقل');
+    if (!vaultId || !fromDate || !toDate) {
+        alert('يرجى ملء جميع الحقول المطلوبة');
         return;
     }
-    
-    const form = document.createElement('form');
-    form.method = 'POST';
 
+    // إظهار معاينة سريعة
+    const previewDiv = document.getElementById('quickReportPreview');
+    const previewContent = document.getElementById('previewContent');
     
-    const csrfToken = document.createElement('input');
-    csrfToken.type = 'hidden';
-    csrfToken.name = '_token';
-    csrfToken.value = '{{ csrf_token() }}';
-    form.appendChild(csrfToken);
-    
-    selected.forEach(id => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'transaction_ids[]';
-        input.value = id;
-        form.appendChild(input);
-    });
-    
-    document.body.appendChild(form);
-    form.submit();
-}
+    previewContent.innerHTML = `
+        <div class="text-center">
+            <i class="fa fa-spinner fa-spin fa-2x text-primary mb-3"></i>
+            <p>جاري تحضير المعاينة...</p>
+        </div>
+    `;
+    previewDiv.style.display = 'block';
 
-function bulkPrint() {
-    const selected = Array.from(document.querySelectorAll('.transaction-checkbox:checked')).map(cb => cb.value);
-    if (selected.length === 0) {
-        alert('يرجى تحديد معamlة واحدة على الأقل');
-        return;
-    }
-    
-    const params = new URLSearchParams();
-    selected.forEach(id => params.append('transaction_ids[]', id));
-    
-}
-
-function bulkDelete() {
-    const selected = Array.from(document.querySelectorAll('.transaction-checkbox:checked')).map(cb => cb.value);
-    if (selected.length === 0) {
-        alert('يرجى تحديد معاملة واحدة على الأقل');
-        return;
-    }
-    
-    if (confirm(`هل أنت متأكد من حذف ${selected.length} معاملة؟ هذا الإجراء لا يمكن التراجع عنه.`)) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-
+    // محاكاة تحميل البيانات (يجب استبدالها بطلب AJAX حقيقي)
+    setTimeout(() => {
+        const selectedVault = document.querySelector(`#report_vault_id option[value="${vaultId}"]`).textContent;
         
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
-        form.appendChild(csrfToken);
-        
-        selected.forEach(id => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'transaction_ids[]';
-            input.value = id;
-            form.appendChild(input);
-        });
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
+        previewContent.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-borderless table-sm">
+                        <tr>
+                            <th>الخزينة:</th>
+                            <td>${selectedVault}</td>
+                        </tr>
+                        <tr>
+                            <th>الفترة:</th>
+                            <td>من ${fromDate} إلى ${toDate}</td>
+                        </tr>
+                        <tr>
+                            <th>نوع التقرير:</th>
+                            <td>${reportType || 'جميع المعاملات'}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <div class="alert alert-info mb-0">
+                        <i class="fa fa-info-circle me-2"></i>
+                        <strong>ملاحظة:</strong> هذه معاينة سريعة. للحصول على التقرير الكامل، انقر على "إنشاء التقرير".
+                    </div>
+                </div>
+            </div>
+        `;
+    }, 1500);
 }
 
 // تحديث تلقائي للصفحة كل 5 دقائق
@@ -734,7 +471,9 @@ setTimeout(function() {
     location.reload();
 }, 300000);
 </script>
+@endpush
 
+@push('styles')
 <style>
 /* تحسينات CSS */
 .avatar-sm {
@@ -842,6 +581,47 @@ setTimeout(function() {
     font-weight: 600;
 }
 
+/* أنماط التصنيفات المالية */
+.badge.bg-success {
+    background-color: #198754 !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+/* أنماط الإجماليات */
+tfoot tr {
+    background-color: #f8f9fa;
+    border-top: 2px solid #dee2e6;
+}
+
+tfoot td {
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+/* أنماط بطاقات الإحصائيات */
+.card.bg-success .opacity-75 {
+    opacity: 0.75;
+}
+
+.card.bg-danger .opacity-75 {
+    opacity: 0.75;
+}
+
+.card.bg-info .opacity-75 {
+    opacity: 0.75;
+}
+
+.card.bg-warning .opacity-75 {
+    opacity: 0.75;
+}
+
 /* تحسينات الاستجابة */
 @media (max-width: 768px) {
     .btn-group {
@@ -864,6 +644,23 @@ setTimeout(function() {
     .avatar-sm {
         width: 24px;
         height: 24px;
+    }
+    
+    /* إخفاء بعض الأعمدة في الشاشات الصغيرة */
+    .table th:nth-child(4), 
+    .table td:nth-child(4),
+    .table th:nth-child(8), 
+    .table td:nth-child(8) {
+        display: none;
+    }
+
+    /* تحسين بطاقات الإحصائيات للموبايل */
+    .card h4 {
+        font-size: 1.2rem;
+    }
+    
+    .card h6 {
+        font-size: 0.9rem;
     }
 }
 
@@ -889,5 +686,99 @@ setTimeout(function() {
     background-color: rgba(13, 202, 240, 0.1);
     color: #055160;
 }
+
+/* أنماط خاصة بالتصنيفات المالية */
+.financial-category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.financial-category-badge .fa-tag {
+    font-size: 0.8em;
+}
+
+/* تحسين عرض التصنيفات في الجدول */
+.table td .d-flex.flex-column {
+    min-width: 120px;
+}
+
+.table td .badge {
+    white-space: nowrap;
+}
+
+/* تحسين الفلاتر */
+.select2-container .select2-selection--single {
+    height: 38px;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+    line-height: 36px;
+    padding-left: 12px;
+}
+
+/* تحسين المودالات */
+.modal-body .form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.modal-body .form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* أنماط معاينة التقرير */
+#quickReportPreview {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* تحسين أزرار الرأس */
+.card-header .btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* أنماط التحقق من الصحة */
+.form-control:valid {
+    border-color: #198754;
+}
+
+.form-control:invalid {
+    border-color: #dc3545;
+}
+
+/* تحسين شكل الجدول */
+.table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #212529;
+}
+
+/* أنماط الطباعة */
+@media print {
+    .card-header .btn-group,
+    .btn,
+    .modal {
+        display: none !important;
+    }
+    
+    .table {
+        font-size: 12px;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+}
 </style>
-@endsection
+@endpush

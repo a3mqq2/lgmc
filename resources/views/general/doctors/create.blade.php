@@ -15,41 +15,19 @@
     @csrf
 
 {{-- قسم رقم العضوية وتاريخ التجديد - يظهر فقط لفرع معين --}}
-@if(auth()->user()->branch_id == 1)
 <div class="card">
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
                 <label for="">رقم العضوية</label>
-                <input type="number" name="index" value="{{\App\Models\Doctor::max('index') + 1}}" id="" class="form-control" required>
+                <input type="number" name="index" value="{{\App\Models\Doctor::where('type', request('type'))->where('branch_id', auth()->user()->branch_id)->max('index') + 1}}" id="" class="form-control" required>
             </div>
             
-            {{-- خيار الاشتراك الساري --}}
             <div class="col-md-12 mt-2">
-                <label for="">هل له اشتراك ساري؟</label>
-                <select name="has_active_subscription" id="has_active_subscription" class="form-control" required>
-                    <option value="">اختر</option>
-                    <option value="yes" {{ old('has_active_subscription') == 'yes' ? 'selected' : '' }}>نعم</option>
-                    <option value="no" {{ old('has_active_subscription') == 'no' ? 'selected' : '' }}>لا</option>
-                </select>
+                <label for="">تاريخ آخر تجديد</label>
+                <input type="date" name="last_issued_date" value="{{ old('last_issued_date') }}" class="form-control">
             </div>
 
-            {{-- حقول تظهر عند اختيار "نعم" للاشتراك الساري --}}
-            <div id="subscription_fields" style="display: none;">
-                <div class="row">
-                    <div class="col-md-6 mt-2">
-                        <label for="">تاريخ آخر تجديد</label>
-                        <input type="date" name="last_issued_date" value="{{ old('last_issued_date') }}" class="form-control">
-                    </div>
-                    
-                    <div class="col-md-6 mt-2">
-                        <label for="">رقم الإذن</label>
-                        <input type="text" name="license_number" value="{{ old('license_number') }}" class="form-control" placeholder="أدخل رقم الإذن">
-                    </div>
-                </div>
-            </div>
-
-            {{-- رسالة توضيحية عند اختيار "لا" --}}
             <div id="no_subscription_message" class="col-md-12 mt-2" style="display: none;">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
@@ -102,7 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
     toggleFields();
 });
 </script>
-@endif
     <div class="card">
         <div class="card-header bg-primary text-light">
             <h3 class="card-title text-light mb-0">إضافة عضوية جديدة</h3>
@@ -423,6 +400,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     <label> تاريخ الانتساب </label>
                     <input type="date" name="registered_at" id="" class="form-control">
                 </div>
+                @if (get_area_name() == "admin")
+                    <div class="col-md-12 mt-2">
+                        <label>الفرع</label>
+                        <select name="branch_id" class="form-control select2" required>
+                            <option value="">حدد الفرع</option>
+                            @foreach ($branches as $branch)
+                                <option value="{{ $branch->id }}" {{ old('branch_id')==$branch->id?'selected':'' }}>{{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
             </div>
             <input type="hidden" name="type" value="{{request("type")}}">
 

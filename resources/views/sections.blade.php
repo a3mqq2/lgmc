@@ -93,7 +93,7 @@
                                                  
 
 
-                                                 @if(auth()->user()->permissions()->where('name', 'financial-administration')->count() || auth()->user()->permissions()->where('name', 'financial-branch')->count())
+                                                 @if(auth()->user()->permissions()->where('name', 'finance-general')->count() || auth()->user()->permissions()->where('name', 'finance-branch')->count())
                                                      
                                                  <div class="col-md-12  p-2 mt-2" style="border-bottom:1px solid #ddd;">
                                                     <a href="{{route('finance.home')}}">

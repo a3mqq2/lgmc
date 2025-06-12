@@ -2,6 +2,493 @@
 
 @section('styles')
 <style>
+/* Upload Report Modal Styles */
+.upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: #fafafa;
+}
+
+.upload-area:hover {
+    border-color: var(--primary-color);
+    background: #f8f9fa;
+}
+
+.upload-area.dragover {
+    border-color: var(--primary-color);
+    background: rgba(185, 28, 28, 0.05);
+}
+
+.upload-content {
+    padding: 2rem;
+}
+
+.selected-file {
+    border: 1px solid #28a745 !important;
+    background: #f8fff9 !important;
+}
+
+.modal-header.bg-primary {
+    background: linear-gradient(135deg, var(--blood-red) 0%, var(--primary-color) 100%) !important;
+}
+
+#uploadProgress .progress {
+    height: 8px;
+    border-radius: 4px;
+}
+
+#uploadProgress .progress-bar {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    transition: width 0.3s ease;
+}
+
+/* File upload validation styles */
+.upload-area.error {
+    border-color: #dc3545;
+    background: rgba(220, 53, 69, 0.05);
+}
+
+.upload-area.success {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.05);
+}
+
+/* Report upload button styles */
+.btn-upload-report {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: var(--transition);
+}
+
+.btn-upload-report:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    color: white;
+}
+
+/* Missing report indicator */
+.missing-report-indicator {
+    position: relative;
+}
+
+.missing-report-indicator::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: #dc3545;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+</style>
+<style>
+    /* ===== Visitor Cards Styles ===== */
+    .visitor-cards-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .visitor-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        border: 2px solid transparent;
+        transition: var(--transition);
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+    
+    .visitor-card.active {
+        border-color: var(--success-color);
+    }
+    
+    .visitor-card.expired {
+        border-color: var(--danger-color);
+        opacity: 0.9;
+    }
+    
+    .visitor-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--card-shadow-hover);
+    }
+    
+    /* ===== Card Header ===== */
+    .visitor-card-header {
+        padding: 1.25rem 1.5rem;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .visitor-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .visitor-name {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin: 0 0 0.25rem 0;
+        line-height: 1.3;
+    }
+    
+    .visitor-email {
+        font-size: 0.875rem;
+        color: var(--secondary-color);
+        margin: 0;
+    }
+    
+    .visitor-status {
+        flex-shrink: 0;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+        min-width: 80px;
+        justify-content: center;
+    }
+    
+    .status-badge.active {
+        background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+    
+    .status-badge.expired {
+        background: linear-gradient(135deg, var(--danger-color) 0%, #b91c1c 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    }
+    
+    .status-badge.expiring {
+        background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+    }
+    
+    /* ===== Card Body ===== */
+    .visitor-card-body {
+        padding: 1.5rem;
+    }
+    
+    .visitor-details {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .detail-item:last-child {
+        border-bottom: none;
+    }
+    
+    .detail-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--secondary-color);
+        font-weight: 500;
+        flex: 1;
+    }
+    
+    .detail-label i {
+        width: 16px;
+        color: var(--primary-color);
+    }
+    
+    .detail-value {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--primary-dark);
+        text-align: left;
+        max-width: 50%;
+        word-break: break-word;
+    }
+    
+    /* ===== Card Footer ===== */
+    .visitor-card-footer {
+        padding: 1rem 1.5rem;
+        background: #fafafa;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .visitor-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 0.75rem;
+    }
+    
+    .action-btn-mobile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.75rem 0.5rem;
+        border-radius: var(--border-radius-sm);
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        min-height: 60px;
+        justify-content: center;
+    }
+    
+    .action-btn-mobile i {
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .action-btn-mobile.primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        color: white;
+    }
+    
+    .action-btn-mobile.warning {
+        background: linear-gradient(135deg, var(--warning-color), #d97706);
+        color: white;
+    }
+    
+    .action-btn-mobile.success {
+        background: linear-gradient(135deg, var(--success-color), #059669);
+        color: white;
+    }
+    
+    .action-btn-mobile.danger {
+        background: linear-gradient(135deg, var(--danger-color), #b91c1c);
+        color: white;
+    }
+    
+    .action-btn-mobile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: white;
+    }
+    
+    /* ===== Responsive Enhancements ===== */
+    @media (max-width: 576px) {
+        .visitor-card-header {
+            padding: 1rem;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.75rem;
+        }
+    
+        .visitor-status {
+            align-self: center;
+        }
+    
+        .visitor-card-body {
+            padding: 1rem;
+        }
+    
+        .visitor-card-footer {
+            padding: 1rem;
+        }
+    
+        .visitor-actions {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+    
+        .action-btn-mobile {
+            padding: 0.5rem;
+            min-height: 50px;
+            font-size: 0.75rem;
+        }
+    
+        .detail-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+        }
+    
+        .detail-value {
+            max-width: 100%;
+            text-align: right;
+            align-self: flex-end;
+        }
+    
+        .visitor-name {
+            font-size: 1rem;
+        }
+    
+        .status-badge {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 0.85rem;
+        }
+    }
+    
+    @media (max-width: 375px) {
+        .visitor-actions {
+            grid-template-columns: 1fr;
+        }
+    
+        .action-btn-mobile {
+            flex-direction: row;
+            gap: 0.5rem;
+            justify-content: center;
+            min-height: 44px;
+        }
+    
+        .action-btn-mobile i {
+            margin-bottom: 0;
+            font-size: 1rem;
+        }
+    }
+    
+    /* ===== Animation للكروت ===== */
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .visitor-card {
+        animation: slideInUp 0.5s ease-out;
+    }
+    
+    .visitor-card:nth-child(1) { animation-delay: 0.1s; }
+    .visitor-card:nth-child(2) { animation-delay: 0.2s; }
+    .visitor-card:nth-child(3) { animation-delay: 0.3s; }
+    .visitor-card:nth-child(4) { animation-delay: 0.4s; }
+    .visitor-card:nth-child(5) { animation-delay: 0.5s; }
+    
+    /* ===== Empty State للهواتف ===== */
+    @media (max-width: 768px) {
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2.5rem !important;
+        }
+        
+        .empty-state h4 {
+            font-size: 1.25rem;
+        }
+        
+        .empty-state p {
+            font-size: 1rem;
+        }
+    }
+    </style>
+    
+    <script>
+    function deleteVisitor(visitorId) {
+        if (confirm('هل أنت متأكد من حذف هذا الطبيب الزائر؟')) {
+            // إنشاء نموذج للحذف
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `{{ route('doctor.visitor-doctors.destroy', '') }}/${visitorId}`;
+            
+            // إضافة CSRF token
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            
+            // إضافة method DELETE
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            
+            form.appendChild(csrfToken);
+            form.appendChild(methodInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+    
+    // تحسين الأداء للهواتف
+    document.addEventListener('DOMContentLoaded', function() {
+        // إضافة تأثير اللمس للكروت
+        const visitorCards = document.querySelectorAll('.visitor-card');
+        
+        visitorCards.forEach(card => {
+            card.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            card.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        });
+        
+        // تحسين الأداء عند التمرير
+        let ticking = false;
+        
+        function updateCards() {
+            const cards = document.querySelectorAll('.visitor-card');
+            const scrollTop = window.pageYOffset;
+            
+            cards.forEach((card, index) => {
+                const cardTop = card.offsetTop;
+                const cardHeight = card.offsetHeight;
+                const windowHeight = window.innerHeight;
+                
+                if (scrollTop + windowHeight > cardTop && scrollTop < cardTop + cardHeight) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }
+            });
+            
+            ticking = false;
+        }
+        
+        function requestTick() {
+            if (!ticking) {
+                requestAnimationFrame(updateCards);
+                ticking = true;
+            }
+        }
+        
+        window.addEventListener('scroll', requestTick);
+    });
+    </script>
+<style>
 /* ===== CSS Variables ===== */
 :root {
     --primary-color: #b91c1c;
@@ -283,6 +770,120 @@
 .info-item .info-label i.fa-calendar-alt{background:linear-gradient(135deg,var(--warning-color),#d97706);color:white;}
 .info-item .info-value{font-weight:600;color:#1f2937;}
 
+/* ===== Visitor Doctors Table Enhanced ===== */
+.visitors-table {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+}
+
+.visitors-table thead th {
+    background: linear-gradient(135deg, var(--blood-red) 0%, var(--primary-color) 100%);
+    color: white;
+    font-weight: 600;
+    padding: 1rem 0.75rem;
+    border: none;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.visitors-table tbody tr {
+    border: none;
+    transition: var(--transition);
+}
+
+.visitors-table tbody tr:hover {
+    background: linear-gradient(135deg, #fef2f2 0%, rgba(185, 28, 28, 0.02) 100%);
+}
+
+.visitors-table tbody td {
+    padding: 1rem 0.75rem;
+    border: none;
+    color: var(--secondary-color);
+    text-align: center;
+    vertical-align: middle;
+}
+
+.visitors-table tbody tr:not(:last-child) td {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* ===== Visitor Status Badges ===== */
+.visitor-status-active {
+    background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.375rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.visitor-status-expired {
+    background: linear-gradient(135deg, var(--danger-color) 0%, #b91c1c 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.375rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+}
+
+.visitor-status-expiring {
+    background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0.375rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
+/* ===== Action Buttons ===== */
+.action-btn-group {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.action-btn {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    transition: var(--transition);
+    color: white;
+    font-size: 0.875rem;
+    min-width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: white;
+}
+
+.action-btn.view {
+    background: var(--primary-color);
+}
+
+.action-btn.edit {
+    background: var(--warning-color);
+}
+
+.action-btn.renew {
+    background: var(--info-color);
+}
+
+.action-btn.delete {
+    background: var(--danger-color);
+}
+
 /* ===== Animations ===== */
 @keyframes fadeInUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
 .fade-in-up{animation:fadeInUp 0.6s ease-out;}
@@ -316,8 +917,18 @@
     .status-card img {
         max-width: 100px;
     }
-}
 
+    .visitors-table thead th,
+    .visitors-table tbody td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .action-btn-group {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}
 
 /* ===== Renew Status Card ===== */
 .status-card.renew-card {
@@ -501,7 +1112,7 @@
         @if($facility->renew_number)
             {{-- كرت تجديد يحتاج تعديل --}}
             <div class="status-card warning-card fade-in-up">
-                <img src="{{asset('assets/images/renew_edit.png')}}" width="120">
+                <img src="{{asset('assets/images/under_edit.png')}}" width="120">
                 <h4 class="text-warning">✏️ طلب تجديدك يحتاج تعديل</h4>
                 <p class="text-muted mb-3">
                     تم مراجعة طلب تجديد اشتراك منشأتك الطبية وهناك بعض الملاحظات التي تحتاج للتعديل.
@@ -649,19 +1260,27 @@
     {{-- ===== شريط التابات ===== --}}
     <ul class="nav nav-tabs" id="facilityTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" data-bs-toggle="tab"
+            <button class="nav-link {{!request('visitors') ? "active" : ""}} " data-bs-toggle="tab"
                     data-bs-target="#tab-info" type="button">المعلومات الاساسية</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" data-bs-toggle="tab"
                     data-bs-target="#tab-files" type="button">المستندات</button>
         </li>
+        @if ($facility->membership_status->value == "active")
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {{request('visitors') ? "active" : ""}} " data-bs-toggle="tab"
+                    data-bs-target="#tab-visitors" type="button">
+                <i class="fas fa-user-friends me-1"></i>الأطباء الزوار
+            </button>
+        </li>
+        @endif
     </ul>
 
     <div class="tab-content" id="facilityTabsContent">
 
         {{-- ================= تبويب المعلومات ================= --}}
-        <div class="tab-pane fade show active" id="tab-info">
+        <div class="tab-pane fade show {{!request('visitors') ? "active" : ""}}" id="tab-info">
             <div class="enhanced-card fade-in-up my-3">
                 <div class="card-header d-flex justify-content-between">
                     <span><i class="fas fa-info-circle me-2"></i> بيانات المنشأة الطبية</span>
@@ -741,97 +1360,294 @@
         </div>
 
         {{-- ================= تبويب المستندات ================= --}}
-                        
-                {{-- في قسم تبويب المستندات، استبدل الكود بهذا --}}
-                {{-- ================= تبويب المستندات ================= --}}
-                <div class="tab-pane fade" id="tab-files">
-                    <div class="enhanced-card fade-in-up my-3">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span>
-                                <i class="fas fa-file-alt me-2"></i> المستندات
-                            </span>
-                            {{-- إظهار رقم التجديد إذا كان موجود --}}
-                            @if($facility->renew_number && $statusVal == 'under_edit')
-                                <span class="badge bg-warning text-dark">
-                                    <i class="fas fa-sync-alt me-1"></i>
-                                    طلب تجديد #{{ $facility->renew_number }}
-                                </span>
-                            @endif
-                        </div>
-
-                        <div class="card-body">
-                            @php
-                                // فلترة الملفات حسب renew_number إذا كانت الحالة under_edit وموجود renew_number
-                                $filteredFiles = $facility->files;
-                                if ($facility->renew_number && $statusVal == 'under_edit') {
-                                    $filteredFiles = $facility->files->where('renew_number', $facility->renew_number);
-                                }
-                            @endphp
-                            
-                            @if($facility->renew_number && $statusVal == 'under_edit')
-                                <div class="alert alert-info mb-3">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    <strong>ملاحظة:</strong> يتم عرض المستندات الخاصة بطلب التجديد رقم #{{ $facility->renew_number }} فقط.
-                                </div>
-                            @endif
-
-                            <div class="list-group">
-                                @forelse($filteredFiles as $doc)
-                                    <div class="list-group-item d-flex flex-column flex-md-row
-                                                justify-content-between align-items-start align-items-md-center">
-                                        <div class="flex-grow-1 mb-2 mb-md-0">
-                                            <div class="d-flex align-items-center gap-2 mb-2">
-                                                <strong>{{ $doc->fileType->name }}</strong>
-                                                @if($doc->renew_number)
-                                                    <span class="badge bg-primary text-white small">
-                                                        <i class="fas fa-sync-alt me-1"></i>
-                                                        تجديد #{{ $doc->renew_number }}
-                                                    </span>
-                                                @endif
-                                            </div>
-                                            <a href="{{ Storage::url($doc->file_path) }}"
-                                            target="_blank" class="small">
-                                                عرض الملف <i class="fa fa-eye"></i>
-                                            </a>
-                                            <div class="small text-muted mt-1">
-                                                آخر تعديل: {{ $doc->updated_at->format('Y-m-d H:i') }}
-                                            </div>
-                                            @if($doc->renew_number)
-                                                <div class="small text-primary mt-1">
-                                                    <i class="fas fa-clock me-1"></i>
-                                                    مرفوع لطلب التجديد
-                                                </div>
-                                            @endif
-                                        </div>
-
-                                        @if($isPending)
-                                            <div class="d-flex align-items-center">
-                                                <label class="btn btn-outline-secondary btn-sm mb-0 me-2">
-                                                    <i class="fa fa-upload"></i> تغيير
-                                                    <input type="file"
-                                                        name="files[{{ $doc->id }}]"
-                                                        hidden
-                                                        onchange="this.parentElement.nextElementSibling.textContent = this.files[0] ? this.files[0].name : ''">
-                                                </label>
-                                                <span class="small text-truncate" style="max-width:150px"></span>
-                                            </div>
-                                        @endif
-                                    </div>
-                                @empty
-                                    <div class="list-group-item text-center text-muted">
-                                        @if($facility->renew_number && $statusVal == 'under_edit')
-                                            لا توجد مستندات مرفوعة لطلب التجديد #{{ $facility->renew_number }} حتى الآن.
-                                        @else
-                                            لا توجد مستندات مرفوعة حتى الآن.
-                                        @endif
-                                    </div>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
+        <div class="tab-pane fade" id="tab-files">
+            <div class="enhanced-card fade-in-up my-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-file-alt me-2"></i> المستندات
+                    </span>
+                    {{-- إظهار رقم التجديد إذا كان موجود --}}
+                    @if($facility->renew_number && $statusVal == 'under_edit')
+                        <span class="badge bg-warning text-dark">
+                            <i class="fas fa-sync-alt me-1"></i>
+                            طلب تجديد #{{ $facility->renew_number }}
+                        </span>
+                    @endif
                 </div>
 
-                    </div> {{-- /tab-content --}}
+                <div class="card-body">
+                    @php
+                        // فلترة الملفات حسب renew_number إذا كانت الحالة under_edit وموجود renew_number
+                        $filteredFiles = $facility->files;
+                        if ($facility->renew_number && $statusVal == 'under_edit') {
+                            $filteredFiles = $facility->files->where('renew_number', $facility->renew_number);
+                        }
+                    @endphp
+                    
+                    @if($facility->renew_number && $statusVal == 'under_edit')
+                        <div class="alert alert-info mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>ملاحظة:</strong> يتم عرض المستندات الخاصة بطلب التجديد رقم #{{ $facility->renew_number }} فقط.
+                        </div>
+                    @endif
+
+                    <div class="list-group">
+                        @forelse($filteredFiles as $doc)
+                            <div class="list-group-item d-flex flex-column flex-md-row
+                                        justify-content-between align-items-start align-items-md-center">
+                                <div class="flex-grow-1 mb-2 mb-md-0">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <strong>{{ $doc->fileType->name }}</strong>
+                                        @if($doc->renew_number)
+                                            <span class="badge bg-primary text-white small">
+                                                <i class="fas fa-sync-alt me-1"></i>
+                                                تجديد #{{ $doc->renew_number }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <a href="{{ Storage::url($doc->file_path) }}"
+                                    target="_blank" class="small">
+                                        عرض الملف <i class="fa fa-eye"></i>
+                                    </a>
+
+                                    
+                                    <div class="small text-muted mt-1">
+                                        آخر تعديل: {{ $doc->updated_at->format('Y-m-d H:i') }}
+                                    </div>
+                                    @if($doc->renew_number)
+                                        <div class="small text-primary mt-1">
+                                            <i class="fas fa-clock me-1"></i>
+                                            مرفوع لطلب التجديد
+                                        </div>
+                                    @endif
+                                </div>
+
+                                @if($isPending)
+                                    <div class="d-flex align-items-center">
+                                        <label class="btn btn-outline-secondary btn-sm mb-0 me-2">
+                                            <i class="fa fa-upload"></i> تغيير
+                                            <input type="file"
+                                                name="files[{{ $doc->id }}]"
+                                                hidden
+                                                onchange="this.parentElement.nextElementSibling.textContent = this.files[0] ? this.files[0].name : ''">
+                                        </label>
+                                        <span class="small text-truncate" style="max-width:150px"></span>
+                                    </div>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="list-group-item text-center text-muted">
+                                @if($facility->renew_number && $statusVal == 'under_edit')
+                                    لا توجد مستندات مرفوعة لطلب التجديد #{{ $facility->renew_number }} حتى الآن.
+                                @else
+                                    لا توجد مستندات مرفوعة حتى الآن.
+                                @endif
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade   {{request("visitors") ? "active show" : ""}} " id="tab-visitors">
+            <div class="enhanced-card fade-in-up my-3">
+                <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                    <span>
+                        <i class="fas fa-user-friends me-2"></i> الأطباء الزوار
+                    </span>
+                    <a href="{{ route('doctor.visitor-doctors.create') }}" class="btn-enhanced text-white text-light btn-primary btn-sm w-100 w-md-auto" style="color: #fff!important;">
+                        <i class="fas fa-user-plus me-1"></i>إضافة طبيب زائر جديد
+                    </a>
+                </div>
+        
+                <div class="card-body">
+        
+                    @if($facility->visitor_doctors->count() > 0)
+                        {{-- عرض للشاشات الكبيرة (جدول) --}}
+                        <div class="d-none d-lg-block">
+                            <div class="table-responsive">
+                                <table class="visitors-table table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>اسم الطبيب</th>
+                                            <th>الصفة والتخصص</th>
+                                            <th>الحالة</th>
+                                            <th>فترة الزيارة</th>
+                                            <th>الإجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($facility->visitor_doctors as $visitor)
+                                        @php
+                                            $endDate = \Carbon\Carbon::parse($visitor->visit_to);
+                                            $isActive = $endDate->isFuture();
+                                            $daysLeft = $endDate->diffInDays(now(), false);
+                                            
+                                            // Check if visitor needs report upload
+                                            $needsReport = $visitor->membership_status->value == 'expired' || $endDate->isPast();
+                                            
+                                            // Check if report already exists (assuming file_type_id 54 for visitor report)
+                                            $hasReport = $visitor->files->where('file_type_id', 54)->count() > 0;
+                                            
+                                            $reportRequired = $needsReport && !$hasReport;
+                                        @endphp
+                                            <tr>
+                                                <td><strong>{{ $loop->iteration }}</strong></td>
+                                                <td>
+                                                    <div>
+                                                        <strong>{{ $visitor->name }}</strong>
+                                                    </div>
+                                                    <small class="text-muted">{{ $visitor->email }}</small>
+                                                </td>
+                                                <td>
+                                                    <div>{{ $visitor->doctor_rank->name }}
+                                                    </div>
+                                                    <small class="text-muted">{{ $visitor->specialty1?->name }}
+                                                        @if ($visitor->specialty_2)
+                                                            - {{ $visitor->specialty_2 }}
+                                                        @endif
+                                                    </small>
+                                                </td>
+                                                <td>
+                                                    <span class="badge {{$visitor->membership_status->badgeClass()}} " >
+                                                        {{$visitor->membership_status->label()}}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    @php
+                                                        $endDate = \Carbon\Carbon::parse($visitor->visit_to);
+                                                        $isActive = $endDate->isFuture();
+                                                        $daysLeft = $endDate->diffInDays(now(), false);
+                                                    @endphp
+                                                    <div class="small">
+                                                        <div><strong>من:</strong> {{ date('Y-m-d', strtotime($visitor->visit_from)) }}</div>
+                                                        <div><strong>إلى:</strong> {{ date('Y-m-d', strtotime($visitor->visit_to)) }}</div>
+                                                        @if($isActive)
+                                                            <div class="text-success">{{ abs($daysLeft) }} يوم متبقي</div>
+                                                        @else
+                                                            <div class="text-danger">انتهى منذ {{ $daysLeft }} يوم</div>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="action-btn-group">
+                                                        <a href="{{ route('doctor.visitor-doctors.show', $visitor->id) }}" 
+                                                           class="action-btn view" title="عرض">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        
+                                                    
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+        
+                        {{-- عرض للهواتف والأجهزة اللوحية (كروت) --}}
+                        <div class="d-lg-none">
+                            <div class="visitor-cards-container">
+                                @foreach($facility->visitor_doctors as $visitor)
+                                    @php
+                                        $endDate = \Carbon\Carbon::parse($visitor->visit_end_date);
+                                        $isActive = $endDate->isFuture();
+                                        $daysLeft = $endDate->diffInDays(now(), false);
+                                    @endphp
+                                    <div class="visitor-card {{ $isActive ? 'active' : 'expired' }}" data-visitor-id="{{ $visitor->id }}">
+                                        {{-- رأس الكرت --}}
+                                        <div class="visitor-card-header">
+                                            <div class="visitor-info">
+                                                <h5 class="visitor-name">{{ $visitor->name }}</h5>
+                                                <p class="visitor-email">{{ $visitor->email }}</p>
+                                            </div>
+                                            <div class="visitor-status">
+                                                <span class="badge {{$visitor->membership_status->badgeClass()}}">{{$visitor->membership_status->label()}}</span>
+                                            </div>
+                                        </div>
+        
+                                        {{-- محتوى الكرت --}}
+                                        <div class="visitor-card-body">
+                                            <div class="visitor-details">
+                                                <div class="detail-item">
+                                                    <span class="detail-label">
+                                                        <i class="fas fa-user-tie"></i>
+                                                        الصفة
+                                                    </span>
+                                                    <span class="detail-value">{{ $visitor->doctor_rank->name ?? 'غير محدد' }}</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">
+                                                        <i class="fas fa-stethoscope"></i>
+                                                        التخصص
+                                                    </span>
+                                                    <span class="detail-value">{{ $visitor->specialty1->name }} 
+                                                        @if ($visitor->specialty_2)
+                                                            - {{ $visitor->specialty_2 }}
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                        من تاريخ
+                                                    </span>
+                                                    <span class="detail-value">{{ date('Y-m-d', strtotime($visitor->visit_from)) }}</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">
+                                                        <i class="fas fa-calendar-check"></i>
+                                                        إلى تاريخ
+                                                    </span>
+                                                    <span class="detail-value">{{ date('Y-m-d', strtotime($visitor->visit_to)) }}</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span class="detail-label">
+                                                        <i class="fas fa-hourglass-half"></i>
+                                                        المدة المتبقية
+                                                    </span>
+                                                    <span class="detail-value {{ $isActive ? 'text-success' : 'text-danger' }}">
+                                                        @if($isActive)
+                                                            {{ abs($daysLeft) }} يوم متبقي
+                                                        @else
+                                                            انتهى منذ {{ $daysLeft }} يوم
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+        
+                                        {{-- أسفل الكرت (الإجراءات) --}}
+                                        <div class="visitor-card-footer">
+                                            <div class="visitor-actions">
+                                                <a href="{{ route('doctor.visitor-doctors.show', $visitor->id) }}" 
+                                                   class="action-btn-mobile primary">
+                                                    <i class="fas fa-eye"></i>
+                                                    <span>عرض</span>
+                                                </a>
+                                      
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        <div class="empty-state">
+                            <i class="fas fa-user-friends empty-state-icon"></i>
+                            <h4>لا يوجد أطباء زوار</h4>
+                            <p>لم يتم تسجيل أي أطباء زوار في هذه المنشأة حتى الآن.</p>
+                            <a href="{{ route('doctor.visitor-doctors.create') }}" class="btn-enhanced btn-primary">
+                                <i class="fas fa-user-plus me-2"></i>إضافة أول طبيب زائر
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div> {{-- /tab-content --}}
 
     @if($isPending)
         <div class="text-center my-4">
@@ -846,4 +1662,308 @@
 @endif
 @endisset
 </div>
+<!-- Upload Report Modal -->
+<div class="modal fade" id="uploadReportModal" tabindex="-1" aria-labelledby="uploadReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title text-light" id="uploadReportModalLabel">
+                    <i class="fas fa-file-upload me-2"></i>
+                    رفع تقرير زيارة الطبيب
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form id="uploadReportForm" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <!-- Doctor Info -->
+                    <div class="alert alert-info d-flex align-items-center mb-4">
+                        <i class="fas fa-user-md me-3 fs-4"></i>
+                        <div>
+                            <h6 class="mb-1">معلومات الطبيب الزائر</h6>
+                            <p class="mb-0" id="doctorInfo">اسم الطبيب</p>
+                        </div>
+                    </div>
+
+                    <!-- Upload Area -->
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content text-center p-4">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                            <h5>اسحب وأفلت الملف هنا أو اضغط للاختيار</h5>
+                            <p class="text-muted">صورة من التقرير بعد زيارة الطبيب الزائر</p>
+                            <p class="small text-muted">الملفات المسموحة: PDF, JPG, PNG (الحجم الأقصى: 2MB)</p>
+                            <input type="file" id="reportFile" name="report_file" accept=".pdf,.jpg,.jpeg,.png" hidden>
+                            <input type="hidden" id="visitorId" name="visitor_id">
+                        </div>
+                    </div>
+
+                    <!-- File Preview -->
+                    <div id="filePreview" class="mt-3" style="display: none;">
+                        <div class="selected-file p-3 border rounded bg-light">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-file fa-2x text-success me-3"></i>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1" id="fileName">اسم الملف</h6>
+                                    <small class="text-muted" id="fileSize">حجم الملف</small>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div id="uploadProgress" class="mt-3" style="display: none;">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <small class="text-muted mt-1">جاري رفع الملف...</small>
+                    </div>
+
+                    <!-- Error Messages -->
+                    <div id="uploadErrors" class="alert alert-danger mt-3" style="display: none;"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary" id="uploadBtn" disabled>
+                        <i class="fas fa-upload me-2"></i>رفع التقرير
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+@section('scripts')
+<script>
+// Global variables
+let currentVisitorId = null;
+
+// Open upload modal
+function openUploadModal(visitorId, visitorName, visitFrom, visitTo) {
+    currentVisitorId = visitorId;
+    
+    // Update modal content
+    document.getElementById('visitorId').value = visitorId;
+    document.getElementById('doctorInfo').innerHTML = `
+        <strong>${visitorName}</strong><br>
+        <small class="text-muted">فترة الزيارة: ${visitFrom} إلى ${visitTo}</small>
+    `;
+    
+    // Reset form
+    resetUploadForm();
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('uploadReportModal'));
+    modal.show();
+}
+
+// Reset upload form
+function resetUploadForm() {
+    document.getElementById('uploadReportForm').reset();
+    document.getElementById('filePreview').style.display = 'none';
+    document.getElementById('uploadProgress').style.display = 'none';
+    document.getElementById('uploadErrors').style.display = 'none';
+    document.getElementById('uploadBtn').disabled = true;
+    
+    const uploadArea = document.getElementById('uploadArea');
+    uploadArea.classList.remove('error', 'success', 'dragover');
+}
+
+// File selection handling
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('reportFile');
+    const uploadForm = document.getElementById('uploadReportForm');
+    
+    // Click to select file
+    uploadArea.addEventListener('click', () => fileInput.click());
+    
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelection();
+        }
+    });
+    
+    // File input change
+    fileInput.addEventListener('change', handleFileSelection);
+    
+    // Form submission
+    uploadForm.addEventListener('submit', handleFormSubmission);
+});
+
+// Handle file selection
+function handleFileSelection() {
+    const fileInput = document.getElementById('reportFile');
+    const file = fileInput.files[0];
+    
+    if (!file) return;
+    
+    // Validate file
+    const validationResult = validateFile(file);
+    if (!validationResult.valid) {
+        showError(validationResult.message);
+        return;
+    }
+    
+    // Show file preview
+    showFilePreview(file);
+    document.getElementById('uploadBtn').disabled = false;
+    document.getElementById('uploadArea').classList.add('success');
+}
+
+// Validate file
+function validateFile(file) {
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+    
+    if (file.size > maxSize) {
+        return {
+            valid: false,
+            message: 'حجم الملف يجب أن يكون أقل من 2 ميجابايت'
+        };
+    }
+    
+    if (!allowedTypes.includes(file.type)) {
+        return {
+            valid: false,
+            message: 'نوع الملف غير مدعوم. يرجى اختيار ملف PDF أو صورة (JPG, PNG)'
+        };
+    }
+    
+    return { valid: true };
+}
+
+// Show file preview
+function showFilePreview(file) {
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = formatFileSize(file.size);
+    document.getElementById('filePreview').style.display = 'block';
+    document.getElementById('uploadErrors').style.display = 'none';
+}
+
+// Remove file
+function removeFile() {
+    document.getElementById('reportFile').value = '';
+    document.getElementById('filePreview').style.display = 'none';
+    document.getElementById('uploadBtn').disabled = true;
+    document.getElementById('uploadArea').classList.remove('success', 'error');
+}
+
+// Handle form submission
+async function handleFormSubmission(e) {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    const fileInput = document.getElementById('reportFile');
+    const visitorId = document.getElementById('visitorId').value;
+    
+    if (!fileInput.files[0]) {
+        showError('يرجى اختيار ملف للرفع');
+        return;
+    }
+    
+    formData.append('report_file', fileInput.files[0]);
+    formData.append('visitor_id', visitorId);
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+    
+    try {
+        // Show progress
+        showProgress();
+        
+        const response = await fetch(`/doctor/visitor-doctors/${visitorId}/upload-report`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            // Success
+            showSuccess('تم رفع التقرير بنجاح');
+            setTimeout(() => {
+                location.reload(); // Reload to update the interface
+            }, 1500);
+        } else {
+            // Error
+            showError(result.message || 'حدث خطأ أثناء رفع الملف');
+        }
+    } catch (error) {
+        showError('حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى');
+    } finally {
+        hideProgress();
+    }
+}
+
+// Show progress
+function showProgress() {
+    document.getElementById('uploadProgress').style.display = 'block';
+    document.getElementById('uploadBtn').disabled = true;
+    
+    // Simulate progress
+    let progress = 0;
+    const progressBar = document.querySelector('#uploadProgress .progress-bar');
+    const interval = setInterval(() => {
+        progress += 10;
+        progressBar.style.width = progress + '%';
+        
+        if (progress >= 90) {
+            clearInterval(interval);
+        }
+    }, 100);
+}
+
+// Hide progress
+function hideProgress() {
+    document.getElementById('uploadProgress').style.display = 'none';
+    document.querySelector('#uploadProgress .progress-bar').style.width = '0%';
+    document.getElementById('uploadBtn').disabled = false;
+}
+
+// Show error
+function showError(message) {
+    const errorDiv = document.getElementById('uploadErrors');
+    errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>${message}`;
+    errorDiv.style.display = 'block';
+    document.getElementById('uploadArea').classList.add('error');
+}
+
+// Show success
+function showSuccess(message) {
+    const errorDiv = document.getElementById('uploadErrors');
+    errorDiv.innerHTML = `<i class="fas fa-check-circle me-2"></i>${message}`;
+    errorDiv.className = 'alert alert-success mt-3';
+    errorDiv.style.display = 'block';
+}
+
+// Format file size
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+</script>
 @endsection

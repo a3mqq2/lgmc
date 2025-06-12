@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Common;
 
+use Carbon\Carbon;
 use App\Models\Log;
 use App\Models\User;
 use App\Models\Vault;
 use App\Models\Branch;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use App\Models\TransactionType;
+use App\Models\FinancialCategory;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
@@ -21,16 +22,17 @@ class TransactionController extends Controller
      */
     public function create()
     {
-        $transaction_types = TransactionType::all();
         $branches = Branch::all();
-
+        $financialCategories = FinancialCategory::all();
         $vaults = Vault::query();
-        if (get_area_name() == "user" || get_area_name() == "finance") {
+        if (auth()->user()->branch_id) {
             $vaults->where('branch_id', auth()->user()->branch_id);
+        } else {
+            $vaults->where('branch_id', null);
         }
         $vaults = $vaults->get();
 
-        return view('general.transactions.create', compact('transaction_types', 'branches', 'vaults'));
+        return view('general.transactions.create', compact('branches', 'vaults','financialCategories'));
     }
 
     /**
@@ -43,6 +45,7 @@ class TransactionController extends Controller
             'amount' => 'required|numeric',
             'type' => 'required|in:deposit,withdrawal',
             'vault_id' => 'required|exists:vaults,id',
+            'financial_category_id' => 'required|exists:financial_categories,id',
         ]);
 
         $vault = Vault::findOrFail($request->vault_id);
@@ -98,6 +101,25 @@ class TransactionController extends Controller
             $query->where('type', $request->type);
         }
     
+
+        if($request->filled('financial_category_id'))
+        {
+            $query->where('financial_category_id', $request->financial_category_id);
+        }
+
+        if($request->filled('is_transfered'))
+        {
+            if($request->is_transfered == 1)
+            {
+                $query->whereNotNull('vault_transfer_id');
+            } else {
+                $query->whereNull('vault_transfer_id');
+            }
+        }
+
+
+
+
         // فلاتر التاريخ
         if ($request->filled('from_date')) {
             $query->whereDate('created_at', '>=', $request->from_date);
@@ -144,14 +166,6 @@ class TransactionController extends Controller
             if (auth()->user()->branch_id) {
                 $query->where('branch_id', auth()->user()->branch_id);
             }
-        } elseif (get_area_name() == "admin") {
-            // الأدمن يمكنه رؤية جميع الفروع أو فرع محدد
-            if ($request->filled('branch_id')) {
-                $query->where('branch_id', $request->branch_id);
-            }
-        } else {
-            // المستخدمون العاديون يرون فرعهم فقط
-            $query->where('branch_id', auth()->user()->branch_id);
         }
     
         // فلتر حسب التاريخ المحدد
@@ -206,14 +220,14 @@ class TransactionController extends Controller
     
         // تحميل العلاقات
         $transactions = $query->with(['user:id,name,email', 'vault:id,name,balance'])
-                              ->paginate(20);
+                              ->paginate(100);
     
         // حساب الإحصائيات
         $statistics = $this->calculateStatistics($request);
     
         // الحصول على البيانات الإضافية
         $users = User::select('id', 'name', 'email')
-                     ->when(get_area_name() !== 'admin', function($q) {
+                     ->when(auth()->user()->branch_id, function($q) {
                          return $q->where('branch_id', auth()->user()->branch_id);
                      })
                      ->orderBy('name')
@@ -230,13 +244,17 @@ class TransactionController extends Controller
         if (get_area_name() == 'admin') {
             $branches = Branch::select('id', 'name')->orderBy('name')->get();
         }
+
+
+        $financialCategories = FinancialCategory::all();
     
         return view('general.transactions.index', compact(
             'transactions', 
             'statistics', 
             'users', 
             'vaults', 
-            'branches'
+            'branches',
+            'financialCategories',
         ));
     }
     
@@ -426,4 +444,237 @@ class TransactionController extends Controller
     
         return $query;
     }
+
+
+
+    public function report(Request $request)
+    {
+        $request->validate([
+            "from_date" => "required|date",
+            "to_date" => "required|date",
+            "vault_id" => "nullable|exists:vaults,id",
+            "type" => "nullable|in:deposit,withdrawal,transfer",
+            "format" => "nullable|in:view,pdf,excel,print"
+        ]);
+    
+        $query = Transaction::with(['vault', 'user', 'financialCategory']);
+    
+        // فلترة حسب الخزينة
+        if ($request->vault_id) {
+            $query->where('vault_id', $request->vault_id);
+        }
+    
+        // فلترة حسب نوع المعاملة
+        if ($request->type) {
+            $query->where('type', $request->type);
+        }
+    
+        // فلترة حسب الفرع للمستخدمين العاديين
+        if (get_area_name() == "user") {
+            $query->where('branch_id', auth()->user()->branch_id);
+        }
+    
+        // فلترة حسب التاريخ
+        $from = Carbon::parse($request->from_date)->startOfDay();
+        $to = Carbon::parse($request->to_date)->endOfDay();
+        $query->whereBetween('created_at', [$from, $to]);
+    
+        $transactions = $query->orderBy('created_at', 'desc')->get();
+    
+        // حساب الإجماليات
+        $totalDeposits = $transactions->where('type', 'deposit')->sum('amount');
+        $totalWithdrawals = $transactions->where('type', 'withdrawal')->sum('amount');
+        $netBalance = $totalDeposits - $totalWithdrawals;
+    
+        // معلومات إضافية للتقرير
+        $reportData = [
+            'from_date' => $from,
+            'to_date' => $to,
+            'vault' => $request->vault_id ? Vault::find($request->vault_id) : null,
+            'type_filter' => $request->type,
+            'total_deposits' => $totalDeposits,
+            'total_withdrawals' => $totalWithdrawals,
+            'net_balance' => $netBalance,
+            'transaction_count' => $transactions->count(),
+            'generated_at' => now(),
+            'generated_by' => auth()->user()
+        ];
+    
+        // تحديد نوع العرض
+        $format = $request->get('format', 'view');
+    
+        switch ($format) {
+            case 'pdf':
+                return $this->generatePdfReport($transactions, $reportData);
+                
+            case 'excel':
+                return $this->generateExcelReport($transactions, $reportData);
+                
+            case 'print':
+                return view('general.reports.transactions_print', compact('transactions', 'reportData'));
+                
+            default:
+                return view('general.reports.transactions', compact('transactions', 'reportData'));
+        }
+    }
+    
+    /**
+     * إنشاء تقرير PDF
+     */
+    private function generatePdfReport($transactions, $reportData)
+    {
+        $pdf = Pdf::loadView('general.reports.transactions_pdf', compact('transactions', 'reportData'));
+        
+        $filename = 'transactions_report_' . $reportData['from_date']->format('Y-m-d') . '_to_' . $reportData['to_date']->format('Y-m-d') . '.pdf';
+        
+        return $pdf->download($filename);
+    }
+    
+    /**
+     * إنشاء تقرير Excel
+     */
+    private function generateExcelReport($transactions, $reportData)
+    {
+        $filename = 'transactions_report_' . $reportData['from_date']->format('Y-m-d') . '_to_' . $reportData['to_date']->format('Y-m-d') . '.xlsx';
+        
+        return Excel::download(new TransactionsExport($transactions, $reportData), $filename);
+    }
+    
+    /**
+     * طباعة التقرير
+     */
+    public function reportPrint(Request $request)
+    {
+        // نفس منطق report() ولكن مع عرض للطباعة
+        return $this->report($request->merge(['format' => 'print']));
+    }
+    
+    /**
+     * تصدير المعاملات المحددة
+     */
+    public function export(Request $request)
+    {
+        $request->validate([
+            'transaction_ids' => 'required|array',
+            'transaction_ids.*' => 'exists:transactions,id',
+            'format' => 'required|in:pdf,excel,csv'
+        ]);
+    
+        $transactions = Transaction::with(['vault', 'user', 'financialCategory'])
+            ->whereIn('id', $request->transaction_ids)
+            ->orderBy('created_at', 'desc')
+            ->get();
+    
+        $reportData = [
+            'total_deposits' => $transactions->where('type', 'deposit')->sum('amount'),
+            'total_withdrawals' => $transactions->where('type', 'withdrawal')->sum('amount'),
+            'transaction_count' => $transactions->count(),
+            'generated_at' => now(),
+            'generated_by' => auth()->user(),
+            'export_type' => 'selected_transactions'
+        ];
+    
+        $reportData['net_balance'] = $reportData['total_deposits'] - $reportData['total_withdrawals'];
+    
+        switch ($request->format) {
+            case 'pdf':
+                return $this->generatePdfReport($transactions, $reportData);
+                
+            case 'excel':
+                return $this->generateExcelReport($transactions, $reportData);
+                
+            case 'csv':
+                return $this->generateCsvReport($transactions, $reportData);
+        }
+    }
+    
+    /**
+     * إنشاء تقرير CSV
+     */
+    private function generateCsvReport($transactions, $reportData)
+    {
+        $filename = 'transactions_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+    
+        $callback = function() use ($transactions) {
+            $file = fopen('php://output', 'w');
+            
+            // إضافة BOM للدعم العربي
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // رؤوس الأعمدة
+            fputcsv($file, [
+                'رقم المعاملة',
+                'نوع المعاملة', 
+                'الخزينة',
+                'المستخدم',
+                'التصنيف المالي',
+                'المبلغ',
+                'الوصف',
+                'التاريخ',
+                'الوقت'
+            ]);
+    
+            // البيانات
+            foreach ($transactions as $transaction) {
+                fputcsv($file, [
+                    $transaction->id,
+                    $transaction->type == 'deposit' ? 'إيداع' : 'سحب',
+                    $transaction->vault->name,
+                    $transaction->user->name,
+                    $transaction->financialCategory->name ?? 'غير محدد',
+                    number_format($transaction->amount, 2),
+                    $transaction->desc,
+                    $transaction->created_at->format('Y-m-d'),
+                    $transaction->created_at->format('H:i:s')
+                ]);
+            }
+    
+            fclose($file);
+        };
+    
+        return response()->stream($callback, 200, $headers);
+    }
+    
+    /**
+     * API للحصول على إحصائيات سريعة
+     */
+    public function quickStats(Request $request)
+    {
+        $request->validate([
+            'vault_id' => 'nullable|exists:vaults,id',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date'
+        ]);
+    
+        $query = Transaction::query();
+    
+        if ($request->vault_id) {
+            $query->where('vault_id', $request->vault_id);
+        }
+    
+        if ($request->from_date && $request->to_date) {
+            $from = Carbon::parse($request->from_date)->startOfDay();
+            $to = Carbon::parse($request->to_date)->endOfDay();
+            $query->whereBetween('created_at', [$from, $to]);
+        }
+    
+        if (get_area_name() == "user") {
+            $query->where('branch_id', auth()->user()->branch_id);
+        }
+    
+        $transactions = $query->get();
+    
+        return response()->json([
+            'total_deposits' => $transactions->where('type', 'deposit')->sum('amount'),
+            'total_withdrawals' => $transactions->where('type', 'withdrawal')->sum('amount'),
+            'transaction_count' => $transactions->count(),
+            'net_balance' => $transactions->where('type', 'deposit')->sum('amount') - $transactions->where('type', 'withdrawal')->sum('amount')
+        ]);
+    }
+
 }

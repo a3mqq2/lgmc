@@ -1,29 +1,29 @@
-
 @extends('layouts.' . get_area_name())
 @section('title', 'قائمة الاطباء')
 
 @section('content')
 <div class="row">
+  
 
-    {{-- تقارير مالية للمدير المالي --}}
-    @if (get_area_name() != "finance")
-    {{-- زر التقارير العادية للمناطق الأخرى --}}
-    <div class="col-md-12 mb-3">
-        <button type="button" class="btn btn-primary text-light" data-bs-toggle="modal" data-bs-target="#reportModal">
-            <i class="fa fa-file-alt"></i> <span class="text-light">إنشاء تقرير الأطباء</span>
-        </button>
-    </div>
-    @endif
+
+    <!-- Add this modal to your blade template after the delete modal -->
+
+{{-- button of modal --}}
+
+@if (get_area_name() != "finance")
+<div class="col-md-12 mb-3">
+    <button type="button" class="btn btn-primary text-light" data-bs-toggle="modal" data-bs-target="#reportModal">
+        <i class="fa fa-file-alt"></i> <span class="text-light">إنشاء تقرير الأطباء</span>
+    </button>
+</div>
+@endif
+
+
 
     <div class="col-12">
         <div class="card">
             <div class="card-header bg-primary text-light">
-                <h4 class="card-title">
-                    قائمة الاطباء 
-                    @if(get_area_name() == "finance")
-                        - المالية
-                    @endif
-                </h4>
+                <h4 class="card-title">قائمة الاطباء</h4>
             </div>
             <div class="card-body">
                 <form action="{{ route(get_area_name().'.doctors.index') }}" method="GET">
@@ -40,225 +40,164 @@
                         <input type="hidden" name="type" value="{{request('type')}}">
 
                         <div class="col-md-3">
-                            <label for="email">صفة الطبيب</label>
+                            <label for="email"> صفة الطبيب</label>
                             <select class="form-control" name="doctor_rank_id" id="doctor_rank_id">
                                 <option value="">اختر صفة الطبيب</option>
-                                @foreach (\App\Models\DoctorRank::where('doctor_type', 'libyan' )->get() as $doctorRank)
+                                @foreach ($doctorRanks as $doctorRank)
                                     <option value="{{ $doctorRank->id }}" {{ request()->input('doctor_rank_id') == $doctorRank->id ? 'selected' : '' }}>
                                         {{ $doctorRank->name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
-
-                        {{-- فلاتر مالية إضافية --}}
-                        @if(get_area_name() == "finance")
-                        <div class="col-md-3">
-                            <label for="payment_status">حالة الدفع</label>
-                            <select class="form-control" name="payment_status" id="payment_status">
-                                <option value="">جميع الحالات</option>
-                                <option value="has_unpaid" {{ request()->input('payment_status') == 'has_unpaid' ? 'selected' : '' }}>له مستحقات</option>
-                                <option value="no_dues" {{ request()->input('payment_status') == 'no_dues' ? 'selected' : '' }}>لا توجد مستحقات</option>
-                            </select>
-                        </div>
-                        @endif
                     </div>
-
                     <div class="row mb-3">
                         <div class="col-md-3">
                             <label for="registered_at">تاريخ الانتساب للنقابة</label>
                             <input type="date" lang="ar" dir="rtl" class="form-control date-picker" id="registered_at" name="registered_at" value="{{ request()->input('registered_at') }}">
                         </div>
+                        {{-- <div class="col-md-3">
+                            <label for="">التخصص</label>
+                            <select class="form-control select2" name="specialization" id="specialization">
+                                <option value="">اختر التخصص</option>
+                                @foreach ($specialties as $specialization)
+                                    <option value="{{ $specialization->id }}" {{ request()->input('specialization') == $specialization->id ? 'selected' : '' }}>
+                                        {{ $specialization->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div> --}}
 
-                        @if(get_area_name() == "finance")
-                        {{-- فلاتر مالية إضافية --}}
-                        <div class="col-md-3">
-                            <label for="min_amount">الحد الأدنى للمستحقات</label>
-                            <input type="number" step="0.01" class="form-control" id="min_amount" name="min_amount" placeholder="0.00" value="{{ request()->input('min_amount') }}">
-                        </div>
-                        <div class="col-md-3">
-                            <label for="max_amount">الحد الأقصى للمستحقات</label>
-                            <input type="number" step="0.01" class="form-control" id="max_amount" name="max_amount" placeholder="9999.99" value="{{ request()->input('max_amount') }}">
-                        </div>
-                        @endif
 
-                        @if(get_area_name() != "finance")
                         <div class="col-md-3">
+
                             @if(count(array_filter(request()->except('page')))) 
                             <div class="mb-3">
-                                <a href="{{ route(get_area_name().'.doctors.print_list', request()->all()) }}" class="btn btn-secondary">
+                                {{-- <a href="{{ route(get_area_name().'.doctors.print_list', request()->all()) }}" class="btn btn-secondary">
                                     <i class="fa fa-print"></i> طباعة النتائج
-                                </a>
+                                </a> --}}
                             </div>
-                            @endif
-                        </div>
                         @endif
+                        </div>
                         
-                        <div class="col-md-3 d-block">
+                        <div class="col-md-3">
                             <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-primary">بحث</button>
-                            @if(count(array_filter(request()->except('page'))))
-                            <a href="{{route(get_area_name().'.doctors.print_list', request()->all())}}" class="btn btn-secondary" target="_blank">
-                                <i class="fa fa-print"></i> طباعة التقرير
-                            </a>
-                            @endif
+                            <button type="submit" class="btn btn-primary d-block">بحث</button>
                         </div>
-                       
                     </div>
-
                 </form>
-
-                {{-- إحصائيات سريعة للمدير المالي --}}
-                @if(get_area_name() == "finance")
-                <div class="row mb-4">
-                    <div class="col-md-12">
-                        <div class="alert alert-info">
-                            <div class="row text-center">
-                                <div class="col-md-3">
-                                    <h5 class="mb-1">{{ number_format(\App\Models\Doctor::where('branch_id', auth()->user()->branch_id)->get()->sum(function($doctor) { return $doctor->invoices->where('status', \App\Enums\InvoiceStatus::unpaid)->sum('amount'); }), 2) }} د.ل</h5>
-                                    <small>إجمالي المستحقات</small>
-                                </div>
-                                <div class="col-md-3">
-                                    <h5 class="mb-1">{{ number_format(\App\Models\Doctor::where('branch_id', auth()->user()->branch_id)->get()->sum(function($doctor) { return $doctor->invoices->where('status', \App\Enums\InvoiceStatus::paid)->sum('amount'); }), 2) }} د.ل</h5>
-                                    <small>إجمالي المدفوعات</small>
-                                </div>
-                                <div class="col-md-3">
-                                    <h5 class="mb-1">{{ \App\Models\Doctor::where('branch_id', auth()->user()->branch_id)->get()->filter(function($doctor) { return $doctor->invoices->where('status', \App\Enums\InvoiceStatus::unpaid)->sum('amount') > 0; })->count() }}</h5>
-                                    <small>أطباء لديهم مستحقات</small>
-                                </div>
-                                <div class="col-md-3">
-                                    <h5 class="mb-1">{{ $doctors->count() }}</h5>
-                                    <small>إجمالي الأطباء</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endif
-
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover mb-0">
                         <thead>
                             <tr>
                                 <th class="bg-light">#</th>
                                 <th class="bg-light">كود الطبيب</th>
+                
+
                                 <th class="bg-light">الاسم</th>
                                 <th class="bg-light">رقم الهاتف</th>
-                                <th class="bg-light">الصفة / التخصص</th>
+                                <th class="bg-light"> الصفة / التخصص </th>
 
+                        
                                 @if (request('type') == "visitor")
-                                    <th class="bg-light">تاريخ بدء الزيارة</th>
-                                    <th class="bg-light">تاريخ انتهاء الزيارة</th>
+                                    <th class="bg-light"> تاريخ بدء الزيارة </th>
+                                    <th class="bg-light"> تاريخ انتهاء الزيارة </th>
                                 @endif
 
                                 @if (request('type') == "libyan")
                                 <th class="bg-light">الرقم الوطني</th>
                                 @endif
+                                <th class="bg-light text-dark" >نوع الطبيب</th>
                                 
-                                <th class="bg-light text-dark">نوع الطبيب</th>
+
                                 <th class="bg-light">حالة الاشتراك</th>
 
-                                @if (request('init_approve'))
-                                    <th class="bg-light">تاريخ الزيارة</th>
+                                @if (request('init_approve') )
+                                    <th class="bg-light"> تاريخ الزيارة</th>
                                 @endif
 
+
                                 @if (get_area_name() == "finance")
-                                <th class="bg-danger text-light">المستحقات</th>
-                                <th class="bg-success text-light">المدفوعات</th>
-                                <th class="bg-warning text-light">عدد الفواتير</th>
-                                <th class="bg-info text-light">آخر دفعة</th>
+                                <th class="bg-danger text-light">القيمة المستحقة من الطبيب</th>
+                                <th class="bg-success text-light">القيمة المدفوعة الكلية</th>
                                 @endif
+                              
 
                                 <th class="bg-light">الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($doctors as $doctor)
-                            <tr @if ($doctor->membership_status->value == "banned") class="bg-gradient-danger text-light" @endif>
+                            <tr
+                                @if ($doctor->membership_status->value == "banned")
+                                class="bg-gradient-danger text-light"
+                                @endif
+                            >
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $doctor->code }}</td>
+                                
+
                                 <td>{{ $doctor->name }}</td>
                                 <td>{{ $doctor->phone }}</td>
                                 <td>
-                                    {{ $doctor->doctor_rank->name ?? '-' }}
-                                    {{ $doctor->specialization }}
+                                    {{ $doctor->doctor_rank->name?? '-' }}
+
+                                   {{ $doctor->specialization  }}
                                 </td>
+
+
 
                                 @if (request('type') == "visitor")
                                 <td>{{ $doctor->visit_from }}</td>
                                 <td>{{ $doctor->visit_to }}</td>
+
                                 @endif
 
                                 @if (request('type') == "libyan")
                                 <td>{{ $doctor->national_number }}</td>
                                 @endif
-                                
-                                <td class="{{$doctor->type->badgeClass()}}">
+                                <td class="{{$doctor->type->badgeClass()}}" >
                                     {{ $doctor->type->label() }}
                                 </td>
+                     
 
                                 <td>
-                                    <span class="badge {{$doctor->membership_status->badgeClass()}}">
-                                        {{ $doctor->membership_status->label() }}
-                                    </span>
+                                    <span class="badge {{$doctor->membership_status->badgeClass()}} ">
+                                                {{ $doctor->membership_status->label() }}
+                                            </span>
                                 </td>
+
+
 
                                 @if (request('init_approve'))
-                                    <td>{{$doctor->visiting_date}}</td>
+                                    <td>
+                                        {{$doctor->visiting_date}}
+                                    </td>
                                 @endif
+                                    @if (get_area_name() == "finance")
+                                    <td>
+                                        @php
+                                        $total = $doctor->invoices->where('status', \App\Enums\InvoiceStatus::unpaid)->sum('amount');
+                                        $paid = $doctor->invoices->where('status', \App\Enums\InvoiceStatus::paid)->sum('amount');
+                                        $relief = $doctor->invoices->where('status', \App\Enums\InvoiceStatus::relief)->sum('amount');
+                                        @endphp
 
-                                @if (get_area_name() == "finance")
-                                @php
-                                    $unpaidTotal = $doctor->invoices->where('status', \App\Enums\InvoiceStatus::unpaid)->sum('amount');
-                                    $paidTotal = $doctor->invoices->where('status', \App\Enums\InvoiceStatus::paid)->sum('amount');
-                                    $reliefTotal = $doctor->invoices->where('status', \App\Enums\InvoiceStatus::relief)->sum('amount');
-                                    $totalInvoices = $doctor->invoices->count();
-                                    $lastPayment = $doctor->invoices->where('status', \App\Enums\InvoiceStatus::paid)->sortByDesc('received_at')->first();
-                                @endphp
-                                
-                                <td class="{{ $unpaidTotal > 0 ? 'text-danger fw-bold' : 'text-success' }}">
-                                    {{ number_format($unpaidTotal, 2) }} د.ل
-                                    @if($reliefTotal > 0)
-                                        <br><small class="text-muted">(إعفاء: {{ number_format($reliefTotal, 2) }})</small>
-                                    @endif
-                                </td>
-                                
-                                <td class="text-success fw-bold">
-                                    {{ number_format($paidTotal, 2) }} د.ل
-                                </td>
-                                
-                                <td class="text-center">
-                                    <span class="badge bg-primary">{{ $totalInvoices }}</span>
-                                </td>
-                                
-                                <td class="text-center">
-                                    @if($lastPayment)
-                                        {{ $lastPayment->received_at ? $lastPayment->received_at : '-' }}
-                                        <br><small class="text-muted">{{ number_format($lastPayment->amount, 2) }} د.ل</small>
-                                    @else
-                                        <span class="text-muted">لا توجد دفعات</span>
-                                    @endif
-                                </td>
-                                @endif
+                                        {{ number_format($total, 2) }} د.ل
+                                    </td>
+                                    <td>
+                                        {{ number_format($paid, 2) }} د.ل
+                                    </td>
+                               @endif
+                              
+
 
                                 <td>
-                                    @if (get_area_name() == "finance")
-                                        {{-- أزرار خاصة بالمدير المالي --}}
-                                      
-                                        <div class="btn-group btn-group-sm">
-                                            <a href="{{route(get_area_name().'.invoices.index',['doctor_id' => $doctor->id])}}" class="btn btn-primary" href="">
-                                                <i class="fa fa-file-invoice"></i> عرض الملف المالي
-                                            </a>
-    
-                                            <a class="btn btn-primary" href="{{route(get_area_name().'.invoices.print-list',['doctor_id' => $doctor->id ])}}" target="_blank">
-                                                <i class="fa fa-print"></i> طباعة الملف المالي 
-                                            </a>
-                                        </div>
-                                    @else
-                                        <a href="{{ route(get_area_name() . '.doctors.show', $doctor) }}" class="btn btn-primary btn-sm text-light">
-                                            عرض <i class="fa fa-eye"></i>
-                                        </a>
+
+
+                                    @if (get_area_name() != "finance")
+                                    <a href="{{ route(get_area_name() . '.doctors.show', $doctor) }}" class="btn btn-primary btn-sm text-light">عرض <i class="fa fa-eye"></i></a>
                                     @endif
+
                                 </td>
                             </tr>
                             @endforeach
@@ -271,169 +210,221 @@
     </div>
 </div>
 
-{{-- مودالات خاصة بالمدير المالي --}}
-@if(get_area_name() == "finance")
-
-{{-- مودال إضافة فاتورة يدوية --}}
-<div class="modal fade" id="addManualInvoiceModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{ route('finance.invoices.store') }}" method="POST">
+            <form method="POST" id="deleteForm">
                 @csrf
-                <input type="hidden" name="doctor_id" id="modalDoctorId">
-                
+                @method('DELETE')
                 <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fa fa-plus me-2"></i>
-                        إضافة فاتورة لـ <span id="modalDoctorName"></span>
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="deleteModalLabel">تأكيد الحذف</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="quickDescription" class="form-label">وصف الفاتورة</label>
-                        <textarea name="description" id="quickDescription" class="form-control" rows="3" required></textarea>
-                    </div>
-
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="quickPreviousSwitch">
-                        <label class="form-check-label" for="quickPreviousSwitch">
-                            حساب اشتراكات سابقة
-                        </label>
-                    </div>
-
-                    <div id="quickRankTableContainer" style="display:none" class="mb-3">
-                        <table class="table table-bordered table-sm">
-                            <thead>
-                                <tr>
-                                    <th>الصفة</th>
-                                    <th>من سنة</th>
-                                    <th>إلى سنة</th>
-                                    <th>إجراء</th>
-                                </tr>
-                            </thead>
-                            <tbody id="quickRankTableBody"></tbody>
-                        </table>
-                        <button type="button" id="quickAddRowBtn" class="btn btn-sm btn-outline-primary">
-                            <i class="fa fa-plus"></i> إضافة بند
-                        </button>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="quickAmount" class="form-label">قيمة الفاتورة (د.ل)</label>
-                            <input type="number" step="0.01" name="amount" id="quickAmount" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">معاينة الإجمالي</label>
-                            <div class="form-control bg-light" id="quickTotalPreview">0.00 د.ل</div>
-                        </div>
-                    </div>
+                    هل أنت متأكد أنك تريد حذف هذا الطبيب؟
                 </div>
-                
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-success">إنشاء الفاتورة</button>
+                    <button type="submit" class="btn btn-danger">حذف</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-{{-- مودال التقارير المالية --}}
-<div class="modal fade" id="financialReportModal" tabindex="-1" aria-hidden="true">
+
+
+@if (get_area_name() != "finance")
+
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title">
-                    <i class="fa fa-chart-line"></i> التقارير المالية
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <i class="fa fa-file-invoice-dollar fa-3x text-warning mb-3"></i>
-                                <h6>تقرير المستحقات</h6>
-                                <p class="text-muted">جميع المستحقات المالية للأطباء</p>
-                         
+            <form method="GET" id="reportForm" action="{{route(get_area_name().'.doctors.generate_report')}}"   target="_blank">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title text-light pb-2" id="reportModalLabel">
+                        <i class="fa fa-file-alt"></i> إنشاء تقرير الأطباء
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <!-- Report Type Selection -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">نوع التقرير</h6>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="report_type" id="summary_report" value="summary" checked>
+                                <label class="btn btn-outline-primary" for="summary_report">
+                                    <i class="fa fa-chart-bar"></i> تقرير إجمالي
+                                </label>
+                                
+                                <input type="radio" class="btn-check" name="report_type" id="detailed_report" value="detailed">
+                                <label class="btn btn-outline-primary" for="detailed_report">
+                                    <i class="fa fa-list-alt"></i> تقرير تفصيلي
+                                </label>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <i class="fa fa-money-bill-wave fa-3x text-success mb-3"></i>
-                                <h6>تقرير المدفوعات</h6>
-                                <p class="text-muted">جميع المدفوعات المستلمة</p>
-                                <a href=" " class="btn btn-success" target="_blank">
-                                    <i class="fa fa-download"></i> تحميل
-                                </a>
+
+                    <!-- Filter Options -->
+                    <div class="filter-options">
+                        <h6 class="text-primary mb-3">معايير التقرير</h6>
+                        
+                        <!-- Doctor Rank Filter -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="report_doctor_rank_id" class="form-label">
+                                    <i class="fa fa-user-md"></i> صفة الطبيب
+                                </label>
+                                <select class="form-control select2" name="doctor_rank_id[]" id="report_doctor_rank_id" multiple>
+                                    @foreach ($doctor_ranks as $doctorRank)
+                                        <option value="{{ $doctorRank->id }}">{{ $doctorRank->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Institution Filter -->
+                            <div class="col-md-6">
+                                <label for="report_institution_id" class="form-label">
+                                    <i class="fa fa-hospital"></i> القطاع العام
+                                </label>
+                                <select class="form-control select2" name="institution_id[]" id="report_institution_id" multiple>
+                                    @foreach ($institutions ?? [] as $institution)
+                                        <option value="{{ $institution->id }}">{{ $institution->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
+
+                        <!-- Specialty Filter -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="report_specialty_id" class="form-label">
+                                    <i class="fa fa-stethoscope"></i> التخصص
+                                </label>
+                                <select class="form-control select2" name="specialty_id[]" id="report_specialty_id" multiple>
+                                    @foreach ($specialties as $specialty)
+                                        <option value="{{ $specialty->id }}">{{ $specialty->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Doctor Type Filter -->
+                           @if (get_area_name() == "admin")
+                           <div class="col-md-6">
+                            <label for="report_doctor_type" class="form-label">
+                                <i class="fa fa-flag"></i> نوع الطبيب
+                            </label>
+                            <select class="form-control select2" name="doctor_type[]" id="report_doctor_type" multiple>
+                                <option value="libyan">ليبي</option>
+                                <option value="palestinian">فلسطيني</option>
+                                <option value="foreign">أجنبي</option>
+                                <option value="visitor">زائر</option>
+                            </select>
+                        </div>
+                           @endif
+                        </div>
+
+                        <!-- Registration Date Range -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="fa fa-calendar-alt"></i> تاريخ الانتساب للنقابة
+                                </label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="date" class="form-control" name="registered_from" id="registered_from" placeholder="من تاريخ">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="date" class="form-control" name="registered_to" id="registered_to" placeholder="إلى تاريخ">
+                            </div>
+                        </div>
+
+                        <!-- Membership Expiry Date Range -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="fa fa-clock"></i> تاريخ انتهاء العضوية
+                                </label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="date" class="form-control" name="membership_expired_from" id="membership_expired_from" placeholder="من تاريخ">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="date" class="form-control" name="membership_expired_to" id="membership_expired_to" placeholder="إلى تاريخ">
+                            </div>
+                        </div>
+
+                        <!-- Membership Status Filter -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="report_membership_status" class="form-label">
+                                    <i class="fa fa-user-check"></i> حالة العضوية
+                                </label>
+                                <select class="form-control select2" name="membership_status[]" id="report_membership_status" multiple>
+                                    <option value="active">نشط</option>
+                                    <option value="under_approve"> قيد الموافقة </option>
+                                    <option value="under_edit">قيد التعديل</option>
+                                    <option value="under_payment">قيد الدفع</option>
+                                    <option value="expired">منتهية الصلاحية</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Additional Options for Detailed Report -->
+                        <div id="detailedOptions" style="display: none;">
+                            <h6 class="text-primary mb-3">خيارات التقرير التفصيلي</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="include_photo" id="include_photo">
+                                        <label class="form-check-label" for="include_photo">
+                                            تضمين صور الأطباء
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="include_contact" id="include_contact" checked>
+                                        <label class="form-check-label" for="include_contact">
+                                            تضمين معلومات الاتصال
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="include_financial" id="include_financial">
+                                        <label class="form-check-label" for="include_financial">
+                                            تضمين البيانات المالية
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="include_membership_history" id="include_membership_history">
+                                        <label class="form-check-label" for="include_membership_history">
+                                            تضمين تاريخ العضوية
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Report Format -->
+                        <input type="hidden" name="format" value="print">
+
                     </div>
                 </div>
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <i class="fa fa-chart-pie fa-3x text-info mb-3"></i>
-                                <h6>تقرير شامل</h6>
-                                <p class="text-muted">تقرير مالي شامل بجميع التفاصيل</p>
-                                <a href=" " class="btn btn-info" target="_blank">
-                                    <i class="fa fa-download"></i> تحميل
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <i class="fa fa-calendar-alt fa-3x text-primary mb-3"></i>
-                                <h6>تقرير شهري</h6>
-                                <p class="text-muted">تقرير مالي لشهر محدد</p>
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#monthlyReportModal">
-                                    <i class="fa fa-cog"></i> إعداد
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fa fa-times"></i> إلغاء
+                    </button>
+                    <button type="button" class="btn btn-info" onclick="previewReport()">
+                        <i class="fa fa-eye"></i> معاينة
+                    </button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
-
-{{-- Template للصفوف الجديدة في الفاتورة السريعة --}}
-<div id="quickRowTemplate" style="display: none">
-    <table>
-        <tr>
-            <td>
-                <select name="ranks[]" class="form-control form-control-sm">
-                    <option value="">-- اختر الصفة --</option>
-                    @foreach(App\Models\DoctorRank::all() as $rank)
-                        <option value="{{ $rank->id }}" data-price="{{ optional(App\Models\Pricing::find($rank->id))->amount ?? 0 }}">{{ $rank->name }}</option>
-                    @endforeach
-                </select>
-            </td>
-            <td>
-                <input type="number" name="from_years[]" min="1900" max="2100" class="form-control form-control-sm">
-            </td>
-            <td>
-                <input type="number" name="to_years[]" min="1900" max="2100" class="form-control form-control-sm">
-            </td>
-            <td>
-                <button type="button" class="btn btn-sm btn-outline-danger quick-remove-row">
-                    <i class="fa fa-trash"></i>
-                </button>
-            </td>
-        </tr>
-    </table>
-</div>
-
 @endif
 
 

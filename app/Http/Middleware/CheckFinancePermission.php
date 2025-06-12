@@ -9,7 +9,7 @@ class CheckFinancePermission
 {
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->check() && auth()->user()->hasAnyPermission(['financial-branch', 'financial-administration'])) {
+        if (auth()->check() && auth()->user()->hasAnyPermission(['finance-branch', 'finance-general'])) {
             return $next($request);
         }
 

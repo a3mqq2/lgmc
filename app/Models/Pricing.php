@@ -19,7 +19,10 @@ class Pricing extends Model
         'amount',
         'type',
         'entity_type',
-        'doctor_type'
+        'doctor_type',
+        'file_required',
+        'file_name',
+        'document_type',
     ];
 
     protected $casts = [

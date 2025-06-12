@@ -17,7 +17,7 @@ class Vault extends Model
         'name', // Name of the vault
         'opening_balance', // Opening balance of the vault
         'branch_id', // ID of the branch to which the vault belongs
-        'user_id'
+        'user_id',
     ];
 
     // Relationships
@@ -33,5 +33,8 @@ class Vault extends Model
     }
     // Add other relationships here as needed
 
-    // Methods, scopes, or other customizations can be added here
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }

@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@100..900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
-    <title> طباعة اذن مزاولة رقم : #{{$licence->id}} </title>
+    <title> طباعة اذن مزاولة رقم : #{{$license->id}} </title>
 
 
 </head>
@@ -27,26 +27,26 @@
         // else if it is for clinic 
 
         $file_type = "";
-        if($licence->licensable_type == "App\Models\Doctor") {
-            if($licence->licensable->type == \App\Enums\DoctorType::Libyan->value)
+        if($license->licensable_type == "App\Models\Doctor") {
+            if($license->licensable->type == \App\Enums\DoctorType::Libyan->value)
             {
                 $file_type = "libyan";
             }
 
 
-            if($licence->licensable->type == \App\Enums\DoctorType::Foreign->value)
+            if($license->licensable->type == \App\Enums\DoctorType::Foreign->value)
             {
                 $file_type = "foreign";
             }
 
 
-            if($licence->licensable->type == \App\Enums\DoctorType::Visitor->value)
+            if($license->licensable->type == \App\Enums\DoctorType::Visitor->value)
             {
                 $file_type = "visitor";
             }
 
 
-            if($licence->licensable->type == \App\Enums\DoctorType::Palestinian->value)
+            if($license->licensable->type == \App\Enums\DoctorType::Palestinian->value)
             {
                 $file_type = "foreign";
             }
@@ -67,7 +67,7 @@
 
             <div class="issued-licence-date text-muted">
                 {{-- humman readable --}}
-                <p>تاريخ الاصدار : {{$licence->created_at->format('Y-m-d')}}</p>
+                <p>تاريخ الاصدار : {{$license->created_at->format('Y-m-d')}}</p>
             </div>
 
 
@@ -89,7 +89,7 @@
            top: 120px;bottom:auto;">
                <div class="code">
                    @php
-                   $link = env('APP_URL') . "checker?licence=" . $licence->id;
+                   $link = env('APP_URL') . "checker?licence=" . $license->id;
                $qrCode = DNS2D::getBarcodePNG($link, 'QRCODE', 5, 5);
                @endphp
                <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 80px; height: 80px;" />
@@ -101,7 +101,7 @@
 
 
                 <div class="branch-sett">
-                    <h6 class="font-weight-bold"><strong>وبالإطلاع علـى سجل العضوية لنقابة أطباء {{ $licence->licensable->branch->name }}</strong></h6>
+                    <h6 class="font-weight-bold"><strong>وبالإطلاع علـى سجل العضوية لنقابة أطباء {{ $license->licensable->branch->name }}</strong></h6>
                 </div>
 
           
@@ -120,7 +120,7 @@
                     font-size: 25px;
                     color: #e30613;
                     font-weight: bold;
-                    font-family: sans-serif;">#{{$licence->code}}</p>
+                    font-family: sans-serif;">#{{$license->code}}</p>
                 </div>
    
             
@@ -135,7 +135,7 @@
 
               <div class="name-box-visitor card  p-3" style="width: 556px!important;">
                <h3 class="font-weight-bold">
-                   <strong>{{$licence->licensable->name}}</strong>
+                   <strong>{{$license->licensable->name}}</strong>
                </h3>
            </div>
 
@@ -150,7 +150,7 @@
            bottom: 470px;">
             <h6 class="font-weight-bold">
                 <strong>
-                  ذات المسؤولية المحدودة والمسجلة بنقابة أطباء {{ $licence->licensable->branch->name }} تحت رقم
+                  ذات المسؤولية المحدودة والمسجلة بنقابة أطباء {{ $license->licensable->branch->name }} تحت رقم
                 </strong>
             </h6>
             </div>
@@ -166,7 +166,7 @@
             padding: 5px !important;
             font-size: 2px;">
                <h6 class="font-weight-bold">
-                  <strong>{{$licence->licensable->code}}</strong>
+                  <strong>{{$license->licensable->code}}</strong>
                </h6>
          </div>
 
@@ -197,7 +197,7 @@
           padding: 6px !important;
           font-size: 47px;">
             <h6 class="font-weight-bold">
-                <strong>{{$licence->licensable->commerical_number ?? '-'}}</strong>
+                <strong>{{$license->licensable->commerical_number ?? '-'}}</strong>
             </h6>
         </div>
 
@@ -210,7 +210,7 @@
         bottom: 429px;">
          <h6 class="font-weight-bold">
              <strong>
-               بمزاولــــــة   نشاط {{ $licence->licensable->type->name  }}
+               بمزاولــــــة   نشاط {{ $license->licensable->type->name  }}
              </strong>
          </h6>
          </div>
@@ -242,7 +242,7 @@
           padding: 6px !important;
           font-size: 47px;">
             <h6 class="font-weight-bold">
-                <strong>{{$licence->licensable->manager?->name}}</strong>
+                <strong>{{$license->licensable->manager?->name}}</strong>
             </h6>
         </div>
 
@@ -275,7 +275,7 @@
          padding: 5px !important;
          font-size: 2px;">
             <h6 class="font-weight-bold">
-               <strong>{{$licence->licensable->manager?->id}}</strong>
+               <strong>{{$license->licensable->manager?->id}}</strong>
             </h6>
       </div>
 
@@ -286,17 +286,17 @@
         <h6 class="text-center font-weight-bold d-inline-block">
             <strong class="d-inline-block">تم إصدار هذا الإذن بتاريخ  </strong>
             <div class="issued d-inline-block">
-                {{$licence->issued_date}}
+                {{$license->issued_date}}
             </div>
             <strong class="d-inline-block"> ويعتبر ملغياََ بتاريخ  </strong>
             <div class="issued d-inline-block">
-                {{$licence->expiry_date}}
+                {{$license->expiry_date}}
             </div>
         </h6>
     </div>
 
      <div class="signuture" style="bottom: 230px;">
-      <h5><strong>نقابة أطباء {{$licence->licensable->branch->name}} </strong></h5>
+      <h5><strong>نقابة أطباء {{$license->licensable->branch->name}} </strong></h5>
   </div>
 
 

@@ -22,19 +22,17 @@ class CreateDoctorMailsTable extends Migration
                 'done',
                 'canceled'
             ])->default('under_approve');
-
-            // just declare it in order — no ->after()
             $table->decimal('grand_total', 12, 2)->default(0);
-
-            $table->text('notes');
-            $table->json('countries');
-            $table->json('emails');
+            $table->text('notes')->nullable();
+            $table->enum('work_mention', ['with', 'without'])->nullable();
             $table->timestamps();
         });
     }
+
 
     public function down(): void
     {
         Schema::dropIfExists('doctor_mails');
     }
+    
 }

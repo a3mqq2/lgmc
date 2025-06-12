@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('doctor_mails', function (Blueprint $table) {
-            $table->year('last_extract_year')->nullable();
+        Schema::table('doctor_files', function (Blueprint $table) {
+            $table->integer('renew_number')->default(0);
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('doctor_mails', function (Blueprint $table) {
-            $table->dropColumn('last_extract_year');
+        Schema::table('doctor_files', function (Blueprint $table) {
+            $table->dropColumn('renew_number');
         });
     }
 };

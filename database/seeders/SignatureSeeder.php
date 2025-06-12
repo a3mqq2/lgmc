@@ -17,8 +17,8 @@ class SignatureSeeder extends Seeder
             [
                 'name' => 'د.محمد علي الغوج',
                 'name_en' => 'mohammed ali alghoj',
-                'job_title_ar' => 'Secretary General',
-                'job_title' => 'النقيب العام',
+                'job_title' => 'Secretary General',
+                'job_title_ar' => 'النقيب العام',
                 'is_selected' => 1,
                 'branch_id' => null,
             ],

@@ -32,19 +32,30 @@ class Licence extends Model
     protected static function booted()
     {
         static::creating(function (Licence $licence) {
-            $year = Carbon::now()->year;
-            $lastIndex = self::whereYear('issued_date', $year)->max('index') ?? 0;
-            $licence->index = $lastIndex + 1;
-            $short = !$licence->doctor_type ? 'MF' :   strtoupper(substr($licence->doctor_type, 0, 3));
-            if($licence->doctor_type && $licence->doctor_type == "libyan")
-            {
-                $licence->code = "{$year}-{$licence->index}";
+            $year  = Carbon::now()->year;
+            $short = $licence->doctor_type
+                        ? strtoupper(substr($licence->doctor_type, 0, 3))
+                        : 'MF';
 
+            // حدِّد نمط الكود المطلوب البحث عنه
+            $pattern = $licence->doctor_type && $licence->doctor_type === 'libyan'
+                        ? "{$year}-%"            // مثال: 2025-1
+                        : "{$short}-{$year}-%";   // مثال: MF-2025-1 أو VIS-2025-1
+
+            // احسب آخر index بناءً على الكود نفسه
+            $lastIndex = self::where('code', 'like', $pattern)->max('index') ?? 0;
+            $licence->index = $lastIndex + 1;
+
+            // أنشئ الكود النهائي
+            if ($licence->doctor_type && $licence->doctor_type === 'libyan') {
+                $licence->code = "{$year}-{$licence->index}";
             } else {
                 $licence->code = "{$short}-{$year}-{$licence->index}";
             }
         });
     }
+
+    /* ---------- العلاقات ---------- */
 
     public function doctor(): BelongsTo
     {
@@ -71,7 +82,6 @@ class Licence extends Model
         return $this->belongsTo(MedicalFacility::class, 'workin_medical_facility_id');
     }
 
-    public function doctor_rank()         { return $this->belongsTo(DoctorRank::class); }
-    public function specialty()          { return $this->belongsTo(Specialty::class, 'specialty_id'); }
-
+    public function doctor_rank() { return $this->belongsTo(DoctorRank::class); }
+    public function specialty()   { return $this->belongsTo(Specialty::class, 'specialty_id'); }
 }

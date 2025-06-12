@@ -6,8 +6,12 @@ use App\Models\Log;
 use App\Models\User;
 use App\Models\Vault;
 use App\Models\Branch;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use App\Models\VaultTransfer;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class VaultController extends Controller
 {
@@ -20,6 +24,8 @@ class VaultController extends Controller
 
         if (auth()->user()->branch_id) {
             $vaults->where('branch_id', auth()->user()->branch_id);
+        } else {
+            $vaults->where('branch_id', null);
         }
 
         $vaults = $vaults->get();
@@ -135,5 +141,80 @@ class VaultController extends Controller
         ]);
 
         return redirect()->route(get_area_name() . '.vaults.index')->with('success', 'تم حذف الحساب بنجاح');
+    }
+
+
+    public function closeCustody(Vault $vault)
+    {
+        if($vault->balance <= 0)
+        {
+            return redirect()->back()->withErrors(['لا يمكن اغلاق الخزينة دون وجود قيمة ']);
+        }
+
+        $fromVault = $vault;
+        $toVault = Vault::where('branch_id', $vault->branch_id)
+            ->where('user_id', null)
+            ->where('id', '!=', $vault->id)
+            ->first();
+
+        try {
+            DB::beginTransaction();
+            // create transaction with type transfer
+            $amount = $fromVault->balance;
+            $transaction = new Transaction();
+            $transaction->amount = $amount;
+            $transaction->user_id = auth()->id();
+            $transaction->vault_id = $fromVault->id;
+            $transaction->type = "withdrawal";
+            $transaction->desc = "اغلاق العهدة وتسوية الرصيد لخزينة " . $fromVault->name;
+            $transaction->branch_id = auth()->user()->branch_id;
+            $transaction->balance = 0;
+            $transaction->financial_category_id = 4;
+            $transaction->save();
+
+            $fromVault->decrement('balance', $fromVault->balance);
+            $toVault->increment('balance', $amount);
+
+            $transactionTo = new Transaction();
+            $transactionTo->amount = $amount;
+            $transactionTo->user_id = auth()->id();
+            $transactionTo->vault_id = $toVault->id;
+            $transactionTo->type = "deposit";
+            $transactionTo->desc = "استلام عهدة من خزينة " . $fromVault->name;
+            $transactionTo->branch_id = auth()->user()->branch_id;
+            $transactionTo->balance = $toVault->balance;
+            $transactionTo->financial_category_id = 4;
+            $transactionTo->save();
+
+
+            $transfer = VaultTransfer::create([
+                'from_vault_id' => $fromVault->id,
+                'to_vault_id' => $toVault->id,
+                'description' => "اغلاق عهدة خزينة " . $fromVault->name . " وتحويل الرصيد إلى خزينة " . $toVault->name,
+                'user_id' => Auth::id(),
+                'branch_id' => auth()->user()->branch_id,
+                'amount' => $amount,
+                'status' => 'approved',
+                'approved_at' => now(),
+                'approved_by' => Auth::id(),
+            ]);
+
+
+            // update all transfers under from vault by vault_transfer_id
+
+            DB::table('transactions')
+            ->where('vault_id', $fromVault->id)
+            ->whereNull('vault_transfer_id')
+            ->update(['vault_transfer_id' => $transfer->id, 'is_transfered' => true]);
+
+            
+
+            DB::commit();
+        } catch(\Exception $e)
+        {
+            return redirect()->back()->withErrors(['حدث خطأ أثناء إغلاق الخزينة: ' . $e->getMessage()]);
+        }
+
+        return redirect()->route(get_area_name() . '.vaults.index')->with('success', 'تم اغلاق الخزينة بنجاح');
     }
 }

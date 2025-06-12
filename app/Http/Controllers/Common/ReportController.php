@@ -73,7 +73,21 @@ class ReportController extends Controller
 
         $transactions = $transactions->orderByDesc('id')->paginate(10);
 
-        return view('general.reports.transactions_print', compact('transactions'));
+
+        $reportData = [
+            'from_date' => Carbon::parse($request->from_date),
+            'to_date' => Carbon::parse($request->to_date),
+            'vault_id' => $request->vault_id,
+            'type_filter' => $request->type_filter,
+            'generated_at' => Carbon::now(),
+            'generated_by' => auth()->user(),
+            'transaction_count' => $transactions->total(),
+            'total_deposits' => $transactions->where('type', 'deposit')->sum('amount'),
+            'total_withdrawals' => $transactions->where('type', 'withdrawal')->sum('amount'),
+            'net_balance' => $transactions->sum('amount'),
+            
+        ];
+        return view('general.reports.transactions_print', compact('transactions','reportData'));
     }
 
     public function licences(Request $request)

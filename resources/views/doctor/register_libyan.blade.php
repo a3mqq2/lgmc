@@ -136,9 +136,7 @@
             showStep(current);
         });
     </script>
-    
-</body>
-</html>="shortcut icon" href="assets/images/logo-primary.png">
+
     <script src="assets/js/layout.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -153,6 +151,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <style>
+
         .is-invalid {
             border: 2px solid #dc3545 !important;
             box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
@@ -521,19 +520,11 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                    <div class="col-md-6">
-                                                        <label>سنة الحصول عليها</label>
-                                                        <select name="internership_complete" id="internership_complete" class="form-control selectize select2">
-                                                            @php
-                                                                $currentYear = date('Y');
-                                                                $years = range($currentYear, 1950);
-                                                            @endphp
-                                                            <option value="">حدد السنة</option>
-                                                            @foreach ($years as $year)
-                                                                <option value="{{$year}}" {{old('internership_complete')==$year?"selected":""}}>{{$year}}</option>
-                                                            @endforeach
-                                                        </select>
+                                                     <div class="col-md-6">
+                                                        <label>تاريخ الحصول عليها</label>
+                                                        <input type="date" name="internership_complete" class="form-control">
                                                     </div>
+                                                          
                                                 </div>
                                                 
                                                 <input type="hidden" name="country_id" value="1">

@@ -304,6 +304,7 @@
                 ['key'=>'under_edit', 'label'=>'عضويات قيد التعديل', 'gradient'=>'card-gradient-secondary', 'icon'=>'fa-edit'],
                 ['key'=>'under_payment', 'label'=>'عضويات قيد الدفع', 'gradient'=>'card-gradient-danger', 'icon'=>'fa-credit-card'],
                 ['key'=>'active', 'label'=>'عضويات مفعله', 'gradient'=>'card-gradient-success', 'icon'=>'fa-check-circle'],
+                ['key'=>'expired', 'label'=>'عضويات منتهية الصلاحية', 'gradient'=>'card-gradient-success', 'icon'=>'fa-times'],
             ];
         @endphp
 

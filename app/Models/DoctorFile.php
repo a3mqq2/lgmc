@@ -15,6 +15,8 @@ class DoctorFile extends Model
         'file_path',
         'uploaded_at',
         "file_type_id",
+        'order_number',
+        'renew_number',
     ];
 
     protected $casts = [

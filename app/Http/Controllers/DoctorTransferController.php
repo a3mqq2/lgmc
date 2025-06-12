@@ -149,62 +149,88 @@ class DoctorTransferController extends Controller
         }
     
         DB::transaction(function () use ($doctorTransfer) {
-    
-            $oldDoctor   = $doctorTransfer->doctor;
+            $oldDoctor = $doctorTransfer->doctor;
             $emailBackup = $oldDoctor->email;
     
-            $existingDoctor = Doctor::where('branch_id', $doctorTransfer->to_branch_id)
-                ->where('national_number', $oldDoctor->national_number)
-                ->where('membership_status', 'suspended')
-                ->latest()
-                ->first();
+            // إذا كان الطبيب فلسطيني أو أجنبي - فقط تغيير الفرع
+            if (in_array($oldDoctor->type->value, ['palestinian', 'foreign'])) {
+                
+                // تغيير فرع الطبيب مباشرة
+                $oldDoctor->branch_id = $doctorTransfer->to_branch_id;
+                $oldDoctor->save();
     
-            $oldDoctor->membership_status = 'suspended';
-            $oldDoctor->suspended_reason  = 'تم النقل إلى الفرع ' . $doctorTransfer->toBranch->name;
-            $oldDoctor->email             = null;
-            $oldDoctor->save();
+                $doctorTransfer->update([
+                    'status'      => 'approved',
+                    'approved_by' => auth()->id(),
+                    'approved_at' => now(),
+                ]);
     
-            if ($existingDoctor) {
-    
-                $targetDoctor                    = $existingDoctor;
-                $targetDoctor->membership_status = 'active';
-                $targetDoctor->suspended_reason  = null;
-                $targetDoctor->email             = $emailBackup;
-                $targetDoctor->updated_at        = now();
+                Log::create([
+                    'user_id'       => auth()->id(),
+                    'details'       => "تمت الموافقة على طلب نقل الطبيب: {$oldDoctor->name} إلى الفرع {$doctorTransfer->toBranch->name}. " 
+                                     . "تم تغيير الفرع مباشرة (طبيب {$oldDoctor->type->value}).",
+                    'loggable_id'   => $oldDoctor->id,
+                    'loggable_type' => Doctor::class,
+                    'action'        => 'approve_doctor_transfer',
+                ]);
     
             } else {
+                // للأطباء الليبيين - الطريقة القديمة (تعليق وإنشاء/تفعيل)
+                
+                $existingDoctor = Doctor::where('branch_id', $doctorTransfer->to_branch_id)
+                    ->where('national_number', $oldDoctor->national_number)
+                    ->where('membership_status', 'suspended')
+                    ->latest()
+                    ->first();
     
-                $targetDoctor                    = $oldDoctor->replicate();
-                $targetDoctor->branch_id         = $doctorTransfer->to_branch_id;
-                $targetDoctor->membership_status = 'active';
-                $targetDoctor->suspended_reason  = null;
-                $targetDoctor->email             = $emailBackup;
-                $targetDoctor->created_at        = now();
-                $targetDoctor->updated_at        = now();
+                $oldDoctor->membership_status = 'suspended';
+                $oldDoctor->suspended_reason  = 'تم النقل إلى الفرع ' . $doctorTransfer->toBranch->name;
+                $oldDoctor->email             = null;
+                $oldDoctor->save();
+    
+                if ($existingDoctor) {
+                    // إعادة تفعيل الملف الموجود
+                    $targetDoctor                    = $existingDoctor;
+                    $targetDoctor->membership_status = 'active';
+                    $targetDoctor->suspended_reason  = null;
+                    $targetDoctor->email             = $emailBackup;
+                    $targetDoctor->updated_at        = now();
+                    $targetDoctor->save();
+    
+                } else {
+                    // إنشاء ملف جديد
+                    $targetDoctor                    = $oldDoctor->replicate();
+                    $targetDoctor->branch_id         = $doctorTransfer->to_branch_id;
+                    $targetDoctor->membership_status = 'active';
+                    $targetDoctor->suspended_reason  = null;
+                    $targetDoctor->email             = $emailBackup;
+                    $targetDoctor->created_at        = now();
+                    $targetDoctor->updated_at        = now();
+                    $targetDoctor->save();
+                }
+    
+                // نسخ الملفات
+                foreach ($oldDoctor->files as $file) {
+                    $newFile            = $file->replicate();
+                    $newFile->doctor_id = $targetDoctor->id;
+                    $newFile->save();
+                }
+    
+                $doctorTransfer->update([
+                    'status'      => 'approved',
+                    'approved_by' => auth()->id(),
+                    'approved_at' => now(),
+                ]);
+    
+                Log::create([
+                    'user_id'       => auth()->id(),
+                    'details'       => "تمت الموافقة على طلب نقل الطبيب: {$oldDoctor->name} إلى الفرع {$doctorTransfer->toBranch->name}. "
+                                     . ($existingDoctor ? 'تم إعادة تفعيل ملفه السابق.' : 'تم إنشاء ملف جديد وتعليق الملف القديم.'),
+                    'loggable_id'   => $targetDoctor->id,
+                    'loggable_type' => Doctor::class,
+                    'action'        => 'approve_doctor_transfer',
+                ]);
             }
-    
-            $targetDoctor->regenerateCode();
-    
-            foreach ($oldDoctor->files as $file) {
-                $newFile            = $file->replicate();
-                $newFile->doctor_id = $targetDoctor->id;
-                $newFile->save();
-            }
-    
-            $doctorTransfer->update([
-                'status'      => 'approved',
-                'approved_by' => auth()->id(),
-                'approved_at' => now(),
-            ]);
-    
-            Log::create([
-                'user_id'       => auth()->id(),
-                'details'       => "تمت الموافقة على طلب نقل الطبيب: {$oldDoctor->name} إلى الفرع {$doctorTransfer->toBranch->name}. "
-                                  . ($existingDoctor ? 'تم إعادة تفعيل ملفه السابق.' : 'تم إنشاء ملف جديد وتعليق الملف القديم.'),
-                'loggable_id'   => $targetDoctor->id,
-                'loggable_type' => Doctor::class,
-                'action'        => 'approve_doctor_transfer',
-            ]);
         });
     
         return redirect()

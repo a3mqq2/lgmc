@@ -632,13 +632,6 @@
 
 
 
-{{-- 
-                                               <div class="form-group">
-                                                {!! NoCaptcha::display() !!}
-                                                @error('g-recaptcha-response')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                            </div> --}}
 
 
                                                    <div class="mt-4">

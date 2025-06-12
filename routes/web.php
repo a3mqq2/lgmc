@@ -9,6 +9,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WebsiteController;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 use App\Http\Controllers\Common\AuthController;
+use App\Http\Controllers\VisitorDoctorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +46,8 @@ Route::get('/upload-documents', [WebsiteController::class, 'upload_documents'])-
 
 // doctor.filepond.process
 Route::post('/doctor/filepond/process', [WebsiteController::class, 'filepond_process'])->name('doctor.filepond.process');
-Route::post('/doctor/filepond/revert', [WebsiteController::class, 'filepond_revert'])->name('doctor.filepond.revert');
+Route::delete('/doctor/filepond/revert', [WebsiteController::class, 'filepond_revert'])->name('doctor.filepond.revert');
+
 
 
 // doctor.registration.complete

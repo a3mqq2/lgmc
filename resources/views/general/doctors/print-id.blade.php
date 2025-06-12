@@ -22,10 +22,15 @@
             background:#fff;
             position:relative;
             display:flex;
-            flex-direction:row-reverse;      /* الصورة جهة اليسار دائماً */
+            flex-direction:row-reverse;      /* الصورة جهة اليسار دائماً للبطاقة العربية */
+        }
+        /* البطاقة الإنجليزية تبدأ من اليسار إلى اليمين */
+        .ltr-card{
+            direction:ltr;
+            flex-direction:row;              /* الصورة جهة اليسار */
         }
 
-        /* يسار البطاقة – الصورة والخلفية الحمراء */
+        /* يسار البطاقة – الصورة أو الـ QR والخلفية الحمراء */
         .photo-section{
             width:30%;
             background:#dc2626;
@@ -42,8 +47,8 @@
             justify-content:center;
         }
         .photo-frame{
-            width:70px;
-            height:85px;
+            width:90px;
+            height:90px;
             border-radius:6px;
             overflow:hidden;
             border:3px solid #fff;
@@ -57,7 +62,7 @@
             text-align:center;
             padding:6px 4px;
             font-weight:700;
-            font-size:10px;
+            font-size:11px;
             letter-spacing:.5px;
             white-space:nowrap;
         }
@@ -78,10 +83,10 @@
             justify-content:space-between;
             align-items:center;
             margin-bottom:10px;
-            height:35px;
+            height:40px;
         }
-        .logo-ar{height:30px;width:auto;}
-        .logo-en{height:25px;width:auto;}
+        .logo-ar{height:40px;width:auto;}
+        .logo-en{height:35px;width:auto;}
 
         /* أقسام المعلومات */
         .info-section{
@@ -92,16 +97,16 @@
         }
 
         /* سطر كامل (Label فوق Value) */
-        .field-section{margin-bottom:8px;}
+        .field-section{margin-bottom:6px;}
         .field-label{
             color:#dc2626;
-            font-size:10px;
-            font-weight:500;
+            font-size:11px;
+            font-weight:700;
             margin-bottom:2px;
         }
         .field-value{
-            font-size:11px;
-            font-weight:600;
+            font-size:13px;
+            font-weight:700;
             color:#374151;
             line-height:1.2;
             overflow:hidden;
@@ -110,21 +115,32 @@
         }
 
         /* الاسم (نفس تنسيق السطر الكامل) */
-        .name-section{margin-bottom:8px;}
+        .name-section{margin-bottom:6px;}
         .name-label{
             color:#dc2626;
-            font-size:10px;
-            font-weight:500;
+            font-size:11px;
+            font-weight:700;
             margin-bottom:2px;
         }
         .name-value{
-            font-size:14px;
-            font-weight:bold;
+            font-size:16px;
+            font-weight:700;
             color:#1f2937;
             line-height:1.2;
         }
 
         .date-value{font-family:'Courier New',monospace;letter-spacing:.5px;}
+
+        /* صف مزدوج لرقم الجواز وتاريخ الانتهاء */
+        .dual-field-row{
+            display:flex;
+            justify-content:space-between;
+            gap:8px;
+        }
+        .dual-field-row .field-section{
+            flex:1;
+            margin-bottom:0;
+        }
 
         /* طباعة */
         @media print{
@@ -146,7 +162,7 @@
                 padding:10px 24px;
                 border:none;
                 border-radius:6px;
-                font-weight:600;
+                font-weight:700;
                 font-size:14px;
                 cursor:pointer;
                 display:inline-flex;
@@ -157,7 +173,7 @@
             .print-button:hover{background:#b91c1c;transform:translateY(-1px);}
         }
 
-        .specialization-text{line-height:1.3;font-size:10px;}
+        .specialization-text{line-height:1.3;font-size:11px;font-weight:700;}
         .print-card *{max-width:100%;}
     </style>
 </head>
@@ -196,21 +212,21 @@
                 <div class="field-section">
                     <div class="field-label">الصفة المهنية</div>
                     <div class="field-value specialization-text">
-                        {{ $doctor->doctor_rank->name }} {{ $doctor->specialization }}
+                        {{ $doctor->doctor_rank->name }} / {{ $doctor->specialization }}
                     </div>
                 </div>
 
-                <!-- رقم الجواز -->
-                <div class="field-section">
-                    <div class="field-label">رقم جواز السفر</div>
-                    <div class="field-value">{{ $doctor->passport_number }}</div>
-                </div>
-
-                <!-- تاريخ الانتهاء -->
-                <div class="field-section">
-                    <div class="field-label">صالحة إلى</div>
-                    <div class="field-value date-value">
-                        {{ date('Y-m-d', strtotime($doctor->membership_expiration_date)) }}
+                <!-- رقم الجواز وتاريخ الانتهاء في نفس السطر -->
+                <div class="dual-field-row">
+                    <div class="field-section">
+                        <div class="field-label">رقم جواز السفر</div>
+                        <div class="field-value">{{ $doctor->passport_number }}</div>
+                    </div>
+                    <div class="field-section">
+                        <div class="field-label">صالحة إلى</div>
+                        <div class="field-value date-value">
+                            {{ date('Y-m-d', strtotime($doctor->membership_expiration_date)) }}
+                        </div>
                     </div>
                 </div>
 
@@ -219,12 +235,12 @@
     </div>
 
     <!-- البطاقة الإنجليزية -->
-    <div class="print-card">
-        <!-- صورة وكود -->
+    <div class="print-card ltr-card">
+        <!-- QR وكود -->
         <div class="photo-section">
             <div class="photo-container">
-                <div class="photo-frame">
-                    <img src="{{ Storage::url($doctor->files->first()?->file_path) }}" alt="Doctor Photo">
+                <div class="">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=wwe.example.com" alt="QR Code">
                 </div>
             </div>
             <div class="code-section">{{ $doctor->code }}</div>
@@ -234,8 +250,8 @@
         <div class="data-section">
             <!-- شعارات -->
             <div class="header-section">
-                <img src="{{ asset('/assets/images/lgmc-dark.png?v=44') }}" class="logo-ar" alt="LGMC">
-                <div style="text-align:left;"></div>
+                <img src="{{ asset('/assets/images/lgmc-dark.png?v=44') }}" class="logo-en" alt="LGMC">
+                <div style="text-align:right;"></div>
             </div>
 
             <!-- معلومات -->
@@ -251,21 +267,21 @@
                 <div class="field-section">
                     <div class="field-label">Profession</div>
                     <div class="field-value specialization-text">
-                        {{ $doctor->doctor_rank->name_en }} {{ $doctor->specialty1?->name_en }}
+                        {{ $doctor->doctor_rank->name_en }} / {{ $doctor->specialty1?->name_en }}
                     </div>
                 </div>
 
-                <!-- رقم الجواز -->
-                <div class="field-section">
-                    <div class="field-label">Passport No</div>
-                    <div class="field-value">{{ $doctor->passport_number }}</div>
-                </div>
-
-                <!-- تاريخ الانتهاء -->
-                <div class="field-section">
-                    <div class="field-label">Valid to date</div>
-                    <div class="field-value date-value">
-                        {{ date('Y-m-d', strtotime($doctor->membership_expiration_date)) }}
+                <!-- Passport No and Valid to date on same line -->
+                <div class="dual-field-row">
+                    <div class="field-section">
+                        <div class="field-label">Passport No</div>
+                        <div class="field-value">{{ $doctor->passport_number }}</div>
+                    </div>
+                    <div class="field-section">
+                        <div class="field-label">Valid to date</div>
+                        <div class="field-value date-value">
+                            {{ date('Y-m-d', strtotime($doctor->membership_expiration_date)) }}
+                        </div>
                     </div>
                 </div>
 
