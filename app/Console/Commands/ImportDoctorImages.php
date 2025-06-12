@@ -33,7 +33,7 @@ class ImportDoctorImages extends Command
                     'doctor_id'    => $doctor->id,
                     'file_name'    => $fileName,
                     'file_path'    => $filePath,
-                    'file_type_id' => 1,
+                    'file_type_id' => 14,
                     'order_number' => 1,
                 ]);
 

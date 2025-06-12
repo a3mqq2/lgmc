@@ -47,7 +47,7 @@ class ImportApplicationForm extends Command
                     'doctor_id'    => $doctor->id,
                     'file_name'    => $fileName,
                     'file_path'    => $filePath,
-                    'file_type_id' => 26,
+                    'file_type_id' => 56,
                     'order_number' => 2
                 ]);
 
