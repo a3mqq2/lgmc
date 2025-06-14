@@ -32,8 +32,8 @@ class FileTypeController extends Controller
                    ->orWhereNull('doctor_type');
              })
              /*
-              * ② فلترة «الصفة/الرتبة»
-              *     ‑ عند وجود rank_id: نعيد المستندات المخصَّصة لهذه الرتبة أو العامة (doctor_rank_id = NULL)
+              * ② فلترة «الصفة/الصفة»
+              *     ‑ عند وجود rank_id: نعيد المستندات المخصَّصة لهذه الصفة أو العامة (doctor_rank_id = NULL)
               *     ‑ عند عدم وجود rank_id: نعيد المستندات العامة فقط (doctor_rank_id = NULL)
               */
              ->when($rank, function ($q) use ($rank) {                 // يوجد rank

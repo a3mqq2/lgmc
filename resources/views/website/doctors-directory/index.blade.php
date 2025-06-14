@@ -88,12 +88,12 @@
             <div class="row justify-content-center">
                 <div class="col-lg-10">
                     <form method="GET" class="row g-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <input type="text" name="search" class="form-control form-control-lg" 
                                    placeholder="ابحث بالاسم أو الرقم المهني..." 
                                    value="{{ request('search') }}">
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-4">
                             <select name="type" class="form-select form-select-lg">
                                 <option value="">جميع الأنواع</option>
                                 @foreach($types as $type)
@@ -103,22 +103,12 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <select name="specialty" class="form-select form-select-lg">
                                 <option value="">جميع التخصصات</option>
                                 @foreach($specialties as $specialty)
                                     <option value="{{ $specialty->id }}" {{ request('specialty') == $specialty->id ? 'selected' : '' }}>
                                         {{ $specialty->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <select name="rank" class="form-select form-select-lg">
-                                <option value="">جميع الرتب</option>
-                                @foreach($ranks as $rank)
-                                    <option value="{{ $rank->id }}" {{ request('rank') == $rank->id ? 'selected' : '' }}>
-                                        {{ $rank->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -160,7 +150,7 @@
                     <div class="card stats-card h-100">
                         <div class="card-body text-center">
                             <i class="fas fa-globe fa-2x text-info mb-3"></i>
-                            <h3 class="mb-1">{{ number_format($stats['foreign']) }}</h3>
+                            <h3 class="mb-1">{{ number_format($stats['palestinian'] + $stats['foreign']) }}</h3>
                             <p class="text-muted mb-0">أطباء أجانب</p>
                         </div>
                     </div>
@@ -169,7 +159,7 @@
                     <div class="card stats-card h-100">
                         <div class="card-body text-center">
                             <i class="fas fa-handshake fa-2x text-warning mb-3"></i>
-                            <h3 class="mb-1">{{ number_format($stats['palestinian'] + $stats['visitor']) }}</h3>
+                            <h3 class="mb-1">{{ number_format($stats['visitor']) }}</h3>
                             <p class="text-muted mb-0">أطباء زائرون</p>
                         </div>
                     </div>
@@ -186,9 +176,9 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h3>نتائج البحث ({{ $doctors->total() }} طبيب)</h3>
                         <div>
-                            {{-- <a href="{{ route('doctors.directory') }}" class="btn btn-outline-primary">
+                            <a href="{{ route('doctors.index') }}" class="btn btn-outline-primary">
                                 <i class="fas fa-refresh"></i> إعادة تعيين الفلاتر
-                            </a> --}}
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -222,19 +212,14 @@
                                     @if($doctor->doctorRank)
                                         <p class="mb-2">
                                             <i class="fas fa-medal text-warning me-2"></i>
-                                            <strong>الرتبة:</strong> {{ $doctor->doctorRank->name }}
+                                            <strong>الصفة:</strong> {{ $doctor->doctorRank->name }}
                                         </p>
                                     @endif
-
-                                    <p class="mb-2">
-                                        <i class="fas fa-tag text-info me-2"></i>
-                                        <strong>النوع:</strong> {{ $doctor->type->label() }}
-                                    </p>
 
                                     @if($doctor->branch && $doctor->type->value === 'libyan')
                                         <p class="mb-2">
                                             <i class="fas fa-map-marker-alt text-danger me-2"></i>
-                                            <strong>الفرع:</strong> {{ $doctor->branch->name }}
+                                            <strong>الفرع :</strong> {{ $doctor->branch->name }}
                                         </p>
                                     @endif
 
@@ -246,12 +231,14 @@
                                     @endif
                                 </div>
 
-                                {{-- <div class="mt-3">
-                                    <a href="{{ route('doctors.show', $doctor->id) }}" 
+                                 <div class="mt-3">
+                                    <a  href="{{route('doctors.show',$doctor)}}"
                                        class="btn btn-primary btn-sm w-100">
                                         <i class="fas fa-eye me-1"></i> عرض التفاصيل
                                     </a>
-                                </div> --}}
+                                </div> 
+
+
                             </div>
                         </div>
                     </div>
@@ -261,9 +248,9 @@
                             <i class="fas fa-search fa-3x text-muted mb-3"></i>
                             <h4 class="text-muted">لا توجد نتائج</h4>
                             <p class="text-muted">لم يتم العثور على أطباء يطابقون معايير البحث</p>
-                            {{-- <a href="{{ route('doctors.directory') }}" class="btn btn-primary">
+                            <a href="{{ route('doctors.index') }}" class="btn btn-primary">
                                 عرض جميع الأطباء
-                            </a> --}}
+                            </a>
                         </div>
                     </div>
                 @endforelse

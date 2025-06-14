@@ -12,6 +12,7 @@ use Stichoza\GoogleTranslate\GoogleTranslate;
 use App\Http\Controllers\Common\AuthController;
 use App\Http\Controllers\VisitorDoctorController;
 use App\Http\Controllers\DoctorsDirectoryController;
+use App\Http\Controllers\MedicalFacilitiesDirectoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,6 +71,11 @@ Route::middleware('auth')->group(function() {
 
 
 Route::get('/doctors', [DoctorsDirectoryController::class , 'index'])->name('doctors.index');
+Route::get('/doctors/{doctor}/show', [DoctorsDirectoryController::class , 'show'])->name('doctors.show');
+
+Route::get('/medical-facilities-directory', [MedicalFacilitiesDirectoryController::class, 'index'])->name('facilities.directory');
+Route::get('/medical-facilities-directory/{facility}', [MedicalFacilitiesDirectoryController::class, 'show'])->name('facilities.show');
+
 
 // send testing email
 Route::get('/send-email', function() {

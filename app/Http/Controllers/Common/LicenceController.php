@@ -118,7 +118,6 @@ class LicenceController extends Controller
         $validated = $request->validate([
             'doctor_id' => 'required|exists:doctors,id',
             'doctor_rank_id' => 'required|exists:doctor_ranks,id',
-            'specialty_id' => 'required|exists:specialties,id',
             'issue_date' => 'required|date',
             'medical_facility_id' => 'required|exists:medical_facilities,id',
         ]);

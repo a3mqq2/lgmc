@@ -45,7 +45,7 @@ class MedicalFacilityService
         // check if medical facility type private_clinic and doctor rank is not ( 3,4,5,6)
         if($data['type'] == 'private_clinic' && !in_array($doctor->rank, [3, 4, 5, 6]))
         {
-            throw new \Exception('الطبيب لا يملك الرتبة المطلوبة لتسجيل منشأة طبية خاصة');
+            throw new \Exception('الطبيب لا يملك الصفة المطلوبة لتسجيل منشأة طبية خاصة');
         }
 
     

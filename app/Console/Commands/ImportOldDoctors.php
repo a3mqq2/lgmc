@@ -27,7 +27,8 @@ class ImportOldDoctors extends Command
 
         foreach ($oldDoctors as $old) {
             try {
-                $universityId = $this->mapUniversity($old->qualification_university_id);
+                $quniversityId = $this->mapUniversity($old->qualification_university_id);
+                $universityId = $this->mapUniversity($old->university_id);
                 $countryId    = $this->mapCountry($old->country_id);
                 $type         = $this->determineDoctorType($countryId);
 
@@ -56,7 +57,8 @@ class ImportOldDoctors extends Command
                     'address'                     => $old->address,
                     'phone'                       => $old->phone,
                     'internership_complete'       => $old->internership_complete,
-                    'qualification_university_id' => $universityId,
+                    'qualification_university_id' => $quniversityId,
+                    'hand_graduation_id'          => $universityId,
                     'certificate_of_excellence_date' => $old->qualification_date,
                     'doctor_rank_id'              => $roleToRank[$old->role] ?? null,
                     'experience'                  => $old->experience,

@@ -26,7 +26,7 @@ class DoctorsDirectoryController extends Controller
             $query->where('specialty_1_id', $request->specialty);
         }
 
-        // فلترة حسب الرتبة
+        // فلترة حسب الصفة
         if ($request->filled('rank')) {
             $query->where('doctor_rank_id', $request->rank);
         }
@@ -77,11 +77,10 @@ class DoctorsDirectoryController extends Controller
             'qualificationUniversity', 'academicDegreeUniversity'
         ])->findOrFail($id);
 
-        // التأكد من أن الطبيب مكتمل البيانات
         if (!$doctor->documents_completed) {
             abort(404);
         }
 
-        return view('doctors-directory.show', compact('doctor'));
+        return view('website.doctors-directory.show', compact('doctor'));
     }
 }

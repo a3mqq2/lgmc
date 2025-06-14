@@ -139,26 +139,30 @@
       <div class="container py-14 pt-md-17 ">
           <div class="row">
             <div class="col-md-6 text-center">
-               <div class="card border">
-                <div class="card-body">
-                    <div class="">
-                      <img src="{{asset('assets/stethoscope.png')}}" alt="">
-                    </div>
-                    <h3 class="text-center"> دليل الأطباء </h3>
-                    <p class="text-muted m-0">دليل شامل لجميع اطباء ليبيا وبياناتهم</p>
-                </div>
-               </div>
+               <a href="{{route('doctors.index')}}">
+                <div class="card border">
+                  <div class="card-body">
+                      <div class="">
+                        <img src="{{asset('assets/stethoscope.png')}}" alt="">
+                      </div>
+                      <h3 class="text-center"> دليل الأطباء </h3>
+                      <p class="text-muted m-0">دليل شامل لجميع اطباء ليبيا وبياناتهم</p>
+                  </div>
+                 </div>
+               </a>
             </div>
             <div class="col-md-6 text-center">
-              <div class="card border">
-               <div class="card-body">
-                   <div class="">
-                     <img src="{{asset('assets/hospital-logo.png')}}" alt="">
-                   </div>
-                   <h3 class="text-center text-primary"> دليل المنشأت الطبية </h3>
-                   <p class="text-muted m-0">دليل شامل لجميع  المنشأت الطبية   وبياناتهم</p>
-               </div>
-              </div>
+              <a href="{{route('facilities.directory')}}">
+                <div class="card border">
+                  <div class="card-body">
+                      <div class="">
+                        <img src="{{asset('assets/hospital-logo.png')}}" alt="">
+                      </div>
+                      <h3 class="text-center text-primary"> دليل المنشأت الطبية </h3>
+                      <p class="text-muted m-0">دليل شامل لجميع  المنشأت الطبية   وبياناتهم</p>
+                  </div>
+                 </div>
+              </a>
            </div>
           </div>
       </div>

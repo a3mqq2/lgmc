@@ -43,8 +43,25 @@
                 <p class="m-0">     الأشاري  ............................................... </p>
             </div>
 
+
+            <div class="valid text-danger text-right font-weight-bold">
+                تحقق من الاذن من هنا
+            </div>
+
+
+            <div class="qr-code card p-2">
+                <div class="code">
+                    @php
+                    $link = env('APP_URL') . "medical-facilities-directory/" . $license->medicalFacility->id;
+                $qrCode = DNS2D::getBarcodePNG($link, 'QRCODE', 5, 5);
+                @endphp
+                <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 50px; height: 50px;" />
+                </div>
+            </div>
+
+
             <div class="doctor-photo">
-                <img src="{{ Storage::url($license->medicalFacility->manager->files->first()?->file_path) }}" alt="صورة الطبيب">
+                <img src="{{  $license->medicalFacility->manager->photo }}" alt="صورة الطبيب">
             </div>
 
 
