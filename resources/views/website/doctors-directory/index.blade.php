@@ -222,13 +222,6 @@
                                             <strong>الفرع :</strong> {{ $doctor->branch->name }}
                                         </p>
                                     @endif
-
-                                    @if($doctor->phone)
-                                        <p class="mb-2">
-                                            <i class="fas fa-phone text-success me-2"></i>
-                                            {{ $doctor->phone }}
-                                        </p>
-                                    @endif
                                 </div>
 
                                  <div class="mt-3">
