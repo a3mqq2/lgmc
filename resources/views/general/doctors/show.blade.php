@@ -465,7 +465,7 @@
                                     <tr>
                                         <th class="bg-light text-primary">  الحالة الاجتماعية </th>
                                         <td>
-                                            {{$doctor->marital_status == "signle" ? 'اعزب' : 'متزوج'}}
+                                            {{$doctor->marital_status->value == "signle" ? 'اعزب' : 'متزوج'}}
                                         </td>
                                     </tr>
                                     @endif
