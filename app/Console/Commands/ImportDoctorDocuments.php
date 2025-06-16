@@ -26,40 +26,39 @@ class ImportDoctorDocuments extends Command
 
         foreach ($oldDocuments as $oldDoc) {
             try {
-                /** @var Doctor|null $doctor */
                 $doctor = Doctor::where('index', $oldDoc->member_id)->first();
-
                 if (!$doctor) {
                     $this->warn("Doctor not found for member_id: {$oldDoc->member_id}");
                     $skipped++;
                     continue;
                 }
 
-                /** @var FileType|null $fileType */
-                $fileType = FileType::where('slug', $oldDoc->slug)->first();
-
+                $slug = $oldDoc->slug;
+                $fileType = FileType::where('slug', $slug)->first();
+                if (!$fileType && str_contains($slug, '_')) {
+                    $baseSlug = explode('_', $slug)[0];
+                    $fileType = FileType::where('slug', $baseSlug)->first();
+                }
                 if (!$fileType) {
-                    $this->warn("File type not found for slug: {$oldDoc->slug}");
+                    $this->warn("File type not found for slug: {$slug}");
                     $skipped++;
                     continue;
                 }
 
-                $exists = DoctorFile::where('doctor_id', $doctor->id)
-                    ->where('file_type_id', $fileType->id)
-                    ->exists();
-
-                if ($exists) {
+                if (
+                    DoctorFile::where('doctor_id', $doctor->id)
+                        ->where('file_type_id', $fileType->id)
+                        ->exists()
+                ) {
                     $this->line("Document already exists for doctor {$doctor->id}, file type {$fileType->name}");
                     $skipped++;
                     continue;
                 }
 
-                // محاولة تحديد مسار الملف القديم
                 $filePath = $oldDoc->file_path
                     ?? $oldDoc->path
-                    ?? $this->guessStoragePath($doctor->doctor_number, $oldDoc->slug);
+                    ?? $this->guessPath($doctor->doctor_number, $fileType->slug);
 
-                // إذا لم يكن الملف موجودًا على التخزين، ضع مسارًا فارغًا على الأقل لتجنب خطأ NOT NULL
                 if (!Storage::disk('public')->exists($filePath)) {
                     $filePath = '';
                 }
@@ -91,20 +90,14 @@ class ImportDoctorDocuments extends Command
         $this->info("Total processed: " . ($imported + $skipped + $errors));
     }
 
-    /**
-     * Guess a public storage path for a document if no explicit path exists.
-     */
-    private function guessStoragePath(string $doctorNumber, string $slug): string
+    private function guessPath(string $doctorNumber, string $slug): string
     {
-        $extensions = ['jpg', 'jpeg', 'png', 'pdf'];
-        foreach ($extensions as $ext) {
+        foreach (['jpg', 'jpeg', 'png', 'pdf'] as $ext) {
             $path = "documents/{$doctorNumber}/{$slug}.{$ext}";
             if (Storage::disk('public')->exists($path)) {
                 return $path;
             }
         }
-
-        // default placeholder (will be stored as empty if the file truly doesn't exist)
         return "documents/{$doctorNumber}/{$slug}";
     }
 }
