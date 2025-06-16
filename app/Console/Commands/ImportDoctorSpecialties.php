@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use App\Models\Doctor;
 use App\Models\Specialty;
 
@@ -15,48 +14,47 @@ class ImportDoctorSpecialties extends Command
 
     public function handle(): void
     {
-        $this->info('Fetching specialties from old DB ...');
+        $this->info('Starting specialty import...');
 
-        // preload existing specialties once (keyed by arabic name)
         $specialtyCache = Specialty::pluck('id', 'name')->toArray();
-
-        // “ممارس عام” id (if exists) – used only for cache but shouldn’t be saved
-        $gpId = $specialtyCache['ممارس عام'] ?? null;
 
         DB::connection('lgmc_r')
             ->table('member_specialty')
             ->join('specialties', 'member_specialty.specialty_id', '=', 'specialties.id')
-            ->select('member_specialty.member_id', 'specialties.name', 'specialties.name_en')
+            ->select(
+                'member_specialty.member_id',
+                'specialties.name',
+                'specialties.name_en'
+            )
             ->orderBy('member_specialty.member_id')
-            ->chunkById(1000, function ($rows) use (&$specialtyCache, $gpId) {
+            ->chunk(1000, function ($rows) use (&$specialtyCache) {
 
                 $grouped = $rows->groupBy('member_id');
 
                 foreach ($grouped as $memberId => $set) {
-
                     $nameAr = trim($set->pluck('name')->first());
                     $nameEn = trim($set->pluck('name_en')->first());
 
-                    // skip if name empty
-                    if ($nameAr == '') { continue; }
-
-                    // get or create specialty id (cache)
-                    if (!isset($specialtyCache[$nameAr])) {
-                        $new = Specialty::create(['name' => $nameAr, 'name_en' => $nameEn]);
-                        $specialtyCache[$nameAr] = $new->id;
+                    if ($nameAr === '') {
+                        continue;
                     }
-                    $specId = $specialtyCache[$nameAr];
 
-                    // doctor
+                    if (!isset($specialtyCache[$nameAr])) {
+                        $spec = Specialty::create(['name' => $nameAr, 'name_en' => $nameEn]);
+                        $specialtyCache[$nameAr] = $spec->id;
+                    }
+
                     $doctor = Doctor::where('index', $memberId)->first();
-                    if (!$doctor) { continue; }
 
-                    // set / unset
-                    $doctor->specialty_1_id = ($nameAr == 'ممارس عام') ? null : $specId;
+                    if (!$doctor) {
+                        continue;
+                    }
+
+                    $doctor->specialty_1_id = ($nameAr === 'ممارس عام') ? null : $specialtyCache[$nameAr];
                     $doctor->save();
                 }
             });
 
-        $this->info('Done importing specialties.');
+        $this->info('Specialty import finished.');
     }
 }
