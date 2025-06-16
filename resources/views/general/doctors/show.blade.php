@@ -629,7 +629,11 @@
                                         </tr>
                                         <tr>
                                             <th class="bg-light text-primary">تاريخ الحصول عليها </th>
-                                            <td>{{ $doctor->internership_complete }}</td>
+                                            @if ($doctor->type->value == "libyan")
+                                                {{date('Y', strtotime($doctor->internership_complete) )}}
+                                                @else 
+                                                {{date('Y-m-d', strtotime($doctor->internership_complete) )}}
+                                            @endif
                                         </tr>
                                     </tbody>
                                 </table>
