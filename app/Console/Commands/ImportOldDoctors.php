@@ -78,7 +78,7 @@ class ImportOldDoctors extends Command
                     'email_verified_at'           => now(),
                     'documents_completed'         => true,
                     'institution_id'              => $institutionId,
-                    'marital_status'              => $old->statutes
+                    'marital_status'              => $old->statutes == 1 ? "single" : "married",
                 ]);
 
                 $doctor->makeCode();
