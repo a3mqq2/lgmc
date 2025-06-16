@@ -14,7 +14,7 @@ class ImportDoctorDocuments extends Command
     protected $signature   = 'import:doctor-documents';
     protected $description = 'Import doctor documents from lgmc_r.documents into LGMC.doctor_files';
 
-    public function handle(): void
+    public function handle()
     {
         $this->info('Starting import of doctor documents...');
 
@@ -26,45 +26,44 @@ class ImportDoctorDocuments extends Command
 
         foreach ($oldDocuments as $oldDoc) {
             try {
-                // ============ 1) Doctor ============
+                /** @var Doctor|null $doctor */
                 $doctor = Doctor::where('index', $oldDoc->member_id)->first();
-                if (!$doctor) { $skipped++; continue; }
 
-                // ============ 2) File-type (slug) ============
-                $slug       = $oldDoc->slug ?? '';
-                $baseSlug   = str_contains($slug, '_') ? explode('_', $slug)[0] : $slug;
-
-                // fix common misspellings
-                if ($baseSlug === 'employement_letter') { $baseSlug = 'employment_letter'; }
-
-                // “other” covers شهادة ميلاد إلكترونية وأي ملفات لا نعرف سلاقها
-                $fileType = FileType::where('slug', $baseSlug)->first()
-                           ?: FileType::where('slug', 'other')->first();
-
-                if (!$fileType) {           // لا يوجد حتى “other”
-                    $errors++; continue;
+                if (!$doctor) {
+                    $this->warn("Doctor not found for member_id: {$oldDoc->member_id}");
+                    $skipped++;
+                    continue;
                 }
 
-                // ============ 3) Allow multiple “other” ============
-                $query = DoctorFile::where('doctor_id', $doctor->id)
-                                   ->where('file_type_id', $fileType->id);
+                /** @var FileType|null $fileType */
+                $fileType = FileType::where('slug', $oldDoc->slug)->first();
 
-                // للسلاق “other” اسم الملف يميّز السجل؛ أمّا لباقي الأنواع نمنع التكرار
-                if ($fileType->slug !== 'other') {
-                    if ($query->exists()) { $skipped++; continue; }
-                } else {
-                    $query->where('file_name', $oldDoc->ar_name ?? $fileType->name);
-                    if ($query->exists()) { $skipped++; continue; }
+                if (!$fileType) {
+                    $this->warn("File type not found for slug: {$oldDoc->slug}");
+                    $skipped++;
+                    continue;
                 }
 
-                // ============ 4) Resolve path ============
+                $exists = DoctorFile::where('doctor_id', $doctor->id)
+                    ->where('file_type_id', $fileType->id)
+                    ->exists();
+
+                if ($exists) {
+                    $this->line("Document already exists for doctor {$doctor->id}, file type {$fileType->name}");
+                    $skipped++;
+                    continue;
+                }
+
+                // محاولة تحديد مسار الملف القديم
                 $filePath = $oldDoc->file_path
-                         ?? $oldDoc->path
-                         ?? $this->guessPath($doctor->doctor_number, $fileType->slug);
+                    ?? $oldDoc->path
+                    ?? $this->guessStoragePath($doctor->doctor_number, $oldDoc->slug);
 
-                if (!Storage::disk('public')->exists($filePath)) { $filePath = ''; }
+                // إذا لم يكن الملف موجودًا على التخزين، ضع مسارًا فارغًا على الأقل لتجنب خطأ NOT NULL
+                if (!Storage::disk('public')->exists($filePath)) {
+                    $filePath = '';
+                }
 
-                // ============ 5) Insert ============
                 DoctorFile::create([
                     'doctor_id'     => $doctor->id,
                     'file_type_id'  => $fileType->id,
@@ -77,21 +76,35 @@ class ImportDoctorDocuments extends Command
                     'updated_at'    => $oldDoc->updated_at,
                 ]);
 
+                $this->info("✓ Imported document: {$oldDoc->ar_name} for doctor {$doctor->id}");
                 $imported++;
-            } catch (\Throwable $e) {
+            } catch (\Exception $e) {
+                $this->error("✗ Failed to import document ID {$oldDoc->id}: " . $e->getMessage());
                 $errors++;
             }
         }
 
-        $this->info("Imported: {$imported} | Skipped: {$skipped} | Errors: {$errors}");
+        $this->info("\n=== Import Summary ===");
+        $this->info("Imported:  {$imported}");
+        $this->info("Skipped:   {$skipped}");
+        $this->info("Errors:    {$errors}");
+        $this->info("Total processed: " . ($imported + $skipped + $errors));
     }
 
-    private function guessPath(string $doctorNumber, string $slug): string
+    /**
+     * Guess a public storage path for a document if no explicit path exists.
+     */
+    private function guessStoragePath(string $doctorNumber, string $slug): string
     {
-        foreach (['jpg','jpeg','png','pdf'] as $ext) {
-            $p = "documents/{$doctorNumber}/{$slug}.{$ext}";
-            if (Storage::disk('public')->exists($p)) return $p;
+        $extensions = ['jpg', 'jpeg', 'png', 'pdf'];
+        foreach ($extensions as $ext) {
+            $path = "documents/{$doctorNumber}/{$slug}.{$ext}";
+            if (Storage::disk('public')->exists($path)) {
+                return $path;
+            }
         }
+
+        // default placeholder (will be stored as empty if the file truly doesn't exist)
         return "documents/{$doctorNumber}/{$slug}";
     }
 }
