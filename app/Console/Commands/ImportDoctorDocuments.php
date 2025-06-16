@@ -26,48 +26,45 @@ class ImportDoctorDocuments extends Command
 
         foreach ($oldDocuments as $oldDoc) {
             try {
+                // ============ 1) Doctor ============
                 $doctor = Doctor::where('index', $oldDoc->member_id)->first();
-                if (!$doctor) {
-                    $this->warn("Doctor not found for member_id: {$oldDoc->member_id}");
-                    $skipped++;
-                    continue;
+                if (!$doctor) { $skipped++; continue; }
+
+                // ============ 2) File-type (slug) ============
+                $slug       = $oldDoc->slug ?? '';
+                $baseSlug   = str_contains($slug, '_') ? explode('_', $slug)[0] : $slug;
+
+                // fix common misspellings
+                if ($baseSlug === 'employement_letter') { $baseSlug = 'employment_letter'; }
+
+                // “other” covers شهادة ميلاد إلكترونية وأي ملفات لا نعرف سلاقها
+                $fileType = FileType::where('slug', $baseSlug)->first()
+                           ?: FileType::where('slug', 'other')->first();
+
+                if (!$fileType) {           // لا يوجد حتى “other”
+                    $errors++; continue;
                 }
 
-                $fileType = FileType::where('slug', $oldDoc->slug)->first();
+                // ============ 3) Allow multiple “other” ============
+                $query = DoctorFile::where('doctor_id', $doctor->id)
+                                   ->where('file_type_id', $fileType->id);
 
-                if (!$fileType && str_contains($oldDoc->slug, '_')) {
-                    $baseSlug = explode('_', $oldDoc->slug)[0];
-                    $fileType = FileType::where('slug', $baseSlug)->first();
+                // للسلاق “other” اسم الملف يميّز السجل؛ أمّا لباقي الأنواع نمنع التكرار
+                if ($fileType->slug !== 'other') {
+                    if ($query->exists()) { $skipped++; continue; }
+                } else {
+                    $query->where('file_name', $oldDoc->ar_name ?? $fileType->name);
+                    if ($query->exists()) { $skipped++; continue; }
                 }
 
-                if (!$fileType) {
-                    $fileType = FileType::where('slug', 'other')->first();
-                }
-
-                if (!$fileType) {
-                    $this->error("Fallback 'other' file type not found in FileType table.");
-                    $errors++;
-                    continue;
-                }
-
-                $exists = DoctorFile::where('doctor_id', $doctor->id)
-                    ->where('file_type_id', $fileType->id)
-                    ->exists();
-
-                if ($exists) {
-                    $this->line("Document already exists for doctor {$doctor->id}, file type {$fileType->name}");
-                    $skipped++;
-                    continue;
-                }
-
+                // ============ 4) Resolve path ============
                 $filePath = $oldDoc->file_path
-                    ?? $oldDoc->path
-                    ?? $this->guessStoragePath($doctor->doctor_number, $fileType->slug);
+                         ?? $oldDoc->path
+                         ?? $this->guessPath($doctor->doctor_number, $fileType->slug);
 
-                if (!Storage::disk('public')->exists($filePath)) {
-                    $filePath = '';
-                }
+                if (!Storage::disk('public')->exists($filePath)) { $filePath = ''; }
 
+                // ============ 5) Insert ============
                 DoctorFile::create([
                     'doctor_id'     => $doctor->id,
                     'file_type_id'  => $fileType->id,
@@ -82,25 +79,18 @@ class ImportDoctorDocuments extends Command
 
                 $imported++;
             } catch (\Throwable $e) {
-                $this->error("Failed to import document ID {$oldDoc->id}: {$e->getMessage()}");
                 $errors++;
             }
         }
 
-        $this->info("\n=== Import Summary ===");
-        $this->info("Imported:  {$imported}");
-        $this->info("Skipped:   {$skipped}");
-        $this->info("Errors:    {$errors}");
-        $this->info("Total processed: " . ($imported + $skipped + $errors));
+        $this->info("Imported: {$imported} | Skipped: {$skipped} | Errors: {$errors}");
     }
 
-    private function guessStoragePath(string $doctorNumber, string $slug): string
+    private function guessPath(string $doctorNumber, string $slug): string
     {
-        foreach (['jpg', 'jpeg', 'png', 'pdf'] as $ext) {
-            $path = "documents/{$doctorNumber}/{$slug}.{$ext}";
-            if (Storage::disk('public')->exists($path)) {
-                return $path;
-            }
+        foreach (['jpg','jpeg','png','pdf'] as $ext) {
+            $p = "documents/{$doctorNumber}/{$slug}.{$ext}";
+            if (Storage::disk('public')->exists($p)) return $p;
         }
         return "documents/{$doctorNumber}/{$slug}";
     }
