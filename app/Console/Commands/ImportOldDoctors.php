@@ -44,6 +44,7 @@ class ImportOldDoctors extends Command
 
                 [$expirationDate, $status] = $this->getFinanceData($old->id);
 
+
                 $doctor = Doctor::create([
                     'doctor_number'               => $old->id,
                     'name'                        => $old->name,
@@ -141,7 +142,7 @@ class ImportOldDoctors extends Command
     private function getFirstInstitution($memberId)
     {
         $record = DB::connection('lgmc_r')->table('hospital_member')
-            ->where('member_id', $memberId)->first();
+            ->where('member_id', $memberId)->latest()->first();
 
         return optional($record)->hospital_id
             ? optional(Institution::find($record->hospital_id))->id
@@ -151,7 +152,7 @@ class ImportOldDoctors extends Command
     private function getFirstSpecialty($memberId)
     {
         $record = DB::connection('lgmc_r')->table('member_specialty')
-            ->where('member_id', $memberId)->first();
+            ->where('member_id', $memberId)->latest()->first();
 
         return $record ? $this->mapSpecialty($record->specialty_id) : null;
     }
