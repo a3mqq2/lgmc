@@ -39,20 +39,13 @@ class ImportDoctorDocuments extends Command
                 $fileType = FileType::where('slug', $oldDoc->slug)->first();
 
                 if (!$fileType) {
-                    $this->warn("File type not found for slug: {$oldDoc->slug}");
-                    $skipped++;
-                    continue;
+                    $fileType = FileType::where('slug','other')->first();
                 }
 
                 $exists = DoctorFile::where('doctor_id', $doctor->id)
                     ->where('file_type_id', $fileType->id)
                     ->exists();
 
-                if ($exists) {
-                    $this->line("Document already exists for doctor {$doctor->id}, file type {$fileType->name}");
-                    $skipped++;
-                    continue;
-                }
 
                 // محاولة تحديد مسار الملف القديم
                 $filePath = $oldDoc->file_path
