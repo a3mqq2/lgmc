@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->boolean('is_required')->default(0);
             $table->integer('order_number');
+            $table->string('slug');
             $table->timestamps();
         });
     }

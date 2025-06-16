@@ -37,6 +37,92 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"/>
+    
+    <!-- Flatpickr CSS for better date handling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+    
+    <!-- Custom styles for date inputs -->
+    <style>
+        /* تنسيق حقول التاريخ */
+        input[type="date"],
+        input[type="text"].flatpickr-input {
+            width: 100%;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            direction: ltr;
+            text-align: left;
+        }
+        
+        /* RTL support for date inputs */
+        [dir="rtl"] input[type="date"],
+        [dir="rtl"] input[type="text"].flatpickr-input {
+            text-align: right;
+        }
+        
+        /* Focus state */
+        input[type="date"]:focus,
+        input[type="text"].flatpickr-input:focus {
+            color: #495057;
+            background-color: #fff;
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        
+        /* Flatpickr calendar RTL adjustments */
+        .flatpickr-calendar.arrowRight {
+            left: auto !important;
+            right: 0 !important;
+        }
+        
+        .flatpickr-calendar {
+            direction: rtl;
+        }
+        
+        /* Make sure date inputs have consistent height */
+        input[type="date"],
+        input[type="text"].flatpickr-input,
+        .form-control {
+            height: calc(1.5em + 0.75rem + 2px);
+        }
+        
+        /* Fix for RTL arrow positions */
+        .flatpickr-calendar.arrowTop:before,
+        .flatpickr-calendar.arrowTop:after {
+            right: 22px;
+            left: auto;
+        }
+        
+        /* Ensure proper spacing in form groups */
+        .form-group input[type="date"],
+        .form-group input[type="text"].flatpickr-input {
+            margin-top: 0.25rem;
+        }
+        
+        /* Fix placeholder text direction */
+        input[type="date"]::placeholder,
+        input[type="text"].flatpickr-input::placeholder {
+            direction: ltr;
+            text-align: left;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            input[type="date"],
+            input[type="text"].flatpickr-input {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+        }
+    </style>
 
     <style>
         .cke_editable {
@@ -669,8 +755,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
     <script src="https://cdn.ckeditor.com/4.17.2/standard-all/translations/ar.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css">
-    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+    
+    <!-- Flatpickr JS for better date handling -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     
     <script src="{{asset('/assets/js/app.js?v=2')}}"></script>
@@ -707,41 +796,139 @@
     });
     </script>
         
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-         document.querySelectorAll('input[type="date"], .date-picker').forEach(function(field) {
-             let picker = new Litepicker({
-                 element: field,
-                 format: "YYYY-MM-DD",  
-                 singleMode: true,
-                 autoApply: true,
-                 allowRepick: true,
-                 minDate: "1900-01-01",
-                 lang: "en",
-                 onSelect: function(date) {
-                     let selectedDate = date.format("YYYY-MM-DD"); 
-                     field.value = selectedDate;
-                     field.dispatchEvent(new Event('change', { bubbles: true }));
-                     console.log("Selected date:", selectedDate);
-                 }
-             });
-     
-             field.removeAttribute("placeholder");
-     
-             field.addEventListener("blur", function() {
-                 let dateValue = field.value.trim();
-                 if (dateValue) {
-                     let parsedDate = new Date(dateValue);
-                     let formattedDate = parsedDate.getFullYear() + '-' +
-                                         String(parsedDate.getMonth() + 1).padStart(2, '0') + '-' +
-                                         String(parsedDate.getDate()).padStart(2, '0');
-                     field.value = formattedDate;
-                 }
-             });
-         });
-     });
-     
-             </script>
+    <!-- Fixed Date Format Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Initialize Flatpickr for all date inputs
+            const dateInputs = document.querySelectorAll('input[type="date"], .date-picker');
+            
+            dateInputs.forEach(function(field) {
+                // Add form-control class if missing
+                if (!field.classList.contains('form-control')) {
+                    field.classList.add('form-control');
+                }
+                
+                // Create Flatpickr instance
+                flatpickr(field, {
+                    dateFormat: "Y-m-d", // This ensures YYYY-MM-DD format
+                    altInput: false, // IMPORTANT: Don't create alternative input
+                    locale: {
+                        firstDayOfWeek: 6, // Saturday
+                        weekdays: {
+                            shorthand: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'],
+                            longhand: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
+                        },
+                        months: {
+                            shorthand: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+                            longhand: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
+                        },
+                        rangeSeparator: ' إلى ',
+                        weekAbbreviation: 'أسبوع',
+                        scrollTitle: 'قم بالتمرير للزيادة',
+                        toggleTitle: 'اضغط للتبديل',
+                        amPM: ['ص', 'م'],
+                        yearAriaLabel: 'السنة',
+                        monthAriaLabel: 'الشهر',
+                        hourAriaLabel: 'الساعة',
+                        minuteAriaLabel: 'الدقيقة'
+                    },
+                    allowInput: true,
+                    clickOpens: true,
+                    minDate: "1900-01-01",
+                    disableMobile: true, // Force Flatpickr on mobile devices
+                    onReady: function(selectedDates, dateStr, instance) {
+                        // Convert type to text to avoid browser native date picker
+                        instance.input.type = 'text';
+                        
+                        // Ensure the input shows the correct format on load
+                        if (instance.input.value) {
+                            // Parse the date and format it correctly
+                            const date = new Date(instance.input.value);
+                            if (!isNaN(date.getTime())) {
+                                const year = date.getFullYear();
+                                const month = String(date.getMonth() + 1).padStart(2, '0');
+                                const day = String(date.getDate()).padStart(2, '0');
+                                instance.input.value = `${year}-${month}-${day}`;
+                            }
+                        }
+                        
+                        // Add RTL support
+                        instance.calendarContainer.classList.add('flatpickr-rtl');
+                    },
+                    onChange: function(selectedDates, dateStr, instance) {
+                        // Force the format to YYYY-MM-DD
+                        if (selectedDates.length > 0) {
+                            const date = selectedDates[0];
+                            const year = date.getFullYear();
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const formattedDate = `${year}-${month}-${day}`;
+                            
+                            // Update the actual input value
+                            instance.input.value = formattedDate;
+                            
+                            // Trigger change event
+                            instance.input.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+                    }
+                });
+                
+                // Add pattern attribute for validation
+                field.setAttribute('pattern', '\\d{4}-\\d{2}-\\d{2}');
+                field.setAttribute('placeholder', 'YYYY-MM-DD');
+                
+                // Handle manual input
+                field.addEventListener('blur', function() {
+                    const value = this.value.trim();
+                    if (value) {
+                        // Try to parse and reformat the date
+                        const regex = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+                        const match = value.match(regex);
+                        if (match) {
+                            const year = match[1];
+                            const month = match[2].padStart(2, '0');
+                            const day = match[3].padStart(2, '0');
+                            this.value = `${year}-${month}-${day}`;
+                        }
+                    }
+                });
+                
+                // Prevent form submission if date format is incorrect
+                const form = field.closest('form');
+                if (form && !form.hasAttribute('data-date-validated')) {
+                    form.setAttribute('data-date-validated', 'true');
+                    form.addEventListener('submit', function(e) {
+                        let hasError = false;
+                        this.querySelectorAll('input.flatpickr-input').forEach(function(dateField) {
+                            const value = dateField.value.trim();
+                            if (value && !value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                                hasError = true;
+                                dateField.classList.add('is-invalid');
+                                dateField.focus();
+                            } else {
+                                dateField.classList.remove('is-invalid');
+                            }
+                        });
+                        
+                        if (hasError) {
+                            e.preventDefault();
+                            alert('التاريخ يجب أن يكون بصيغة YYYY-MM-DD');
+                        }
+                    });
+                }
+            });
+            
+            // Fix any existing date values on page load
+            document.querySelectorAll('input[value*="-"]').forEach(function(input) {
+                if (input.value && input.value.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) {
+                    const parts = input.value.split('-');
+                    if (parts.length === 3) {
+                        input.value = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+                    }
+                }
+            });
+        });
+    </script>
 
 <script>
     $(document).ready(function() {
@@ -777,6 +964,8 @@
       });
     });
   </script>  
+
+  
 </body>
 
 

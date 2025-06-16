@@ -10,49 +10,66 @@ class PrivateClinicFilesSeeder extends Seeder
 {
     public function run(): void
     {
-        $privateClinic = MedicalFacilityType::find(1); 
+        $privateClinic = MedicalFacilityType::find(1);
 
         if (!$privateClinic) {
             $this->command->error('لم يتم العثور على نوع المنشأة: Private Clinic');
             return;
         }
 
+        // مستندات إنشاء عيادة فردية
         $registrationFiles = [
-            'شهاده سلبية',
-            'وثيقة تأمين من هيئة التأمين الطبي',
+            [
+                'name'         => 'شهاده سلبية',
+                'slug'         => 'negative-certificate',
+                'order_number' => 1,
+            ],
+            [
+                'name'         => 'وثيقة تأمين من هيئة التأمين الطبي',
+                'slug'         => 'medical-insurance-document',
+                'order_number' => 2,
+            ],
         ];
 
-        $index = 1;
-        foreach ($registrationFiles as $name) {
+        foreach ($registrationFiles as $file) {
             FileType::create([
-                'type' => 'medical_facility',
-                'name' => $name,
-                'for_registration' => 1,
-                'is_required' => 1,
-                'doctor_type' => null,
+                'type'                     => 'medical_facility',
+                'name'                     => $file['name'],
+                'slug'                     => $file['slug'],
+                'for_registration'         => 1,
+                'is_required'              => 1,
+                'doctor_type'              => null,
                 'medical_facility_type_id' => $privateClinic->id,
-                'facility_type' => 'single',
-                'order_number' => $index++,
+                'facility_type'            => 'single',
+                'order_number'             => $file['order_number'],
             ]);
         }
 
         // مستندات تجديد عيادة فردية
         $renewalFiles = [
-            'شهادة سلبية سارية المفعول',
-            'وثيقة تأمين من هيئة التأمين الطبي',
+            [
+                'name'         => 'شهادة سلبية سارية المفعول',
+                'slug'         => 'valid-negative-certificate',
+                'order_number' => 1,
+            ],
+            [
+                'name'         => 'وثيقة تأمين من هيئة التأمين الطبي',
+                'slug'         => 'medical-insurance-document',
+                'order_number' => 2,
+            ],
         ];
 
-        $index = 1;
-        foreach ($renewalFiles as $name) {
+        foreach ($renewalFiles as $file) {
             FileType::create([
-                'type' => 'medical_facility',
-                'name' => $name,
-                'for_registration' => 0,
-                'is_required' => 1,
-                'doctor_type' => null,
+                'type'                     => 'medical_facility',
+                'name'                     => $file['name'],
+                'slug'                     => $file['slug'],
+                'for_registration'         => 0,
+                'is_required'              => 1,
+                'doctor_type'              => null,
                 'medical_facility_type_id' => $privateClinic->id,
-                'facility_type' => 'single',
-                'order_number' => $index++,
+                'facility_type'            => 'single',
+                'order_number'             => $file['order_number'],
             ]);
         }
 

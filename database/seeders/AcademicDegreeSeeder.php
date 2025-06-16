@@ -15,7 +15,9 @@ class AcademicDegreeSeeder extends Seeder
             ['name' => 'بكالوريوس'],
             ['name' => 'ماجستير'],
             ['name' => 'دكتوراه'],
-            ['name' => 'زمالة'],
+            ['name' => 'بروفيسور'],
+            ['name' => 'دبلوم'],
+            ['name' => 'شهادة تخصص'],
         ];
 
         foreach ($degrees as $degree) {

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\AcademicDegree;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Models\Doctor;
@@ -29,8 +30,6 @@ class ImportOldDoctors extends Command
             try {
                 $quniversityId = $this->mapUniversity($old->qualification_university_id);
                 $universityId = $this->mapUniversity($old->university_id);
-                $countryId    = $this->mapCountry($old->country_id);
-                $type         = $this->determineDoctorType($countryId);
 
                 $roleToRank = [
                     1 => 2, // طبيب ممارس
@@ -44,7 +43,6 @@ class ImportOldDoctors extends Command
 
                 [$expirationDate, $status] = $this->getFinanceData($old->id);
 
-
                 $doctor = Doctor::create([
                     'doctor_number'               => $old->id,
                     'name'                        => $old->name,
@@ -52,14 +50,17 @@ class ImportOldDoctors extends Command
                     'national_number'             => $old->national_id,
                     'mother_name'                 => $old->mother_name_en,
                     'date_of_birth'               => $old->birthday,
-                    'gender'                      => $old->gender == 1 ? 'male' : 'female',
+                    'gender'                      => $old->gender == 1 ? \App\Enums\GenderEnum::male : \App\Enums\GenderEnum::female,
                     'passport_number'             => $old->pid,
                     'passport_expiration'         => $old->pid_date,
                     'address'                     => $old->address,
                     'phone'                       => $old->phone,
                     'internership_complete'       => $old->internership_complete,
-                    'qualification_university_id' => $quniversityId,
+                    'graduation_date'       => $old->internership_complete,
+                    'qualification_university_id' => $universityId,
                     'hand_graduation_id'          => $universityId,
+                    'academic_degree_univeristy_id' => $quniversityId,
+                    'academic_degree_id' => $old->qualification,
                     'certificate_of_excellence_date' => $old->qualification_date,
                     'doctor_rank_id'              => $roleToRank[$old->role] ?? null,
                     'experience'                  => $old->experience,
@@ -68,8 +69,8 @@ class ImportOldDoctors extends Command
                     'created_at'                  => now(),
                     'updated_at'                  => now(),
                     'branch_id'                   => 1,
-                    'country_id'                  => $countryId,
-                    'type'                        => $type,
+                    'country_id'                  => 1,
+                    'type'                        => 'libyan',
                     'index'                       => $old->id,
                     'membership_status'           => $status,
                     'membership_expiration_date'  => $expirationDate,
@@ -77,7 +78,7 @@ class ImportOldDoctors extends Command
                     'email_verified_at'           => now(),
                     'documents_completed'         => true,
                     'institution_id'              => $institutionId,
-                    'specialty_1_id'              => isset($roleToRank[$old->role]) && $roleToRank[$old->role] == 1 ? null : $specialtyId,
+                    'marital_status'              => $old->statutes
                 ]);
 
                 $doctor->makeCode();
@@ -143,6 +144,7 @@ class ImportOldDoctors extends Command
     {
         $record = DB::connection('lgmc_r')->table('hospital_member')
             ->where('member_id', $memberId)->latest()->first();
+
 
         return optional($record)->hospital_id
             ? optional(Institution::find($record->hospital_id))->id

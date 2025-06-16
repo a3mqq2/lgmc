@@ -474,7 +474,7 @@
                                     <tr>
                                         <th class="bg-light text-primary">  الجنس   </th>
                                         <td>
-                                            {{$doctor->gender == "male" ? 'ذكر' : 'انثى'}}
+                                            {{$doctor->gender->value == "male" ? 'ذكر' : 'انثى'}}
                                         </td>
                                     </tr>
                                     @endif

@@ -69,7 +69,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BranchSeeder::class);
         // $this->call(SpecialtySeeder::class);
         $this->call(FileTypeSeeder::class);
-        $this->call(UniversitySeeder::class);
+        // $this->call(UniversitySeeder::class);
         // $this->call(ArabUniversitiesSeeder::class);
         $this->call(VaultSeeder::class);
         $this->call(MedicalFacilityTypeSeeder::class); // ← 👈 لازم تجي قبل
@@ -86,7 +86,6 @@ class DatabaseSeeder extends Seeder
         $this->call(EmailSeeder::class);
         $this->call(CountryMailableSeeder::class);
         $this->call(FinancialCategorySeeder::class);
-        $this->call(OtherFileTypeSeeder::class);
         Artisan::call('import:hospitals');
     }
 }

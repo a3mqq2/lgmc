@@ -16,6 +16,7 @@ class FileType extends Model
         'doctor_type',
         'for_registration',
         'facility_type',
+        'slug',
     ];
 
     public function getFileTypeArAttribute()

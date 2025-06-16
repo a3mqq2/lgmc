@@ -25,7 +25,7 @@
             
             <div class="col-md-12 mt-2">
                 <label for="">تاريخ آخر تجديد</label>
-                <input type="date" name="last_issued_date" value="{{ old('last_issued_date') }}" class="form-control">
+                <input type="date" name="last_issued_date" value="{{ old('last_issued_date') }}" >
             </div>
 
             <div id="no_subscription_message" class="col-md-12 mt-2" style="display: none;">
