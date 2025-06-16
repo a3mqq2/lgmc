@@ -763,7 +763,6 @@
                                 <th class="bg-light text-primary">#</th>
                                 <th class="bg-light text-primary">العرض</th>
                                 <th class="bg-light text-primary">اسم الملف</th>
-                                <th class="bg-light text-primary">نوع الملف</th>
                                 <th class="bg-light text-primary">تحميل</th>
                                 <th class="bg-light text-primary">إجراءات</th>
                             </tr>
@@ -774,7 +773,6 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td><img src="{{ Storage::url($file->file_path) }}" class="img-thumbnail" style="width:50px;height:50px;object-fit:cover;"></td>
                                     <td>{{ $file->file_name }}</td>
-                                    <td>{{ $file->fileType?->name ?? '—' }}</td>
                                     <td>
                                         <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fa fa-eye"></i></a>
                                         <a download href="{{ Storage::url($file->file_path) }}" class="btn btn-sm btn-outline-secondary"><i class="fa fa-download"></i></a>
