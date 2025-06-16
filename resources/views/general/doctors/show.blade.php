@@ -617,7 +617,13 @@
                                         </tr>
                                         <tr>
                                             <th class="bg-light text-primary">تاريخ الحصول عليها </th>
-                                            <td>{{ $doctor->graduation_date }}</td>
+                                            <td>
+                                                @if ($doctor->type->value == "libyan")
+                                                    {{date('Y', strtotime($doctor->graduation_date))}}
+                                                    @else 
+                                                    {{ $doctor->graduation_date }}
+                                                @endif
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -662,7 +668,13 @@
                                         <tr>
                                             <th class="bg-light text-primary"> بتاريخ   </th>
                                             <td>
+
+                                                @if ($doctor->type->value == "libyan")
+                                                {{ date('Y', strtotime($doctor->certificate_of_excellence_date) ) }}
+                                                    @else 
                                                 {{ $doctor->certificate_of_excellence_date }}
+                                                @endif
+
                                             </td>
                                         </tr>
                                     </table>
