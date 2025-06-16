@@ -14,7 +14,7 @@ class ImportDoctorDocuments extends Command
     protected $signature   = 'import:doctor-documents';
     protected $description = 'Import doctor documents from lgmc_r.documents into LGMC.doctor_files';
 
-    public function handle()
+    public function handle(): void
     {
         $this->info('Starting import of doctor documents...');
 
@@ -27,37 +27,26 @@ class ImportDoctorDocuments extends Command
         foreach ($oldDocuments as $oldDoc) {
             try {
                 $doctor = Doctor::where('index', $oldDoc->member_id)->first();
-                if (!$doctor) {
-                    $this->warn("Doctor not found for member_id: {$oldDoc->member_id}");
-                    $skipped++;
-                    continue;
-                }
+                if (!$doctor) { $skipped++; continue; }
 
-                $slug = $oldDoc->slug;
-                $fileType = FileType::where('slug', $slug)->first();
-                if (!$fileType && str_contains($slug, '_')) {
-                    $baseSlug = explode('_', $slug)[0];
-                    $fileType = FileType::where('slug', $baseSlug)->first();
-                }
+                $slug       = $oldDoc->slug ?? '';
+                $targetSlug = $this->normalizeSlug($slug);
+
+                $fileType = FileType::where('slug', $targetSlug)->first();
                 if (!$fileType) {
-                    $this->warn("File type not found for slug: {$slug}");
-                    $skipped++;
-                    continue;
+                    $fileType = FileType::where('slug', 'other')->first();
                 }
+                if (!$fileType) { $skipped++; continue; }
 
-                if (
-                    DoctorFile::where('doctor_id', $doctor->id)
-                        ->where('file_type_id', $fileType->id)
-                        ->exists()
-                ) {
-                    $this->line("Document already exists for doctor {$doctor->id}, file type {$fileType->name}");
-                    $skipped++;
-                    continue;
-                }
+                $exists = DoctorFile::where('doctor_id', $doctor->id)
+                    ->where('file_type_id', $fileType->id)
+                    ->exists();
+
+                if ($exists) { $skipped++; continue; }
 
                 $filePath = $oldDoc->file_path
                     ?? $oldDoc->path
-                    ?? $this->guessPath($doctor->doctor_number, $fileType->slug);
+                    ?? $this->guessPath($doctor->doctor_number, $targetSlug);
 
                 if (!Storage::disk('public')->exists($filePath)) {
                     $filePath = '';
@@ -75,19 +64,24 @@ class ImportDoctorDocuments extends Command
                     'updated_at'    => $oldDoc->updated_at,
                 ]);
 
-                $this->info("✓ Imported document: {$oldDoc->ar_name} for doctor {$doctor->id}");
                 $imported++;
-            } catch (\Exception $e) {
-                $this->error("✗ Failed to import document ID {$oldDoc->id}: " . $e->getMessage());
+            } catch (\Throwable $e) {
                 $errors++;
             }
         }
 
-        $this->info("\n=== Import Summary ===");
-        $this->info("Imported:  {$imported}");
-        $this->info("Skipped:   {$skipped}");
-        $this->info("Errors:    {$errors}");
-        $this->info("Total processed: " . ($imported + $skipped + $errors));
+        $this->info("Imported: {$imported} | Skipped: {$skipped} | Errors: {$errors}");
+    }
+
+    private function normalizeSlug(string $raw): string
+    {
+        $base = str_contains($raw, '_') ? explode('_', $raw)[0] : $raw;
+
+        return match ($base) {
+            'employment_letter', 'employement_letter' => 'employment_letter',
+            'other'                                      => 'other',
+            default                                      => $base,
+        };
     }
 
     private function guessPath(string $doctorNumber, string $slug): string
