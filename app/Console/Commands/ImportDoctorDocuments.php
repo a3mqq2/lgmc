@@ -14,7 +14,7 @@ class ImportDoctorDocuments extends Command
     protected $signature   = 'import:doctor-documents';
     protected $description = 'Import doctor documents from lgmc_r.documents into LGMC.doctor_files';
 
-    public function handle(): void
+    public function handle()
     {
         $this->info('Starting import of doctor documents...');
 
@@ -26,28 +26,40 @@ class ImportDoctorDocuments extends Command
 
         foreach ($oldDocuments as $oldDoc) {
             try {
+                /** @var Doctor|null $doctor */
                 $doctor = Doctor::where('index', $oldDoc->member_id)->first();
-                if (!$doctor) { $skipped++; continue; }
 
-                $slug       = $oldDoc->slug ?? '';
-                $targetSlug = $this->normalizeSlug($slug);
-
-                $fileType = FileType::where('slug', $targetSlug)->first();
-                if (!$fileType) {
-                    $fileType = FileType::where('slug', 'other')->first();
+                if (!$doctor) {
+                    $this->warn("Doctor not found for member_id: {$oldDoc->member_id}");
+                    $skipped++;
+                    continue;
                 }
-                if (!$fileType) { $skipped++; continue; }
+
+                /** @var FileType|null $fileType */
+                $fileType = FileType::where('slug', $oldDoc->slug)->first();
+
+                if (!$fileType) {
+                    $this->warn("File type not found for slug: {$oldDoc->slug}");
+                    $skipped++;
+                    continue;
+                }
 
                 $exists = DoctorFile::where('doctor_id', $doctor->id)
                     ->where('file_type_id', $fileType->id)
                     ->exists();
 
-                if ($exists) { $skipped++; continue; }
+                if ($exists) {
+                    $this->line("Document already exists for doctor {$doctor->id}, file type {$fileType->name}");
+                    $skipped++;
+                    continue;
+                }
 
+                // محاولة تحديد مسار الملف القديم
                 $filePath = $oldDoc->file_path
                     ?? $oldDoc->path
-                    ?? $this->guessPath($doctor->doctor_number, $targetSlug);
+                    ?? $this->guessStoragePath($doctor->doctor_number, $oldDoc->slug);
 
+                // إذا لم يكن الملف موجودًا على التخزين، ضع مسارًا فارغًا على الأقل لتجنب خطأ NOT NULL
                 if (!Storage::disk('public')->exists($filePath)) {
                     $filePath = '';
                 }
@@ -64,34 +76,35 @@ class ImportDoctorDocuments extends Command
                     'updated_at'    => $oldDoc->updated_at,
                 ]);
 
+                $this->info("✓ Imported document: {$oldDoc->ar_name} for doctor {$doctor->id}");
                 $imported++;
-            } catch (\Throwable $e) {
+            } catch (\Exception $e) {
+                $this->error("✗ Failed to import document ID {$oldDoc->id}: " . $e->getMessage());
                 $errors++;
             }
         }
 
-        $this->info("Imported: {$imported} | Skipped: {$skipped} | Errors: {$errors}");
+        $this->info("\n=== Import Summary ===");
+        $this->info("Imported:  {$imported}");
+        $this->info("Skipped:   {$skipped}");
+        $this->info("Errors:    {$errors}");
+        $this->info("Total processed: " . ($imported + $skipped + $errors));
     }
 
-    private function normalizeSlug(string $raw): string
+    /**
+     * Guess a public storage path for a document if no explicit path exists.
+     */
+    private function guessStoragePath(string $doctorNumber, string $slug): string
     {
-        $base = str_contains($raw, '_') ? explode('_', $raw)[0] : $raw;
-
-        return match ($base) {
-            'employment_letter', 'employement_letter' => 'employment_letter',
-            'other'                                      => 'other',
-            default                                      => $base,
-        };
-    }
-
-    private function guessPath(string $doctorNumber, string $slug): string
-    {
-        foreach (['jpg', 'jpeg', 'png', 'pdf'] as $ext) {
+        $extensions = ['jpg', 'jpeg', 'png', 'pdf'];
+        foreach ($extensions as $ext) {
             $path = "documents/{$doctorNumber}/{$slug}.{$ext}";
             if (Storage::disk('public')->exists($path)) {
                 return $path;
             }
         }
+
+        // default placeholder (will be stored as empty if the file truly doesn't exist)
         return "documents/{$doctorNumber}/{$slug}";
     }
 }
