@@ -550,16 +550,7 @@
                             <h3 class="text-primary"> بيانات الاتصال </h3>
                             <table class="table table-bordered">
                                 <tbody>
-                                    
-
-                                    @if ($doctor->address)
-                                    <tr>
-                                        <th class="bg-light text-primary"> العنوان </th>
-                                        <td>{{ $doctor->address }}</td>
-                                    </tr>
-                                    @endif
-
-                                    
+                             
                                     @if ($doctor->type->value != "visitor")
                                     <tr>
                                         <th class="bg-light text-primary">رقم الهاتف</th>
@@ -583,8 +574,6 @@
                                         <td>{{ $doctor->address }}</td>
                                     </tr>
                                     @endif
-                                    
-                                
                                 </tbody>
                             </table>
                         </div>
