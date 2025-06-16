@@ -27,7 +27,7 @@ class ImportDoctorDocuments extends Command
         foreach ($oldDocuments as $oldDoc) {
             try {
                 // البحث عن الطبيب في قاعدة البيانات الجديدة
-                $doctor = Doctor::where('old_member_id', $oldDoc->member_id)->first();
+                $doctor = Doctor::where('index', $oldDoc->member_id)->first();
                 
                 if (!$doctor) {
                     $this->warn("Doctor not found for member_id: {$oldDoc->member_id}");
