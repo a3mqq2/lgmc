@@ -607,11 +607,15 @@
                                         <tr>
                                             <th class="bg-light text-primary">تاريخ الحصول عليها </th>
                                             <td>
-                                                @if ($doctor->type->value == "libyan")
-                                                    {{date('Y', strtotime($doctor->graduation_date))}}
-                                                    @else 
-                                                    {{ $doctor->graduation_date }}
+
+                                                @if ($doctor->graduation_date)
+                                                    @if ($doctor->type->value == "libyan")
+                                                        {{date('Y', strtotime($doctor->graduation_date))}}
+                                                        @else 
+                                                        {{ $doctor->graduation_date }}
+                                                    @endif
                                                 @endif
+
                                             </td>
                                         </tr>
                                     </tbody>
@@ -664,12 +668,13 @@
                                             <th class="bg-light text-primary"> بتاريخ   </th>
                                             <td>
 
-                                                @if ($doctor->type->value == "libyan")
-                                                {{ date('Y', strtotime($doctor->certificate_of_excellence_date) ) }}
-                                                    @else 
-                                                {{ $doctor->certificate_of_excellence_date }}
+                                                @if ($doctor->certificate_of_excellence_date)
+                                                    @if ($doctor->type->value == "libyan")
+                                                    {{ date('Y', strtotime($doctor->certificate_of_excellence_date) ) }}
+                                                        @else 
+                                                    {{ $doctor->certificate_of_excellence_date }}
+                                                    @endif
                                                 @endif
-
                                             </td>
                                         </tr>
                                     </table>
@@ -727,7 +732,11 @@
                                     <tbody>
                                         <tr>
                                             <th class="bg-light text-right">تاريخ الانتساب</th>
-                                            <td>{{date('Y-m-d', strtotime($doctor->registered_at) )}}</td>
+                                            <td>
+                                                @if ($doctor->registered_at)
+                                                     {{date('Y-m-d', strtotime($doctor->registered_at) )}}
+                                                @endif
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
