@@ -469,7 +469,7 @@
     </div>
 
     <!-- Status Change Form -->
-    @if ($medicalFacility->membership_status->value == 'under_approve' || $medicalFacility->membership_status->value == 'under_renew')
+    @if (($medicalFacility->membership_status->value == 'under_approve' || $medicalFacility->membership_status->value == 'under_renew') && get_area_name() == "admin")
     <div class="row mt-4">
         <div class="col-12">
             <form action="{{route(get_area_name().'.medical-facilities.change-status', $medicalFacility)}}" method="POST">

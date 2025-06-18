@@ -240,7 +240,10 @@
         <div class="photo-section">
             <div class="photo-container">
                 <div class="">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=wwe.example.com" alt="QR Code">
+                    @php
+                        $link = env('APP_URL') . "doctors/" . $doctor->id . '/show';
+                    @endphp
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={{$link}}" alt="QR Code">
                 </div>
             </div>
             <div class="code-section">{{ $doctor->code }}</div>

@@ -69,6 +69,14 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:branch_operation
     ->name('medical-facilities.upload-file');
     Route::delete('medical-facilities/{file}', [MedicalFacilityFileController::class, 'destroy']) // alias for easy access
     ->name('medical-facilities.destroy');
+    Route::post('/medical-facilities/{medicalFacility}/change-status', [MedicalFacilityController::class, 'change_status'])->name('medical-facilities.change-status');
+    Route::post('medical-facilities/{medicalFacility}', [MedicalFacilityFileController::class, 'store'])->name('medical-facilities.upload-file');
+    Route::get('medical-facilities/{medicalFacility}/print-license', [MedicalFacilityController::class, 'print_license'])->name('medical-facilities.print-license');
+
+
+    Route::post('/doctors/{doctor}/add-card', [DoctorController::class, 'addCard'])
+    ->name('doctors.add-card');
+
     // ===== END DOCTOR FILES ROUTES ===== //
 
 
@@ -120,6 +128,13 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:branch_operation
     Route::post('/doctors/{doctor}/renew-membership', [DoctorController::class, 'renewMembership'])
     ->name('doctors.renew-membership');
 
+
+    Route::post('/doctors/{doctor}/add-card', [DoctorController::class, 'addCard'])
+    ->name('doctors.renew-membership');
+
+    Route::post('/doctors/{doctor}/add-card', [DoctorController::class, 'addCard'])
+    ->name('doctors.add-card');
+    
 
     Route::resource('licences', LicenceController::class);
     Route::get('/licences/{licence}/print', [LicenceController::class, 'print'])->name('licences.print');

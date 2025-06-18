@@ -71,7 +71,7 @@ class DoctorFileController extends Controller
                 'action'        => 'upload_doctor_file',
             ]);
 
-            return redirect()->route(get_area_name() . '.doctors.show', $doctor->id)
+            return redirect()->route(get_area_name() . '.doctors.show', ['doctor' => $doctor->id, 'redirect' => 'documents'])
                 ->with('success', 'تم رفع الملف بنجاح.');
         } catch (\Exception $e) {
             return redirect()->back()

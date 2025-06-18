@@ -10,7 +10,7 @@ use App\Services\InvoiceService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\{Auth, DB};
 use PhpOffice\PhpSpreadsheet\Calculation\Financial\Securities\Price;
-use App\Models\{Doctor, Invoice, Licence, Log, MedicalFacility, Pricing, Signature, Transaction, Vault};
+use App\Models\{Doctor, Institution, Invoice, Licence, Log, MedicalFacility, Pricing, Signature, Transaction, Vault};
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sign;
 
@@ -119,7 +119,7 @@ class LicenceController extends Controller
             'doctor_id' => 'required|exists:doctors,id',
             'doctor_rank_id' => 'required|exists:doctor_ranks,id',
             'issue_date' => 'required|date',
-            'medical_facility_id' => 'required|exists:medical_facilities,id',
+            'medical_facility_id' => 'required',
         ]);
 
         try {
@@ -127,6 +127,15 @@ class LicenceController extends Controller
 
 
             $doctor = Doctor::findOrFail($validated['doctor_id']);
+
+            $institution = Institution::where('name', $request->medical_facility_id)->first();
+            $medicalFacility = MedicalFacility::where('name', $request->medical_facility_id)->first();
+
+            if(!$institution && !$medicalFacility)
+            {
+                return redirect()
+                ->route(get_area_name().'.doctors.show', ['doctor' => $doctor, 'redirect' => 'licenses']);
+            }
 
             $licence = new Licence();
             $licence->doctor_id = $validated['doctor_id'];
@@ -138,7 +147,8 @@ class LicenceController extends Controller
             $licence->created_by = Auth::id();
             $licence->specialty_id = $request->specialty_id;
             $licence->doctor_rank_id = $request->doctor_rank_id;
-            $licence->workin_medical_facility_id = $request->medical_facility_id ?? null;
+            $licence->workin_medical_facility_id = $medicalFacility ? $medicalFacility->id : null;
+            $licence->institution_id =  $institution ? $institution->id : null;
             $licence->amount = 0;
             $licence->save();
 
@@ -159,7 +169,7 @@ class LicenceController extends Controller
             $medicalFacility = MedicalFacility::find($request->medical_facility_id);
             $invoice = new Invoice();
             $invoice->invoice_number = rand(0,999999999);
-            $invoice->description = "فاتورة اذن مزاولة جديد للطبيب " . $doctor->name . ' بالعمل في  ' . $medicalFacility->name;
+            $invoice->description = "فاتورة اذن مزاولة جديد للطبيب " . $doctor->name . ' بالعمل في  ' . $request->medical_facility_id;
             $invoice->user_id = auth()->id();
             $invoice->amount = $pricing->amount;
             $invoice->status = "unpaid";
@@ -185,7 +195,7 @@ class LicenceController extends Controller
             DB::commit();
 
             return redirect()
-                ->route(get_area_name() . '.doctors.show', $doctor)
+                ->route(get_area_name() . '.doctors.show', ['doctor' => $doctor, 'redirect' => 'licenses'])
                 ->with('success', 'تم إضافة إذن المزاولة بنجاح. رقم الإذن: ' . $licence->code);
 
         } catch (\Exception $e) {

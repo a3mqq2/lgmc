@@ -67,9 +67,9 @@ class DatabaseSeeder extends Seeder
         $this->call(CountrySeeder::class);
         $this->call(AcademicDegreeSeeder::class);
         $this->call(BranchSeeder::class);
-        // $this->call(SpecialtySeeder::class);
+        $this->call(SpecialtySeeder::class);
         $this->call(FileTypeSeeder::class);
-        // $this->call(UniversitySeeder::class);
+        $this->call(UniversitySeeder::class);
         // $this->call(ArabUniversitiesSeeder::class);
         $this->call(VaultSeeder::class);
         $this->call(MedicalFacilityTypeSeeder::class); // ← 👈 لازم تجي قبل

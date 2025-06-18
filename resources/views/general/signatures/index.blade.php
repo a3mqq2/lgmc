@@ -42,7 +42,7 @@
                                     @foreach($signatures as $index => $signature)
                                         @php
                                             $selected = $signature->branch_id
-                                                ? optional($signature->branch)->signature_id === $signature->id
+                                                ? optional($signature->branch)->signature_id == $signature->id
                                                 : $signature->is_selected;
                                         @endphp
                                         <tr>
@@ -54,7 +54,7 @@
                                             <td>{{ $signature->branch?->name ?? 'النقابة العامة' }}</td>
                                             @php
                                             $selected = $signature->branch_id
-                                                ? optional($signature->branch)->signature_id === $signature->id    // فروع
+                                                ? optional($signature->branch)->signature_id == $signature->id    // فروع
                                                 : $signature->is_selected;                                         // النقابة العامة
                                         @endphp
                                         

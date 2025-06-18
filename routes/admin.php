@@ -48,6 +48,9 @@ Route::get ('/doctors/{doctor}/print-membership-form',         [DoctorController
 Route::post('/doctors/{doctor}/renew-membership', [DoctorController::class, 'renewMembership'])
     ->name('user.doctors.renew-membership');
 
+    Route::post('/doctors/{doctor}/add-card', [DoctorController::class, 'addCard'])
+    ->name('doctors.add-card');
+    
 // Route لتجديد العضوية - للإدارة  
 Route::post('/doctors/{doctor}/renew-membership', [DoctorController::class, 'renewMembership'])
     ->name('doctors.renew-membership');

@@ -194,7 +194,7 @@
 
 
 
-                @if ($licence->doctor->institution && ! $licence->doctor->MedicalFacility)
+                @if ($licence->institution)
                 <div class="in-place">
                  <h6 class="font-weight-bold">
                      <strong>
@@ -205,7 +205,7 @@
  
              <div class="medical-facility-box card">
                  <h4 class="font-weight-bold">
-                         <strong>  {{$licence->doctor->institution}}  </strong>
+                         <strong>  {{$licence->institution->name}}  </strong>
                  </h4>
  
              </div>
@@ -235,9 +235,9 @@
                 <div class="qr-code card p-2">
                     <div class="code">
                         @php
-                        $link = env('APP_URL') . "doctors/" . $licence->doctor->id . '/show';
-                    $qrCode = DNS2D::getBarcodePNG($link, 'QRCODE', 5, 5);
-                    @endphp
+                            $link = env('APP_URL') . "doctors/" . $licence->doctor->id . '/show';
+                            $qrCode = DNS2D::getBarcodePNG($link, 'QRCODE', 5, 5);
+                        @endphp
                     <img src="data:image/png;base64,{{ $qrCode }}" alt="qrcode" style="width: 50px; height: 50px;" />
                     </div>
                 </div>

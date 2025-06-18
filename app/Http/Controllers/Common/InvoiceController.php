@@ -183,7 +183,7 @@ class InvoiceController extends Controller
                  'branch_id' => $doctor->branch_id,
                  'user_id' => auth()->id(),
                  'doctor_id' => $doctor->id,
-                 'category' => 'registration'
+                 'category' => 'custom'
              ];
      
              $invoice = Invoice::create($invoiceData);
@@ -241,7 +241,7 @@ class InvoiceController extends Controller
                  ]);
              }
      
-             return redirect()->back()->with('success', 'تم إنشاء الفاتورة رقم ' . $invoice->id . ' بنجاح بمبلغ ' . number_format($amount, 2) . ' د.ل');
+             return redirect()->route(get_area_name().'.doctors.show',['doctor' => $doctor, 'redirect' => 'finance'])->with('success', 'تم إنشاء الفاتورة رقم ' . $invoice->id . ' بنجاح بمبلغ ' . number_format($amount, 2) . ' د.ل');
      
          } catch (\Exception $e) {
              \Log::error('Error creating manual dues invoice', [

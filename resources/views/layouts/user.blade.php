@@ -616,7 +616,7 @@
                         </button>
                     </div>
                     <div class="input-group mt-2">
-                        <input type="text" name="phone" placeholder="ابحث برقم هاتف الطبيب" class="form-control" id="">
+                        <input type="text" name="name" placeholder="ابحث باسم الطبيب" class="form-control" id="">
                         <button type="submit" class="btn btn-info btn-sm">
                             <i class="fa fa-search"></i> بحث
                         </button>

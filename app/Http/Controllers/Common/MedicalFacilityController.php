@@ -270,7 +270,13 @@ class MedicalFacilityController extends Controller
             return redirect()->back()->withErrors(['error' => 'لا يوجد رخصة لهذه المنشأة الطبية']);
         }
 
-        $signature =  Signature::where('is_selected', 1)->where('branch_id', null)->first();
+        if(get_area_name() == "admin")
+        {
+            $signature =  Signature::where('is_selected', 1)->where('branch_id', null)->first();
+        } else {
+            $signature =  Signature::where('is_selected', 1)->where('branch_id', auth()->user()->branch_id)->first();
+        }
+
         return view('general.medical-facilities.license', compact('medicalFacility', 'license','signature'));
     }
 }

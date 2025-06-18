@@ -8,6 +8,10 @@
     <h2>{{$doctor->name}}</h2>
 </div>
 
+@php
+    $redirect = request('redirect') ?? "information";
+@endphp
+
 
 @if ($doctor->membership_status->value == "banned")
     <div class="col-12 mb-3">
@@ -184,7 +188,19 @@
             @if (($doctor->type->value == "libyan" && get_area_name() == "user") || ($doctor->type->value == "foreign" || $doctor->type->value == "palestinian") && get_area_name() == "admin")
             <a href="{{ route(get_area_name().'.doctors.edit',$doctor) }}" class="btn btn-info text-light">تعديل <i class="fa fa-edit"></i></a>
             <a href="{{ route(get_area_name().'.doctors.print',$doctor) }}" class="btn btn-secondary text-light">طباعة بيانات الطبيب <i class="fa fa-print"></i></a>
-            <a href="{{ route(get_area_name().'.doctors.print-id',$doctor) }}" class="btn btn-primary text-light"> طباعة  البطاقة  <i class="fa fa-code"></i></a>
+                
+            
+                @if ($doctor->card_expiration_date && \Carbon\Carbon::parse($doctor->card_expiration_date)->isFuture())
+                    <a href="{{ route(get_area_name() . '.doctors.print-id', $doctor) }}" class="btn btn-primary text-light">
+                        طباعة البطاقة <i class="fa fa-code"></i>
+                    </a>
+                @else
+                    <a class="btn btn-primary text-light disabled">
+                        طباعة البطاقة <i class="fa fa-code"></i>
+                    </a>
+                @endif
+
+
             @endif
 
         
@@ -341,7 +357,7 @@
             <ul class="nav nav-tabs" id="doctorTab" role="tablist">
                 {{-- البيانات الشخصية --}}
                 <li class="nav-item">
-                    <button class="nav-link active" id="personal-tab" data-bs-toggle="tab"
+                    <button class="nav-link {{$redirect == "information" ? "active" : ""}} " id="personal-tab" data-bs-toggle="tab"
                             data-bs-target="#personal" type="button">
                         البيانات الشخصية
                     </button>
@@ -350,7 +366,7 @@
                 {{-- مستندات الطبيب --}}
                 @if($user->permissions()->where('name', 'doctor-finance-view')->count())
                     <li class="nav-item">
-                        <button class="nav-link" id="docs-tab" data-bs-toggle="tab"
+                        <button class="nav-link {{$redirect == "documents" ? "active" : ""}} " id="docs-tab" data-bs-toggle="tab"
                                 data-bs-target="#docs" type="button">
                             مستندات الطبيب
                         </button>
@@ -364,7 +380,7 @@
                     $user->permissions()->where('name', 'doctor-finance-view')->count()
                 )
                     <li class="nav-item">
-                        <button class="nav-link" id="finance-tab" data-bs-toggle="tab"
+                        <button class="nav-link {{$redirect == "finance" ? "active" : ""}}" id="finance-tab" data-bs-toggle="tab"
                                 data-bs-target="#finance" type="button">
                             الملف المالي
                         </button>
@@ -374,7 +390,7 @@
                 {{-- أذونات المزاولة --}}
                 @if($user->permissions()->where('name', 'practice-permit-manage')->count())
                     <li class="nav-item">
-                        <button class="nav-link" id="licenses-tab" data-bs-toggle="tab"
+                        <button class="nav-link {{$redirect == "licenses" ? "active" : ""}}" id="licenses-tab" data-bs-toggle="tab"
                                 data-bs-target="#licenses" type="button">
                             أذونات المزاولة
                         </button>
@@ -388,7 +404,7 @@
                     $user->permissions()->where('name', 'doctor-mails')->count()
                 )
                     <li class="nav-item">
-                        <button class="nav-link" id="external-tab" data-bs-toggle="tab"
+                        <button class="nav-link  {{$redirect == "external" ? "active" : ""}}" id="external-tab" data-bs-toggle="tab"
                                 data-bs-target="#external" type="button">
                             طلبات الأوراق الخارجية
                         </button>
@@ -406,7 +422,7 @@
                     )
                 )
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-bs-toggle="tab"
+                        <button class="nav-link   {{$redirect == "medical_facility" ? "active" : ""}} " data-bs-toggle="tab"
                                 data-bs-target="#tab-medical-facility" type="button">
                             <i class="fas fa-hospital me-1"></i> المنشأة الطبية
                         </button>
@@ -416,7 +432,7 @@
             
 
             <div class="tab-content pt-3">
-                <div class="tab-pane fade show active" id="personal" role="tabpanel">
+                <div class="tab-pane fade     {{$redirect == "information" ? "active show" : ""}} " id="personal" role="tabpanel">
                     <div class="row">
                         <div class="col-md-9">
                             <h3 class="text-primary">البيانات الشخصية</h3>
@@ -748,7 +764,7 @@
                 
 
                 {{-- تاب المستندات المحدث --}}
-                <div class="tab-pane fade" id="docs" role="tabpanel">
+                <div class="tab-pane fade    {{$redirect == "documents" ? "active show" : ""}} " id="docs" role="tabpanel">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">مستندات الطبيب</h5>
                     <div>
@@ -812,19 +828,64 @@
             </div>
 
             {{-- تاب المالي المحدث --}}
-            <div class="tab-pane fade" id="finance" role="tabpanel">
+            <div class="tab-pane fade    {{$redirect == "finance" ? "active show" : ""}} " id="finance" role="tabpanel">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0"> الملف المالي للطبيب</h5>
-
-                    @if (($doctor->type->value == "libyan" && get_area_name() == "user") || (get_area_name() == "admin" && in_array($doctor->type->value,['palestinian','foreign']) ))
-                    <button type="button" class="btn btn-success text-light" data-bs-toggle="modal" data-bs-target="#addManualDuesModal">
-                        <i class="fa fa-plus"></i> إضافة مستحقات يدوية
-                    </button>
-                    @endif
-
-                    
+            
+                    <div class="btn-group">
+                        @if (($doctor->type->value == "libyan" && get_area_name() == "user") || (get_area_name() == "admin" && in_array($doctor->type->value,['palestinian','foreign']) ))
+                        <button type="button" class="btn btn-success text-light" data-bs-toggle="modal" data-bs-target="#addManualDuesModal">
+                            <i class="fa fa-plus"></i> إضافة مستحقات يدوية
+                        </button>
+                        @endif
+                        
+                        {{-- زر إضافة بطاقة للطبيب --}}
+                        <button type="button" class="btn btn-primary text-light ms-2" data-bs-toggle="modal" data-bs-target="#addDoctorCardModal">
+                            <i class="fa fa-id-card"></i> إضافة بطاقة للطبيب
+                        </button>
+                    </div>
                 </div>
-
+            
+                {{-- مودال تأكيد إضافة بطاقة للطبيب --}}
+                <div class="modal fade" id="addDoctorCardModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form action="{{ route(get_area_name().'.doctors.add-card', $doctor->id) }}" method="POST">
+                                @csrf
+                                <div class="modal-header bg-primary text-white">
+                                    <h5 class="modal-title text-light">
+                                        <i class="fa fa-id-card me-2"></i>
+                                        إضافة بطاقة للطبيب
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                
+                                <div class="modal-body text-center py-4">
+                                    <i class="fa fa-id-card fa-4x text-primary mb-3"></i>
+                                    <h5 class="mb-3">هل أنت متأكد من إضافة بطاقة للطبيب؟</h5>
+                                    <div class="bg-light p-3 rounded">
+                                        <p class="mb-1"><strong>د. {{ $doctor->name }}</strong></p>
+                                        <p class="text-muted mb-0">كود النقابي : {{ $doctor->code ?? 'غير محدد' }}</p>
+                                    </div>
+                                    <div class="alert alert-info mt-3 mb-0">
+                                        <i class="fa fa-info-circle me-1"></i>
+                                        سيتم احتساب رسوم البطاقة وإضافتها للفواتير
+                                    </div>
+                                </div>
+                                
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        <i class="fa fa-times"></i> إلغاء
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-check"></i> تأكيد الإضافة
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            
                 {{-- مودال إضافة مستحقات يدوية --}}
                 <div class="modal fade" id="addManualDuesModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
@@ -855,7 +916,7 @@
                                                 placeholder="أدخل وصف تفصيلي للفاتورة..." 
                                                 required></textarea>
                                     </div>
-
+            
                                     {{-- Switch لحساب اشتراكات سابقة --}}
                                     <div class="form-check form-switch mb-3">
                                         <input class="form-check-input" type="checkbox" id="modalPreviousSwitch">
@@ -864,7 +925,7 @@
                                             حساب اشتراكات سابقة
                                         </label>
                                     </div>
-
+            
                                     {{-- جدول الصفات والسنوات --}}
                                     <div id="modalRankTableContainer" style="display:none" class="mb-3">
                                         <div class="alert alert-info">
@@ -888,7 +949,7 @@
                                             <i class="fa fa-plus me-1"></i> إضافة بند
                                         </button>
                                     </div>
-
+            
                                     {{-- قيمة الفاتورة --}}
                                     <div class="row">
                                         <div class="col-md-6">
@@ -923,7 +984,7 @@
                         </div>
                     </div>
                 </div>
-
+            
                 {{-- Template للصفوف الجديدة --}}
                 <div id="modalRowTemplate" style="display: none">
                     <table>
@@ -960,7 +1021,7 @@
                         </tr>
                     </table>
                 </div>
-
+            
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
                         <thead>
@@ -1033,11 +1094,61 @@
                     </table>
                 </div>
             </div>
+            
+            {{-- JavaScript لإدارة المودالات --}}
+            <script>
+                function confirmAddCard() {
+                    // إغلاق المودال الأول
+                    var firstModal = bootstrap.Modal.getInstance(document.getElementById('addDoctorCardModal'));
+                    firstModal.hide();
+                    
+                    // فتح مودال التأكيد بعد تأخير بسيط
+                    setTimeout(function() {
+                        var confirmModal = new bootstrap.Modal(document.getElementById('confirmAddCardModal'));
+                        confirmModal.show();
+                    }, 300);
+                }
+                
+                // تنظيف الخلفية السوداء عند إغلاق المودالات
+                document.getElementById('addDoctorCardModal').addEventListener('hidden.bs.modal', function () {
+                    document.body.classList.remove('modal-open');
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                });
+                
+                document.getElementById('confirmAddCardModal').addEventListener('hidden.bs.modal', function () {
+                    document.body.classList.remove('modal-open');
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                });
+            </script>
+            {{-- JavaScript لإدارة المودالات --}}
+            <script>
+                function confirmAddCard() {
+                    // إغلاق المودال الأول
+                    var firstModal = bootstrap.Modal.getInstance(document.getElementById('addDoctorCardModal'));
+                    firstModal.hide();
+                    
+                    // فتح مودال التأكيد بعد تأخير بسيط
+                    setTimeout(function() {
+                        var confirmModal = new bootstrap.Modal(document.getElementById('confirmAddCardModal'));
+                        confirmModal.show();
+                    }, 300);
+                }
+                
+                // تنظيف الخلفية السوداء عند إغلاق المودالات
+                document.getElementById('addDoctorCardModal').addEventListener('hidden.bs.modal', function () {
+                    document.body.classList.remove('modal-open');
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                });
+                
+                document.getElementById('confirmAddCardModal').addEventListener('hidden.bs.modal', function () {
+                    document.body.classList.remove('modal-open');
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                });
+            </script>
 
 
 
-
-                <div class="tab-pane fade" id="licenses" role="tabpanel">
+                <div class="tab-pane fade    {{$redirect == "licenses" ? "active show" : ""}} " id="licenses" role="tabpanel">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0"> أذونات المزاولة </h5>
                     </div>
@@ -1122,7 +1233,7 @@
                                             <!-- المنشأة الطبية -->
                                             <div class="col-md-6">
                                                 <label class="form-label">
-                                                    <i class="fa fa-calendar"></i> المنشأة الطبية <span class="text-danger">*</span>
+                                                    <i class="fa fa-calendar"></i> مكان العمل <span class="text-danger">*</span>
                                                 </label>
                                                 
                                                 <select name="medical_facility_id" 
@@ -1130,9 +1241,12 @@
                                                         class="form-control select2" 
                                                         required
                                                         >
-                                                    <option value="">حدد منشأة طبية</option>
+                                                    <option value="">حدد من القائمة </option>
                                                     @foreach ($medicalFacilities as $medicalFacility)
-                                                        <option value="{{$medicalFacility->id}}">{{$medicalFacility->name}}</option>
+                                                        <option value="{{$medicalFacility->name}}">{{$medicalFacility->name}}</option>
+                                                    @endforeach
+                                                    @foreach ($institutions as $instituion)
+                                                        <option value="{{$instituion->name}}">{{$instituion->name}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -1162,7 +1276,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th> رقم الأذن </th>
-                                    <th> المنشأة الطبية </th>
+                                    <th> مكان العمل </th>
                                     <th>الحالة</th>
                                     <th>تاريخ الإنشاء</th>
                                     <th>الاعدادات</th>
@@ -1173,7 +1287,11 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $license->code }}</td>
+                                        @if ($license->workIn)
                                         <td>{{ $license->workIn?->name ?? '—' }}</td>
+                                        @else 
+                                        <td>{{ $license->institution?->name ?? '—' }}</td>
+                                        @endif
                                         <td>
                                             <span class="badge {{ $license->status->badgeClass() }}">
                                                 {{ $license->status->label() }}
@@ -1198,7 +1316,7 @@
 
 
                 @if($doctor->medicalFacility)
-                <div class="tab-pane fade" id="tab-medical-facility">
+                <div class="tab-pane fade {{$redirect == "medical_facility" ? "active show" : ""}}" id="tab-medical-facility">
                     <div class="enhanced-card fade-in-up my-3">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <div>
@@ -1316,7 +1434,7 @@
                 </div>
                 @endif
                 @if(auth()->user()->permissions()->where('name','doctor-mails')->count())
-                    <div class="tab-pane fade" id="external" role="tabpanel">
+                    <div class="tab-pane fade {{$redirect == "external" ? "active show" : ""}}" id="external" role="tabpanel">
                         <div class="table-responsive mt-3">
                             <table class="table table-hover table-bordered mb-0">
                                 <thead class="table-light">

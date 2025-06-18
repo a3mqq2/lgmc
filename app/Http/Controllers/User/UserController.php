@@ -43,6 +43,17 @@ class UserController extends Controller
             })->first();
         }
 
+
+
+        if(request('name'))
+        {
+            $doctor = Doctor::where('name', 'like', '%' . request('name') . '%')
+            ->when(auth()->user()->branch_id, function ($query) {
+                $query->where('branch_id', auth()->user()->branch_id);
+            })->first();
+        }
+
+        
         if(request('code'))
         {
             $code = explode('-', $request->code);

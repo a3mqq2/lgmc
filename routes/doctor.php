@@ -59,4 +59,7 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth:doctor', 'otp.verifi
     Route::put('profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('profile/change-password', [ProfileController::class, 'change_password'])->name('profile.change-password');
     Route::post('profile/change-password', [ProfileController::class, 'change_password_store'])->name('profile.change-password');
+
+
+    
 });

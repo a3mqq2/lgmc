@@ -20,6 +20,7 @@ class Licence extends Model
         'doctor_rank_id',
         'created_by',
         'amount',
+        'institution_id',
     ];
 
     protected $casts = [
@@ -80,6 +81,12 @@ class Licence extends Model
     public function workIn(): BelongsTo
     {
         return $this->belongsTo(MedicalFacility::class, 'workin_medical_facility_id');
+    }
+
+
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class, 'institution_id');
     }
 
     public function doctor_rank() { return $this->belongsTo(DoctorRank::class); }

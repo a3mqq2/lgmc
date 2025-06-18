@@ -37,7 +37,7 @@ class Doctor extends Authenticatable
         'institution_id', 'specialty_2', 'medical_facility_id', 'visit_from',
         'academic_degree_univeristy_id',
         'visit_to', 'edit_note','ban_reason','renew_number','email_verified_at',
-        'documents_completed','password'
+        'documents_completed','password','card_expiration_date',
     ];
 
     protected $hidden = ['remember_token'];
@@ -49,6 +49,7 @@ class Doctor extends Authenticatable
         'membership_status'          => MembershipStatus::class,
         'code'                       => 'string',
         'documents_completed'        => 'boolean',
+        'card_expiration_date'       => 'date',
     ];
 
     /* -----------------------------------------------------------------

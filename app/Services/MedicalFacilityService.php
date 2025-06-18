@@ -99,6 +99,9 @@ class MedicalFacilityService
             }
     
             $medicalFacility->save();
+        } else {
+            $medicalFacility->membership_status = 'under_payment';
+            $medicalFacility->save();
         }
     
         return $medicalFacility;

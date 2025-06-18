@@ -387,17 +387,17 @@ class DoctorController extends Controller
 
 
         
-        if($doctor->type->value != "visitor")
-        {
-            $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
+        // if($doctor->type->value != "visitor")
+        // {
+        //     $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
 
-            $invoice_item = new InvoiceItem();
-            $invoice_item->invoice_id = $invoice->id;
-            $invoice_item->description = $pricing_card_id->name;
-            $invoice_item->amount = $pricing_card_id->amount;
-            $invoice_item->pricing_id = $pricing_card_id->id;
-            $invoice_item->save();
-        }
+        //     $invoice_item = new InvoiceItem();
+        //     $invoice_item->invoice_id = $invoice->id;
+        //     $invoice_item->description = $pricing_card_id->name;
+        //     $invoice_item->amount = $pricing_card_id->amount;
+        //     $invoice_item->pricing_id = $pricing_card_id->id;
+        //     $invoice_item->save();
+        // }
 
 
         if($doctor->type->value == "visitor")
@@ -970,14 +970,14 @@ class DoctorController extends Controller
             $invoice_item->save();
 
             
-            $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
+            // $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
 
-            $invoice_item = new InvoiceItem();
-            $invoice_item->invoice_id = $invoice->id;
-            $invoice_item->description = $pricing_card_id->name;
-            $invoice_item->amount = $pricing_card_id->amount;
-            $invoice_item->pricing_id = $pricing_card_id->id;
-            $invoice_item->save();
+            // $invoice_item = new InvoiceItem();
+            // $invoice_item->invoice_id = $invoice->id;
+            // $invoice_item->description = $pricing_card_id->name;
+            // $invoice_item->amount = $pricing_card_id->amount;
+            // $invoice_item->pricing_id = $pricing_card_id->id;
+            // $invoice_item->save();
 
 
             
@@ -1010,5 +1010,37 @@ class DoctorController extends Controller
             \Log::error("Error saving file to doctor: " . $e->getMessage());
             return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني ' . $e->getMessage() ]);
         }
+    }
+
+
+    public function addCard(Doctor $doctor)
+    {
+          
+            $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
+
+
+            $invoice = new Invoice();
+            $invoice->invoice_number = rand(0,999999999);
+            $invoice->description = "فاتورة بطاقة تعريفية جديدة للطبيب " . $doctor->name;
+            $invoice->user_id = auth()->id();
+            $invoice->amount = 0;
+            $invoice->status = "unpaid";
+            $invoice->doctor_id = $doctor->id;
+            $invoice->category = "card";
+            $invoice->save();
+
+            $invoice_item = new InvoiceItem();
+            $invoice_item->invoice_id = $invoice->id;
+            $invoice_item->description = $pricing_card_id->name;
+            $invoice_item->amount = $pricing_card_id->amount;
+            $invoice_item->pricing_id = $pricing_card_id->id;
+            $invoice_item->save();
+
+            $invoice->update([
+                'amount' => $invoice->items()->sum('amount'),
+            ]);
+
+            return redirect()->route(get_area_name().'.doctors.show', ['doctor' => $doctor, 'redirect' => 'finance']);
+
     }
 }

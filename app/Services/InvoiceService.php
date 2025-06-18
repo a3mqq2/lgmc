@@ -222,6 +222,53 @@ class InvoiceService
             $transaction->financial_category_id = 3;
             $transaction->save();
         }
+
+
+
+        if($invoice->category == "custom")
+        {
+            $vault = auth()->user()->vault ?? Vault::first();
+            $vault->balance += $invoice->amount;
+            $vault->save();
+    
+            $transaction = new Transaction();
+            $transaction->amount = $invoice->amount;
+            $transaction->user_id = auth()->id();
+            $transaction->vault_id = $vault->id;
+            $transaction->type = "deposit";
+            $transaction->desc = $invoice->description;
+            $transaction->branch_id = auth()->user()->branch_id;
+            $transaction->balance = $vault->balance;
+            // $transaction->financial_category_id = 3;
+            $transaction->save();
+        }
+
+
+
+        if($invoice->category == "card")
+        {
+
+            $doctor = $invoice->doctor;
+            $doctor->card_expiration_date = now()->addYear();
+            $doctor->save();
+
+            $vault = auth()->user()->vault ?? Vault::first();
+            $vault->balance += $invoice->amount;
+            $vault->save();
+    
+            $transaction = new Transaction();
+            $transaction->amount = $invoice->amount;
+            $transaction->user_id = auth()->id();
+            $transaction->vault_id = $vault->id;
+            $transaction->type = "deposit";
+            $transaction->desc = $invoice->description;
+            $transaction->branch_id = auth()->user()->branch_id;
+            $transaction->balance = $vault->balance;
+            // $transaction->financial_category_id = 3;
+            $transaction->save();
+        }
+
+
     
         return $invoice;
     }

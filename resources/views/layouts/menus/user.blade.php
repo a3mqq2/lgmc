@@ -106,6 +106,25 @@
 
 
 
+@if(auth()->user()->permissions()->where('name','manage-medical-facilities-branch')->count() && auth()->user()->branch_id != 1)
+
+<li class="nav-item">
+    <a class="nav-link menu-link" data-bs-target="#medical-facility" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fa fa-hospital"></i>
+        <span data-key="t-layouts">المنشآت طبية</span>
+    </a>
+    <div class="collapse menu-dropdown" id="medical-facility">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.medical-facilities.create') }}" class="nav-link" data-key="t-horizontal">إنشاء  منشأة طبية جديدة</a>
+                <a href="{{ route(get_area_name().'.medical-facilities.index') }}" class="nav-link" data-key="t-horizontal">عرض جميع المنشآت طبية</a>
+            </li>
+        </ul>
+    </div>
+</li>
+@endif
+
+
 
 
 

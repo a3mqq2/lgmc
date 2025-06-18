@@ -87,14 +87,14 @@ class GenerateMembershipInvoices extends Command
             $invoice_item->save();
 
             
-            $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
+            // $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
 
-            $invoice_item = new InvoiceItem();
-            $invoice_item->invoice_id = $invoice->id;
-            $invoice_item->description = $pricing_card_id->name;
-            $invoice_item->amount = $pricing_card_id->amount;
-            $invoice_item->pricing_id = $pricing_card_id->id;
-            $invoice_item->save();
+            // $invoice_item = new InvoiceItem();
+            // $invoice_item->invoice_id = $invoice->id;
+            // $invoice_item->description = $pricing_card_id->name;
+            // $invoice_item->amount = $pricing_card_id->amount;
+            // $invoice_item->pricing_id = $pricing_card_id->id;
+            // $invoice_item->save();
 
 
             
