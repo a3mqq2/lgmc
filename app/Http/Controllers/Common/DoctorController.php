@@ -471,7 +471,7 @@ class DoctorController extends Controller
                 $license->status = "active";
                 $license->created_by = auth()->id();
                 $license->amount = 0; 
-                $licence->branch_id = auth()->user()->branch_id;
+                $license->branch_id = auth()->user()->branch_id;
                 $license->save();
             } else {
                 $membership_expiration_date = $doctor->type->value == "foreign" ?   Carbon::now()->addMonths(6) : Carbon::now()->addMonths(12);
