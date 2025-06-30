@@ -126,7 +126,7 @@ class InvoiceService
             $license->status = "active";
             $license->created_by = auth()->id();
             $license->amount = 0; 
-            $licence->branch_id = auth()->user()->branch_id;
+            $license->branch_id = auth()->user()->branch_id;
             $license->save();
     
             // Create a transaction for the payment
