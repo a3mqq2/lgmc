@@ -37,6 +37,7 @@ class BranchController extends Controller
             "phone" => "required|unique:branches,phone",
             "city" => "nullable",
             "code" => "required",
+            'name_en' => "required",
         ]);
 
         try {
@@ -47,6 +48,7 @@ class BranchController extends Controller
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'city' => $request->city,
+                "name_en" => $request->name_en,
             ]);
 
             Log::create([
@@ -84,6 +86,7 @@ class BranchController extends Controller
             "name" => "required",
             "phone" => "required",
             "city" => "nullable",
+            "name_en" => "required",
         ]);
 
         try {
@@ -94,6 +97,7 @@ class BranchController extends Controller
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'city' => $request->city,
+                "name_en" => $request->name_en,
             ]);
 
             Log::create([

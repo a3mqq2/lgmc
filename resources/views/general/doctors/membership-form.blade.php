@@ -302,7 +302,7 @@
                         <div class="form-row">
                             <span class="form-label">الحالة الاجتماعية:</span>
                             @if ($doctor->marital_status)
-                                <span class="form-value">{{ $doctor->marital_status->value == 'single' ? 'أعزب' : ($doctor->marital_status->value == 'married' ? 'متزوج' : '') }}</span>
+                                <span class="form-value">{{ $doctor->marital_status?->value == 'single' ? 'أعزب' : ($doctor->marital_status?->value == 'married' ? 'متزوج' : '') }}</span>
                                 @else 
                                 <span class="form-value"></span>
                             @endif
@@ -319,7 +319,7 @@
                         </div>
                         <div class="form-row">
                             <span class="form-label">الجنس:</span>
-                            <span class="form-value">{{ $doctor->gender->value == 'male' ? 'ذكر' : 'أنثى' }}</span>
+                            <span class="form-value">{{ $doctor->gender?->value == 'male' ? 'ذكر' : 'أنثى' }}</span>
                         </div>
                     </div>
                 </div>

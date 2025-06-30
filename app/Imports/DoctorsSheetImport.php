@@ -31,7 +31,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
 
         $specialty = null;
         if (!empty($row['altkhss']) && $row['altkhss'] != "طبيب عام") {
-            $specialty = Specialty::firstOrCreate(['name' => $row['altkhss']]);
+            $specialty = Specialty::firstOrCreate(['name' => $row['altkhss'],'name_en' => '-']);
         }
 
         $institution = null;
@@ -54,9 +54,8 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             'certificate_of_excellence_date' => !empty($row['almohl']) && is_numeric(preg_replace('/\D/', '', $row['almohl'])) 
                 ? preg_replace('/\D/', '', $row['almohl']) . '-01-01' 
                 : null,
-            "date_of_birth" => $this->parseDate($row['almylad']),
             'registered_at' => $this->parseDate($row['alantsab']),
-            'branch_id' => 5,
+            'branch_id' => 3,
             'type' => "libyan",
             'country_id' => 1,
         ]);
@@ -81,38 +80,16 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
         
             $key = "{$branchId}_{$type}_{$year}";
         
-            if (!isset($this->licenceIndexes[$key])) {
-                $maxIndex = Licence::where('branch_id', $branchId)
-                    ->whereYear('issued_date', $year)
-                    ->where('licensable_type', $type)
-                    ->max('index') ?? 0;
-                $this->licenceIndexes[$key] = $maxIndex;
-            }
-        
-            $this->licenceIndexes[$key]++;
-        
-            $index = $this->licenceIndexes[$key];
-            $prefix = 'LIC';
-            $code = $branchCode . '-' . $prefix . '-' . $year . '-' . str_pad($index, 3, '0', STR_PAD_LEFT);
-
-            Licence::create([
-                'licensable_id' => $doctor->id,
-                'licensable_type' => Doctor::class,
-                'issued_date' => $issueDate->format('Y-m-d'),
-                'expiry_date' => $expiryDate->format('Y-m-d'),
-                'status' => $expiryDate->isPast() ? 'expired' : 'active',
-                'doctor_id' => $doctor->id,
-                'branch_id' => $branchId,
-                'created_by' => auth()->id(),
-                'doctor_type' => "libyan",
-                'index' => $index,
-                'code' => $code,
-            ]);
+    
+            $max_code = Doctor::where('branch_id', 3)->max('index');
         
             $doctor->update([
-                'membership_status' => $expiryDate->isPast() ? 'inactive' : 'active',
+                'index' => $max_code + 1,
+                'membership_status' => $expiryDate->isPast() ? 'expired' : 'active',
                 'membership_expiration_date' => $expiryDate->format('Y-m-d'),
             ]);
+
+            $doctor->makeCode();
         }
 
         return $doctor;

@@ -21,6 +21,7 @@ class Licence extends Model
         'created_by',
         'amount',
         'institution_id',
+        'branch_id',
     ];
 
     protected $casts = [
@@ -44,8 +45,12 @@ class Licence extends Model
                         : "{$short}-{$year}-%";   // مثال: MF-2025-1 أو VIS-2025-1
 
             // احسب آخر index بناءً على الكود نفسه
-            $lastIndex = self::where('code', 'like', $pattern)->max('index') ?? 0;
-            $licence->index = $lastIndex + 1;
+            $lastIndex = self::where('branch_id', auth()->user()->branch_id)->max('index') ?? 0;
+            
+            if(!$licence->index)
+            {
+                $licence->index = $lastIndex + 1;
+            }
 
             // أنشئ الكود النهائي
             if ($licence->doctor_type && $licence->doctor_type === 'libyan') {
@@ -91,4 +96,5 @@ class Licence extends Model
 
     public function doctor_rank() { return $this->belongsTo(DoctorRank::class); }
     public function specialty()   { return $this->belongsTo(Specialty::class, 'specialty_id'); }
+
 }

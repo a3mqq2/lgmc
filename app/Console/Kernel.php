@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('generate:membership-invoices')->daily();
+        // $schedule->command('generate:membership-invoices')->daily();
         $schedule->command('licences:expiration')->daily();
         $schedule->command('doctors:expire-memberships')->daily();
         $schedule->command('doctor:purge-incomplete')->daily();

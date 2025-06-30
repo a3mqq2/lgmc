@@ -79,6 +79,7 @@ class InvoiceService
                 $license->status = "active";
                 $license->created_by = auth()->id();
                 $license->amount = 0; 
+                $license->branch_id = auth()->user()->branch_id;
                 $license->save();
             } else {
                 $invoice->doctor->setSequentialIndex();
@@ -125,6 +126,7 @@ class InvoiceService
             $license->status = "active";
             $license->created_by = auth()->id();
             $license->amount = 0; 
+            $licence->branch_id = auth()->user()->branch_id;
             $license->save();
     
             // Create a transaction for the payment
@@ -159,6 +161,7 @@ class InvoiceService
             $license->status = "active";
             $license->created_by = auth()->id();
             $license->amount = 0; 
+            $license->branch_id = auth()->user()->branch_id;
             $license->save();
     
             // Create a transaction for the payment

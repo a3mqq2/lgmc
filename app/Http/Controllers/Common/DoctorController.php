@@ -372,6 +372,7 @@ class DoctorController extends Controller
         $invoice->doctor_id = $doctor->type->value == "visitor" ? $doctor->medicalFacilityWork->manager_id : $doctor->id;
         $invoice->category = "registration";
         $invoice->visitor_id = $doctor->type->value == "visitor" ? $doctor->id : null;
+        $invoice->branch_id = auth()->user()->branch_id;
         $invoice->save();
 
         // registeration invoice 
@@ -470,6 +471,7 @@ class DoctorController extends Controller
                 $license->status = "active";
                 $license->created_by = auth()->id();
                 $license->amount = 0; 
+                $licence->branch_id = auth()->user()->branch_id;
                 $license->save();
             } else {
                 $membership_expiration_date = $doctor->type->value == "foreign" ?   Carbon::now()->addMonths(6) : Carbon::now()->addMonths(12);
@@ -914,7 +916,6 @@ class DoctorController extends Controller
         }
     }
 
-
     public function renewMembership(Doctor $doctor)
     {
         try {
@@ -928,65 +929,108 @@ class DoctorController extends Controller
             return redirect()->back()->withErrors(['error' => 'حدث خطأ ما يرجى الاتصال بالدعم الفني ' . $e->getMessage() ]);
         }
     }
-
-
+    
     private function createInvoice($doctor)
     {
-
-            // create membership_invoice
-            $invoice = new Invoice();
-            $invoice->invoice_number = rand(0,999999999);
-            $invoice->description = " فاتورة تجديد اشتراك طبيب   " . $doctor->name;
-            $invoice->user_id = auth()->id();
-            $invoice->amount = 0;
-            $invoice->status = "unpaid";
-            $invoice->doctor_id = $doctor->id;
-            $invoice->category = "registration";
-            $invoice->save();
-
-
-            // registeration invoice 
-            $pricing_membership = Pricing::where('doctor_type', $doctor->type->value)->where('type','membership')
-            ->where('doctor_rank_id', $doctor->doctor_rank_id)->first();
-            
-            $invoice_item = new InvoiceItem();
-            $invoice_item->invoice_id = $invoice->id;
-            $invoice_item->description = $pricing_membership->name;
-            $invoice_item->amount = $pricing_membership->amount;
-            $invoice_item->pricing_id = $pricing_membership->id;
-
-            $invoice_item->save();
-
-
-            $pricing_licence = Pricing::where("doctor_type", $doctor->type->value)
-            ->where('doctor_rank_id', $doctor->doctor_rank_id)->where('type', 'license')
+        // create membership_invoice
+        $invoice = new Invoice();
+        $invoice->invoice_number = rand(0,999999999);
+        $invoice->description = " فاتورة تجديد اشتراك طبيب   " . $doctor->name;
+        $invoice->user_id = auth()->id();
+        $invoice->amount = 0;
+        $invoice->status = "unpaid";
+        $invoice->doctor_id = $doctor->id;
+        $invoice->category = "registration";
+        $invoice->branch_id = auth()->user()->branch_id;
+        $invoice->save();
+    
+        // الحصول على أسعار العضوية
+        $pricing_membership = Pricing::where('doctor_type', $doctor->type->value)
+            ->where('type','membership')
+            ->where('doctor_rank_id', $doctor->doctor_rank_id)
             ->first();
 
-            $invoice_item = new InvoiceItem();
-            $invoice_item->invoice_id = $invoice->id;
-            $invoice_item->description = $pricing_licence->name;
-            $invoice_item->amount = $pricing_licence->amount;
-            $invoice_item->pricing_id = $pricing_licence->id;
-            $invoice_item->save();
+    
+    
+        if(in_array($doctor->type->value,['palestinian','foreign']))
+        {
+            $expiredYears = $this->calculateExpiredYears($doctor);
+            if ($expiredYears <= 1) {
+                // السنة الحالية فقط - بدون غرامات
+                $this->addCurrentYearItems($invoice, $pricing_membership);
+            } else {
+              if(in_array($doctor->type->value, ['foreign','palestinian']))
+              {
+                  $this->addCurrentYearItems($invoice, $pricing_membership);
+                  $this->addPenaltyItems($invoice, $pricing_membership, $expiredYears - 1);
+              }
+            }
+        } else {
+            $this->addCurrentYearItems($invoice, $pricing_membership);
+        }
 
-            
-            // $pricing_card_id = Pricing::where('doctor_type', $doctor->type->value)->where('type','card')->first();
-
-            // $invoice_item = new InvoiceItem();
-            // $invoice_item->invoice_id = $invoice->id;
-            // $invoice_item->description = $pricing_card_id->name;
-            // $invoice_item->amount = $pricing_card_id->amount;
-            // $invoice_item->pricing_id = $pricing_card_id->id;
-            // $invoice_item->save();
-
-
-            
-            $invoice->update([
-                'amount' => $invoice->items()->sum('amount'),
-            ]);
        
+    
+        // تحديث إجمالي الفاتورة
+        $invoice->update([
+            'amount' => $invoice->items()->sum('amount'),
+        ]);
     }
-
+    
+    /**
+     * حساب عدد السنوات المنتهية الصلاحية
+     */
+    private function calculateExpiredYears($doctor)
+    {
+        if (!$doctor->membership_expiration_date) {
+            // إذا لم يكن هناك تاريخ انتهاء، نعتبرها سنة واحدة
+            return 1;
+        }
+    
+        $expirationDate = Carbon::parse($doctor->membership_expiration_date);
+        $currentDate = Carbon::now();
+        
+        // حساب الفرق بالسنوات
+        $yearsDifference = $currentDate->diffInYears($expirationDate);
+        
+        // إذا انتهت الصلاحية، نحسب عدد السنوات + السنة الحالية
+        if ($expirationDate->isPast()) {
+            return $yearsDifference + 1;
+        }
+        
+        return 1; // لم تنته الصلاحية بعد
+    }
+    
+    /**
+     * إضافة عناصر السنة الحالية
+     */
+    private function addCurrentYearItems($invoice, $pricing_membership)
+    {
+        // عضوية السنة الحالية
+        $invoice_item = new InvoiceItem();
+        $invoice_item->invoice_id = $invoice->id;
+        $invoice_item->description = $pricing_membership->name . ' (السنة الحالية)';
+        $invoice_item->amount = $pricing_membership->amount;
+        $invoice_item->pricing_id = $pricing_membership->id;
+        $invoice_item->save();
+    }
+    
+    /**
+     * إضافة غرامات السنوات السابقة
+     */
+    private function addPenaltyItems($invoice, $pricing_membership, $expiredYears)
+    {
+        for ($i = 1; $i <= $expiredYears; $i++) {
+            // غرامة العضوية للسنة السابقة (الضعف)
+            $penalty_membership = new InvoiceItem();
+            $penalty_membership->invoice_id = $invoice->id;
+            $penalty_membership->description = 'غرامة تأخير عضوية - السنة ' . $i . ' (ضعف المبلغ)';
+            $penalty_membership->amount = $pricing_membership->amount * 2;
+            $penalty_membership->pricing_id = $pricing_membership->id;
+            $penalty_membership->save();
+        }
+    }
+    
 
     public function saveFileToDoctor($id, Request $request)
     {
@@ -1027,6 +1071,7 @@ class DoctorController extends Controller
             $invoice->status = "unpaid";
             $invoice->doctor_id = $doctor->id;
             $invoice->category = "card";
+            $invoice->branch_id = auth()->user()->branch_id;
             $invoice->save();
 
             $invoice_item = new InvoiceItem();

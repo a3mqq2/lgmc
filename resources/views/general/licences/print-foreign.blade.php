@@ -202,23 +202,27 @@
 
 
 
+              
+                @if (($licence->workIn))
                 <div class="in-place">
-                    <h6 class="font-weight-bold">
-                        <strong>
-                            بـالمنشأة الطــبية  
-                        </strong>
-                    </h6>
-                </div>
-    
-                <div class="medical-facility-box card">
-                    <h4 class="font-weight-bold">
-                            <strong>  {{$licence->workIn? $licence->workIn->name : "-"}}  </strong>
-                    </h4>
-    
-                </div>
+                 <h6 class="font-weight-bold">
+                     <strong>
+                         بـالمنشأة الطــبية  
+                     </strong>
+                 </h6>
+             </div>
+ 
+             <div class="medical-facility-box card">
+                 <h4 class="font-weight-bold">
+                         <strong>  {{$licence->workIn ? $licence->workIn->name : "-"}}  </strong>
+                 </h4>
+ 
+             </div>
+                @endif
 
 
-                @if ($licence->doctor->institution && ! $licence->doctor->MedicalFacility)
+
+                @if ($licence->institution)
                 <div class="in-place">
                  <h6 class="font-weight-bold">
                      <strong>
@@ -229,16 +233,11 @@
  
              <div class="medical-facility-box card">
                  <h4 class="font-weight-bold">
-                         <strong>  {{$licence->doctor->institution}}  </strong>
+                         <strong>  {{$licence->institution->name}}  </strong>
                  </h4>
  
              </div>
                 @endif
-
-
-
-
-
 
 
                 <div class="expired card" style="top:750px!important;">

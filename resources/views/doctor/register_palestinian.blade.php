@@ -390,6 +390,15 @@
                                                         <input type="hidden" name="country_id" value="2">
                                                     @endif
 
+
+                                                    <div class="col-md-6">
+                                                        <label>الجنس</label>
+                                                        <select name="gender" id="gender" class="form-control">
+                                                            <option value="male">ذكر</option>
+                                                            <option value="female">انثى</option>
+                                                        </select>
+                                                    </div>
+
                                                     <div class="col-md-12 mt-3">
                                                         <div class="custom-alert d-flex align-items-center mb-4" role="alert">
                                                             <i class="fas fa-passport fs-4 me-2 flex-shrink-0"></i>

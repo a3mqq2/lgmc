@@ -439,7 +439,7 @@
             </div>
         </div>
     </div>
-
+    @if(auth()->user()->permissions->where('name','manage-medical-facilities')->count())
     {{-- Medical Facilities Section --}}
     <div class="section-header fade-in-up">
         <div class="section-icon">
@@ -528,6 +528,7 @@
             </div>
         @endforeach
     </div>
+    @endif
 
     {{-- Foreign Doctors Section --}}
     @if(auth()->user()->permissions->where('name','doctor-foreign')->count())
@@ -570,6 +571,7 @@
     @endif
 
 
+    @if(auth()->user()->permissions->where('name','doctor-visitor')->count())
 
     <div class="section-header fade-in-up">
         <div class="section-icon">
@@ -608,6 +610,7 @@
         @endforeach
     </div>
 
+    @endif
     {{-- Palestinian Doctors Section --}}
     @if(auth()->user()->permissions->where('name','doctor-palestinian')->count())
         <div class="section-header fade-in-up">

@@ -39,12 +39,7 @@
 
 
     @if ($doctor->membership_status->value == "expired" &&
-        $doctor->invoices()->where('category','registration')->where('status','unpaid')->count() == 0
-    
-    && (
-        ($doctor->type->value == "libyan" && get_area_name() == "user") || 
-        (get_area_name() == "admin" && in_array($doctor->type->value,['palestinian','foreign']))
-    ))
+        $doctor->invoices()->where('category','registration')->where('status','unpaid')->count() == 0)
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
@@ -298,7 +293,7 @@
 
 
 {{-- زر الحذف للأطباء تحت الموافقة --}}
-@if ($doctor->membership_status->value == "under_approve" && ((get_area_name() == "user" && $doctor->type->value == "libyan")  || (get_area_name() == "user" && in_array($doctor->type->value,['palestinian','foreign'])) ))
+@if ($doctor->membership_status->value == "under_approve" && ((get_area_name() == "user" && $doctor->type->value == "libyan")  || (get_area_name() == "admin" && in_array($doctor->type->value,['palestinian','foreign'])) ))
 <div class="col-md-12">
     <div class="card">
         <div class="card-body">
@@ -546,6 +541,18 @@
                                     </tr>
 
 
+                                    @if ($doctor->medicalFacilityWork)
+                                    <tr>
+                                        <th class="bg-light text-primary"> الشركة المستضيفة   </th>
+                                        <td class="text-center">
+                                            {{ $doctor->medicalFacilityWork->name}}
+                                        </td>
+                                    </tr>
+                                    @endif
+                                   
+
+
+
                                     @if ($doctor->membership_status->value == "suspended" )
                                     <tr>
                                         <th class="bg-light text-primary"> سبب التعليق    </th>
@@ -722,14 +729,6 @@
                                                 <td>{{$doctor->branch ? $doctor->branch->name : "لم يحدد"}}</td>
                                             </tr>
                                         @endif
-                                        <tr>
-                                            <th class="bg-light text-right">المنشات الطبية / القطاع الخاص </th>
-                                            <td>-</td>
-                                        </tr>
-                                        <tr>
-                                            <th class="bg-light text-right"> جهة العمل / المستشفى </th>
-                                            <td> {{ $doctor->institutionObj  ? $doctor->institutionObj->name : '-' }} </td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -804,7 +803,7 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td><img src="{{ Storage::url($file->file_path) }}" class="img-thumbnail" style="width:50px;height:50px;object-fit:cover;"></td>
-                                    <td>{{ $file->file_name }}</td>
+                                    <td>{{ $file->fileType->name }}</td>
                                     <td>
                                         <a href="{{ Storage::url($file->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fa fa-eye"></i></a>
                                         <a download href="{{ Storage::url($file->file_path) }}" class="btn btn-sm btn-outline-secondary"><i class="fa fa-download"></i></a>
@@ -828,272 +827,315 @@
             </div>
 
             {{-- تاب المالي المحدث --}}
-            <div class="tab-pane fade    {{$redirect == "finance" ? "active show" : ""}} " id="finance" role="tabpanel">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0"> الملف المالي للطبيب</h5>
+            {{-- تاب المالي المحدث --}}
+<div class="tab-pane fade {{$redirect == "finance" ? "active show" : ""}}" id="finance" role="tabpanel">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0"> الملف المالي للطبيب</h5>
+
+        <div class="btn-group">
+            @if (($doctor->type->value == "libyan" && get_area_name() == "user") || (get_area_name() == "admin" && in_array($doctor->type->value,['palestinian','foreign']) ))
+            <button type="button" class="btn btn-success text-light" data-bs-toggle="modal" data-bs-target="#addManualDuesModal">
+                <i class="fa fa-plus"></i> إضافة مستحقات يدوية
+            </button>
+            @endif
             
-                    <div class="btn-group">
-                        @if (($doctor->type->value == "libyan" && get_area_name() == "user") || (get_area_name() == "admin" && in_array($doctor->type->value,['palestinian','foreign']) ))
-                        <button type="button" class="btn btn-success text-light" data-bs-toggle="modal" data-bs-target="#addManualDuesModal">
-                            <i class="fa fa-plus"></i> إضافة مستحقات يدوية
-                        </button>
-                        @endif
-                        
-                        {{-- زر إضافة بطاقة للطبيب --}}
-                        <button type="button" class="btn btn-primary text-light ms-2" data-bs-toggle="modal" data-bs-target="#addDoctorCardModal">
-                            <i class="fa fa-id-card"></i> إضافة بطاقة للطبيب
-                        </button>
-                    </div>
+            {{-- زر إضافة بطاقة للطبيب --}}
+            <button type="button" class="btn btn-primary text-light ms-2" data-bs-toggle="modal" data-bs-target="#addDoctorCardModal">
+                <i class="fa fa-id-card"></i> إضافة بطاقة للطبيب
+            </button>
+        </div>
+    </div>
+
+    {{-- أزرار التحديد والطباعة --}}
+    <div class="card mb-3" id="invoiceSelectionCard" style="display: none;">
+        <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="fw-bold text-primary">المحددة: </span>
+                    <span id="selectedCount" class="badge bg-primary">0</span>
+                    <span class="ms-3 fw-bold text-success">الإجمالي: </span>
+                    <span id="selectedTotal" class="badge bg-success">0.00 د.ل</span>
                 </div>
-            
-                {{-- مودال تأكيد إضافة بطاقة للطبيب --}}
-                <div class="modal fade" id="addDoctorCardModal" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <form action="{{ route(get_area_name().'.doctors.add-card', $doctor->id) }}" method="POST">
-                                @csrf
-                                <div class="modal-header bg-primary text-white">
-                                    <h5 class="modal-title text-light">
-                                        <i class="fa fa-id-card me-2"></i>
-                                        إضافة بطاقة للطبيب
-                                    </h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                </div>
-                                
-                                <div class="modal-body text-center py-4">
-                                    <i class="fa fa-id-card fa-4x text-primary mb-3"></i>
-                                    <h5 class="mb-3">هل أنت متأكد من إضافة بطاقة للطبيب؟</h5>
-                                    <div class="bg-light p-3 rounded">
-                                        <p class="mb-1"><strong>د. {{ $doctor->name }}</strong></p>
-                                        <p class="text-muted mb-0">كود النقابي : {{ $doctor->code ?? 'غير محدد' }}</p>
-                                    </div>
-                                    <div class="alert alert-info mt-3 mb-0">
-                                        <i class="fa fa-info-circle me-1"></i>
-                                        سيتم احتساب رسوم البطاقة وإضافتها للفواتير
-                                    </div>
-                                </div>
-                                
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                        <i class="fa fa-times"></i> إلغاء
-                                    </button>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-check"></i> تأكيد الإضافة
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            
-                {{-- مودال إضافة مستحقات يدوية --}}
-                <div class="modal fade" id="addManualDuesModal" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <form action="{{ route(get_area_name().'.invoices.store') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="doctor_id" value="{{ $doctor->id }}">
-                                
-                                <div class="modal-header">
-                                    <h5 class="modal-title">
-                                        <i class="fa fa-plus me-2"></i>
-                                        إضافة مستحقات يدوية
-                                    </h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                
-                                <div class="modal-body">
-                                    {{-- وصف الفاتورة --}}
-                                    <div class="mb-3">
-                                        <label for="modalDescription" class="form-label">
-                                            <i class="fa fa-file-text me-1"></i>
-                                            وصف الفاتورة <span class="text-danger">*</span>
-                                        </label>
-                                        <textarea name="description" 
-                                                id="modalDescription" 
-                                                class="form-control" 
-                                                rows="3" 
-                                                placeholder="أدخل وصف تفصيلي للفاتورة..." 
-                                                required></textarea>
-                                    </div>
-            
-                                    {{-- Switch لحساب اشتراكات سابقة --}}
-                                    <div class="form-check form-switch mb-3">
-                                        <input class="form-check-input" type="checkbox" id="modalPreviousSwitch">
-                                        <label class="form-check-label" for="modalPreviousSwitch">
-                                            <i class="fa fa-history me-1"></i>
-                                            حساب اشتراكات سابقة
-                                        </label>
-                                    </div>
-            
-                                    {{-- جدول الصفات والسنوات --}}
-                                    <div id="modalRankTableContainer" style="display:none" class="mb-3">
-                                        <div class="alert alert-info">
-                                            <i class="fa fa-info-circle me-1"></i>
-                                            قم بإضافة الصفات والسنوات المطلوب حساب الاشتراكات لها
-                                        </div>
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered table-sm">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th width="30%">الصفة</th>
-                                                        <th width="25%">من سنة</th>
-                                                        <th width="25%">إلى سنة</th>
-                                                        <th width="20%">إجراء</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="modalRankTableBody"></tbody>
-                                            </table>
-                                        </div>
-                                        <button type="button" id="modalAddRowBtn" class="btn btn-sm btn-outline-primary">
-                                            <i class="fa fa-plus me-1"></i> إضافة بند
-                                        </button>
-                                    </div>
-            
-                                    {{-- قيمة الفاتورة --}}
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label for="modalAmount" class="form-label">
-                                                <i class="fa fa-money-bill me-1"></i>
-                                                قيمة الفاتورة (د.ل) <span class="text-danger">*</span>
-                                            </label>
-                                            <input type="number" 
-                                                    step="0.01" 
-                                                    name="amount" 
-                                                    id="modalAmount" 
-                                                    class="form-control" 
-                                                    placeholder="0.00"
-                                                    required>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label text-muted">معاينة الإجمالي</label>
-                                            <div class="form-control bg-light" id="modalTotalPreview">0.00 د.ل</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                        <i class="fa fa-times"></i> إلغاء
-                                    </button>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fa fa-save"></i> إنشاء الفاتورة
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            
-                {{-- Template للصفوف الجديدة --}}
-                <div id="modalRowTemplate" style="display: none">
-                    <table>
-                        <tr>
-                            <td>
-                                <select name="ranks[]" class="form-control form-control-sm">
-                                    <option value="">-- اختر الصفة --</option>
-                                    @foreach(App\Models\DoctorRank::where('doctor_type', $doctor->type->value)->get() as $rank)
-                                        <option value="{{ $rank->id }}" data-price="{{ App\Models\Pricing::where('type','membership')->where('doctor_type', $doctor->type->value)->where('doctor_rank_id', $rank->id)->first()->amount }}">{{ $rank->name }}</option>
-                                    @endforeach
-                                </select>
-                            </td>
-                            <td>
-                                <input type="number" 
-                                        name="from_years[]" 
-                                        min="1900" 
-                                        max="2100" 
-                                        class="form-control form-control-sm"
-                                        placeholder="2020">
-                            </td>
-                            <td>
-                                <input type="number" 
-                                        name="to_years[]" 
-                                        min="1900" 
-                                        max="2100" 
-                                        class="form-control form-control-sm"
-                                        placeholder="2024">
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-danger modal-remove-row">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>رقم الفاتورة</th>
-                                <th>الوصف</th>
-                                <th>المستخدم</th>
-                                <th>المبلغ</th>
-                                <th>الحالة</th>
-                                <th>تاريخ الإنشاء</th>
-                                <th>اعدادات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($doctor->invoices as $invoice)
-                                <tr>
-                                    <td>{{ $invoice->id }}</td>
-                                    <td>{{ $invoice->id }}</td>
-                                    <td>{{ $invoice->description }}</td>
-                                    <td>{{ $invoice->user?->name ?? '-' }}</td>
-                                    <td>{{ number_format($invoice->amount, 2) }} د.ل</td>
-                                    <td>
-                                        <span class="badge {{$invoice->status->badgeClass()}}">
-                                            {{$invoice->status->label()}}
-                                        </span>
-                                    </td>
-                                    <td>{{ $invoice->created_at->format('Y-m-d') }}</td>
-                                    <td>
-                                        <a href="{{ route(get_area_name().'.invoices.print', $invoice->id) }}" class="btn btn-sm btn-secondary">
-                                            طباعة
-                                        </a>
-                                        @if ($invoice->status->value == "unpaid" && auth()->user()->vault)
-                                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#received_{{$invoice->id}}">
-                                            استلام القيمة <i class="fa fa-check"></i>
-                                        </button>
-                                        {{-- مودال استلام القيمة --}}
-                                        <div class="modal fade" id="received_{{$invoice->id}}" tabindex="-1" aria-labelledby="received_{{$invoice->id}}Label" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <form method="POST" action="{{ route(get_area_name() . '.invoices.received', ['invoice' => $invoice->id]) }}">
-                                                        @csrf
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="received_{{$invoice->id}}Label">تآكيد إستلام القيمة</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <div class="mb-3">
-                                                                <label for="notes" class="form-label">ملاحظات - اختياري</label>
-                                                                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                                                            <button type="submit" class="btn btn-primary">موافقة</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="text-center">لا توجد فواتير متاحة.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="selectAllInvoices()">
+                        <i class="fa fa-check-square"></i> تحديد الكل
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearAllInvoices()">
+                        <i class="fa fa-square"></i> إلغاء التحديد
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm" onclick="printSelectedInvoices()" id="printSelectedBtn" disabled>
+                        <i class="fa fa-print"></i> طباعة المحددة
+                    </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    {{-- باقي المودالات (بدون تغيير) --}}
+    {{-- مودال تأكيد إضافة بطاقة للطبيب --}}
+    <div class="modal fade" id="addDoctorCardModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ route(get_area_name().'.doctors.add-card', $doctor->id) }}" method="POST">
+                    @csrf
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title text-light">
+                            <i class="fa fa-id-card me-2"></i>
+                            إضافة بطاقة للطبيب
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    
+                    <div class="modal-body text-center py-4">
+                        <i class="fa fa-id-card fa-4x text-primary mb-3"></i>
+                        <h5 class="mb-3">هل أنت متأكد من إضافة بطاقة للطبيب؟</h5>
+                        <div class="bg-light p-3 rounded">
+                            <p class="mb-1"><strong>د. {{ $doctor->name }}</strong></p>
+                            <p class="text-muted mb-0">كود النقابي : {{ $doctor->code ?? 'غير محدد' }}</p>
+                        </div>
+                        <div class="alert alert-info mt-3 mb-0">
+                            <i class="fa fa-info-circle me-1"></i>
+                            سيتم احتساب رسوم البطاقة وإضافتها للفواتير
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa fa-times"></i> إلغاء
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-check"></i> تأكيد الإضافة
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- مودال إضافة مستحقات يدوية (بدون تغيير) --}}
+    <div class="modal fade" id="addManualDuesModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form action="{{ route(get_area_name().'.invoices.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="doctor_id" value="{{ $doctor->id }}">
+                    
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fa fa-plus me-2"></i>
+                            إضافة مستحقات يدوية
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        {{-- وصف الفاتورة --}}
+                        <div class="mb-3">
+                            <label for="modalDescription" class="form-label">
+                                <i class="fa fa-file-text me-1"></i>
+                                وصف الفاتورة <span class="text-danger">*</span>
+                            </label>
+                            <textarea name="description" 
+                                    id="modalDescription" 
+                                    class="form-control" 
+                                    rows="3" 
+                                    placeholder="أدخل وصف تفصيلي للفاتورة..." 
+                                    required></textarea>
+                        </div>
+
+                        {{-- Switch لحساب اشتراكات سابقة --}}
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="modalPreviousSwitch">
+                            <label class="form-check-label" for="modalPreviousSwitch">
+                                <i class="fa fa-history me-1"></i>
+                                حساب اشتراكات سابقة
+                            </label>
+                        </div>
+
+                        {{-- جدول الصفات والسنوات --}}
+                        <div id="modalRankTableContainer" style="display:none" class="mb-3">
+                            <div class="alert alert-info">
+                                <i class="fa fa-info-circle me-1"></i>
+                                قم بإضافة الصفات والسنوات المطلوب حساب الاشتراكات لها
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th width="30%">الصفة</th>
+                                            <th width="25%">من سنة</th>
+                                            <th width="25%">إلى سنة</th>
+                                            <th width="20%">إجراء</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="modalRankTableBody"></tbody>
+                                </table>
+                            </div>
+                            <button type="button" id="modalAddRowBtn" class="btn btn-sm btn-outline-primary">
+                                <i class="fa fa-plus me-1"></i> إضافة بند
+                            </button>
+                        </div>
+
+                        {{-- قيمة الفاتورة --}}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="modalAmount" class="form-label">
+                                    <i class="fa fa-money-bill me-1"></i>
+                                    قيمة الفاتورة (د.ل) <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" 
+                                        step="0.01" 
+                                        name="amount" 
+                                        id="modalAmount" 
+                                        class="form-control" 
+                                        placeholder="0.00"
+                                        required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted">معاينة الإجمالي</label>
+                                <div class="form-control bg-light" id="modalTotalPreview">0.00 د.ل</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa fa-times"></i> إلغاء
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa fa-save"></i> إنشاء الفاتورة
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Template للصفوف الجديدة --}}
+    <div id="modalRowTemplate" style="display: none">
+        <table>
+            <tr>
+                <td>
+                    <select name="ranks[]" class="form-control form-control-sm">
+                        <option value="">-- اختر الصفة --</option>
+                        @foreach(App\Models\DoctorRank::where('doctor_type', $doctor->type->value)->get() as $rank)
+                            <option value="{{ $rank->id }}" data-price="{{ App\Models\Pricing::where('type','membership')->where('doctor_type', $doctor->type->value)->where('doctor_rank_id', $rank->id)->first()->amount }}">{{ $rank->name }}</option>
+                        @endforeach
+                    </select>
+                </td>
+                <td>
+                    <input type="number" 
+                            name="from_years[]" 
+                            min="1900" 
+                            max="2100" 
+                            class="form-control form-control-sm"
+                            placeholder="2020">
+                </td>
+                <td>
+                    <input type="number" 
+                            name="to_years[]" 
+                            min="1900" 
+                            max="2100" 
+                            class="form-control form-control-sm"
+                            placeholder="2024">
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-danger modal-remove-row">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    {{-- جدول الفواتير المحدث --}}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th width="40">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
+                        </div>
+                    </th>
+                    <th>#</th>
+                    <th>رقم الفاتورة</th>
+                    <th>الوصف</th>
+                    <th>المستخدم</th>
+                    <th>المبلغ</th>
+                    <th>الحالة</th>
+                    <th>تاريخ الإنشاء</th>
+                    <th>اعدادات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($doctor->invoices->where('branch_id', auth()->user()->branch_id) as $invoice)
+                    <tr>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input invoice-checkbox" 
+                                       type="checkbox" 
+                                       value="{{ $invoice->id }}"
+                                       data-amount="{{ $invoice->amount }}"
+                                       onchange="updateSelection()">
+                            </div>
+                        </td>
+                        <td>{{ $invoice->id }}</td>
+                        <td>{{ $invoice->id }}</td>
+                        <td>{{ $invoice->description }}</td>
+                        <td>{{ $invoice->user?->name ?? '-' }}</td>
+                        <td>{{ number_format($invoice->amount, 2) }} د.ل</td>
+                        <td>
+                            <span class="badge {{$invoice->status->badgeClass()}}">
+                                {{$invoice->status->label()}}
+                            </span>
+                        </td>
+                        <td>{{ $invoice->created_at->format('Y-m-d') }}</td>
+                        <td>
+                            <a href="{{ route(get_area_name().'.invoices.print', $invoice->id) }}" class="btn btn-sm btn-secondary">
+                                طباعة
+                            </a>
+                            @if ($invoice->status->value == "unpaid" && auth()->user()->vault)
+                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#received_{{$invoice->id}}">
+                                استلام القيمة <i class="fa fa-check"></i>
+                            </button>
+                            {{-- مودال استلام القيمة --}}
+                            <div class="modal fade" id="received_{{$invoice->id}}" tabindex="-1" aria-labelledby="received_{{$invoice->id}}Label" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form method="POST" action="{{ route(get_area_name() . '.invoices.received', ['invoice' => $invoice->id]) }}">
+                                            @csrf
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="received_{{$invoice->id}}Label">تآكيد إستلام القيمة</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="notes" class="form-label">ملاحظات - اختياري</label>
+                                                    <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                                                <button type="submit" class="btn btn-primary">موافقة</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="9" class="text-center">لا توجد فواتير متاحة.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
             
             {{-- JavaScript لإدارة المودالات --}}
             <script>
@@ -1182,41 +1224,7 @@
                                     
                                     <div class="modal-body">
                                         <div class="row g-3">
-                                            <!-- معلومات الطبيب -->
-                                            <div class="col-12">
-                                                <div class="alert alert-info">
-                                                    <strong>الطبيب:</strong> {{ $doctor->name }} 
-                                                    <span class="badge bg-primary">{{ $doctor->code }}</span>
-                                                </div>
-                                            </div>
 
-                                            <!-- حدد الصفة -->
-                                            <div class="col-md-6">
-                                                <label class="form-label">
-                                                    <i class="fa fa-user-tie"></i> صفة الطبيب 
-                                                </label>
-                                                <select name="doctor_rank_id" class="form-control" required disabled>
-                                                    <option value="{{ $doctor->doctor_rank_id }}" >
-                                                        {{$doctor->doctor_rank->name}}
-                                                    </option>
-                                                </select>
-
-                                                <input type="hidden" name="doctor_rank_id" value="{{$doctor->doctor_rank_id}}">
-                                            </div>
-
-                                            <!-- التخصص -->
-                                            <div class="col-md-6">
-                                                <label class="form-label">
-                                                    <i class="fa fa-stethoscope"></i> التخصص
-                                                </label>
-                                                <select name="specialty_id" class="form-control" readonly disabled>
-                                                    <option value="{{$doctor->specialty1?->id}}">{{$doctor->specialty1?->name}}</option>
-                                                </select>
-
-                                                <input type="hidden" name="specialty_id" value="{{$doctor->specialty1?->id}}">
-                                            </div>
-
-                                            <!-- تاريخ الإصدار -->
                                             <div class="col-md-6">
                                                 <label class="form-label">
                                                     <i class="fa fa-calendar"></i> تاريخ الإصدار <span class="text-danger">*</span>
@@ -1252,6 +1260,10 @@
                                             </div>
                                             
 
+                                            <div class="col-md-12">
+                                                <label for="">رقم الإذن</label>
+                                                <input type="number" class="form-control" required name="index" value="{{\App\Models\Licence::where('branch_id',auth()->user()->branch_id)->where('doctor_type', $doctor->type->value)->max('index')+1}}" id="">
+                                            </div>
 
                                         </div>
                                     </div>
@@ -1440,7 +1452,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>#</th><th>الطبيب</th>
-                                        <th>الإجمالي</th><th>الحالة</th><th>تاريخ الإنشاء</th><th>إجراءات</th>
+                                        <th>الإجمالي</th><th>الحالة</th><th>تاريخ الإنشاء</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1451,12 +1463,6 @@
                                             <td>{{ number_format($mail->grand_total,2) }} د.ل</td>
                                             <td><span class="badge {{ ['under_approve'=>'bg-warning','under_payment'=>'bg-info','under_proccess'=>'bg-primary','done'=>'bg-success','failed'=>'bg-danger','under_edit'=>'bg-secondary'][$mail->status] ?? 'bg-secondary' }}">{{ ['under_approve'=>'قيد الموافقة','under_payment'=>'قيد الدفع','under_proccess'=>'قيد التجهيز','done'=>'مكتمل','failed'=>'فشل','under_edit'=>'قيد التعديل'][$mail->status] ?? 'غير معروف' }}</span></td>
                                             <td>{{ $mail->created_at->format('Y-m-d') }}</td>
-                                            <td>
-                                                <div class="btn-group btn-group-sm">
-                                                    <a href="{{ route(get_area_name().'.doctor-mails.show',$mail) }}" class="btn btn-outline-info"><i class="fa fa-eye"></i></a>
-                                                </div>
-                                                
-                                            </td>
                                         </tr>
                                     @empty
                                         <tr><td colspan="8" class="text-center py-4">لا توجد طلبات</td></tr>
@@ -1577,22 +1583,6 @@
                             </div>
                             @endif
     
-                            {{-- الجهة العامة/المستشفى --}}
-                            
-                            @if ($doctor->type->value != "visitor")
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">
-                                    <i class="fa fa-hospital me-1"></i>الجهة العامة/المستشفى
-                                </label>
-                                <select name="institution_id" class="form-control select2">
-                                    <option value="">-- حدد مستشفى --</option>
-                                    @foreach ($institutions as $institution)
-                                        <option value="{{ $institution->id }}">{{ $institution->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @endif
-
 
                             @if ($doctor->type->value == "visitor")
                             <div class="col-md-6 mb-3">
@@ -2758,6 +2748,255 @@ document.addEventListener('DOMContentLoaded', function () {
         
         .info-value {
             font-size: 0.9rem;
+        }
+    }
+    </style>
+
+<script>
+    // متغيرات عامة لإدارة التحديد
+    let selectedInvoices = [];
+    
+    // تحديث العرض عند تغيير التحديد
+    function updateSelection() {
+        const checkboxes = document.querySelectorAll('.invoice-checkbox:checked');
+        const selectionCard = document.getElementById('invoiceSelectionCard');
+        const selectedCountEl = document.getElementById('selectedCount');
+        const selectedTotalEl = document.getElementById('selectedTotal');
+        const printBtn = document.getElementById('printSelectedBtn');
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        
+        // تحديث المصفوفة
+        selectedInvoices = [];
+        let totalAmount = 0;
+        
+        checkboxes.forEach(checkbox => {
+            selectedInvoices.push(checkbox.value);
+            totalAmount += parseFloat(checkbox.dataset.amount);
+        });
+        
+        // تحديث العرض
+        selectedCountEl.textContent = selectedInvoices.length;
+        selectedTotalEl.textContent = totalAmount.toFixed(2) + ' د.ل';
+        
+        // إظهار/إخفاء كارت التحديد
+        if (selectedInvoices.length > 0) {
+            selectionCard.style.display = 'block';
+            printBtn.disabled = false;
+        } else {
+            selectionCard.style.display = 'none';
+            printBtn.disabled = true;
+        }
+        
+        // تحديث حالة تحديد الكل
+        const allCheckboxes = document.querySelectorAll('.invoice-checkbox');
+        selectAllCheckbox.indeterminate = checkboxes.length > 0 && checkboxes.length < allCheckboxes.length;
+        selectAllCheckbox.checked = checkboxes.length === allCheckboxes.length && allCheckboxes.length > 0;
+    }
+    
+    // تحديد/إلغاء تحديد الكل
+    function toggleSelectAll() {
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        const invoiceCheckboxes = document.querySelectorAll('.invoice-checkbox');
+        
+        invoiceCheckboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+        
+        updateSelection();
+    }
+    
+    // تحديد جميع الفواتير
+    function selectAllInvoices() {
+        const invoiceCheckboxes = document.querySelectorAll('.invoice-checkbox');
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        
+        invoiceCheckboxes.forEach(checkbox => {
+            checkbox.checked = true;
+        });
+        selectAllCheckbox.checked = true;
+        
+        updateSelection();
+    }
+    
+    // إلغاء تحديد جميع الفواتير
+    function clearAllInvoices() {
+        const invoiceCheckboxes = document.querySelectorAll('.invoice-checkbox');
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        
+        invoiceCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+        
+        updateSelection();
+    }
+    
+    // طباعة الفواتير المحددة
+    function printSelectedInvoices() {
+        if (selectedInvoices.length === 0) {
+            alert('يرجى تحديد فاتورة واحدة على الأقل للطباعة');
+            return;
+        }
+        
+        // إنشاء form مخفي لإرسال البيانات
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route(get_area_name().".invoices.print-multiple") }}';
+        form.target = '_blank';
+        
+        // إضافة CSRF token
+        const csrfField = document.createElement('input');
+        csrfField.type = 'hidden';
+        csrfField.name = '_token';
+        csrfField.value = '{{ csrf_token() }}';
+        form.appendChild(csrfField);
+        
+        // إضافة معرف الطبيب
+        const doctorField = document.createElement('input');
+        doctorField.type = 'hidden';
+        doctorField.name = 'doctor_id';
+        doctorField.value = '{{ $doctor->id }}';
+        form.appendChild(doctorField);
+        
+        // إضافة معرفات الفواتير المحددة
+        selectedInvoices.forEach(invoiceId => {
+            const invoiceField = document.createElement('input');
+            invoiceField.type = 'hidden';
+            invoiceField.name = 'invoice_ids[]';
+            invoiceField.value = invoiceId;
+            form.appendChild(invoiceField);
+        });
+        
+        // إضافة الـ form للصفحة وإرساله
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+        
+        // إظهار رسالة تأكيد
+        const printBtn = document.getElementById('printSelectedBtn');
+        const originalText = printBtn.innerHTML;
+        printBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> جاري الطباعة...';
+        printBtn.disabled = true;
+        
+        setTimeout(() => {
+            printBtn.innerHTML = originalText;
+            printBtn.disabled = false;
+        }, 2000);
+    }
+    
+    // تهيئة الأحداث عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+        // إخفاء كارت التحديد في البداية
+        const selectionCard = document.getElementById('invoiceSelectionCard');
+        if (selectionCard) {
+            selectionCard.style.display = 'none';
+        }
+        
+        // تحديث التحديد الأولي
+        updateSelection();
+    });
+    </script>
+    
+    <style>
+    /* تحسين مظهر كارت التحديد */
+    #invoiceSelectionCard {
+        background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
+        border: 2px solid #2196f3;
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+        transition: all 0.3s ease;
+    }
+    
+    #invoiceSelectionCard .card-body {
+        border-radius: 8px;
+    }
+    
+    /* تحسين مظهر الـ checkboxes */
+    .form-check-input {
+        width: 1.2em;
+        height: 1.2em;
+        border-radius: 4px;
+        border: 2px solid #dee2e6;
+        transition: all 0.2s ease;
+    }
+    
+    .form-check-input:checked {
+        background-color: #2196f3;
+        border-color: #2196f3;
+        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+    }
+    
+    .form-check-input:indeterminate {
+        background-color: #ff9800;
+        border-color: #ff9800;
+    }
+    
+    /* تحسين الصفوف عند التحديد */
+    .invoice-checkbox:checked + td,
+    tr:has(.invoice-checkbox:checked) {
+        background-color: rgba(33, 150, 243, 0.05);
+    }
+    
+    tr:has(.invoice-checkbox:checked) {
+        box-shadow: inset 3px 0 0 #2196f3;
+    }
+    
+    /* تحسين الأزرار */
+    .btn-group .btn {
+        transition: all 0.2s ease;
+    }
+    
+    .btn-outline-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(33, 150, 243, 0.2);
+    }
+    
+    .btn-outline-secondary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
+    }
+    
+    .btn-info:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(23, 162, 184, 0.2);
+    }
+    
+    /* تحسين الـ badges */
+    .badge {
+        font-size: 0.9em;
+        padding: 0.5em 0.8em;
+        border-radius: 6px;
+    }
+    
+    /* تأثيرات الانتقال */
+    #invoiceSelectionCard {
+        animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* تحسينات للاستجابة */
+    @media (max-width: 768px) {
+        #invoiceSelectionCard .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        #invoiceSelectionCard .btn-group {
+            width: 100%;
+        }
+        
+        #invoiceSelectionCard .btn-group .btn {
+            flex: 1;
         }
     }
     </style>

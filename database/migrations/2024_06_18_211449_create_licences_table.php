@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('doctor_id')->nullable()->constrained('doctors')->onDelete('cascade');
             $table->foreignId('medical_facility_id')->nullable()->constrained('medical_facilities')->onDelete('cascade');
-            $table->unsignedInteger('index')->nullable();
-            $table->string('code', 50)->nullable()->unique();
+            $table->integer('index')->nullable();
+            $table->string('code', 50)->nullable();
             $table->date('issued_date');
             $table->date('expiry_date');
             $table->string('status');

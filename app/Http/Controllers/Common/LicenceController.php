@@ -117,9 +117,9 @@ class LicenceController extends Controller
         // التحقق من صحة البيانات
         $validated = $request->validate([
             'doctor_id' => 'required|exists:doctors,id',
-            'doctor_rank_id' => 'required|exists:doctor_ranks,id',
             'issue_date' => 'required|date',
             'medical_facility_id' => 'required',
+            'index' => "required",
         ]);
 
         try {
@@ -139,17 +139,18 @@ class LicenceController extends Controller
 
             $licence = new Licence();
             $licence->doctor_id = $validated['doctor_id'];
-            $licence->doctor_rank_id = $validated['doctor_rank_id'];
             $licence->issued_date = $validated['issue_date'];
             $licence->expiry_date  = $doctor->type->value == "libyan" ? Carbon::parse($validated['issue_date'])->addYear() : Carbon::parse($validated['issue_date'])->addMonths(6);
             $licence->status = 'under_payment';
             $licence->doctor_type = $doctor->type->value ?? null;
             $licence->created_by = Auth::id();
-            $licence->specialty_id = $request->specialty_id;
-            $licence->doctor_rank_id = $request->doctor_rank_id;
+            $licence->specialty_id = $doctor->specialty_1_id;
+            $licence->doctor_rank_id = $doctor->doctor_rank_id;
             $licence->workin_medical_facility_id = $medicalFacility ? $medicalFacility->id : null;
             $licence->institution_id =  $institution ? $institution->id : null;
             $licence->amount = 0;
+            $licence->branch_id = auth()->user()->branch_id;
+            $licence->index = $request->index;
             $licence->save();
 
 
@@ -176,6 +177,7 @@ class LicenceController extends Controller
             $invoice->doctor_id = $doctor->id;
             $invoice->category = "licence";
             $invoice->licence_id = $licence->id;
+            $invoice->branch_id = auth()->user()->branch_id;
             $invoice->save();
 
             $invoice_item = new InvoiceItem();
@@ -479,7 +481,7 @@ class LicenceController extends Controller
         {
             $signature = Signature::whereNull('branch_id')->where('is_selected', 1)->first();
         } else {
-            $signature = Signature::where('branch_id', $licence->branch_id)->where('is_selected', 1)->first();
+            $signature = Signature::where('branch_id', $licence->doctor->branch_id)->where('is_selected', 1)->first();
         }
         
         if($licence->doctor)

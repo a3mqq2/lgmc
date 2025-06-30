@@ -343,7 +343,7 @@ class InvoiceController extends Controller
             return redirect()->back()->withErrors([$e->getMessage()]);
         }
     
-        return redirect()->back()->with('success', 'تم تحديث حالة الفاتورة إلى مدفوعة.');
+        return redirect()->route(get_area_name().'.doctors.show', ['doctor' => $invoice->doctor, 'redirect' => 'finance'])->with('success', 'تم تحديث حالة الفاتورة إلى مدفوعة.');
     }
     
 
@@ -386,5 +386,39 @@ class InvoiceController extends Controller
 
         $invoices = $query->orderByDesc('id')->get();
         return view('general.invoices.print_list', compact('invoices'));
+    }
+
+
+    public function printMultiple(Request $request)
+    {
+        $request->validate([
+            'doctor_id' => 'required|exists:doctors,id',
+            'invoice_ids' => 'required|array|min:1',
+            'invoice_ids.*' => 'exists:invoices,id'
+        ]);
+    
+        $doctor = Doctor::findOrFail($request->doctor_id);
+        $invoices = Invoice::whereIn('id', $request->invoice_ids)
+                          ->where('doctor_id', $doctor->id)
+                          ->with(['user', 'doctor'])
+                          ->orderBy('created_at', 'desc')
+                          ->get();
+    
+        if ($invoices->isEmpty()) {
+            return redirect()->back()->with('error', 'لم يتم العثور على فواتير صحيحة');
+        }
+    
+        // حساب الإجماليات
+        $totalAmount = $invoices->sum('amount');
+        $paidAmount = $invoices->where('status', 'paid')->sum('amount');
+        $unpaidAmount = $invoices->where('status', 'unpaid')->sum('amount');
+    
+        return view('general.invoices.print-multiple', compact(
+            'doctor', 
+            'invoices', 
+            'totalAmount', 
+            'paidAmount', 
+            'unpaidAmount'
+        ));
     }
 }

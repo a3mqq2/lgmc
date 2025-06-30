@@ -633,16 +633,6 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-
-                                                    <div class="mb-3">
-                                                        <label class="form-label">الجهة العامة/ المستشفى</label>
-                                                        <select name="institution_id" id="" class="form-control select2 selectize">
-                                                            <option value="">حدد مستشفى</option>
-                                                            @foreach ($institutions as $institution)
-                                                                <option value="{{$institution->id}}">{{$institution->name}}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
                                                 </div>
 
                                                 <div class="d-flex justify-content-between mt-4">

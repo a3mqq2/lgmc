@@ -17,6 +17,7 @@
                                 <tr>
                                     <th class="bg-light" scope="col">#</th>
                                     <th class="bg-light" scope="col">اسم الجامعة</th>
+                                    <th class="bg-light" scope="col">اسم الجامعة بالانجليزية</th>
                                     <th class="bg-light" scope="col">تاريخ الإنشاء</th>
                                     <th class="bg-light" scope="col">الإجراءات</th>
                                 </tr>
@@ -26,6 +27,7 @@
                                 <tr>
                                     <th scope="row">{{ $university->id }}</th>
                                     <td>{{ $university->name }}</td>
+                                    <td>{{ $university->name_en }}</td>
                                     <td>{{ $university->created_at->format('Y-m-d') }}</td>
                                     <td>
                                         <a href="{{ route(get_area_name().'.universities.edit', $university->id) }}" class="btn btn-primary btn-sm">تعديل</a>

@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\DocumentPreparation;
 use App\Models\InternshipTrainingRecord;
 use App\Models\InternshipGap;
+use App\Models\Signature;
 
 class DoctorMailController extends Controller
 {
@@ -536,6 +537,7 @@ class DoctorMailController extends Controller
             $invoice->doctor_id = $doctorMail->doctor_id;
             $invoice->category = "doctor_mail";
             $invoice->doctor_mail_id = $doctorMail->id;
+            $invoice->branch_id = auth()->user()->branch_id;
             $invoice->save();
 
 
@@ -984,6 +986,8 @@ class DoctorMailController extends Controller
      */
     public function prepareDocument(Request $request, DoctorMail $doctorMail, int $serviceId)
     {
+
+
         try {
             // العثور على الخدمة المحددة في الطلب
             $doctorMailService = $doctorMail->services()->where('id', $serviceId)->first();
@@ -1018,17 +1022,7 @@ class DoctorMailController extends Controller
                 ], 422);
             }
 
-            // التحقق من صحة البيانات حسب نوع المستند
-            $validatedData = $this->validateDocumentData($request, $documentType);
-            
-            if (!$validatedData['valid']) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $validatedData['message'],
-                    'errors' => $validatedData['errors'] ?? []
-                ], 422);
-            }
-
+     
             DB::beginTransaction();
 
             try {
@@ -1040,13 +1034,13 @@ class DoctorMailController extends Controller
                     ],
                     [
                         'document_type' => $documentType,
-                        'preparation_data' => $validatedData['data'],
+                        'preparation_data' => $request->all(),
                         'status' => 'pending'
                     ]
                 );
 
                 // معالجة البيانات حسب نوع المستند
-                $result = $this->processDocumentByType($documentType, $validatedData['data'], $documentPreparation);
+                $result = $this->processDocumentByType($documentType, $request, $documentPreparation);
 
                 if ($result['success']) {
                     // تحديث حالة إعداد المستند
@@ -1084,145 +1078,14 @@ class DoctorMailController extends Controller
             }
 
         } catch (\Exception $e) {
-            Log::error('خطأ في إعداد المستند', [
-                'error' => $e->getMessage(),
-                'doctor_mail_id' => $doctorMail->id,
-                'service_id' => $serviceId,
-                'user_id' => auth()->id()
-            ]);
-            
             return response()->json([
                 'success' => false,
-                'message' => 'حدث خطأ أثناء إعداد المستند. يرجى المحاولة مرة أخرى.'
+                'message' => 'حدث خطأ أثناء إعداد المستند. يرجى المحاولة مرة أخرى.  ' . $e->getMessage()
             ], 500);
         }
     }
 
-    /**
-     * التحقق من صحة البيانات حسب نوع المستند
-     *
-     * @param Request $request
-     * @param string $documentType
-     * @return array
-     */
-    private function validateDocumentData(Request $request, string $documentType): array
-    {
-        switch ($documentType) {
-            case 'license':
-            case 'good_standing':
-            case 'certificate':
-            case 'verification_work':
-            case 'university_letters':
-                // لا توجد بيانات إضافية مطلوبة لهذه الأنواع
-                return [
-                    'valid' => true,
-                    'data' => [
-                        'document_type' => $documentType,
-                        'prepared_at' => now()->toDateTimeString()
-                    ]
-                ];
 
-            case 'specialist':
-                $validator = Validator::make($request->all(), [
-                    'doctor_type' => 'required|in:specialist,consultant'
-                ], [
-                    'doctor_type.required' => 'يرجى اختيار نوع الطبيب',
-                    'doctor_type.in' => 'نوع الطبيب يجب أن يكون اختصاصي أو استشاري'
-                ]);
-
-                if ($validator->fails()) {
-                    return [
-                        'valid' => false,
-                        'message' => $validator->errors()->first(),
-                        'errors' => $validator->errors()
-                    ];
-                }
-
-                return [
-                    'valid' => true,
-                    'data' => [
-                        'document_type' => $documentType,
-                        'doctor_type' => $request->doctor_type,
-                        'doctor_type_label' => $request->doctor_type === 'specialist' ? 'اختصاصي' : 'استشاري'
-                    ]
-                ];
-
-            case 'internship_second_year':
-                $validator = Validator::make($request->all(), [
-                    'specialty' => 'required|array|min:1',
-                    'specialty.*' => 'required|string|min:2|max:100',
-                    'institution' => 'required|array|min:1',
-                    'institution.*' => 'required|string|min:2|max:200',
-                    'from_date' => 'required|array|min:1',
-                    'from_date.*' => 'required|date|before_or_equal:today',
-                    'to_date' => 'required|array|min:1',
-                    'to_date.*' => 'required|date|after_or_equal:from_date.*|before_or_equal:today',
-                    'has_gap' => 'sometimes|boolean',
-                    'gap_from_date' => 'required_if:has_gap,true|date|before_or_equal:today',
-                    'gap_to_date' => 'required_if:has_gap,true|date|after_or_equal:gap_from_date|before_or_equal:today',
-                    'gap_reason' => 'required_if:has_gap,true|string|min:10|max:1000'
-                ], [
-                    'specialty.required' => 'يرجى إدخال التخصص',
-                    'specialty.min' => 'يجب إدخال تخصص واحد على الأقل',
-                    'institution.required' => 'يرجى إدخال المؤسسة',
-                    'from_date.required' => 'يرجى إدخال تاريخ البداية',
-                    'to_date.required' => 'يرجى إدخال تاريخ النهاية',
-                    'to_date.*.after_or_equal' => 'تاريخ النهاية يجب أن يكون بعد أو يساوي تاريخ البداية',
-                    'gap_reason.min' => 'سبب الفجوة يجب أن يكون أكثر تفصيلاً (10 أحرف على الأقل)',
-                    'gap_reason.max' => 'سبب الفجوة طويل جداً'
-                ]);
-
-                if ($validator->fails()) {
-                    return [
-                        'valid' => false,
-                        'message' => $validator->errors()->first(),
-                        'errors' => $validator->errors()
-                    ];
-                }
-
-                // التحقق من عدم تداخل التواريخ
-                $dateValidation = $this->validateTrainingDates($request->from_date, $request->to_date);
-                if (!$dateValidation['valid']) {
-                    return $dateValidation;
-                }
-
-                // تجميع بيانات سجلات التدريب
-                $trainingRecords = [];
-                for ($i = 0; $i < count($request->specialty); $i++) {
-                    $trainingRecords[] = [
-                        'specialty' => $request->specialty[$i],
-                        'institution' => $request->institution[$i],
-                        'from_date' => $request->from_date[$i],
-                        'to_date' => $request->to_date[$i]
-                    ];
-                }
-
-                $data = [
-                    'document_type' => $documentType,
-                    'training_records' => $trainingRecords,
-                    'total_records' => count($trainingRecords)
-                ];
-
-                if ($request->boolean('has_gap')) {
-                    $data['gap'] = [
-                        'from_date' => $request->gap_from_date,
-                        'to_date' => $request->gap_to_date,
-                        'reason' => $request->gap_reason
-                    ];
-                }
-
-                return [
-                    'valid' => true,
-                    'data' => $data
-                ];
-
-            default:
-                return [
-                    'valid' => false,
-                    'message' => 'نوع المستند غير مدعوم: ' . $documentType
-                ];
-        }
-    }
 
     /**
      * التحقق من صحة تواريخ التدريب وعدم تداخلها
@@ -1279,8 +1142,9 @@ class DoctorMailController extends Controller
      * @param DocumentPreparation $documentPreparation
      * @return array
      */
-    private function processDocumentByType(string $documentType, array $data, DocumentPreparation $documentPreparation): array
+    private function processDocumentByType(string $documentType,  $data, DocumentPreparation $documentPreparation): array
     {
+
         switch ($documentType) {
             case 'license':
                 return $this->prepareLicenseDocument($documentPreparation);
@@ -1345,7 +1209,7 @@ class DoctorMailController extends Controller
      * @param array $data
      * @return array
      */
-    private function prepareCertificateDocument(DocumentPreparation $documentPreparation, array $data = []): array
+    private function prepareCertificateDocument(DocumentPreparation $documentPreparation,  $data)
     {
         try {
             $doctor = $documentPreparation->doctorMail->doctor;
@@ -1454,11 +1318,11 @@ class DoctorMailController extends Controller
      * @param array $data
      * @return array
      */
-    private function prepareSpecialistDocument(DocumentPreparation $documentPreparation, array $data): array
+    private function prepareSpecialistDocument(DocumentPreparation $documentPreparation,  $data): array
     {
         try {
             $doctor = $documentPreparation->doctorMail->doctor;
-            $typeLabel = $data['doctor_type_label'];
+            $typeLabel = $data->doctor_type_label;
             
             return [
                 'success' => true,
@@ -1483,54 +1347,26 @@ class DoctorMailController extends Controller
      * @param array $data
      * @return array
      */
-    private function prepareInternshipDocument(DocumentPreparation $documentPreparation, array $data): array
+
+
+
+    private function prepareInternshipDocument(DocumentPreparation $documentPreparation,  $data)
     {
         try {
             $doctor = $documentPreparation->doctorMail->doctor;
             
-            // إنشاء سجلات التدريب
-            foreach ($data['training_records'] as $recordData) {
-                InternshipTrainingRecord::create([
-                    'document_preparation_id' => $documentPreparation->id,
-                    'specialty' => $recordData['specialty'],
-                    'institution' => $recordData['institution'],
-                    'from_date' => $recordData['from_date'],
-                    'to_date' => $recordData['to_date']
-                ]);
-            }
-
-            // إنشاء سجل الفجوة إن وجد
-            if (isset($data['gap'])) {
-                InternshipGap::create([
-                    'document_preparation_id' => $documentPreparation->id,
-                    'from_date' => $data['gap']['from_date'],
-                    'to_date' => $data['gap']['to_date'],
-                    'reason' => $data['gap']['reason']
-                ]);
-            }
-
-            $recordsCount = $data['total_records'];
-            $message = "تم إعداد شهادة السنة الثانية للامتياز مع {$recordsCount} سجل تدريب";
-            
-            if (isset($data['gap'])) {
-                $message .= ' مع وجود فجوة في التدريب';
-            }
-            
-            $message .= ' بنجاح';
-            
             return [
                 'success' => true,
-                'message' => $message,
+                'message' => 'تم إعداد رسالة سنة امتياز ثانية بنجاح',
                 'document_path' => null,
-                'notes' => $message . " للطبيب {$doctor->name} (كود: {$doctor->code})"
+                'notes' => "تم إعداد رسالة سنة امتياز ثانية للطبيب {$doctor->name} (كود: {$doctor->code})"
             ];
-
         } catch (\Exception $e) {
-            Log::error('خطأ في إنشاء سجلات التدريب: ' . $e->getMessage());
+            Log::error('خطأ في إعداد رسالة سنة امتياز ثانية: ' . $e->getMessage());
             
             return [
                 'success' => false,
-                'message' => 'حدث خطأ أثناء حفظ بيانات التدريب'
+                'message' => 'حدث خطأ أثناء إعداد الرسالة '
             ];
         }
     }
@@ -1622,10 +1458,11 @@ class DoctorMailController extends Controller
         ];
 
         $documentTypeName = $documentTypesNames[$documentPreparation->document_type] ?? $documentPreparation->document_type;
-
+        $signature = Signature::where('branch_id', null)->where('is_selected', 1)->first();
         return view('admin.document-preparations.print', compact(
             'documentPreparation', 
-            'documentTypeName'
+            'documentTypeName',
+            'signature',
         ));
     }
 

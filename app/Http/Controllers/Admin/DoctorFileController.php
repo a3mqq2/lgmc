@@ -50,9 +50,9 @@ class DoctorFileController extends Controller
 
         try {
             $file     = $request->file('document');
-            $fileName = $file->getClientOriginalName();
-            $filePath = $file->storeAs('files', $fileName, 'public');
             $fileType = FileType::findOrFail($request->file_type_id);
+            $fileName = $fileType->name;
+            $filePath = $file->storeAs('files', $fileName, 'public');
             $doctorFile = DoctorFile::create([
                 'doctor_id'    => $doctor->id,
                 'file_name'    => $fileName,
@@ -115,13 +115,14 @@ class DoctorFileController extends Controller
 
         try {
             // لو تم رفع ملف جديد احذف القديم وارفع الجديد
+            $fileType = FileType::find($request->file_type_id);
             if ($request->hasFile('document')) {
                 if ($file->file_path && Storage::disk('public')->exists($file->file_path)) {
                     Storage::disk('public')->delete($file->file_path);
                 }
 
                 $newDoc   = $request->file('document');
-                $fileName = time() . '_' . $newDoc->getClientOriginalName();      
+                $fileName = time() . '_' . $fileType->name;      
                 $filePath = $newDoc->storeAs('files', $fileName, 'public');
 
                 $file->file_name   = $fileName;

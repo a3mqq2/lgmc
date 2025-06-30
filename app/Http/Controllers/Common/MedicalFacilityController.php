@@ -205,6 +205,7 @@ class MedicalFacilityController extends Controller
         $invoice->amount = 0;
         $invoice->status = "unpaid";
         $invoice->doctor_id = $medicalFacility->manager->id;
+        $invoice->branch_id = auth()->user()->branch_id;
         $invoice->category = $medicalFacility->renew_number ? 'medical_facility_renew' : 'medical_facility_registration';
         $invoice->save();
 
@@ -239,6 +240,7 @@ class MedicalFacilityController extends Controller
               $license->status = "active";
               $license->created_by = auth()->id();
               $license->amount = 0; // Assuming amount is 0 for now, adjust as needed
+              $license->branch_id = auth()->user()->branch_id;
               $license->save();
 
             // Create a transaction for the payment

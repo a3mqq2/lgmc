@@ -45,6 +45,11 @@ Route::get('/doctors/generate-report', [DoctorController::class, 'generateReport
 Route::get('/doctors/preview-report', [DoctorController::class, 'previewReport'])->name('doctors.preview_report');
 Route::get ('/doctors/{doctor}/print-membership-form',         [DoctorController::class, 'print_membership_form'])->name('doctors.print-membership-form');
 
+
+Route::post('/invoices/print-multiple', [InvoiceController::class, 'printMultiple'])
+->name('invoices.print-multiple');
+
+
 Route::post('/doctors/{doctor}/renew-membership', [DoctorController::class, 'renewMembership'])
     ->name('user.doctors.renew-membership');
 
@@ -58,32 +63,32 @@ Route::post('/doctors/{doctor}/renew-membership', [DoctorController::class, 'ren
 
 Route::get('/reports', [ReportController::class, 'index'])->middleware('permission:manage-branches-reports')->name('reports.index');
 Route::get('/doctors/{doctor}/print-id', [DoctorController::class, 'print_id'])->name('doctors.print-id');
-Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->middleware('permission:doctor-foreign')->name('doctors.print');
-Route::get('/doctors/{doctor}/print-license', [DoctorController::class, 'print_license'])->middleware('permission:doctor-foreign')->name('doctors.print-license');
-Route::post('/doctors/import-store', [DoctorController::class, 'import_store'])->middleware('permission:doctor-foreign')->name('doctors.import-store');
-Route::get('/doctors/import', [DoctorController::class, 'import'])->middleware('permission:doctor-foreign')->name('doctors.import');
-Route::resource('doctors', DoctorController::class)->middleware('permission:doctor-foreign');
+Route::get('/doctors/{doctor}/print', [DoctorController::class, 'print'])->name('doctors.print');
+Route::get('/doctors/{doctor}/print-license', [DoctorController::class, 'print_license'])->name('doctors.print-license');
+Route::post('/doctors/import-store', [DoctorController::class, 'import_store'])->name('doctors.import-store');
+Route::get('/doctors/import', [DoctorController::class, 'import'])->name('doctors.import');
+Route::resource('doctors', DoctorController::class);
 Route::resource('specialties', SpecialtyController::class)->middleware('permission:addons');
 Route::resource('countries', CountryController::class)->middleware('permission:addons');
-Route::resource('branches', BranchController::class)->middleware('permission:manage-branches');
+Route::resource('branches', BranchController::class);
 Route::get('/users/{user}/change-status', [UsersController::class, 'change_status'])->name('users.change-status');
 Route::resource('users', UsersController::class)->middleware('permission:manage-staff');
 Route::resource('staffs', StaffController::class);
 Route::resource('medical-facility-types', MedicalFacilityTypeController::class)->middleware('permission:addons');
 Route::resource('universities', UniversityController::class)->middleware('permission:addons'); 
 Route::resource('academic-degrees', AcademicDegreeController::class)->middleware('permission:addons');
-Route::get('medical-facilities/import', [ MedicalFacilityController::class, 'import'])->middleware('permission:manage-medical-facilities')->name('medical-facilities.import');
-Route::post('medical-facilities/import', [ MedicalFacilityController::class, 'import_store'])->middleware('permission:manage-medical-facilities')->name('medical-facilities.import-store');
-Route::resource('medical-facilities', MedicalFacilityController::class)->middleware('permission:manage-medical-facilities');
+Route::get('medical-facilities/import', [ MedicalFacilityController::class, 'import'])->name('medical-facilities.import');
+Route::post('medical-facilities/import', [ MedicalFacilityController::class, 'import_store'])->name('medical-facilities.import-store');
+Route::resource('medical-facilities', MedicalFacilityController::class);
 
 Route::post('/medical-facilities/{medicalFacility}/change-status', [MedicalFacilityController::class, 'change_status'])->name('medical-facilities.change-status');
 
 
-Route::resource('doctor_ranks', DoctorRankController::class)->middleware('permission:doctor-foreign');
+Route::resource('doctor_ranks', DoctorRankController::class);
 Route::resource('file-types', FileTypeController::class)->middleware('permission:addons');
 
-Route::resource('doctors.files', DoctorFileController::class)->shallow()->middleware('permission:doctor-foreign');
-Route::resource('medical-facility-files', DoctorFileController::class)->shallow()->middleware('permission:doctor-foreign');
+Route::resource('doctors.files', DoctorFileController::class)->shallow();
+Route::resource('medical-facility-files', DoctorFileController::class)->shallow();
 Route::patch('/licences/{licence}/approve', [LicenceController::class, 'approve'])->middleware('permission:manage-medical-licenses,manage-doctor-permits')->name('licences.approve');
 Route::get('/licences/{licence}/print', [LicenceController::class, 'print'])->name('licences.print');
 Route::resource('licences', LicenceController::class);
@@ -164,19 +169,19 @@ Route::post('doctor-mails/{doctorMail}/services/{service}/prepare-document', [Do
 
 // راوت صفحة الطباعة
 Route::get('document-preparations/{documentPreparation}/print', [DoctorMailController::class, 'printDocumentPreparation'])
-    ->name('admin.document-preparations.print');
+    ->name('document-preparations.print');
 
 // راوت تصدير PDF
 Route::get('document-preparations/{documentPreparation}/export-pdf', [DoctorMailController::class, 'exportToPdf'])
-    ->name('admin.document-preparations.export-pdf');
+    ->name('document-preparations.export-pdf');
 
 // راوت عرض تفاصيل إعداد المستند
 Route::get('doctor-mails/{doctorMail}/document-preparations/{documentPreparation}', [DoctorMailController::class, 'showDocumentPreparation'])
-    ->name('admin.doctor-mails.document-preparations.show');
+    ->name('doctor-mails.document-preparations.show');
 
 // راوت إكمال إعداد المستند
 Route::patch('doctor-mails/{doctorMail}/document-preparations/{documentPreparation}/complete', [DoctorMailController::class, 'completeDocumentPreparation'])
-    ->name('admin.doctor-mails.document-preparations.complete');
+    ->name('doctor-mails.document-preparations.complete');
 
 
 Route::resource('emails', EmailController::class);

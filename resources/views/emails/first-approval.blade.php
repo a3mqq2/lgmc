@@ -299,11 +299,13 @@
             </div>
             @endif
 
+            @if ($doctor->branch_id == 1)
             <div class="timing-info">
                 <strong>مواعيد تقديم المستندات:</strong><br>
                 يومي الاثنين والأربعاء من كل أسبوع<br>
                 من الساعة 8:30 صباحاً وحتى الساعة 12:00 ظهراً
             </div>
+            @endif
 
             <div class="important-notice">
                 <h3>المستندات المطلوبة للإحضار</h3>

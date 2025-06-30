@@ -385,7 +385,7 @@
                                                         <input type="date" required name="passport_expiration" value="{{old('passport_expiration')}}" class="form-control">
                                                     </div>
 
-                                                    <div class="col-md-12">
+                                                    <div class="col-md-6">
                                                         <label>الجنسية</label>
                                                         <select name="country_id" required id="country_id" class="form-control selectize" @if(request('type')=="libyan"||request('type')=="palestinian") disabled @endif>
                                                             <option value="">حدد دولة</option>
@@ -402,6 +402,22 @@
                                                             <input type="hidden" name="country_id" value="1">
                                                         @endif
                                                     </div>
+
+                                                         
+                                                    <div class="col-md-6">
+                                                        <label>الجنس</label>
+                                                        <select name="gender" id="gender" class="form-control">
+                                                            <option value="male">ذكر</option>
+                                                            <option value="female">انثى</option>
+                                                        </select>
+                                                    </div>
+
+
+                                                    <div class="col-md-12">
+                                                        <label>تاريخ الميلاد</label>
+                                                        <input type="date" name="date_of_birth" id="" class="form-control">
+                                                    </div>
+
 
                                                     <div class="col-md-12 mt-3">
                                                         <div class="custom-alert d-flex align-items-center mb-4" role="alert">

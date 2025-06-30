@@ -25,7 +25,7 @@ class MedicalFacilityFileController extends Controller
         $medicalFacility->files()->create([
             'file_path' => $filePath,
             'file_type_id' => $request->file_type_id,
-            'file_name' => $file->getClientOriginalName(),
+            'file_name' => $fileType->name,
             'uploaded_at' => now(),
             'order_number' => $fileType->order_number,
         ]);
@@ -71,7 +71,7 @@ class MedicalFacilityFileController extends Controller
             );
     
             $file->file_path   = $filePath;
-            $file->file_name   = $newFile->getClientOriginalName();
+            $file->file_name   = $fileType->name;
             $file->uploaded_at = now();
         }
     

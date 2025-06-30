@@ -71,7 +71,7 @@ class MedicalFacilityController extends Controller
                 $path = $file->store('medical-facilities','public');
     
                 $facility->files()->create([
-                    'file_name'    => $file->getClientOriginalName(),
+                    'file_name'    => $ft->name,
                     'file_type_id' => $ft->id,
                     'file_path'    => $path,
                 ]);

@@ -281,6 +281,7 @@ class DoctorHomeController extends Controller
             "phone" => "required",
             "city" => "required",
             "address" => "required|max:255",
+            'commercial_number' => "required",
         ]);
 
         $medical_facility = new MedicalFacility();
@@ -292,6 +293,7 @@ class DoctorHomeController extends Controller
         $medical_facility->manager_id = auth('doctor')->id();
         $medical_facility->branch_id = auth('doctor')->user()->branch_id;
         $medical_facility->membership_status = "under_complete";
+        $medical_facility->commercial_number = $request->commercial_number;
         $medical_facility->save();
 
         return redirect()->route('doctor.my-facility')->with('success', 'تم إنشاء المنشأة الطبية بنجاح');

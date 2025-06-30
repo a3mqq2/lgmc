@@ -33,6 +33,7 @@ class UniversityController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'en_name' => "required",
         ]);
 
         $university = University::create($request->all());
@@ -72,6 +73,7 @@ class UniversityController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'en_name' => "required",
         ]);
 
         $university->update($request->all());

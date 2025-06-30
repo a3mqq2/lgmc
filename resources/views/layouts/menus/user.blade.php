@@ -70,9 +70,13 @@
     <div class="collapse menu-dropdown" id="palestinian">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'under_payment']) }}" class="nav-link"> عضويات قيد الدفع  </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'active']) }}" class="nav-link"> عضويات مفعله </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'expired']) }}" class="nav-link"> عضويات منتهية الصلاحية </a>
+                <a href="{{ route(get_area_name().'.doctors.create', ['type' => "palestinian"]) }}" class="nav-link"> إضافة عضو جديد    </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'under_approve']) }}" class="nav-link">طلبات الموقع </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'active']) }}" class="nav-link">عضويات مفعله</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'expired']) }}" class="nav-link">عضويات  منتهيه صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'banned']) }}" class="nav-link">عضويات موقوفه</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian", 'membership_status' => 'suspended']) }}" class="nav-link">عضويات معلقه</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "palestinian"]) }}" class="nav-link"> جميع العضويات </a>
             </li>
         </ul>
     </div>
@@ -92,9 +96,13 @@
     <div class="collapse menu-dropdown" id="foreign">
         <ul class="nav nav-sm flex-column">
             <li class="nav-item">
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'under_payment']) }}" class="nav-link"> عضويات قيد الدفع  </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'active']) }}" class="nav-link"> عضويات مفعله </a>
-                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'expired']) }}" class="nav-link"> عضويات منتهية الصلاحية </a>
+                <a href="{{ route(get_area_name().'.doctors.create', ['type' => "foreign"]) }}" class="nav-link"> إضافة عضو جديد    </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'under_approve']) }}" class="nav-link">طلبات الموقع </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'active']) }}" class="nav-link">عضويات مفعله</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'expired']) }}" class="nav-link">عضويات  منتهيه صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'banned']) }}" class="nav-link">عضويات موقوفه</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign", 'membership_status' => 'suspended']) }}" class="nav-link">عضويات معلقه</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "foreign"]) }}" class="nav-link"> جميع العضويات </a>
             </li>
         </ul>
     </div>
@@ -123,6 +131,33 @@
     </div>
 </li>
 @endif
+
+
+
+
+
+@if(auth()->user()->permissions()->where('name','doctor-visitor')->count())
+
+<li class="nav-item">
+    <a class="nav-link menu-link" data-bs-target="#visitors" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+        <i class="fa fa-user-doctor"></i>
+        <span data-key="t-layouts">الاطباء الزوار</span>
+    </a>
+    <div class="collapse menu-dropdown" id="visitors">
+        <ul class="nav nav-sm flex-column">
+            <li class="nav-item">
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'under_approve']) }}" class="nav-link">طلبات الموقع </a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'active']) }}" class="nav-link">عضويات مفعله</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'expired']) }}" class="nav-link">عضويات  منتهيه صلاحيتهم</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'banned']) }}" class="nav-link">عضويات موقوفه</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor", 'membership_status' => 'suspended']) }}" class="nav-link">عضويات معلقه</a>
+                <a href="{{ route(get_area_name().'.doctors.index', ['type' => "visitor"]) }}" class="nav-link"> جميع العضويات </a>
+            </li>
+        </ul>
+    </div>
+</li>
+@endif
+
 
 
 
@@ -324,6 +359,13 @@
     </div>
 </li>
 
+
+
+<li class="nav-item">
+    <a class="nav-link menu-link" href="{{ route(get_area_name().'.reports.index') }}">
+        <i class="fa fa-file"></i> <span>  التقارير   </span>
+    </a>
+</li>
 
 
 

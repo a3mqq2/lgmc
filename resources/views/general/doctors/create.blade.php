@@ -150,13 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         </select>
                     </div>
 
-                    <div class="col-md-6 mt-2">
-                        <label>النوع</label>
-                        <select name="gender" id="gender" class="form-control" required>
-                            <option value="male"   {{ old('gender')=='male'   ? 'selected':'' }}>ذكر</option>
-                            <option value="female" {{ old('gender')=='female' ? 'selected':'' }}>أنثى</option>
-                        </select>
-                    </div>
 
                     <div class="col-md-6 mt-2">
                         <label>رقم جواز السفر</label>
@@ -168,6 +161,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         <input type="date" name="passport_expiration" value="{{ old('passport_expiration') }}" required class="form-control">
                     </div>
                 @endif
+
+
+                <div class="col-md-6 mt-2">
+                    <label>النوع</label>
+                    <select name="gender" id="gender" class="form-control" required>
+                        <option value="male"   {{ old('gender')=='male'   ? 'selected':'' }}>ذكر</option>
+                        <option value="female" {{ old('gender')=='female' ? 'selected':'' }}>أنثى</option>
+                    </select>
+                </div>
 
                 @if ($type == 'visitor')
                     <div class="col-md-6 mt-2">
@@ -346,18 +348,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <input type="date" name="registered_at" value="{{ old('registered_at') }}" class="form-control">
                     </div>
                 @endif
-
-                <div class="col-md-6">
-                    <div class="">
-                        <label class="form-label">الجهة العامة/ المستشفى</label>
-                        <select name="institution_id" id="" class="form-control select2 selectize">
-                            <option value="">حدد مستشفى</option>
-                            @foreach ($institutions as $institution)
-                                <option value="{{$institution->id}}">{{$institution->name}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
 
                 <div class="col-md-6">
                     <label>الصفة</label>

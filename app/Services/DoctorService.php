@@ -213,7 +213,7 @@ class DoctorService
          /* -------------------------------------------------
           |  تقييد الفرع حسب المنطقة
           * ------------------------------------------------*/
-         if (get_area_name() !== 'admin') {
+         if (get_area_name() != 'admin' && auth()->user()->branch_id) {
              $query->where('branch_id', auth()->user()->branch_id);
          }
      
@@ -352,7 +352,7 @@ class DoctorService
     
             // Set default password if not provided
             if(!$doctor->password) {
-                $doctor->password = Hash::make($doctor->phone);
+                $doctor->password = Hash::make(123123123);
             }
     
             // Set branch for Libyan doctors
@@ -384,6 +384,7 @@ class DoctorService
     $invoice->doctor_id = $doctor->id;
     $invoice->category = $doctor->membership_status == "under_payment" ? "registration" : "renewal";
     $invoice->branch_id = auth()->user()->branch_id ?? $doctor->branch_id;
+    $invoice->branch_id = auth()->user()->branch_id;
     $invoice->save();
 
     try {
@@ -522,12 +523,12 @@ class DoctorService
                       if ($existingFile) {
   
                           $existingFile->update([
-                              'file_name' => $file->getClientOriginalName(),
+                              'file_name' => $file_type->name,
                               'file_path' => $file->store('doctors', 'public'),
                           ]);
                       } else {
                           $doctor->files()->create([
-                              'file_name' => $file->getClientOriginalName(),
+                              'file_name' => $file_type->name,
                               'file_type_id' => $file_type->id,
                               'file_path' => $file->store('doctors', 'public'),
                           ]);

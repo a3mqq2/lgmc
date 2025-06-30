@@ -1,6 +1,21 @@
 @extends('layouts.'.get_area_name())
 @section('title', 'تفاصيل طلب أوراق الخارج')
+@section('styles')
+<style>
+/* Fix for Select2 dropdown z-index inside modal */
+.select2-container--default .select2-dropdown {
+    z-index: 9999 !important;
+}
 
+.modal .select2-container {
+    z-index: 9999 !important;
+}
+
+.select2-container--open {
+    z-index: 9999 !important;
+}
+</style>
+@endsection
 @section('content')
 <div class="container-fluid">
     <!-- Page Header -->
@@ -208,7 +223,30 @@
                                     </td>
                                     <td>
                                         @if(get_area_name() == "admin" && $doctorMail->status == 'under_proccess')
-                                            <!-- أزرار الإجراءات الأخرى إن وجدت -->
+                                            @php
+                                                $documentType = $service->pricing->document_type ?? null;
+                                                $allowedTypes = ['certificate', 'good_standing', 'internship_second_year', 'license', 'specialist', 'university_letters', 'verification_work'];
+                                            @endphp
+                                            
+                                            @if($documentType && in_array($documentType, $allowedTypes) && !$service->has_document_preparation)
+                                                @if($documentType === 'good_standing')
+                                                    <button type="button" class="btn btn-sm btn-success" 
+                                                            onclick="showDocumentModalWithWorkMention('good_standing', {{ $service->id }}, '{{ $service->work_mention }}')">
+                                                        <i class="fas fa-file-alt me-1"></i>
+                                                        إعداد النموذج
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="btn btn-sm btn-primary" 
+                                                            onclick="showDocumentModal('{{ $documentType }}', {{ $service->id }})">
+                                                        <i class="fas fa-file-alt me-1"></i>
+                                                        إعداد النموذج
+                                                    </button>
+                                                @endif
+                                            @endif
+                                    
+                                            @if($documentType && in_array($documentType, $allowedTypes) && $service->has_document_preparation)
+                                                <a target="_blank" href="{{route('admin.document-preparations.print', ['documentPreparation' => $service->documentPreparation->id, 'download' => 1] )}}" class="btn btn-success">تحميل النموذج</a>
+                                            @endif
                                         @endif
                                     </td>
                                 </tr>
@@ -226,6 +264,412 @@
                 </div>
             </div>
 
+            <div class="modal fade" id="confirmDocumentModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form id="confirmDocumentForm" onsubmit="prepareDocument(event)">
+                            @csrf
+                            <input type="hidden" name="document_type" id="confirmDocumentType">
+                            <input type="hidden" name="service_id" id="confirmServiceId">
+                            
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title" id="confirmDocumentTitle">
+                                    <i class="fas fa-file-alt me-2"></i>
+                                    إعداد المستند
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center py-5">
+                                <div class="mb-4">
+                                    <i class="fas fa-check-circle fa-4x text-primary"></i>
+                                </div>
+                                <h4 class="mb-3">هل تريد إعداد المستند؟</h4>
+                                <p class="text-muted" id="confirmDocumentMessage">سيتم إعداد المستند للطبيب</p>
+                            </div>
+                            <div class="modal-footer border-0 justify-content-center">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-cog me-2"></i>
+                                    إعداد المستند
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Internship Second Year Modal -->
+            <div class="modal fade" id="internshipSecondYearModal" tabindex="-1">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content">
+                        <form id="internshipSecondYearForm" onsubmit="prepareDocument(event)">
+                            @csrf
+                            <input type="hidden" name="document_type" value="internship_second_year">
+                            <input type="hidden" name="service_id" id="internshipServiceId">
+                            
+                            <div class="modal-header bg-info text-white">
+                                <h5 class="modal-title text-light">
+                                    <i class="fas fa-hospital me-2"></i>
+                                    إعداد شهادة التدريب - السنة الثانية
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="hasGapPeriod" name="has_gap_period" onchange="toggleGapFields()">
+                                            <label class="form-check-label fw-bold text-info" for="hasGapPeriod">
+                                                <i class="fas fa-calendar-alt me-2"></i>
+                                                يوجد فترة فجوة (Gap Period)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+            
+                                <div class="row mb-4" id="gapPeriodFields" >
+                                    <div class="col-12 mb-2">
+                                        <small class="text-muted">فترة الفجوة التي سيتم ذكرها في الشهادة:</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="gap_start" class="form-label">بداية الفترة</label>
+                                        <input type="month" name="gap_start" id="gap_start" class="form-control">
+                                        <small class="text-muted">مثال: 2018-07 (يوليو 2018)</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="gap_end" class="form-label">نهاية الفترة</label>
+                                        <input type="month" name="gap_end" id="gap_end" class="form-control">
+                                        <small class="text-muted">مثال: 2019-07 (يوليو 2019)</small>
+                                    </div>
+                                </div>
+            
+                                <hr class="my-4">
+            
+                                <!-- Training Records Section -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h6 class="text-info mb-3">
+                                            <i class="fas fa-table me-2"></i>
+                                            سجلات التدريب
+                                        </h6>
+                                    </div>
+                                </div>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="internshipTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Hospital / Medical Center</th>
+                                                <th>Starting Date</th>
+                                                <th>Ending Date</th>
+                                                <th>Specialty Course Type</th>
+                                                <th style="width: 50px;">حذف</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="internshipTableBody">
+                                            <tr>
+                                                <td><input type="text" name="hospital[]" class="form-control" required></td>
+                                                <td><input type="date" name="start_date[]" class="form-control" required></td>
+                                                <td><input type="date" name="end_date[]" class="form-control" required></td>
+                                                <td><input type="text" name="specialty[]" class="form-control" required></td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)" disabled>
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-success btn-sm" onclick="addInternshipRow()">
+                                        <i class="fas fa-plus me-2"></i>
+                                        إضافة صف جديد
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                <button type="submit" class="btn btn-info">
+                                    <i class="fas fa-cog me-2"></i>
+                                    إعداد المستند
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Verification Work Modal -->
+            <div class="modal fade" id="verificationWorkModal" tabindex="-1">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content">
+                        <form id="verificationWorkForm" onsubmit="prepareDocument(event)">
+                            @csrf
+                            <input type="hidden" name="document_type" value="verification_work">
+                            <input type="hidden" name="service_id" id="verificationServiceId">
+                            
+                            <div class="modal-header bg-warning text-dark">
+                                <h5 class="modal-title text-light">
+                                    <i class="fas fa-briefcase me-2"></i>
+                                    إعداد شهادة التحقق من العمل
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="verificationTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Specialty</th>
+                                                <th>Hospital</th>
+                                                <th>From</th>
+                                                <th>To</th>
+                                                <th style="width: 50px;">حذف</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="verificationTableBody">
+                                            <tr>
+                                                <td><input type="text" name="work_specialty[]" class="form-control" required></td>
+                                                <td><input type="text" name="work_hospital[]" class="form-control" required></td>
+                                                <td><input type="date" name="work_from[]" class="form-control" required></td>
+                                                <td><input type="date" name="work_to[]" class="form-control" required></td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)" disabled>
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-success btn-sm" onclick="addVerificationRow()">
+                                        <i class="fas fa-plus me-2"></i>
+                                        إضافة صف جديد
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-cog me-2"></i>
+                                    إعداد المستند
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Add this JavaScript code to the scripts section -->
+            <script>
+            // Document modal management
+            // Updated showDocumentModal function
+            function showDocumentModal(documentType, serviceId, workMention = null) {
+                switch(documentType) {
+                    case 'specialist':
+                    case 'license':
+                    case 'university_letters':
+                        showConfirmModal(documentType, serviceId);
+                        break;
+                    case 'good_standing':
+                        // Check if this service has work_mention requirement
+                        showDocumentModalWithWorkMention(documentType, serviceId, workMention);
+                        break;
+                    case 'certificate':
+                        document.getElementById('certificateServiceId').value = serviceId;
+                        new bootstrap.Modal(document.getElementById('certificateModal')).show();
+                        break;
+                    case 'internship_second_year':
+                        document.getElementById('internshipServiceId').value = serviceId;
+                        new bootstrap.Modal(document.getElementById('internshipSecondYearModal')).show();
+                        break;
+                    case 'verification_work':
+                        document.getElementById('verificationServiceId').value = serviceId;
+                        new bootstrap.Modal(document.getElementById('verificationWorkModal')).show();
+                        break;
+                }
+            }
+
+            // Function to show document modal with work mention parameter
+            function showDocumentModalWithWorkMention(documentType, serviceId, workMention) {
+                if (documentType === 'good_standing') {
+                    // Set service ID
+                    document.getElementById('goodStandingServiceId').value = serviceId;
+                    document.getElementById('goodStandingWorkMention').value = workMention ? 'true' : 'false';
+                    
+                    // Show/hide work place field and work details section
+                    const workDetailsSection = document.getElementById('workDetailsSection');
+                    
+                    if (workMention === 'with') {
+                        workDetailsSection.style.display = 'block';
+                        
+                        // Make first row of work details required
+                        const firstRowInputs = workDetailsSection.querySelectorAll('tbody tr:first-child input');
+                        firstRowInputs.forEach(input => {
+                            if (!input.name.includes('work_from') && !input.name.includes('work_to')) {
+                                input.required = true;
+                            }
+                        });
+                    } else {
+                        workDetailsSection.style.display = 'none';
+                        
+                        // Clear and make work details not required
+                        const workInputs = workDetailsSection.querySelectorAll('input');
+                        workInputs.forEach(input => {
+                            input.required = false;
+                            input.value = '';
+                        });
+                    }
+                    
+                    // Show modal
+                    new bootstrap.Modal(document.getElementById('goodStandingModal')).show();
+                } else {
+                    showDocumentModal(documentType, serviceId);
+                }
+            }
+            function showConfirmModal(documentType, serviceId) {
+                const titles = {
+                    'certificate': 'شهادة',
+                    'good_standing': 'شهادة حسن السيرة والسلوك',
+                    'license': 'رخصة',
+                    'specialist': 'شهادة الاختصاص',
+                    'university_letters': 'خطابات جامعية'
+                };
+                
+                document.getElementById('confirmDocumentType').value = documentType;
+                document.getElementById('confirmServiceId').value = serviceId;
+                document.getElementById('confirmDocumentTitle').innerHTML = `<i class="fas fa-file-alt me-2"></i> إعداد ${titles[documentType] || 'المستند'}`;
+                document.getElementById('confirmDocumentMessage').textContent = `سيتم إعداد ${titles[documentType] || 'المستند'} للطبيب`;
+                
+                new bootstrap.Modal(document.getElementById('confirmDocumentModal')).show();
+            }
+            
+            // Add row functions
+            function addInternshipRow() {
+                const tbody = document.getElementById('internshipTableBody');
+                const newRow = tbody.rows[0].cloneNode(true);
+                
+                // Clear input values
+                newRow.querySelectorAll('input').forEach(input => input.value = '');
+                
+                // Enable delete button
+                const deleteBtn = newRow.querySelector('button');
+                deleteBtn.disabled = false;
+                
+                tbody.appendChild(newRow);
+            }
+            
+            function addVerificationRow() {
+                const tbody = document.getElementById('verificationTableBody');
+                const newRow = tbody.rows[0].cloneNode(true);
+                
+                // Clear input values
+                newRow.querySelectorAll('input').forEach(input => input.value = '');
+                
+                // Enable delete button
+                const deleteBtn = newRow.querySelector('button');
+                deleteBtn.disabled = false;
+                
+                tbody.appendChild(newRow);
+            }
+            
+            // Remove row function
+            function removeRow(button) {
+                const row = button.closest('tr');
+                const tbody = row.parentElement;
+                
+                // Don't remove if it's the last row
+                if (tbody.rows.length > 1) {
+                    row.remove();
+                }
+            }
+            
+        
+                            
+                // Update the prepareDocument function to handle the certificate form data
+                function prepareDocument(event) {
+                    event.preventDefault();
+                    
+                    const form = event.target;
+                    const formData = new FormData(form);
+                    
+                    // Handle country selection for certificate
+                    if (formData.get('document_type') === 'certificate') {
+                        const country = formData.get('country');
+                        if (country === 'other') {
+                            formData.set('country', formData.get('other_country'));
+                        }
+                        formData.delete('other_country');
+                    }
+                    
+                    // Get the service ID from the form
+                    const serviceId = formData.get('service_id');
+                    
+                    // Show loading
+                    Swal.fire({
+                        title: 'جاري إعداد المستند...',
+                        text: 'يرجى الانتظار',
+                        icon: 'info',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading()
+                        }
+                    });
+                    
+                    // Build the URL with both parameters
+                    const url = `{{ url('admin/doctor-mails') }}/{{ $doctorMail->id }}/services/${serviceId}/prepare-document`;
+                    let csrfToken = '{{csrf_token()}}'
+                    
+                    fetch(url, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'تم إعداد المستند بنجاح',
+                                text: data.message || 'تم إعداد المستند بنجاح',
+                                confirmButtonText: 'حسناً'
+                            }).then(() => {
+                                // Close modal
+                                const modals = ['confirmDocumentModal', 'internshipSecondYearModal', 'verificationWorkModal', 'certificateModal', 'goodStandingModal'];
+                                modals.forEach(modalId => {
+                                    const modalEl = document.getElementById(modalId);
+                                    const modal = bootstrap.Modal.getInstance(modalEl);
+                                    if (modal) modal.hide();
+                                });
+
+                                // Reload the page to show updated data
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطأ',
+                                text: data.message || 'حدث خطأ أثناء إعداد المستند',
+                                confirmButtonText: 'حسناً'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطأ',
+                            text: 'حدث خطأ في الاتصال',
+                            confirmButtonText: 'حسناً'
+                        });
+                    });
+                }
+            </script>
             <!-- Modal لحفظ الملف في ملف الطبيب -->
             <div class="modal fade" id="saveFileModal" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
@@ -483,6 +927,233 @@
     </div>
     @endif
 </div>
+<!-- Good Standing Modal -->
+<div class="modal fade" id="goodStandingModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <form id="goodStandingForm" onsubmit="prepareDocument(event)">
+                @csrf
+                <input type="hidden" name="document_type" value="good_standing">
+                <input type="hidden" name="service_id" id="goodStandingServiceId">
+                <input type="hidden" name="work_mention_required" id="goodStandingWorkMention">
+                
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title text-light">
+                        <i class="fas fa-certificate me-2"></i>
+                        إعداد شهادة حسن السيرة والسلوك
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Work Place Field (Optional) -->
+                    <div class="row mb-4" id="goodStandingWorkPlaceField" style="display: none;">
+                        <div class="col-12">
+                           
+                        </div>
+                    </div>
+
+                    <!-- Work Details Table (Only for work_mention) -->
+                    <div id="workDetailsSection" style="display: none;">
+                        <hr class="my-4">
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="text-success mb-3">
+                                    <i class="fas fa-briefcase me-2"></i>
+                                    تفاصيل العمل
+                                </h6>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="workDetailsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Work as</th>
+                                        <th>Specialty</th>
+                                        <th>Department</th>
+                                        <th>Hospital</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th style="width: 50px;">حذف</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="workDetailsTableBody">
+                                    <tr>
+                                        <td><input type="text" name="work_as[]" class="form-control" placeholder="junior Doctor" required></td>
+                                        <td><input type="text" name="work_specialty[]" class="form-control" placeholder="Internal Medicine" required></td>
+                                        <td><input type="text" name="work_department[]" class="form-control" placeholder="Internal Medicine Dept." required></td>
+                                        <td><input type="text" name="work_hospital[]" class="form-control" placeholder="Tripoli Medical Center" required></td>
+                                        <td><input type="date" name="work_from[]" class="form-control" required></td>
+                                        <td><input type="date" name="work_to[]" class="form-control" required></td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="removeWorkRow(this)" disabled>
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-success btn-sm" onclick="addWorkRow()">
+                                <i class="fas fa-plus me-2"></i>
+                                إضافة عمل جديد
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Simple confirmation message (for without work mention) -->
+                    <div id="simpleConfirmation" style="display: none;">
+                        <div class="text-center py-4">
+                            <div class="mb-4">
+                                <i class="fas fa-check-circle fa-4x text-success"></i>
+                            </div>
+                            <h4 class="mb-3">هل تريد إعداد شهادة حسن السيرة والسلوك؟</h4>
+                            <p class="text-muted">سيتم إعداد الشهادة بدون ذكر جهة العمل</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-cog me-2"></i>
+                        إعداد المستند
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Function to add work row
+function addWorkRow() {
+    const tbody = document.getElementById('workDetailsTableBody');
+    const newRow = tbody.rows[0].cloneNode(true);
+    
+    // Clear input values
+    newRow.querySelectorAll('input').forEach(input => input.value = '');
+    
+    // Enable delete button
+    const deleteBtn = newRow.querySelector('button');
+    deleteBtn.disabled = false;
+    
+    tbody.appendChild(newRow);
+}
+
+// Function to remove work row
+function removeWorkRow(button) {
+    const row = button.closest('tr');
+    const tbody = row.parentElement;
+    
+    // Don't remove if it's the last row
+    if (tbody.rows.length > 1) {
+        row.remove();
+    }
+}
+
+// Function to show document modal with work mention parameter
+function showDocumentModalWithWorkMention(documentType, serviceId, workMention) {
+    if (documentType === 'good_standing') {
+        // Set service ID
+        document.getElementById('goodStandingServiceId').value = serviceId;
+        document.getElementById('goodStandingWorkMention').value = workMention ? 'true' : 'false';
+        
+        // Show/hide work place field and work details section
+        const workDetailsSection = document.getElementById('workDetailsSection');
+        
+        if (workMention === 'with') {
+            workDetailsSection.style.display = 'block';
+            
+            // Make first row of work details required
+            const firstRowInputs = workDetailsSection.querySelectorAll('tbody tr:first-child input');
+            firstRowInputs.forEach(input => {
+                input.required = true;
+            });
+        } else {
+            workDetailsSection.style.display = 'none';
+            
+            // Clear and make work details not required
+            const workInputs = workDetailsSection.querySelectorAll('input');
+            workInputs.forEach(input => {
+                input.required = false;
+                input.value = '';
+            });
+        }
+        
+        // Show modal
+        new bootstrap.Modal(document.getElementById('goodStandingModal')).show();
+    } else {
+        showDocumentModal(documentType, serviceId);
+    }
+}
+</script>
+
+<script>
+// Function to add work row
+function addWorkRow() {
+    const tbody = document.getElementById('workDetailsTableBody');
+    const newRow = tbody.rows[0].cloneNode(true);
+    
+    // Clear input values
+    newRow.querySelectorAll('input').forEach(input => input.value = '');
+    
+    // Enable delete button
+    const deleteBtn = newRow.querySelector('button');
+    deleteBtn.disabled = false;
+    
+    tbody.appendChild(newRow);
+}
+
+// Function to remove work row
+function removeWorkRow(button) {
+    const row = button.closest('tr');
+    const tbody = row.parentElement;
+    
+    // Don't remove if it's the last row
+    if (tbody.rows.length > 1) {
+        row.remove();
+    }
+}
+
+// Update the showDocumentModal function to handle good_standing with work_mention
+function showDocumentModalWithWorkMention(documentType, serviceId, workMention) {
+    if (documentType === 'good_standing') {
+        // Set service ID
+        document.getElementById('goodStandingServiceId').value = serviceId;
+        document.getElementById('goodStandingWorkMention').value = workMention ? 'true' : 'false';
+        
+        // Show/hide work place field and work details section
+        const workDetailsSection = document.getElementById('workDetailsSection');
+        
+        if (workMention === 'with') {
+            workDetailsSection.style.display = 'block';
+            
+            // Make work details required
+            const workInputs = workDetailsSection.querySelectorAll('input[name^="work_"]');
+            workInputs.forEach(input => {
+                if (input.type !== 'date') {
+                    input.required = true;
+                }
+            });
+        } else {
+            workDetailsSection.style.display = 'none';
+            
+            // Clear and make work details not required
+            const workInputs = workDetailsSection.querySelectorAll('input');
+            workInputs.forEach(input => {
+                input.required = false;
+                input.value = '';
+            });
+        }
+        
+        // Show modal
+        new bootstrap.Modal(document.getElementById('goodStandingModal')).show();
+    } else {
+        showDocumentModal(documentType, serviceId);
+    }
+}
+</script>
 
 <!-- Edit Request Modal -->
 <div class="modal fade" id="editRequestModal" tabindex="-1">
@@ -494,7 +1165,7 @@
                 <input type="hidden" name="status" value="under_edit">
                 
                 <div class="modal-header border-0">
-                    <h5 class="modal-title">
+                    <h5 class="modal-title text-light">
                         <i class="fas fa-edit me-2"></i>
                         إرجاع الطلب للتعديل
                     </h5>
@@ -530,31 +1201,47 @@
 <!-- Document Preparation Modals -->
 
 <!-- Good Standing Modal -->
-<div class="modal fade" id="goodStandingModal" tabindex="-1">
+
+
+<!-- Good Standing Modal -->
+
+<!-- Certificate Modal -->
+<div class="modal fade" id="certificateModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form id="goodStandingForm" onsubmit="prepareDocument(event, 'good_standing')">
+            <form id="certificateForm" onsubmit="prepareDocument(event)">
                 @csrf
-                <input type="hidden" name="document_type" value="good_standing">
-                <input type="hidden" name="service_id" id="goodStandingServiceId">
+                <input type="hidden" name="document_type" value="certificate">
+                <input type="hidden" name="service_id" id="certificateServiceId">
                 
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title text-light">
                         <i class="fas fa-certificate me-2"></i>
-                        إعداد شهادة حسن السيرة والسلوك
+                        إعداد الرخصة
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-center py-5">
+                <div class="modal-body">
                     <div class="mb-4">
-                        <i class="fas fa-check-circle fa-4x text-success"></i>
+                        <label class="form-label">الدولة <span class="text-danger">*</span></label>
+                        <select class="form-select select2" name="country_id" id="certificateCountry" required>
+                            <option value="">اختر الدولة...</option>
+                            @foreach (\App\Models\Country::all() as $country)
+                                <option value="{{$country->id}}">{{$country->country_name_ar}} - {{$country->country_name_en}}</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <h4 class="mb-3">هل تريد إعداد المستند؟</h4>
-                    <p class="text-muted">سيتم إعداد شهادة حسن السيرة والسلوك للطبيب</p>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">القسم / التخصص <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="department" id="certificateDepartment" 
+                               placeholder="مثال: general practitioner department" required>
+                        <small class="text-muted">اكتب القسم أو التخصص باللغة الإنجليزية</small>
+                    </div>
                 </div>
-                <div class="modal-footer border-0 justify-content-center">
+                <div class="modal-footer border-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-primary">
                         <i class="fas fa-cog me-2"></i>
                         إعداد المستند
                     </button>
@@ -563,7 +1250,6 @@
         </div>
     </div>
 </div>
-
 <!-- Specialist Modal -->
 <div class="modal fade" id="specialistModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -574,7 +1260,7 @@
                 <input type="hidden" name="service_id" id="specialistServiceId">
                 
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">
+                    <h5 class="modal-title text-light">
                         <i class="fas fa-user-md me-2"></i>
                         إعداد شهادة الاختصاص
                     </h5>
@@ -830,6 +1516,22 @@ function saveToDoctor(serviceId, filePath, fileName) {
     modal.show();
 }
 
+
+// Function to show document modal with work mention parameter
+function showDocumentModalWithWorkMention(documentType, serviceId, workMention) {
+    if (documentType === 'good_standing') {
+        // Set service ID
+        document.getElementById('goodStandingServiceId').value = serviceId;
+        document.getElementById('goodStandingWorkMention').value = workMention ? 'true' : 'false';
+        
+        
+        // Show modal
+        new bootstrap.Modal(document.getElementById('goodStandingModal')).show();
+    } else {
+        showDocumentModal(documentType, serviceId);
+    }
+}
+
 // معالج إرسال نموذج حفظ الملف
 document.getElementById('saveFileForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -903,4 +1605,152 @@ function updateSaveButton(serviceId) {
     }
 }
 </script>
+<script>
+// Initialize Select2 when modal is shown
+$('#certificateModal').on('shown.bs.modal', function () {
+    $('#certificateCountry').select2({
+        dropdownParent: $('#certificateModal'),
+        width: '100%',
+        placeholder: 'اختر الدولة...',
+        allowClear: true,
+        dir: 'rtl'
+    });
+});
+
+// Destroy Select2 when modal is hidden
+$('#certificateModal').on('hidden.bs.modal', function () {
+    $('#certificateCountry').select2('destroy');
+});
+$('#certificateModal').removeAttr('tabindex');
+
+</script>
+
+<script>
+function toggleGapFields() {
+    const checkbox = document.getElementById('hasGapPeriod');
+    const gapFields = document.getElementById('gapPeriodFields');
+    const gapStart = document.getElementById('gap_start');
+    const gapEnd = document.getElementById('gap_end');
+    
+    if (checkbox.checked) {
+        gapFields.style.display = 'block';
+        gapStart.required = true;
+        gapEnd.required = true;
+    } else {
+        gapFields.style.display = 'none';
+        gapStart.required = false;
+        gapEnd.required = false;
+        gapStart.value = '';
+        gapEnd.value = '';
+    }
+}
+</script>
+
+<script>
+    // Function to add work row
+    function addWorkRow() {
+        const tbody = document.getElementById('workDetailsTableBody');
+        const newRow = tbody.rows[0].cloneNode(true);
+        
+        // Clear input values
+        newRow.querySelectorAll('input').forEach(input => input.value = '');
+        
+        // Enable delete button
+        const deleteBtn = newRow.querySelector('button');
+        deleteBtn.disabled = false;
+        
+        tbody.appendChild(newRow);
+    }
+    
+    // Function to remove work row
+    function removeWorkRow(button) {
+        const row = button.closest('tr');
+        const tbody = row.parentElement;
+        
+        // Don't remove if it's the last row
+        if (tbody.rows.length > 1) {
+            row.remove();
+        }
+    }
+    
+    // FIXED: Function to show document modal with work mention parameter
+    function showDocumentModalWithWorkMention(documentType, serviceId, workMention) {
+        console.log('showDocumentModalWithWorkMention called:', { documentType, serviceId, workMention });
+        
+        if (documentType === 'good_standing') {
+            // Set service ID and work mention
+            document.getElementById('goodStandingServiceId').value = serviceId;
+            document.getElementById('goodStandingWorkMention').value = workMention;
+            
+            // Get all sections
+            const workDetailsSection = document.getElementById('workDetailsSection');
+            const simpleConfirmation = document.getElementById('simpleConfirmation');
+            
+            // Hide all sections first
+            workDetailsSection.style.display = 'none';
+            simpleConfirmation.style.display = 'none';
+            
+            if (workMention === 'with') {
+                // Show work-related sections
+                workDetailsSection.style.display = 'block';
+                
+                // Make first row of work details required
+                const firstRowInputs = workDetailsSection.querySelectorAll('tbody tr:first-child input');
+                firstRowInputs.forEach(input => {
+                    input.required = true;
+                });
+                
+                console.log('Work sections shown');
+            } else {
+                // Show simple confirmation
+                simpleConfirmation.style.display = 'block';
+                
+                // Clear and make work details not required
+                const workInputs = workDetailsSection.querySelectorAll('input');
+                workInputs.forEach(input => {
+                    input.required = false;
+                    input.value = '';
+                });
+                
+                console.log('Simple confirmation shown');
+            }
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('goodStandingModal'));
+            modal.show();
+            
+            console.log('Modal shown');
+        } else {
+            showDocumentModal(documentType, serviceId);
+        }
+    }
+    
+    // Override the existing function to ensure it works
+    function showGoodStandingModal(serviceId, workMention) {
+        showDocumentModalWithWorkMention('good_standing', serviceId, workMention);
+    }
+    </script>
+    <script>
+    // Add this to your scripts section for debugging
+    console.log('Good Standing Modal script loaded');
+
+    // Test function
+    function testGoodStanding() {
+        console.log('Testing Good Standing modal');
+        showDocumentModalWithWorkMention('good_standing', 123, 'with');
+    }
+
+    // Alternative function name for testing
+    window.showGoodStandingModal = function(serviceId, workMention) {
+        console.log('showGoodStandingModal called with:', serviceId, workMention);
+        showDocumentModalWithWorkMention('good_standing', serviceId, workMention);
+    };
+
+    // Debug the elements
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, checking elements:');
+        console.log('workDetailsSection:', document.getElementById('workDetailsSection'));
+        console.log('simpleConfirmation:', document.getElementById('simpleConfirmation'));
+    });
+    </script>
 @endsection

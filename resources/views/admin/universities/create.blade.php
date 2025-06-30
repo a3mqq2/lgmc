@@ -23,6 +23,18 @@
                             @enderror
                         </div>
 
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label">اسم الجامعة بالانجليزية</label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="en_name" value="{{ old('en_name') }}" required>
+                            @error('name')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+
+
                         <button type="submit" class="btn btn-primary">إنشاء</button>
                     </form>
                 </div>

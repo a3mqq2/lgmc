@@ -32,6 +32,17 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:branch_operation
     Route::get('/search', [UserController::class, 'search'])->name('search');
     Route::get('/home',   [UserController::class, 'home'])->name('home');
 
+
+    Route::group(['prefix' => 'reports', 'as' => 'reports.'], function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/doctors-registration', [ReportController::class, 'doctorsRegistration'])->name('doctors-registration');
+        Route::get('/doctors-licenses', [ReportController::class, 'doctorsLicenses'])->name('doctors-licenses');
+        Route::get('/medical-facilities-registration', [ReportController::class, 'medicalFacilitiesRegistration'])->name('medical-facilities-registration');
+        Route::get('/medical-facilities-licenses', [ReportController::class, 'medicalFacilitiesLicenses'])->name('medical-facilities-licenses');
+        Route::get('/quick-stats', [ReportController::class, 'getQuickStats'])->name('quick-stats');
+        Route::get('/export-excel', [ReportController::class, 'exportToExcel'])->name('export-excel');
+    });
+
     Route::resource('vaults',       VaultController::class)->only(['index']);
     Route::resource('transactions', TransactionController::class);
 
@@ -117,6 +128,8 @@ Route::prefix('user')->name('user.')->middleware(['auth', 'role:branch_operation
     Route::post('/invoices/{invoice}/received', [InvoiceController::class, 'received'])->name('invoices.received');
     Route::resource('invoices', InvoiceController::class)->only(['index', 'edit', 'update','destroy','create','store']);
 
+    Route::post('/invoices/print-multiple', [InvoiceController::class, 'printMultiple'])
+    ->name('invoices.print-multiple');
 
     // user.doctors.files.reorder
     Route::post('/doctors/files/reorder', [DoctorFileController::class, 'reorderFiles'])->name('doctors.files.reorder');

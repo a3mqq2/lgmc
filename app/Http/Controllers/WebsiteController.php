@@ -180,19 +180,16 @@ class WebsiteController extends Controller
                 'public'
             );
         
-            // 4) اربط أو حدّث السجل
             $fileType = FileType::findOrFail($fileTypeId);
             
-            // تحديد ما إذا كان نحتاج renew_number للطبيب الزائر
             $fileData = [
                 $ownerKey      => $ownerId,
                 'file_type_id' => $fileTypeId,
-                'file_name'    => $file->getClientOriginalName(),
+                'file_name'    => $fileType->name,
                 'file_path'    => $path,
                 'order_number' => $fileType->order_number,
             ];
         
-            // إضافة renew_number للمنشآت والأطباء الزوار
             if ($request->has('medical_facility_id') || 
                 ($request->has('doctor_id') && $owner->type->value == "visitor")) {
                 $fileData['renew_number'] = $owner->renew_number;
@@ -200,7 +197,6 @@ class WebsiteController extends Controller
         
             $relation->create($fileData);
         
-            // 5) احسب المرفوعات المطلوبة
             $is_for_registeration = $owner->membership_status->value == "expired" ? 0 : 1;
         
             $requiredTypeIds = $typeQuery

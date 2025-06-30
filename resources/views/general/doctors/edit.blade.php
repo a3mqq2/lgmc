@@ -296,15 +296,6 @@
                 </div>
                 @endif
                 <div class="col-md-6">
-                    <label class="form-label">الجهة العامة/ المستشفى</label>
-                    <select name="institution_id" id="" class="form-control select2 selectize">
-                        <option value="">حدد مستشفى</option>
-                        @foreach ($institutions as $institution)
-                            <option value="{{$institution->id}}" {{$institution->id == $doctor->institution_id ? "selected" : ""}} >{{$institution->name}}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-6">
                     <label>الصفة</label>
                     <select name="doctor_rank_id" required class="form-control select2">
                         <option value="">حدد الصفة</option>
@@ -326,16 +317,6 @@
             </div>
             <hr>
 
-
-
-            {{-- بيانات اخرى --}}
-            <h5 class="text-primary mb-3">بيانات اخرى</h5>
-            <div class="row">
-                <div class="col-md-12">
-                    <label>بيانات اضافيه</label>
-                    <textarea name="notes" rows="4" class="form-control">{{ old('notes',$doctor->notes) }}</textarea>
-                </div>
-            </div>
 
         </div>
 

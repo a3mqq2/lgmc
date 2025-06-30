@@ -205,7 +205,8 @@
 
 
 
-                @if (($doctor->MedicalFacility && ! $doctor->institution) || $doctor->MedicalFacility)
+              
+                @if (($licence->workIn))
                 <div class="in-place">
                  <h6 class="font-weight-bold">
                      <strong>
@@ -216,7 +217,7 @@
  
              <div class="medical-facility-box card">
                  <h4 class="font-weight-bold">
-                         <strong>  {{$doctor->MedicalFacility ? $doctor->MedicalFacility->name : "-"}}  </strong>
+                         <strong>  {{$licence->workIn ? $licence->workIn->name : "-"}}  </strong>
                  </h4>
  
              </div>
@@ -224,7 +225,7 @@
 
 
 
-                @if ($doctor->institution && ! $doctor->MedicalFacility)
+                @if ($licence->institution)
                 <div class="in-place">
                  <h6 class="font-weight-bold">
                      <strong>
@@ -235,13 +236,11 @@
  
              <div class="medical-facility-box card">
                  <h4 class="font-weight-bold">
-                         <strong>  {{$doctor->institution}}  </strong>
+                         <strong>  {{$licence->institution->name}}  </strong>
                  </h4>
  
              </div>
                 @endif
-
-
 
 
 

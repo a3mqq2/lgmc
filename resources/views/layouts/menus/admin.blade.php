@@ -244,6 +244,26 @@
                 </div>
             </li>
 
+
+            <li class="nav-item">
+                <a class="nav-link menu-link" href="#universities" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                    <i class="fa fa-university"></i>
+                    <span data-key="t-layouts">الجامعات</span>
+                </a>
+                <div class="collapse menu-dropdown" id="universities">
+                    <ul class="nav nav-sm flex-column">
+                        <li class="nav-item">
+                            <a href="{{ route(get_area_name().'.universities.create') }}" class="nav-link" data-key="t-horizontal">
+                                إضافة جامعة جديدة
+                            </a>
+                            <a href="{{ route(get_area_name().'.universities.index') }}" class="nav-link" data-key="t-horizontal">
+                                عرض جميع الجامعات
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            
             {{-- Countries --}}
             <li class="nav-item">
                 <a class="nav-link menu-link" data-bs-target="#countries" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
