@@ -57,9 +57,13 @@
                 </div>
                 
                 {{-- زر تجديد العضوية --}}
-                <button type="button" class="btn btn-success text-light" data-bs-toggle="modal" data-bs-target="#renewMembershipModal">
+                <button type="button" 
+                {{$doctor->doctor_rank_id == null ? "disabled" : ""}}
+                class="btn btn-success text-light" data-bs-toggle="modal" data-bs-target="#renewMembershipModal">
                     <i class="fa fa-refresh"></i> تجديد العضوية
                 </button>
+
+                <a href="{{route(get_area_name().'.doctors.edit', $doctor)}}" class="btn btn-info"><i class="fa fa-edit"></i> تعديل بيانات الطبيب </a>
             </div>
         </div>
     </div>

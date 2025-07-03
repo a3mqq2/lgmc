@@ -451,6 +451,77 @@
 }
 
 
+/* إضافة هذا في قسم الـ styles الموجود */
+.flatpickr-calendar {
+    z-index: 9999 !important;
+    position: absolute !important;
+}
+
+.flatpickr-calendar.open {
+    z-index: 9999 !important;
+}
+
+/* منع التداخل مع العناصر الأخرى */
+.flatpickr-wrapper {
+    position: relative;
+}
+
+/* تحسين عرض الأسهم */
+.flatpickr-prev-month,
+.flatpickr-next-month {
+    position: relative;
+    z-index: 10000;
+    pointer-events: auto;
+}
+
+/* إصلاح مشكلة RTL */
+.flatpickr-calendar.arrowRight:before,
+.flatpickr-calendar.arrowRight:after {
+    right: 22px !important;
+    left: auto !important;
+}
+
+.flatpickr-calendar.arrowLeft:before,
+.flatpickr-calendar.arrowLeft:after {
+    left: 22px !important;
+    right: auto !important;
+}
+
+/* تحسين عرض التقويم للغة العربية */
+.flatpickr-calendar.flatpickr-rtl {
+    direction: rtl;
+}
+
+.flatpickr-calendar.flatpickr-rtl .flatpickr-months {
+    direction: rtl;
+}
+
+.flatpickr-calendar.flatpickr-rtl .flatpickr-weekdays {
+    direction: rtl;
+}
+
+.flatpickr-calendar.flatpickr-rtl .flatpickr-days {
+    direction: rtl;
+}
+
+/* إصلاح الأسهم */
+.flatpickr-calendar.flatpickr-rtl .flatpickr-prev-month {
+    right: 0;
+    left: auto;
+}
+
+.flatpickr-calendar.flatpickr-rtl .flatpickr-next-month {
+    left: 0;
+    right: auto;
+}
+
+/* منع تداخل الأسهم */
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
+    width: 14px;
+    height: 14px;
+}
+
 </style>
 
 
@@ -809,40 +880,33 @@
                 }
                 
                 // Create Flatpickr instance
+           // استبدل كود Flatpickr الموجود بهذا:
                 flatpickr(field, {
-                    dateFormat: "Y-m-d", // This ensures YYYY-MM-DD format
-                    altInput: false, // IMPORTANT: Don't create alternative input
+                    dateFormat: "Y-m-d",
+                    altInput: false,
                     locale: {
-                        firstDayOfWeek: 6, // Saturday
-                        weekdays: {
-                            shorthand: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'],
-                            longhand: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
-                        },
-                        months: {
-                            shorthand: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
-                            longhand: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
-                        },
-                        rangeSeparator: ' إلى ',
-                        weekAbbreviation: 'أسبوع',
-                        scrollTitle: 'قم بالتمرير للزيادة',
-                        toggleTitle: 'اضغط للتبديل',
-                        amPM: ['ص', 'م'],
-                        yearAriaLabel: 'السنة',
-                        monthAriaLabel: 'الشهر',
-                        hourAriaLabel: 'الساعة',
-                        minuteAriaLabel: 'الدقيقة'
+                        // نفس الإعدادات الموجودة
                     },
                     allowInput: true,
                     clickOpens: true,
                     minDate: "1900-01-01",
-                    disableMobile: true, // Force Flatpickr on mobile devices
+                    disableMobile: true,
+                    // إضافة هذه الخيارات لحل مشكلة التداخل
+                    static: false,
+                    appendTo: document.body,
+                    positionElement: field,
+                    // تحسين الموضع
+                    position: "auto",
                     onReady: function(selectedDates, dateStr, instance) {
-                        // Convert type to text to avoid browser native date picker
                         instance.input.type = 'text';
                         
-                        // Ensure the input shows the correct format on load
+                        // إضافة فئة RTL
+                        instance.calendarContainer.classList.add('flatpickr-rtl');
+                        
+                        // تحسين z-index
+                        instance.calendarContainer.style.zIndex = '9999';
+                        
                         if (instance.input.value) {
-                            // Parse the date and format it correctly
                             const date = new Date(instance.input.value);
                             if (!isNaN(date.getTime())) {
                                 const year = date.getFullYear();
@@ -851,12 +915,8 @@
                                 instance.input.value = `${year}-${month}-${day}`;
                             }
                         }
-                        
-                        // Add RTL support
-                        instance.calendarContainer.classList.add('flatpickr-rtl');
                     },
                     onChange: function(selectedDates, dateStr, instance) {
-                        // Force the format to YYYY-MM-DD
                         if (selectedDates.length > 0) {
                             const date = selectedDates[0];
                             const year = date.getFullYear();
@@ -864,15 +924,11 @@
                             const day = String(date.getDate()).padStart(2, '0');
                             const formattedDate = `${year}-${month}-${day}`;
                             
-                            // Update the actual input value
                             instance.input.value = formattedDate;
-                            
-                            // Trigger change event
                             instance.input.dispatchEvent(new Event('change', { bubbles: true }));
                         }
                     }
                 });
-                
                 // Add pattern attribute for validation
                 field.setAttribute('pattern', '\\d{4}-\\d{2}-\\d{2}');
                 field.setAttribute('placeholder', 'YYYY-MM-DD');
@@ -963,6 +1019,19 @@
         });
       });
     });
+
+
+    // إضافة هذا الكود بعد إنشاء Flatpickr
+field.addEventListener('focus', function() {
+    setTimeout(() => {
+        const calendar = document.querySelector('.flatpickr-calendar.open');
+        if (calendar) {
+            calendar.style.zIndex = '9999';
+            calendar.style.position = 'absolute';
+        }
+    }, 100);
+});
+
   </script>  
 
   

@@ -17,7 +17,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
     protected $licenceIndexes = [];
 
     protected $doctorRankMap = [
-        'طبيب عام' => 1,
+        'ممارس عام' => 1,
         'اخصائي' => 3,
         'طبيب ممارس' => 2,
         'استشاري' => 6,
@@ -30,7 +30,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
         }
 
         $specialty = null;
-        if (!empty($row['altkhss']) && $row['altkhss'] != "طبيب عام") {
+        if (!empty($row['altkhss']) && $row['altkhss'] != "ممارس عام") {
             $specialty = Specialty::firstOrCreate(['name' => $row['altkhss'],'name_en' => '-']);
         }
 
@@ -43,8 +43,14 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             return null;
         }
 
+        if (empty($row['aadoy']) || !is_numeric($row['aadoy'])) {
+            Log::warning('Doctor number is missing or invalid', ['row' => $row]);
+            return null;
+        }
+
+
         $doctor = new Doctor([
-            'doctor_number' => $row['aadoy'],
+            'index' => $row['aadoy'],
             'name' => $row['alasm'],
             'phone' => 0 . $row['rkm_alhatf'],
             'address' => $row['alakam'],
@@ -81,12 +87,10 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             $key = "{$branchId}_{$type}_{$year}";
         
     
-            $max_code = Doctor::where('branch_id', 3)->max('index');
         
             $doctor->update([
-                'index' => $max_code + 1,
-                'membership_status' => $expiryDate->isPast() ? 'expired' : 'active',
-                'membership_expiration_date' => $expiryDate->format('Y-m-d'),
+                'membership_status' => $expiryDate ? $expiryDate->isPast() ? 'expired' : 'active' : 'under_approve',
+                'membership_expiration_date' => $expiryDate ? $expiryDate->format('Y-m-d') : null,
             ]);
 
             $doctor->makeCode();
