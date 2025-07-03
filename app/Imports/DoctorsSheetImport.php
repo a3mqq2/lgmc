@@ -64,6 +64,7 @@ class DoctorsSheetImport implements ToModel, WithHeadingRow
             'branch_id' => 3,
             'type' => "libyan",
             'country_id' => 1,
+            'password' => bcrypt(123123123),
         ]);
 
         $doctor->save();
